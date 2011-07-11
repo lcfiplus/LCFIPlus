@@ -840,7 +840,7 @@ void processEvents(const char* input, const char* output, int nStart, int nEnd) 
 	JetConfig jetCfg;
 	//jetCfg.nJet = 2;
 	jetCfg.nJet = 6;
-	JetFinder* jetFinder = new JetFinder(jetCfg);
+	//JetFinder* jetFinder = new JetFinder(jetCfg);
 	//CheatedJetFinder* cheatedJetFinder = new CheatedJetFinder(jetCfg);
 
 	//*
@@ -1140,7 +1140,7 @@ void processEvents(const char* input, const char* output, int nStart, int nEnd) 
 
 		Vertex* primaryVertex = findPrimaryVertex(tracksForPrimary,25);
 		if (primaryVertex == 0) {
-			fprintf(stderr,"primary vertex could not be found (ntrk=%d), skipping event\n",tracksForPrimary.size());
+			fprintf(stderr,"primary vertex could not be found (ntrk=%d), skipping event\n",(int)tracksForPrimary.size());
 			continue;
 		}
 
@@ -1167,7 +1167,7 @@ void processEvents(const char* input, const char* output, int nStart, int nEnd) 
 
 		if (debug.primary) {
 			printf("IP: (%f,%f,%f) - beam constraint; ntrks+2=%d\n",primaryVertex->getX(),primaryVertex->getY(),primaryVertex->getZ(),
-					primaryVertex->getTracks().size());
+					(int)primaryVertex->getTracks().size());
 			for(unsigned int i=0;i<primaryVertex->getTracks().size()-2;i++){
 				Track* tr = primaryVertex->getTracks()[i];
 				cout << "        Track #" << i << ": p = (" << tr->Px() << "," << tr->Py() << "," << tr->Pz() << "), chi2 = "
@@ -1306,7 +1306,7 @@ void processEvents(const char* input, const char* output, int nStart, int nEnd) 
 				MCParticle* ssp = mcp->getSemiStableParent();
 				if (ssp) {
 					int abspdg = abs(ssp->getPDG());
-					if (abspdg >= 5000 & abspdg < 6000) {
+					if (abspdg >= 5000 && abspdg < 6000) {
 						d.jet_bbaryon[iJet] = 1;
 					}
 				}

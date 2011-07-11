@@ -40,7 +40,8 @@ FlavtagProcessor::FlavtagProcessor() : Processor("FlavtagProcessor") {
 	// ROOT object
 	int argc = 0;
 	if(gROOT->GetApplication() == 0){
-		TApplication *theapp = new TApplication("FlavtagProcessor",&argc,0);
+		//TApplication *theapp =
+		new TApplication("FlavtagProcessor",&argc,0);
 		SLM << "TApplication created." << endl;
 	}
 }

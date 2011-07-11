@@ -1,6 +1,6 @@
 ########################################################
-# cmake file for building Marlin example Package
-# @author Jan Engels, DESY
+# cmake file for building LCFIPlus package
+# @author Tomohiko Tanabe, University of Tokyo
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6 FATAL_ERROR)
 ########################################################
 
@@ -24,12 +24,13 @@ FIND_PACKAGE( ILCUTIL COMPONENTS ILCSOFT_CMAKE_MODULES REQUIRED )
 INCLUDE( ilcsoft_default_settings )
 
 
+FIND_PACKAGE( LCIO REQUIRED )
 FIND_PACKAGE( Marlin 1.0 REQUIRED )
 FIND_PACKAGE( MarlinUtil REQUIRED )
 FIND_PACKAGE( ROOT 5.28 REQUIRED )
 FIND_PACKAGE( LCFIVertex 0.5.1 REQUIRED )
 
-FOREACH( pkg Marlin MarlinUtil ROOT LCFIVertex )
+FOREACH( pkg LCIO Marlin MarlinUtil ROOT LCFIVertex )
     IF( ${pkg}_FOUND )
 	INCLUDE_DIRECTORIES( ${${pkg}_INCLUDE_DIRS} )
 	LINK_LIBRARIES( ${${pkg}_LIBRARIES} )
@@ -39,9 +40,32 @@ ENDFOREACH()
 
 
 INCLUDE_DIRECTORIES( ${LCFIVertex_DIR}/vertex_lcfi ${LCFIVertex_DIR}/boost )
-LINK_LIBRARIES( -lEve )
 
+SET( ROOT_DICT_CINT_DEFINITIONS "-DHANDLE_DICT_EXCEPTIONS=IGNORED_FOR_CINT")
+INCLUDE( ${ROOT_DICT_MACROS_FILE} )
 
+ADD_CUSTOM_COMMAND(
+    OUTPUT ${ROOT_DICT_OUTPUT_DIR}/dict.cc
+    COMMAND mkdir ARGS -p ${ROOT_DICT_OUTPUT_DIR}
+    COMMAND ${ROOT_CINT_WRAPPER}
+      -f ${ROOT_DICT_OUTPUT_DIR}/dict.cc
+      -c -I${LCIO_INCLUDE_DIRS}
+      ${PROJECT_SOURCE_DIR}/include/flavtag.h
+      ${PROJECT_SOURCE_DIR}/include/Driver.h
+      ${PROJECT_SOURCE_DIR}/include/Suehara.h
+      ${PROJECT_SOURCE_DIR}/include/EventStore.h
+      ${PROJECT_SOURCE_DIR}/include/LCIOStorer.h
+      ${PROJECT_SOURCE_DIR}/include/TreeStorer.h
+      ${PROJECT_SOURCE_DIR}/include/EventNavigator.h
+      ${PROJECT_SOURCE_DIR}/include/JetFinder.h
+      ${PROJECT_SOURCE_DIR}/include/interface.h
+      ${PROJECT_SOURCE_DIR}/include/process.h
+      ${PROJECT_SOURCE_DIR}/include/MakeNtuple.h
+      ${PROJECT_SOURCE_DIR}/include/TrainMVA.h
+      ${PROJECT_SOURCE_DIR}/include/LinkDef.h
+)
+
+LIST(APPEND library_sources ${ROOT_DICT_OUTPUT_DIR}/dict.cc )
 
 
 ### LIBRARY #################################################################
