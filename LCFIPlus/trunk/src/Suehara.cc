@@ -74,7 +74,7 @@ using namespace flavtag::algoEtc;
 			ls.InitCollections("PandoraPFOs","MCParticlesSkimmed","RecoMCTruthLink","Tracks","Neutrals","MCParticles");
 			cout << "LCIO initialization successful." << endl;
 
-			vector<Vertex *> *pvertices = 0;
+			vector<Vertex *> *pvertices(0);
 			EventStore::Instance()->Register<Vertex>("BuildUpVertices", pvertices,inclVertex ? EventStore::PERSIST : 0);
 			vector<Jet *> *pjets = 0;
 			EventStore::Instance()->Register<Jet>("SueharaJets", pjets,EventStore::PERSIST);
@@ -185,7 +185,7 @@ using namespace flavtag::algoEtc;
 			ts.RegisterAll();
 			EventStore::Instance()->Print();
 
-			const vector<flavtag::Vertex *> *pvertices;
+			const vector<flavtag::Vertex *> *pvertices(0);
 			EventStore::Instance()->Get("TearDownVertices",pvertices);
 
 			for(int nev =0;nev< 100;nev++){
@@ -607,7 +607,7 @@ void testSueharaVertex(const char *inputfile, const char *outputfile, int nStart
 
 Jet * JetMCMatch(vector<Jet *> &jets, MCParticle *mcp, vector<Track *> &assignedTracks, vector<Track *> &residualTracks)
 {
-	const vector<Track *> *pTracks;
+	const vector<Track *> *pTracks(0);
 	EventStore::Instance()->Get<Track>("Tracks",pTracks);
 
 	vector<Track *> bTracks;
@@ -1404,7 +1404,7 @@ void simpleAnalysis(const char *inputfile, const char *outputfile, int nStart, i
 		cout << "Event #" << nev << endl;
 
 		Event evt;
-		GeometryHandler *gh = GeometryHandler::Instance();
+		//GeometryHandler *gh = GeometryHandler::Instance();
 
 //		const vector<MCParticle *>& mcps = evt.getMCParticles();
 		vector<Track *> tracks = evt.getTracks();

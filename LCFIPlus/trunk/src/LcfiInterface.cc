@@ -131,7 +131,7 @@ namespace flavtag {
 
 		if(event){
 			if (debug) {
-	    	printf("lcfiEvent: converting %d tracks\n",event->getTracks().size());
+	    	printf("lcfiEvent: converting %d tracks\n",(int)event->getTracks().size());
 			}
 	    for (vector<Track*>::const_iterator iter = event->getTracks().begin();
 	        iter != event->getTracks().end(); ++iter) {
@@ -168,12 +168,12 @@ namespace flavtag {
 
 		// make sure vertex contains at least two tracks
 		if(debug) fprintf(stderr,"returning flavtagVertex (%.2e,%.2e,%.2e) with ntrks=%d\n",
-				vertex->_x, vertex->_y, vertex->_z, vertex->getTracks().size());
+				vertex->_x, vertex->_y, vertex->_z, (int)vertex->getTracks().size());
 		assert( vertex->getTracks().size() >= 2 );
 		assert( vertex->getTracks().size() != 0 );
 		if (vertex->getTracks().size() == 0) {
 			fprintf(stderr,"error: vertex has no tracks!!\n");
-			fprintf(stderr," lcfiVertex->tracks().size()=%d\n",lcfiVertex->tracks().size());
+			fprintf(stderr," lcfiVertex->tracks().size()=%d\n",(int)lcfiVertex->tracks().size());
 			exit(1);
 		}
 
@@ -338,7 +338,7 @@ namespace flavtag {
 
 		if (debug) {
 			printf("finding secondary vertices for jet: (E=%.2e, px=%.2e, py=%.2e, pz=%.2e), ntrk=%d (%d passses cut)\n",
-					jet->E(),jet->Px(),jet->Py(),jet->Pz(),tracks.size(),usedTracks);
+					jet->E(),jet->Px(),jet->Py(),jet->Pz(),(int)tracks.size(),usedTracks);
 		}
 
     // default _JetWeightingEnergyScaling = 5.0/40.0

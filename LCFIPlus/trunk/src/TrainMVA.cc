@@ -64,7 +64,6 @@ void TrainMVA::end() {
 	gSystem->MakeDirectory(_outputDirectory);
 
 	for (unsigned int icat=0; icat<_categoryList.size(); ++icat) {
-		TTree* copytree = tree->CopyTree(_categoryList[icat].cut);
 		TString prefix = _outputPrefix+(ULong_t)icat;
 		TString s = _outputDirectory + prefix + ".root";
 		TFile* outputFile = new TFile(s,"RECREATE");

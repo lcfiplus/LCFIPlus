@@ -839,9 +839,9 @@ namespace flavtag{
 		min.SetVariable(2,"z",initial.z(), 1e-6);
 //		min.SetPrintLevel(0);
 		bool success = min.Minimize();
-		//if (!success) {
+		if (!success) {
 			//printf("minuit status: %d\n", min.Status());
-		//}
+		}
 		const double *xx = min.X();
 		double maxll = -pf(xx);
 #endif

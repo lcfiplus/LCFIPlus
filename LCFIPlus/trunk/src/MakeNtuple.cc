@@ -127,7 +127,7 @@ void MakeNtuple::process() {
 	}
 	Vertex* primaryVertex = findPrimaryVertex(tracksForPrimary,25);
 	if (primaryVertex == 0) {
-		fprintf(stderr,"primary vertex could not be found (ntrk=%d), skipping event\n",tracksForPrimary.size());
+		fprintf(stderr,"primary vertex could not be found (ntrk=%d), skipping event\n",(int)tracksForPrimary.size());
 		return;
 	}
 
