@@ -24,7 +24,6 @@
 
 #pragma link C++ class flavtag::LCIOStorer;
 #pragma link C++ class flavtag::TreeStorer;
-//#pragma link C++ class PiuStorer;
 #pragma link C++ class flavtag::EventStore;
 #pragma link C++ class flavtag::EventNavigator;
 
@@ -37,7 +36,6 @@
 //#pragma link C++ class flavtag::Event;
 
 #pragma link C++ function lcioToTree;
-//#pragma link C++ function piuToTree;
 #pragma link C++ function treeTest;
 #pragma link C++ function processEvents;
 #pragma link C++ function eventDisplay;

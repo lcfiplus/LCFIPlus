@@ -1,9 +1,9 @@
 #ifndef flavtag_h
 #define flavtag_h 1
 
-#ifdef lib_flavtag_EXPORTS
+//#ifdef lib_flavtag_EXPORTS
 #define NO_EVE 1
-#endif
+//#endif
 
 #include <vector>
 #include <map>
