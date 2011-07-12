@@ -6,7 +6,6 @@
 #include "flavtag.h"
 #include "JetFinder.h"
 
-//extern int piuToTree(const char *infile = "input.piu", const char *outfile = "test.root");
 extern void treeTest(const char *treefile = "share/test.root");
 extern void lcioToTree(const char *infile = "share/test.slcio", const char *outfile = "share/test2.root");
 extern void testSuehara();

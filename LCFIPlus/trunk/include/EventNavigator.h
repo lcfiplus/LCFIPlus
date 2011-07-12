@@ -4,7 +4,6 @@
 #include <string>
 //#include "TQObject.h"
 
-#ifndef NO_EVE
 
 namespace flavtag {
 
@@ -13,6 +12,7 @@ namespace flavtag {
 
   //class EventNavigator : protected TQObject {
   class EventNavigator {
+#ifndef NO_EVE
     public:
       EventNavigator(const char* input, int start=0);
 			~EventNavigator();
@@ -23,10 +23,10 @@ namespace flavtag {
     private:
 			LCIOStorer* _ls;
 			int _start;
+#endif
   };
 }
 
-#endif
 
 #endif //EVENT_NAV_
 
