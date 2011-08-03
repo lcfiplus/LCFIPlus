@@ -364,7 +364,7 @@ namespace flavtag {
       enum vtx { xx=0, xy, yy, xz, yz, zz };
 
       Vertex() : _chi2(0), _prob(0), _x(0), _y(0), _z(0) {}
-			Vertex(float chi2, float prob, float x, float y, float z, const float cov[6])
+			Vertex(const float chi2, const float prob, const float x, const float y, const float z, const float cov[6])
 				: _id(-1), _chi2(chi2), _prob(prob), _x(x), _y(y), _z(z)
 			{
 				memcpy(_cov, cov, sizeof(_cov));

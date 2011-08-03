@@ -63,6 +63,7 @@ namespace flavtag{
 		private:
 			TFile* _file;
 			TTree* _t;
+			int _nJet;
 
 			FlavtagData _data;
 			ClassDef(MakeNtuple,1);

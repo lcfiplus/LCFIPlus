@@ -35,6 +35,14 @@ namespace flavtag{
 				const char *mcpfoColName = "RecoMCTruthLink",
 				const char *trackName = "Tracks", const char *neutralName = "Neutrals", const char *mcpName = "MCParticles");
 
+			// initialize misc collections
+			void InitVertexCollection(const char *lcioName, const char *flavtagName);
+			void InitJetCollection(const char *lcioName, const char *flavtagName);
+
+			// register every LCIO collections
+			void InitVertexCollectionsAuto(lcio::LCEvent *evt);
+			void InitJetCollectionsAuto(lcio::LCEvent *evt);
+
 			// flavtag -> LCIO
 			void ConvertVertex(const char *vertexName, const char *outName = 0, const char *outRPName = 0);
 			void ConvertJet(const char *jetName, const char *outName = 0, bool extractVertex = false);
@@ -61,6 +69,10 @@ namespace flavtag{
 			string _mcColName;
 			string _mcpfoColName;
 
+			// vertices / jets
+			map<string, vector<flavtag::Vertex *> *> _importVertexCols;
+			map<string, vector<flavtag::Jet *> *> _importJetCols;
+
 			// LCIO - flavtag relation
 /*			map<flavtag::Track *, lcio::ReconstructedParticle *> _trackLCIORel;
 			map<flavtag::Neutral *, lcio::ReconstructedParticle *> _neutralLCIORel;
@@ -70,8 +82,8 @@ namespace flavtag{
 			vector<lcio::MCParticle *> _mcpLCIORel;
 
 			// new classes
-			vector<lcio::Vertex *> _vtxLCIORel;
-			vector<lcio::ReconstructedParticle *> _jetLCIORel;
+			map<flavtag::Vertex *, lcio::Vertex *> _vtxLCIORel;
+			map<flavtag::Jet *, lcio::ReconstructedParticle *> _jetLCIORel;
 
 			// autosave for output
 			bool _autoconvert;

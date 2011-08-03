@@ -58,6 +58,11 @@ namespace flavtag{
 		const std::vector<Vertex *> * _vertices; //!
 		std::vector<Jet *> * _jets; //!
 		int _njets;
+		double _ycut;
+		bool _useMuonID;
+		double _vsMinDist;
+		double _vsMaxDist;
+		double _vsK0MassWidth;
 	};
 
 }
