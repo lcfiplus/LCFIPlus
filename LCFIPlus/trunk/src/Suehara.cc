@@ -27,6 +27,47 @@
 using namespace flavtag;
 using namespace flavtag::algoEtc;
 
+		void lcioTest(const char *infile)
+		{
+			LCIOStorer ls(infile);
+			ls.InitCollections("PandoraPFOs","MCParticlesSkimmed","RecoMCTruthLink","Tracks","Neutrals","MCParticles");
+			ls.InitVertexCollection("ZVRESVertices_2Jets", "TestVertices");
+			ls.InitJetCollection("Durham_2Jets", "TestJets");
+			cout << "LCIO initialization successful." << endl;
+
+			EventStore::Instance()->Print();
+
+			int nev = 0;
+			while(ls.Next()){
+				const vector<Vertex *> *pvcol;
+				bool b = EventStore::Instance()->Get("TestVertices", pvcol);
+
+				if(!b){cerr << "Obtaining vertex collection failed." << endl;break;}
+
+				cout << "Event # " << nev++ << ", # vertices = " << pvcol->size() << endl;
+
+				for(unsigned int n=0; n < pvcol->size(); n++){
+					Vertex *v = (*pvcol)[n];
+					cout << "  Vertex # " << n << ", chi2 = " << v->getChi2() << ", prob = " << v->getProb();
+					cout << ", pos = (" << v->getX() << ", " << v->getY() << ", " << v->getZ() << ")";
+					cout << ", # tracks = " << v->getTracks().size() << endl;
+				}
+
+				const vector<Jet *> *pjcol;
+				b = EventStore::Instance()->Get("TestJets", pjcol);
+				if(!b){cerr << "Obtaining jet collection failed." << endl;break;}
+
+				cout << "Event # " << nev << ", # jets = " << pjcol->size() << endl;
+
+				for(unsigned int n=0;n < pjcol->size(); n++){
+					Jet *j = (*pjcol)[n];
+					cout << "  Jet # " << n << ", p = (" << j->Px() << ", " << j->Py() << ", " << j->Pz() << "), E = " << j->E();
+					cout << ", # tracks = " << j->getTracks().size() << ", # neutrals = " << j->getNeutrals().size() << endl;
+				}
+			}
+
+		}
+
 		void treeTest(const char *treefile)
 		{
 			TreeStorer ts(treefile,"FlavTagTree",TreeStorer::mode_input);
@@ -74,7 +115,7 @@ using namespace flavtag::algoEtc;
 			ls.InitCollections("PandoraPFOs","MCParticlesSkimmed","RecoMCTruthLink","Tracks","Neutrals","MCParticles");
 			cout << "LCIO initialization successful." << endl;
 
-			vector<Vertex *> *pvertices(0);
+			vector<Vertex *> *pvertices = 0;
 			EventStore::Instance()->Register<Vertex>("BuildUpVertices", pvertices,inclVertex ? EventStore::PERSIST : 0);
 			vector<Jet *> *pjets = 0;
 			EventStore::Instance()->Register<Jet>("SueharaJets", pjets,EventStore::PERSIST);
@@ -185,7 +226,7 @@ using namespace flavtag::algoEtc;
 			ts.RegisterAll();
 			EventStore::Instance()->Print();
 
-			const vector<flavtag::Vertex *> *pvertices(0);
+			const vector<flavtag::Vertex *> *pvertices;
 			EventStore::Instance()->Get("TearDownVertices",pvertices);
 
 			for(int nev =0;nev< 100;nev++){
@@ -607,7 +648,7 @@ void testSueharaVertex(const char *inputfile, const char *outputfile, int nStart
 
 Jet * JetMCMatch(vector<Jet *> &jets, MCParticle *mcp, vector<Track *> &assignedTracks, vector<Track *> &residualTracks)
 {
-	const vector<Track *> *pTracks(0);
+	const vector<Track *> *pTracks;
 	EventStore::Instance()->Get<Track>("Tracks",pTracks);
 
 	vector<Track *> bTracks;
@@ -1404,7 +1445,7 @@ void simpleAnalysis(const char *inputfile, const char *outputfile, int nStart, i
 		cout << "Event #" << nev << endl;
 
 		Event evt;
-		//GeometryHandler *gh = GeometryHandler::Instance();
+//		GeometryHandler *gh = GeometryHandler::Instance();
 
 //		const vector<MCParticle *>& mcps = evt.getMCParticles();
 		vector<Track *> tracks = evt.getTracks();

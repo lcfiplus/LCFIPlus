@@ -1,17 +1,16 @@
 #include "FlavtagProcessor.h"
 #include "EventStore.h"
 
-// ----- include for verbosity dependend logging ---------
+// ----- include for verbosity dependent logging ---------
 #include "marlin/VerbosityLevels.h"
 #include "marlin/StringParameters.h"
+#define SLM streamlog_out(MESSAGE)
 
 // Marlin stuff
 #include <marlin/Global.h>
 
 #include "TROOT.h"
 #include "TApplication.h"
-
-#define SLM streamlog_out(MESSAGE)
 
 using namespace std;
 using namespace lcio ;
@@ -36,6 +35,8 @@ FlavtagProcessor::FlavtagProcessor() : Processor("FlavtagProcessor") {
 	registerInputCollection(LCIO::LCRELATION, "MCPFORelation", "Relation between MC and PFO particles",
 		_mcpfoRelationName, std::string("RecoMCTruthLink"));
 
+	registerProcessorParameter("VertexAutoLoad", "Loading LCIO vertices automatically", _autoVertex, int(1));
+	registerProcessorParameter("JetAutoLoad", "Loading LCIO jets automatically", _autoJet, int(1));
 
 	// ROOT object
 	int argc = 0;
@@ -119,6 +120,12 @@ void FlavtagProcessor::processRunHeader( LCRunHeader* run) {
 } 
 
 void FlavtagProcessor::processEvent( LCEvent * evt ) { 
+
+	// auto register collections
+	if(_autoVertex)
+		_lcio->InitVertexCollectionsAuto(evt);
+	if(_autoJet)
+		_lcio->InitJetCollectionsAuto(evt);
 
 	// set LCEvent
 	if(_lcioowner)

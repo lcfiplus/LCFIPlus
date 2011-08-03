@@ -32,6 +32,10 @@ void MakeNtuple::init(FlavtagParameters *param) {
 	FlavtagAlgorithm::init(param);
 
 	string outputFilename = param->get("TrainNtupleFile",string("flavtag.root"));
+	_nJet = param->get("TrainNJet",float(2));
+
+	cout << "MakeNtuple: Ntuple file set to " << outputFilename << endl;
+	cout << "MakeNtuple: Number of jet set to " << _nJet << endl;
 
 	FlavtagData& d = _data;
 
@@ -81,7 +85,7 @@ void MakeNtuple::process() {
 	FlavtagData& d = _data;
 	memset(&d, 0, sizeof(d));
 	JetConfig jetCfg;
-	jetCfg.nJet = 2;
+	jetCfg.nJet = _nJet;
 	SecondaryVertexConfig secVtxCfg;
 	// AND
 	secVtxCfg.maxD0 = 10;

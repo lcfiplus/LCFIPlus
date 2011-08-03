@@ -96,6 +96,13 @@ namespace flavtag{
 		EventStore::Instance()->Register(jcolname.c_str(), _jets, EventStore::PERSIST | EventStore::JET_EXTRACT_VERTEX);
 
 		_njets = param->get("NJetsRequested",int(6));
+		_ycut = param->get("YCut", double(0));
+
+		_useMuonID = param->get("UseMuonID", int(1));
+
+		_vsMinDist = param->get("VertexSelectionMinimumDistance", double(0.3));
+		_vsMaxDist = param->get("VertexSelectionMaximumDistance", double(30.));
+		_vsK0MassWidth = param->get("VertexSelectionK0MassWidth", double(20.));
 	}
 
 	void JetClustering::process()
@@ -110,7 +117,7 @@ namespace flavtag{
 		JetConfig jetCfg;
 		jetCfg.nJet = _njets;
 		JetFinder* jetFinder = new JetFinder(jetCfg);
-		double ycut = 0;
+		double ycut = _ycut;
 
 		// select vertices
 		vector<Vertex *> selectedVertices;
@@ -118,9 +125,10 @@ namespace flavtag{
 		for(vector<Vertex *>::const_iterator it = _vertices->begin(); it != _vertices->end();it++){
 			Vertex *v = *it;
 			double mass = 0.;
+			double k0mass = .498;
 			if(v->getTracks().size() == 2)
 				mass = (*(TLorentzVector *)(v->getTracks()[0]) + *(TLorentzVector *)(v->getTracks()[1])).M();
-			if((mass < .488 || mass > .508) && v->getPos().Mag() < 30 && v->getPos().Mag() > 0.3){
+			if((mass < k0mass - _vsK0MassWidth/2 || mass > k0mass + _vsK0MassWidth/2) && v->getPos().Mag() < _vsMaxDist && v->getPos().Mag() > _vsMinDist){
 				selectedVertices.push_back(v);
 				for(vector<Track *>::const_iterator itt = v->getTracks().begin(); itt != v->getTracks().end(); itt++){
 					vector<Track *>::iterator itt2 = remove_if(residualTracks.begin(), residualTracks.end(), bind2nd(equal_to<Track *>(), *itt));
@@ -128,7 +136,7 @@ namespace flavtag{
 				}
 			}
 		}
-		*_jets = jetFinder->run(residualTracks, evt.getNeutrals(), selectedVertices, &ycut);
+		*_jets = jetFinder->run(residualTracks, evt.getNeutrals(), selectedVertices, &ycut, _useMuonID);
 	}
 
 	void JetClustering::end()

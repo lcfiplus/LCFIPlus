@@ -35,6 +35,7 @@
 
 //#pragma link C++ class flavtag::Event;
 
+#pragma link C++ function lcioTest;
 #pragma link C++ function lcioToTree;
 #pragma link C++ function treeTest;
 #pragma link C++ function processEvents;
