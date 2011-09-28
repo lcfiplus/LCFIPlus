@@ -2,7 +2,7 @@
 #ifndef LCIOStorer_h
 #define LCIOStorer_h 1
 
-#include "flavtag.h"
+#include "lcfiplus.h"
 #include <vector>
 #include <string>
 
@@ -17,7 +17,7 @@
 
 using namespace std;
 
-namespace flavtag{
+namespace lcfiplus{
 
 	class LCIOStorer : public TObject
 	{
@@ -29,7 +29,7 @@ namespace flavtag{
 			bool Next(); // file mode: move to the next event
 			void SetEvent(lcio::LCEvent *event); // non-file mode
 
-			// LCIO -> flavtag
+			// LCIO -> lcfiplus
 			// register basic collections to EventStore
 			void InitCollections(const char *pfoColName = "PandoraPFOs", const char *mcColName = "MCParticlesSkimmed",
 				const char *mcpfoColName = "RecoMCTruthLink",
@@ -43,7 +43,7 @@ namespace flavtag{
 			void InitVertexCollectionsAuto(lcio::LCEvent *evt);
 			void InitJetCollectionsAuto(lcio::LCEvent *evt);
 
-			// flavtag -> LCIO
+			// lcfiplus -> LCIO
 			void ConvertVertex(const char *vertexName, const char *outName = 0, const char *outRPName = 0);
 			void ConvertJet(const char *jetName, const char *outName = 0, bool extractVertex = false);
 // 			void ConvertJetWithFlavor(const char *jetName, const char *flavName);
@@ -70,20 +70,20 @@ namespace flavtag{
 			string _mcpfoColName;
 
 			// vertices / jets
-			map<string, vector<flavtag::Vertex *> *> _importVertexCols;
-			map<string, vector<flavtag::Jet *> *> _importJetCols;
+			map<string, vector<lcfiplus::Vertex *> *> _importVertexCols;
+			map<string, vector<lcfiplus::Jet *> *> _importJetCols;
 
-			// LCIO - flavtag relation
-/*			map<flavtag::Track *, lcio::ReconstructedParticle *> _trackLCIORel;
-			map<flavtag::Neutral *, lcio::ReconstructedParticle *> _neutralLCIORel;
-			map<flavtag::MCParticle *, lcio::MCParticle *> _mcpLCIORel;*/
+			// LCIO - lcfiplus relation
+/*			map<lcfiplus::Track *, lcio::ReconstructedParticle *> _trackLCIORel;
+			map<lcfiplus::Neutral *, lcio::ReconstructedParticle *> _neutralLCIORel;
+			map<lcfiplus::MCParticle *, lcio::MCParticle *> _mcpLCIORel;*/
 			vector<lcio::ReconstructedParticle *> _trackLCIORel;
 			vector<lcio::ReconstructedParticle *> _neutralLCIORel;
 			vector<lcio::MCParticle *> _mcpLCIORel;
 
 			// new classes
-			map<flavtag::Vertex *, lcio::Vertex *> _vtxLCIORel;
-			map<flavtag::Jet *, lcio::ReconstructedParticle *> _jetLCIORel;
+			map<lcfiplus::Vertex *, lcio::Vertex *> _vtxLCIORel;
+			map<lcfiplus::Jet *, lcio::ReconstructedParticle *> _jetLCIORel;
 
 			// autosave for output
 			bool _autoconvert;

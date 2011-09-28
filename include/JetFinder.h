@@ -1,13 +1,13 @@
 #ifndef JetFinder_h
 #define JetFinder_h 1
 
-#include "flavtag.h"
+#include "lcfiplus.h"
 #include "TObject.h"
 
 using namespace std;
-using namespace flavtag;
+using namespace lcfiplus;
 
-namespace flavtag {
+namespace lcfiplus {
 
   struct JetConfig {
     string algo;
@@ -23,7 +23,9 @@ namespace flavtag {
     JetConfig() : nJet(0),Ycut(1),coneR(0),epsCut(0), coreThreshold(0),distCut(0),nIteration(5) {}
   };
 
-  class Jet : public TLorentzVector {
+	Jet* convertJetVertex(Jet* jet);
+
+  class JetFinder {
     public:
       static double funcDurham(Jet& jet1, Jet& jet2, double Evis2);
       static double funcJade(Jet& jet1, Jet& jet2, double Evis2);
@@ -31,52 +33,6 @@ namespace flavtag {
       static double funcDurhamCheat(Jet& jet1, Jet& jet2, double Evis2);
       static double funcDurhamVertex(Jet& jet1, Jet& jet2, double Evis2);
 
-      // constructors
-      Jet() : _id(-1) {};
-      Jet(Track* trk);
-      Jet(Neutral* neutral);
-			Jet(Vertex *vtx) : _id(-1){add(vtx);}
-      ~Jet() {};
-
-			void setId(int id){_id = id;}
-			int getId()const {return _id;}
-
-      const vector<Track*>& getTracks() const { return _tracks; }
-      const vector<Neutral*>& getNeutrals() const { return _neutrals; }
-      const vector<Vertex*>& getVertices() const { return _vertices; }
-
-      // methods
-      void add(const Jet& jet);
-      void add(Track *trk){_tracks.push_back(trk); *(TLorentzVector *)this += *(TLorentzVector *)trk;}
-      void add(Neutral *neut){_neutrals.push_back(neut); *(TLorentzVector *)this += *(TLorentzVector *)neut;}
-      void add(Vertex *vtx){
-				_vertices.push_back(vtx);
-				for(unsigned int i=0;i<vtx->getTracks().size();i++){
-					*(TLorentzVector *)this += *(TLorentzVector *)(vtx->getTracks()[i]);
-				}
-			}
-      //void recalculate();
-
-      static int sort(const Jet* a, const Jet* b) {
-        return (a->E() > b->E());
-      }
-
-			double sphericity() const;
-
-    private:
-      vector<Track*> _tracks;
-      vector<Neutral*> _neutrals;
-			vector<Vertex*> _vertices;
-
-			int _id;
-
-			ClassDefNV(Jet, 1);
-  };
-
-	Jet* convertJetVertex(Jet* jet);
-
-  class JetFinder {
-    public:
       JetFinder(const JetConfig& cfg);
       ~JetFinder() {};
       vector<Jet*> run(vector<Track*> tracks);

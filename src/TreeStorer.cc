@@ -1,11 +1,11 @@
 // TreeStorer.cc
 #include "TreeStorer.h"
-#include "flavtag.h"
+#include "lcfiplus.h"
 #include "EventStore.h"
 
 #include "TBranchElement.h"
 
-namespace flavtag{
+namespace lcfiplus{
 
 	// ctor/dtor
 	TreeStorer::TreeStorer(const char *filename, const char *treename, int mode)
@@ -33,7 +33,7 @@ namespace flavtag{
 	// both for output and input
 	void TreeStorer::Register(const char *name)
 	{
-		EventStore *store = EventStore::Instance();
+		EventStore *store = Event::Instance();
 		if(!_tree)throw(new Exception("TreeStorer::Register: Tree not initialized!"));
 
 		if(_mode == mode_input){

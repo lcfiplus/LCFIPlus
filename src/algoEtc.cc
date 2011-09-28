@@ -1,10 +1,10 @@
-#include "flavtag.h"
+#include "lcfiplus.h"
 #include "algoEtc.h"
 
 #include "TRandom.h"
 #include <math.h>
 
-namespace flavtag{
+namespace lcfiplus{
 namespace algoEtc{
 
 void makeBeamTracks(Track *&t1, Track *&t2)

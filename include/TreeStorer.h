@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace flavtag{
+namespace lcfiplus{
 
 	class TreeStorer
 	{

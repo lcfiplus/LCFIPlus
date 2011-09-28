@@ -3,7 +3,7 @@
 #ifndef VertexFinderTearDown_h
 #define VertexFinderTearDown_h 1
 
-#include "flavtag.h"
+#include "lcfiplus.h"
 #include "VertexFitterLCFI.h"
 #include "VertexFitterSimple.h"
 #include "algoEtc.h"
@@ -13,7 +13,7 @@
 
 using namespace std;
 
-namespace flavtag {
+namespace lcfiplus {
 
 	class SortTracksByChi2{ // decending order
 		public:
@@ -21,11 +21,11 @@ namespace flavtag {
 	};
 
 	// Function for recursive search of vertices using TearDown method
-	vector<flavtag::Vertex*> * findTearDownVertices(const Event& evt, const Jet& jet);
+	vector<lcfiplus::Vertex*> * findTearDownVertices(const Event& evt, const Jet& jet);
 
 	// Primary Vertex finder with TearDown method
-	flavtag::Vertex * findPrimaryVertex(const vector<Track *> &tracks, double chi2 = 9.0);
-//	flavtag::Vertex * findPrimaryVertex(const vector<Track *> &tracks, const vector<Track *> &beamTracks, double chi2 = 9.0);
+	lcfiplus::Vertex * findPrimaryVertex(const vector<Track *> &tracks, double chi2 = 9.0);
+//	lcfiplus::Vertex * findPrimaryVertex(const vector<Track *> &tracks, const vector<Track *> &beamTracks, double chi2 = 9.0);
 
 	// implementation of TearDown method
 	template<template<class T, class Allocator=allocator<T> > class Container = std::vector, template<class Iterator> class VertexFitter = VertexFitterLCFI >
@@ -70,7 +70,7 @@ namespace flavtag {
 						/*
 						cout << "Track removed: chi2 = " << worstChi2 << ", vpos = ("
 									<< resultVertex->getX() << ", " << resultVertex->getY() << ", " << resultVertex->getZ() << ")" <<  endl;
-						 */
+						 //*/
 						delete resultVertex;
 						resultVertex = 0;
 					}

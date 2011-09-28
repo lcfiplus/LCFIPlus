@@ -14,15 +14,13 @@
 
 #include "TVector3.h"
 #include "TLorentzVector.h"
-#include "TMatrixDSym.h"
-#include "TVectorD.h"
 
 using namespace std;
 
-namespace flavtag {
+namespace lcfiplus {
 
   /* Jet resolution functions */
-  double Jet::funcDurham(Jet& jet1, Jet& jet2, double Evis2){
+  double JetFinder::funcDurham(Jet& jet1, Jet& jet2, double Evis2){
     /*
        D(I,J) = 2.*MIN(PL(4,I)*PL(4,I),PL(4,J)*PL(4,J))*MAX(0.,(1.-
        (PL(1,I)*PL(1,J)+PL(2,I)*PL(2,J)+PL(3,I)*PL(3,J))/
@@ -37,7 +35,7 @@ namespace flavtag {
     return val/Evis2;
   }
 
-  double Jet::funcDurhamVertex(Jet& jet1, Jet& jet2, double Evis2){
+  double JetFinder::funcDurhamVertex(Jet& jet1, Jet& jet2, double Evis2){
 		// do not combine vertex-oriented jets
 		if(jet1.getVertices().size() > 0 && jet2.getVertices().size() > 0)
 			return 1e+300;
@@ -46,7 +44,7 @@ namespace flavtag {
   }
 
 
-  double Jet::funcDurhamCheat(Jet& jet1, Jet& jet2, double Evis2){
+  double JetFinder::funcDurhamCheat(Jet& jet1, Jet& jet2, double Evis2){
     double e1 = jet1.E();
     double e2 = jet2.E();
     TVector3 mom1 = jet1.Vect();
@@ -55,7 +53,7 @@ namespace flavtag {
     return val/Evis2;
   }
 
-  double Jet::funcJade(Jet& jet1, Jet& jet2, double Evis2){
+  double JetFinder::funcJade(Jet& jet1, Jet& jet2, double Evis2){
     /*
        JADE(I,J) = 2.*PL(4,I)*PL(4,J)*MAX(0.,(1.-
        (PL(1,I)*PL(1,J)+PL(2,I)*PL(2,J)+PL(3,I)*PL(3,J))/
@@ -70,7 +68,7 @@ namespace flavtag {
     return val/Evis2;
   }
 
-  double Jet::funcJadeE(Jet& jet1, Jet& jet2, double Evis2){
+  double JetFinder::funcJadeE(Jet& jet1, Jet& jet2, double Evis2){
     /*
        E(I,J) = MAX(0.,(PL(4,I)+PL(4,J))**2-(PL(1,I)+PL(1,J))**2-
        (PL(2,I)+PL(2,J))**2-(PL(3,I)+PL(3,J))**2)
@@ -84,61 +82,8 @@ namespace flavtag {
     return val/Evis2;
   }
 
-  Jet::Jet(Track* trk) : TLorentzVector(*trk), _id(-1) {
-    _tracks.push_back(trk);
-  }
-  
-  Jet::Jet(Neutral* neut) : TLorentzVector(*neut), _id(-1) {
-    _neutrals.push_back(neut);
-  }
-
-  /* combines this jet with another jet
-   * energy and momentum are added
-   * daughter lists are combined
-   */
-  void Jet::add( const Jet& jet ) {
-    *this += jet;
-    for (vector<Track*>::const_iterator iter = jet.getTracks().begin(); iter != jet.getTracks().end(); ++iter) {
-      _tracks.push_back(*iter);
-    }
-    for (vector<Neutral*>::const_iterator iter = jet.getNeutrals().begin(); iter != jet.getNeutrals().end(); ++iter) {
-      _neutrals.push_back(*iter);
-    }
-  }
-
-	// calculate boosted sphericity in the jet's CoM frame
-	double Jet::sphericity() const {
-
-		// assumes I'm a flat jet (no vertex structure)
-		TVector3 jetBoost = BoostVector();
-		TMatrixDSym sphMat(3);
-		sphMat(0,0) = 0;
-		sphMat(0,1) = 0;
-		sphMat(0,2) = 0;
-		sphMat(1,1) = 0;
-		sphMat(1,2) = 0;
-		sphMat(2,2) = 0;
-
-		const vector<Track*>& tracks = getTracks();
-		for (vector<Track*>::const_iterator iter = tracks.begin(); iter != tracks.end(); ++iter) {
-			TLorentzVector trkVec(**iter);
-			trkVec.Boost(-jetBoost);
-			sphMat(0,0) += trkVec.X()*trkVec.X();
-			sphMat(0,1) += trkVec.X()*trkVec.Y();
-			sphMat(0,2) += trkVec.X()*trkVec.Z();
-			sphMat(1,1) += trkVec.Y()*trkVec.Y();
-			sphMat(1,2) += trkVec.Y()*trkVec.Z();
-			sphMat(2,2) += trkVec.Z()*trkVec.Z();
-		}
-		double norm = sphMat(0,0)+sphMat(1,1)+sphMat(2,2);
-		sphMat *= 1.5/norm;
-		TVectorD eig;
-		sphMat.EigenVectors(eig);
-		return eig(1)+eig(2);
-	}
-
   JetFinder::JetFinder(const JetConfig& cfg) : _cfg(cfg) {
-    _Yfunc = Jet::funcDurham;
+    _Yfunc = JetFinder::funcDurham;
   }
 
   vector<Jet*> JetFinder::run(vector<Track*> tracks) {
@@ -175,7 +120,7 @@ namespace flavtag {
 		// angle to associate particles to vertex
 		const double vertexassocangle = 0.2;
 
-		_Yfunc = Jet::funcDurhamVertex;
+		_Yfunc = JetFinder::funcDurhamVertex;
 
 		// associate tracks/neutrals to vertex jets
 		vector<bool> usedTracks(tracks.size(), false);

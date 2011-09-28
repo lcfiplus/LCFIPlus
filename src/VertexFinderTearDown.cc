@@ -1,18 +1,18 @@
 // VertexFinderTearDown.cc
 
-#include "flavtag.h"
+#include "lcfiplus.h"
 #include "VertexFinderTearDown.h"
 
 #include "algoEtc.h"
 
-using namespace flavtag;
-using namespace flavtag::algoEtc;
+using namespace lcfiplus;
+using namespace lcfiplus::algoEtc;
 
-vector<flavtag::Vertex*> * flavtag::findTearDownVertices(const Event& evt, const Jet& jet) {
+vector<lcfiplus::Vertex*> * lcfiplus::findTearDownVertices(const Event& evt, const Jet& jet) {
 	double chi2 = 9.0;
 	bool verbose(false);
-	vector<flavtag::Vertex *> * pvertices;
-	pvertices = new vector<flavtag::Vertex*>;
+	vector<lcfiplus::Vertex *> * pvertices;
+	pvertices = new vector<lcfiplus::Vertex*>;
 
 	// copy tracks in the jet into a list
 	//const vector<Track *> &v = jets[nj]->getTracks();
@@ -23,7 +23,7 @@ vector<flavtag::Vertex*> * flavtag::findTearDownVertices(const Event& evt, const
 
 	while(tracksInJet.size() >= 2){
 		list<Track *> residuals;
-		flavtag::Vertex *secvtx = flavtag::VertexFinderTearDown<list>()(tracksInJet,0, chi2, &residuals);
+		lcfiplus::Vertex *secvtx = lcfiplus::VertexFinderTearDown<list>()(tracksInJet,0, chi2, &residuals);
 		if(!secvtx)break;
 
 		pvertices->push_back(secvtx);
@@ -45,12 +45,13 @@ vector<flavtag::Vertex*> * flavtag::findTearDownVertices(const Event& evt, const
 	return pvertices;
 }
 
-flavtag::Vertex * flavtag::findPrimaryVertex(const vector<Track *> &tracks, double chi2)
+lcfiplus::Vertex * lcfiplus::findPrimaryVertex(const vector<Track *> &tracks, double chi2)
 {
 	Vertex *ip;
 	makeBeamVertex(ip);
 
-	Vertex * ret =  VertexFinderTearDown<vector, VertexFitterSimple>()(tracks, 0, chi2, 0, ip);
+	//Vertex * ret =  VertexFinderTearDown<vector, VertexFitterSimple>()(tracks, 0, chi2, 0, ip);
+	Vertex * ret =  VertexFinderTearDown<vector>()(tracks, 0, chi2, 0, ip);
 
 	if (ret == 0) return ip; // FIXME: this is safety procedure in case primary vertex is not found; need to confirm this is good behavior
 
@@ -58,7 +59,7 @@ flavtag::Vertex * flavtag::findPrimaryVertex(const vector<Track *> &tracks, doub
 	return ret;
 }
 
-// flavtag::Vertex * flavtag::findPrimaryVertex(const vector<Track *> &tracks, const vector<Track *> &beamTracks, double chi2)
+// lcfiplus::Vertex * lcfiplus::findPrimaryVertex(const vector<Track *> &tracks, const vector<Track *> &beamTracks, double chi2)
 // {
 // 	// make point constraint with beam tracks for initial condition
 // 	Vertex * ipv = VertexFitterSimple_V()(beamTracks.begin(), beamTracks.end());

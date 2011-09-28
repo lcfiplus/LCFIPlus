@@ -42,9 +42,9 @@ extern TEveManager* gEve;
 extern TSystem* gSystem;
 #endif
 
-using namespace flavtag;
-using namespace flavtag::algoSigProb;
-using namespace flavtag::algoEtc;
+using namespace lcfiplus;
+using namespace lcfiplus::algoSigProb;
+using namespace lcfiplus::algoEtc;
 
 TRandom3 _rand;
 
@@ -402,7 +402,7 @@ void matchMcVertex( const Event& evt, vector<MCVertex*>& vtxList, map<MCVertex*,
 	for (vector<Vertex*>::iterator rvtxIter = recovtx.begin(); rvtxIter != recovtx.end(); ++rvtxIter) {
 		Vertex* recov = *rvtxIter;
 		vector<Track*> dauList = recov->getTracks();
-		Vertex * vtx = flavtag::VertexFinderTearDown<vector>()(tracksForPrimary, &beamTracks, 9.0, 0);
+		Vertex * vtx = lcfiplus::VertexFinderTearDown<vector>()(tracksForPrimary, &beamTracks, 9.0, 0);
 		printf("ndau = %d\n", dauList.size() );
 	}
 	*/
@@ -753,7 +753,7 @@ vector<Vertex*> findAdditionalVertices(
 	return ret;
 }
 
-vector<Track*> findSingleTracks(const Event& evt, const Jet& jet, const vector<flavtag::Vertex*>& vtxList) {
+vector<Track*> findSingleTracks(const Event& evt, const Jet& jet, const vector<lcfiplus::Vertex*>& vtxList) {
 	vector<Track*> ret;
 	vector<Track*> cand;
 
@@ -804,7 +804,7 @@ void processEvents(const char* input, const char* output, int nStart, int nEnd) 
 		 int nStart = 0;
 		 int nEnd = 99;
 		 char* input = "share/test2.slcio";
-		 char* output = "share/flavtag.root";
+		 char* output = "share/lcfiplus.root";
 
 		 if (argc>2) {
 		 nStart = atoi(argv[1]);
@@ -846,17 +846,17 @@ void processEvents(const char* input, const char* output, int nStart, int nEnd) 
 	//*
 		 SecondaryVertexConfig secVtxCfg;
 	// AND
-	secVtxCfg.maxD0 = 10;
-	secVtxCfg.maxD0Err = 0.25;
-	secVtxCfg.maxZ0 = 20;
-	secVtxCfg.maxZ0Err = 1e10;
-	secVtxCfg.minPt = 0.1;
-	secVtxCfg.maxInnermostHitRadius = 1e10;
+	secVtxCfg.TrackQualityCuts.maxD0 = 10;
+	secVtxCfg.TrackQualityCuts.maxD0Err = 0.25;
+	secVtxCfg.TrackQualityCuts.maxZ0 = 20;
+	secVtxCfg.TrackQualityCuts.maxZ0Err = 1e10;
+	secVtxCfg.TrackQualityCuts.minPt = 0.1;
+	secVtxCfg.TrackQualityCuts.maxInnermostHitRadius = 1e10;
 	// OR
-	secVtxCfg.minTpcHits = 20;
-	secVtxCfg.minFtdHits = 3;
-	secVtxCfg.minVtxHitsWithoutTpcFtd = 3;
-	secVtxCfg.minVtxPlusFtdHits = 0;
+	secVtxCfg.TrackQualityCuts.minTpcHits = 20;
+	secVtxCfg.TrackQualityCuts.minFtdHits = 3;
+	secVtxCfg.TrackQualityCuts.minVtxHitsWithoutTpcFtd = 3;
+	secVtxCfg.TrackQualityCuts.minVtxPlusFtdHits = 0;
 	// */
 	/*
 	SecondaryVertexConfig secVtxCfg;
@@ -1051,6 +1051,8 @@ void processEvents(const char* input, const char* output, int nStart, int nEnd) 
 		}
 	}
 
+	Event *event = Event::Instance();
+
 	for (int iEvent=nStart; iEvent<=nEnd; ++iEvent) {
 		if (debug.system) printf("evt: %d\n",iEvent);
 
@@ -1064,14 +1066,13 @@ void processEvents(const char* input, const char* output, int nStart, int nEnd) 
 		}
 
 		//EventStore::Instance()->Print();
-		Event evt;	// default constructor initializes with default collection names (Tracks, Neutrals, MCParticles)
+		//Event evt;	// default constructor initializes with default collection names (Tracks, Neutrals, MCParticles)
 
-		Event *event = &evt;
-
+/*
 		if (rescaleError) {
 			event->rescaleErrors();
 		}
-
+*/
 		/*
 		///////////////////////////////////
 		// check bbbbbb (reject H->WW etc.)
@@ -1173,7 +1174,7 @@ void processEvents(const char* input, const char* output, int nStart, int nEnd) 
 				cout << "        Track #" << i << ": p = (" << tr->Px() << "," << tr->Py() << "," << tr->Pz() << "), chi2 = "
 					<< primaryVertex->getChi2Track(tr)
 					//<< "\n";
-					<< ", mcFlavorType = " << evt.getMCParticle(tr)->getFlavorTagCategory() << "\n";
+					<< ", mcFlavorType = " << event->getMCParticle(tr)->getFlavorTagCategory() << "\n";
 			}
 		}
 
@@ -1182,9 +1183,9 @@ void processEvents(const char* input, const char* output, int nStart, int nEnd) 
 		tracksForPrimary.pop_back();
 		tracksForPrimary.pop_back();
 
-		flavtag::Vertex * vtx = flavtag::VertexFinderTearDown<vector>()(tracksForPrimary, &beamTracks, 9.0, 0);
-		//flavtag::Vertex *secvtx = flavtag::VertexFinderTearDown<list>()(tracksInJet,0, chi2, &residuals);
-		//flavtag::Vertex *secvtx = flavtag::VertexFinderTearDown<list>()(tracksInJet,0, chi2th_secondary, &residuals);
+		lcfiplus::Vertex * vtx = lcfiplus::VertexFinderTearDown<vector>()(tracksForPrimary, &beamTracks, 9.0, 0);
+		//lcfiplus::Vertex *secvtx = lcfiplus::VertexFinderTearDown<list>()(tracksInJet,0, chi2, &residuals);
+		//lcfiplus::Vertex *secvtx = lcfiplus::VertexFinderTearDown<list>()(tracksInJet,0, chi2th_secondary, &residuals);
 		if (debug.primary) {
 			printf("IP: (%f,%f,%f) - teardown\n",vtx->getX(),vtx->getY(),vtx->getZ());
 			//Track *worstTrack = vtx->getWorstTrack();
@@ -1266,9 +1267,9 @@ void processEvents(const char* input, const char* output, int nStart, int nEnd) 
 		vector<MCVertex*> mcVtxList = findMcVertex(event->getMCParticles());
 		//vector<MCVertex*> mcVtxList;
 		map<MCVertex*,int> mcVtxFlagTable;
-		matchMcVertex(evt, mcVtxList, mcVtxFlagTable);
-		matchMcVertexJet(evt, mcVtxList, mcVtxFlagTable, jets);
-		matchMcVertexRecoV0(evt, mcVtxList, mcVtxFlagTable);
+		matchMcVertex(*event, mcVtxList, mcVtxFlagTable);
+		matchMcVertexJet(*event, mcVtxList, mcVtxFlagTable, jets);
+		matchMcVertexRecoV0(*event, mcVtxList, mcVtxFlagTable);
 
 		///////////////////////////////////////////
 		// mc vtx end
@@ -1437,8 +1438,8 @@ void processEvents(const char* input, const char* output, int nStart, int nEnd) 
 			//vector<Vertex*> zvtopVtxList = interface->findSecondaryVertices( &jet, secVtxCfg );
 
 			vector<Vertex*> zvtopVtxList = interface.findSecondaryVertices( jets[iJet], secVtxCfg );
-			vector<Vertex*>* tearDownVtxList = findTearDownVertices( evt, jet );
-			vector<Vertex*> moreVtxList1 = findAdditionalVertices( evt, jets[iJet], zvtopVtxList, primaryVertex );
+			vector<Vertex*>* tearDownVtxList = findTearDownVertices( *event, jet );
+			vector<Vertex*> moreVtxList1 = findAdditionalVertices( *event, jets[iJet], zvtopVtxList, primaryVertex );
 
 			//vector<Vertex*> zvtopVtxList;
 			//vector<Vertex*>* tearDownVtxList = new vector<Vertex*>;
@@ -1483,11 +1484,11 @@ void processEvents(const char* input, const char* output, int nStart, int nEnd) 
 			//////////////////////////////////////////
 			// match reco-mc vertex
 			for (unsigned int i=0; i<vtxList.size(); ++i) {
-				matchMcVertexReco(evt, mcVtxList, mcVtxFlagTable, vtxList[i]);
+				matchMcVertexReco(*event, mcVtxList, mcVtxFlagTable, vtxList[i]);
 			}
 			//////////////////////////////////////////
 
-			vector<Track*> singleTracks = findSingleTracks( evt, jet, vtxList );
+			vector<Track*> singleTracks = findSingleTracks( *event, jet, vtxList );
 
 			evtZvtopVtxList.insert( evtZvtopVtxList.end(), zvtopVtxList.begin(), zvtopVtxList.end() );
 			evtTearDownVtxList.insert( evtTearDownVtxList.end(), tearDownVtxList->begin(), tearDownVtxList->end() );
@@ -1982,11 +1983,11 @@ void processEvents(const char* input, const char* output, int nStart, int nEnd) 
 
 			b = new TGPictureButton(hf, gClient->GetPicture(icondir + "GoBack.gif"));
 			hf->AddFrame(b);
-			b->Connect("Clicked()", "flavtag::EventNavigator", fh, "Bck()");
+			b->Connect("Clicked()", "lcfiplus::EventNavigator", fh, "Bck()");
 
 			b = new TGPictureButton(hf, gClient->GetPicture(icondir + "GoForward.gif"));
 			hf->AddFrame(b);
-			b->Connect("Clicked()", "flavtag::EventNavigator", fh, "Fwd()");
+			b->Connect("Clicked()", "lcfiplus::EventNavigator", fh, "Fwd()");
 
 			frmEvent->AddFrame(hf);
 			frmMain->AddFrame(frmEvent);
@@ -2006,7 +2007,7 @@ void processEvents(const char* input, const char* output, int nStart, int nEnd) 
 #endif
 		}
 
-void flavtag_default()
+void lcfiplus_default()
 {
 	//	lcioToTree();
 	processEvents("/data5/soft/samples/grid/users/walsh/zpole/samples/reconstructed/ILD_00/01-06/DST-01-06_M-06-07-p01_zpole-RAL_90GeV_Z_to_qq_ILD_00_LCPhys_0001.slcio","test.root",0,1000);
@@ -2024,8 +2025,8 @@ int main(int argc, char* argv[]) {
 	// if argc==4 argv[2] function in argv[1] file is processed with param argv[3]
 	// if argc>=5 abort 
 
-	if(argc>=5){cout << "usage: flavtag [ filename [ funcname [ params ] ] ]" << endl; return 1;}
-	if(argc==1){flavtag_default();return 0;}
+	if(argc>=5){cout << "usage: lcfiplus [ filename [ funcname [ params ] ] ]" << endl; return 1;}
+	if(argc==1){lcfiplus_default();return 0;}
 	const char *macroname = argv[1];
 	const char *funcname = (argc>2 ? argv[2] : "");
 	const char *params = (argc>3 ? argv[3] : "");

@@ -1,6 +1,6 @@
 // geometry.cc
 
-#include "flavtag.h"
+#include "lcfiplus.h"
 #include "geometry.h"
 
 #include "Math/Functor.h"
@@ -11,7 +11,7 @@
 
 #include "algo.h"
 
-namespace flavtag{
+namespace lcfiplus{
 
 	static bool verbose = false;
 
@@ -24,7 +24,7 @@ namespace flavtag{
 	}
 	// ctor/dtor
 	GeometryHandler::GeometryHandler(){
-		gErrorIgnoreLevel = kWarning; // to shut up Minuit warnings
+		gErrorIgnoreLevel = kWarning; // to silence Minuit warnings
 	}
 	GeometryHandler::~GeometryHandler()
 	{
@@ -70,6 +70,7 @@ namespace flavtag{
 
 		// variance to likelihood: currently Gaussian
 		return -variance;
+		//return TMath::Log10(variance);
 	}
 
 	void Point::LogLikelihoodDeriv(TVector3 &p,double* output)const{
@@ -118,7 +119,7 @@ namespace flavtag{
 			return 1e10;
 		}
 
-//		cout << "VARIANCE: " << t << ", " << variance << endl;
+		//cout << "VARIANCE: " << t << ", " << variance << endl;
 
 		return variance;
 	}
@@ -282,11 +283,15 @@ namespace flavtag{
 //		minimizer.SetFunction(f, t, t-(t2-t1)/2, t+(t2-t1)/2);
 //		bool b = minimizer.Minimize(100, 1e-12,1e-7);
 		ROOT::Minuit2::Minuit2Minimizer min(ROOT::Minuit2::kMigrad);
+		//ROOT::Minuit2::Minuit2Minimizer min(ROOT::Minuit2::kSimplex);
 		min.SetFunction(f);
-		min.SetMaxFunctionCalls(1000);
+//		min.SetMaxFunctionCalls(1000);
+		min.SetMaxFunctionCalls(10000);
 		min.SetMaxIterations(100);
-		min.SetTolerance(1e-5);
+//		min.SetTolerance(1e-5);
+		min.SetTolerance(1e-6);
 		min.SetPrintLevel(0);
+		// TODO: primary vertex finder sometimes fails
 		double tllimit = -1. / r;
 		double tulimit = 1000. / r;
 
@@ -443,7 +448,7 @@ namespace flavtag{
 		fprintf(stderr,"( %.10e, %.10e, %.10e, %.10e, %.10e )\n",_err(2,0),_err(2,1),_err(2,2),_err(2,3),_err(2,4));
 		fprintf(stderr,"( %.10e, %.10e, %.10e, %.10e, %.10e )\n",_err(3,0),_err(3,1),_err(3,2),_err(3,3),_err(3,4));
 		fprintf(stderr,"( %.10e, %.10e, %.10e, %.10e, %.10e )\n",_err(4,0),_err(4,1),_err(4,2),_err(4,3),_err(4,4));
-		*/
+		//*/
 
 		// xyz error matrix
 		err = ROOT::Math::SimilarityT(trackToXyz, _err);
@@ -834,14 +839,21 @@ namespace flavtag{
 		min.SetMaxFunctionCalls(10000);
 		min.SetMaxIterations(100);
 		min.SetTolerance(1e-4);
-		min.SetVariable(0,"x",initial.x(), 1e-6);
-		min.SetVariable(1,"y",initial.y(), 1e-6);
-		min.SetVariable(2,"z",initial.z(), 1e-6);
-//		min.SetPrintLevel(0);
+		min.SetValidError(true);
+
+		//min.SetVariable(0,"x",initial.x(), 1e-6);
+		//min.SetVariable(1,"y",initial.y(), 1e-6);
+		//min.SetVariable(2,"z",initial.z(), 1e-6);
+		min.SetVariable(0,"x",initial.x(), 1e-4);
+		min.SetVariable(1,"y",initial.y(), 1e-4);
+		min.SetVariable(2,"z",initial.z(), 1e-4);
+		min.SetPrintLevel(0);
 		bool success = min.Minimize();
+		/*
 		if (!success) {
-			//printf("minuit status: %d\n", min.Status());
+			printf("minuit status: %d\n", min.Status());
 		}
+		*/
 		const double *xx = min.X();
 		double maxll = -pf(xx);
 #endif
@@ -857,14 +869,28 @@ namespace flavtag{
 		double maxll = -fmin;
 		*/
 
-		if(verbose)
+//		min.PrintResults();
+		if(verbose){
+			cout << "Mimimizer status: " << min.Status() << ", Edm = " << min.Edm() << ", # tracks = " << points.size() << ", Tolerance = " << min.Tolerance()  << endl;
 			cout << "Minimum: (" << xx[0] << ", " << xx[1] << ", " << xx[2] << "), l= " << maxll << endl;
+		}
 
 		if(result){
 			Point::SVector3 pos(xx[0], xx[1], xx[2]);
 			Point::SMatrixSym3 err;
 			for(int i=0;i<3;i++)for(int j=i;j<3;j++){
 				err(i,j) = min.CovMatrix(i,j);
+				if(verbose)
+					cout << "CovMatrix(" << i << "," << j << "): " << min.CovMatrix(i,j) << endl;
+			}
+
+			if (verbose) {
+				cout << scientific;
+				cout << "minuit result - covariant matrix:" << endl;
+				cout << err(0,0) << "  " << err(0,1) << "  " << err(0,2) << endl;
+				cout << err(1,0) << "  " << err(1,1) << "  " << err(1,2) << endl;
+				cout << err(2,0) << "  " << err(2,1) << "  " << err(2,2) << endl;
+				cout << fixed;
 			}
 			result->SetPosErr(pos,err);
 		}

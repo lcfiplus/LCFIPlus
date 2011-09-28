@@ -3,13 +3,13 @@
 #ifndef VertexFitterSimple_h
 #define VertexFitterSimple_h 1
 
-#include "flavtag.h"
+#include "lcfiplus.h"
 #include "geometry.h"
 
 using namespace std;
-using namespace flavtag;
+using namespace lcfiplus;
 
-namespace flavtag {
+namespace lcfiplus {
 
 	template<class Iterator>
 		class VertexFitterSimple {
@@ -43,6 +43,16 @@ namespace flavtag {
 					cov[Vertex::yy] = result->GetErr(1,1);
 					cov[Vertex::yz] = result->GetErr(1,2);
 					cov[Vertex::zz] = result->GetErr(2,2);
+
+					if(verbose) {
+						cout << "Vertex cov matrix:" << endl;
+						cout << scientific << cov[Vertex::xx] << "  ";
+						cout << cov[Vertex::yy] << "  ";
+						cout << cov[Vertex::zz] << "  ";
+						cout << cov[Vertex::xy] << "  ";
+						cout << cov[Vertex::yz] << "  ";
+						cout << cov[Vertex::xz] << endl << fixed;
+					}
 
 					if(verbose){
 						cout << "VertexFitterSimple: vertex position is " << endl;

@@ -3,13 +3,13 @@
 #ifndef geometry_h
 #define geometry_h 1
 
-#include "flavtag.h"
+#include "lcfiplus.h"
 #include "TVector3.h"
 
 #include "Math/SVector.h"
 #include "Math/SMatrix.h"
 
-namespace flavtag{
+namespace lcfiplus{
 
 	class PointBase;
 	class Point;
