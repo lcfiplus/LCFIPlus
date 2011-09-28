@@ -24,8 +24,8 @@
 #include "algoEtc.h"
 #include "geometry.h"
 
-using namespace flavtag;
-using namespace flavtag::algoEtc;
+using namespace lcfiplus;
+using namespace lcfiplus::algoEtc;
 
 		void lcioTest(const char *infile)
 		{
@@ -35,12 +35,12 @@ using namespace flavtag::algoEtc;
 			ls.InitJetCollection("Durham_2Jets", "TestJets");
 			cout << "LCIO initialization successful." << endl;
 
-			EventStore::Instance()->Print();
+			Event::Instance()->Print();
 
 			int nev = 0;
 			while(ls.Next()){
 				const vector<Vertex *> *pvcol;
-				bool b = EventStore::Instance()->Get("TestVertices", pvcol);
+				bool b = Event::Instance()->Get("TestVertices", pvcol);
 
 				if(!b){cerr << "Obtaining vertex collection failed." << endl;break;}
 
@@ -54,7 +54,7 @@ using namespace flavtag::algoEtc;
 				}
 
 				const vector<Jet *> *pjcol;
-				b = EventStore::Instance()->Get("TestJets", pjcol);
+				b = Event::Instance()->Get("TestJets", pjcol);
 				if(!b){cerr << "Obtaining jet collection failed." << endl;break;}
 
 				cout << "Event # " << nev << ", # jets = " << pjcol->size() << endl;
@@ -75,7 +75,7 @@ using namespace flavtag::algoEtc;
 			ts.RegisterAll();
 			cout << "Tree registration finished." << endl;
 
-			EventStore::Instance()->Print();
+			Event::Instance()->Print();
 		}
 
 		void lcioToTree(const char *infile, const char *outfile)
@@ -91,7 +91,7 @@ using namespace flavtag::algoEtc;
 			ts.Register("Neutrals");
 			ts.Register("MCParticles");
 			cout << "ROOT initialization successful." << endl;
-			EventStore::Instance()->Print();
+			Event::Instance()->Print();
 
 			while(ls.Next()){
 				ts.Fill();
@@ -116,11 +116,13 @@ using namespace flavtag::algoEtc;
 			cout << "LCIO initialization successful." << endl;
 
 			vector<Vertex *> *pvertices = 0;
-			EventStore::Instance()->Register<Vertex>("BuildUpVertices", pvertices,inclVertex ? EventStore::PERSIST : 0);
+			Event::Instance()->Register<Vertex>("BuildUpVertices", pvertices,inclVertex ? EventStore::PERSIST : 0);
 			vector<Jet *> *pjets = 0;
-			EventStore::Instance()->Register<Jet>("SueharaJets", pjets,EventStore::PERSIST);
+			Event::Instance()->Register<Jet>("SueharaJets", pjets,EventStore::PERSIST);
 
 			int nev = -1;
+
+			Event *event = Event::Instance();
 
 			while(ls.Next()){
 				nev ++;
@@ -132,7 +134,7 @@ using namespace flavtag::algoEtc;
 					int hcount = 0;
 
 					const vector<MCParticle *> *pmcp;
-					EventStore::Instance()->Get("MCParticles", pmcp);
+					Event::Instance()->Get("MCParticles", pmcp);
 					const vector<MCParticle *> &mcps = *pmcp;
 
 					for(unsigned int i=0;i<mcps.size();i++){
@@ -155,9 +157,7 @@ using namespace flavtag::algoEtc;
 				pvertices->clear();
 				pjets->clear();
 
-				Event evt;
-
-				SecondaryVertexConfig secVtxCfg;
+				TrackSelectorConfig secVtxCfg;
 				// original setup 110214
 				secVtxCfg.maxD0 = 10;
 				secVtxCfg.maxZ0 = 20;
@@ -179,16 +179,16 @@ using namespace flavtag::algoEtc;
 				JetFinder* jetFinder = new JetFinder(jetCfg);
 				double ycut = 0;
 
-				LcfiInterface interface(&evt);
+//				LcfiInterface interface(event);
 
 				// cut bad tracks
-				const vector<Track *> &tracks = evt.getTracks();
-				vector<Track *> passedTracks;
+				const vector<Track *> &tracks = event->getTracks();
+				vector<Track *> passedTracks = TrackSelector() (tracks, secVtxCfg);
 
-				for(unsigned int i=0;i<tracks.size();i++){
-					if(interface.passesCut(tracks[i], secVtxCfg))
-						passedTracks.push_back(tracks[i]);
-				}
+// 				for(unsigned int i=0;i<tracks.size();i++){
+// 					if(interface.passesCut(tracks[i], secVtxCfg))
+// 						passedTracks.push_back(tracks[i]);
+// 				}
 
 				// build up vertexing
 				VertexFinderSuehara::buildUp(passedTracks, *pvertices, 25, 9, 10);
@@ -211,7 +211,7 @@ using namespace flavtag::algoEtc;
 						}
 					}
 				}
-				*pjets = jetFinder->run(residualTracks, evt.getNeutrals(), selectedVertices, &ycut);
+				*pjets = jetFinder->run(residualTracks, event->getNeutrals(), selectedVertices, &ycut);
 
 //				if(inclVertex)
 //					ls.ConvertVertex("BuildUpVertices");
@@ -224,10 +224,10 @@ using namespace flavtag::algoEtc;
 		{
 			TreeStorer ts("share/zpole_v.root","FlavTagTree",TreeStorer::mode_input);
 			ts.RegisterAll();
-			EventStore::Instance()->Print();
+			Event::Instance()->Print();
 
-			const vector<flavtag::Vertex *> *pvertices;
-			EventStore::Instance()->Get("TearDownVertices",pvertices);
+			const vector<lcfiplus::Vertex *> *pvertices;
+			Event::Instance()->Get("TearDownVertices",pvertices);
 
 			for(int nev =0;nev< 100;nev++){
 				ts.GetEntry(nev);
@@ -246,10 +246,10 @@ using namespace flavtag::algoEtc;
 //			ts.RegisterAll();
 
 			// register vertex collection
-			vector<flavtag::Vertex *> * pvertices;
-			EventStore::Instance()->Register<flavtag::Vertex>("TearDownVertices", pvertices);
+			vector<lcfiplus::Vertex *> * pvertices;
+			Event::Instance()->Register<lcfiplus::Vertex>("TearDownVertices", pvertices);
 
-			EventStore::Instance()->Print();
+			Event::Instance()->Print();
 
 			TreeStorer tsout(outputfile,"FlavTagTree",TreeStorer::mode_output);
 			tsout.Register("Tracks");
@@ -257,21 +257,21 @@ using namespace flavtag::algoEtc;
 			tsout.Register("MCParticles");
 			tsout.Register("TearDownVertices");
 
+			Event *event = Event::Instance();
+
 			int nev = -1;
 			while(ls.Next()){
 				nev ++;
 //			for(int nev = 0;nev < ts.GetTree()->GetEntries();nev++){
 //				ts.GetEntry(nev);
 
-				flavtag::Event evt;
-
 				if(verbose || nev%100 == 0)
-					cout << "Event # " << nev << " # B is " << evt.mcNumberOfB() << " ------------------------" << endl;
+					cout << "Event # " << nev << " # B is " << event->mcNumberOfB() << " ------------------------" << endl;
 
-				if(bonly && evt.mcNumberOfB()==0)continue;
+				if(bonly && event->mcNumberOfB()==0)continue;
 
 				// Primary vertex by teardown
-				vector<Track *> tracks = evt.getTracks();
+				vector<Track *> tracks = event->getTracks();
 				// 		// IP constraint;
 				// 		float iperr[6];
 				// 		memset(iperr,0,sizeof(iperr));
@@ -290,8 +290,8 @@ using namespace flavtag::algoEtc;
 
 				pvertices->clear();
 
-//				flavtag::Vertex * vtx = flavtag::VertexFinderTearDown<vector>()(tracks, &beamTracks, chi2th_primary, 0);
-				flavtag::Vertex * vtx = findPrimaryVertex(tracks,chi2th_primary);
+//				lcfiplus::Vertex * vtx = lcfiplus::VertexFinderTearDown<vector>()(tracks, &beamTracks, chi2th_primary, 0);
+				lcfiplus::Vertex * vtx = findPrimaryVertex(tracks,chi2th_primary);
 				if(!vtx){
 					cout << "Primary vertex not found! # tracks = " << tracks.size() << endl;
 					continue;
@@ -307,7 +307,7 @@ using namespace flavtag::algoEtc;
 				JetConfig jetCfg;
 				jetCfg.nJet = 2;
 				JetFinder* jetFinder = new JetFinder(jetCfg);
-				vector<Jet*> jets = jetFinder->run(evt.getTracks(),evt.getNeutrals());
+				vector<Jet*> jets = jetFinder->run(event->getTracks(),event->getNeutrals());
 
 				// jet loop
 				for(int nj=0;nj<2;nj++){
@@ -327,8 +327,8 @@ using namespace flavtag::algoEtc;
 					while(tracksInJet.size() >= 2){
 						// search secondary vertex
 						list<Track *> residuals;
-//						flavtag::Vertex *secvtx = flavtag::VertexFinderTearDown<list>()(tracksInJet,0, chi2th_secondary, &residuals);
-						flavtag::Vertex *secvtx = flavtag::VertexFinderTearDown<list, VertexFitterSimple>()(tracksInJet,0, chi2th_secondary, &residuals);
+//						lcfiplus::Vertex *secvtx = lcfiplus::VertexFinderTearDown<list>()(tracksInJet,0, chi2th_secondary, &residuals);
+						lcfiplus::Vertex *secvtx = lcfiplus::VertexFinderTearDown<list, VertexFitterSimple>()(tracksInJet,0, chi2th_secondary, &residuals);
 						if(!secvtx)break;
 
 						pvertices->push_back(secvtx);
@@ -356,8 +356,8 @@ using namespace flavtag::algoEtc;
 							cout << worstTrack->getD0() << ", " << worstTrack->getZ0() << ", ";
 							cout << vtx->getChi2Track(worstTrack) << ", ";
 
-							cout << evt.getMCParticle(worstTrack)->getFlavorTagCategory() << ", ";
-							cout << evt.getMCParticle(worstTrack)->getVx() << ", " << evt.getMCParticle(worstTrack)->getVy() << ", " << evt.getMCParticle(worstTrack)->getVz() << endl;
+							cout << event->getMCParticle(worstTrack)->getFlavorTagCategory() << ", ";
+							cout << event->getMCParticle(worstTrack)->getVx() << ", " << event->getMCParticle(worstTrack)->getVy() << ", " << event->getMCParticle(worstTrack)->getVz() << endl;
 
 				// todo: not suitable for vector
 				for(vector<Track *>::iterator it = tracks.begin();it!=tracks.end();it++){
@@ -417,15 +417,16 @@ void checkMCTearDown(const char *inputfile, const char *outputfile, int nStart, 
 	int summcv = 0;
 	int summcrecov = 0;
 
+	Event *event = Event::Instance();
+
 	while(ls.Next()){
 		if(nev < nStart){nev++;continue;}
 		if(nev >= nEnd)break;
 
-		Event ev;
 
 		// track check
  		cout << "Track check start: ###########################" << endl;
- 		const vector<Track *> &tracks = ev.getTracks();
+ 		const vector<Track *> &tracks = event->getTracks();
  		cout << "# tracks = " << tracks.size() << endl;
  		for(unsigned int i=0;i<tracks.size();i++){
  			MCParticle *mc = tracks[i]->getMcp();
@@ -436,9 +437,9 @@ void checkMCTearDown(const char *inputfile, const char *outputfile, int nStart, 
  		}
  		cout << "Track check end: ###########################" << endl;
 
-		vector<MCVertex *> mcv = findMcVertex(ev.getMCParticles());
+		vector<MCVertex *> mcv = findMcVertex(event->getMCParticles());
 		map<MCVertex*,int> table;
-		matchMcVertex(ev, mcv, table);
+		matchMcVertex(*event, mcv, table);
 
 		cout << "MCVertex size = " << mcv.size() << endl;
 		for(unsigned int i=0;i<mcv.size();i++){
@@ -464,7 +465,7 @@ void checkMCTearDown(const char *inputfile, const char *outputfile, int nStart, 
 			}
 
 			if(pmcv->getRecoTracks().size() >= 2){
-				flavtag::Vertex *vtx = flavtag::VertexFinderTearDown<vector, VertexFitterSimple>()(pmcv->getRecoTracks(),0, 10000, NULL);
+				lcfiplus::Vertex *vtx = lcfiplus::VertexFinderTearDown<vector, VertexFitterSimple>()(pmcv->getRecoTracks(),0, 10000, NULL);
 				if(vtx == NULL)cout << ", Vertex not found";
 				else{
 					cout << ", Vertex found at: " << vtx->getX() << ", " << vtx->getY() << ", " << vtx->getZ() << " with " << vtx->getTracks().size() << " tracks, ";
@@ -479,10 +480,10 @@ void checkMCTearDown(const char *inputfile, const char *outputfile, int nStart, 
 
 		LcfiInterface lcfi;
 
-//		vector<Vertex *> *pvtx = flavtag::VertexFinderSuehara::findCandidates(ev.getTracks(), 10000, 100, 9);
+//		vector<Vertex *> *pvtx = lcfiplus::VertexFinderSuehara::findCandidates(event->getTracks(), 10000, 100, 9);
 		vector<Vertex *> vtx;
 		vector<Vertex *> *pvtx = &vtx;
-		flavtag::VertexFinderSuehara::buildUp(ev.getTracks(), vtx, 25, 25, 100);
+		lcfiplus::VertexFinderSuehara::buildUp(event->getTracks(), vtx, 25, 25, 100);
 		cout << "Event #" << nev << ": " << pvtx->size() << " vertices found." << endl;
 		for(unsigned int i=0;i<vtx.size();i++){
 			cout << "position: (" << vtx[i]->getX() << ", " << vtx[i]->getY() << ", " << vtx[i]->getZ() << "), ";
@@ -509,7 +510,7 @@ void checkMCTearDown(const char *inputfile, const char *outputfile, int nStart, 
 			cout << endl;
 		}
 
-		Vertex *priVertex = findPrimaryVertex(ev.getTracks(), 25);
+		Vertex *priVertex = findPrimaryVertex(event->getTracks(), 25);
 		cout << "Primary: (" << priVertex->getX() << ", " << priVertex->getY()  << ", " << priVertex->getZ() << ")";
 		cout << ", err:(" << sqrt(priVertex->getCov()[Vertex::xx]) << ", " << sqrt(priVertex->getCov()[Vertex::yy]) << ", " << sqrt(priVertex->getCov()[Vertex::zz]) << ")" << endl;
 
@@ -632,9 +633,9 @@ void testSueharaVertex(const char *inputfile, const char *outputfile, int nStart
 		if(nev < nStart){nev++;continue;}
 		if(nev >= nEnd)break;
 
-		Event ev;
+		Event *event = Event::Instance();
 
-		vector<Vertex *> *pvtx = flavtag::VertexFinderSuehara::findCandidates(ev.getTracks(), 25, 10, 5);
+		vector<Vertex *> *pvtx = lcfiplus::VertexFinderSuehara::findCandidates(event->getTracks(), 25, 10, 5);
 		cout << "Event #" << nev << ": " << pvtx->size() << " vertices found." << endl;
 
 		for(unsigned int i=0;i<pvtx->size();i++){
@@ -649,7 +650,7 @@ void testSueharaVertex(const char *inputfile, const char *outputfile, int nStart
 Jet * JetMCMatch(vector<Jet *> &jets, MCParticle *mcp, vector<Track *> &assignedTracks, vector<Track *> &residualTracks)
 {
 	const vector<Track *> *pTracks;
-	EventStore::Instance()->Get<Track>("Tracks",pTracks);
+	Event::Instance()->Get<Track>("Tracks",pTracks);
 
 	vector<Track *> bTracks;
 
@@ -746,6 +747,8 @@ void bbhhAnalysis3(const char *inputfile, const char *outputfile, int nStart, in
 
 	int nev = -1;
 
+	Event *event = Event::Instance();
+
 	while(ls.Next()){
 		nev ++;
 		if(nev < nStart){continue;}
@@ -753,10 +756,9 @@ void bbhhAnalysis3(const char *inputfile, const char *outputfile, int nStart, in
 		cout << "Event #" << nev << endl;
 
 //		ts.GetEntry(nev);
-		Event evt;
 
-		const vector<MCParticle *>& mcps = evt.getMCParticles();
-//		const vector<Track *>& tracks = evt.getTracks();
+		const vector<MCParticle *>& mcps = event->getMCParticles();
+//		const vector<Track *>& tracks = event->getTracks();
 
 		// check bbbbbb (reject H->WW etc.)
 		if(bbhh){
@@ -787,13 +789,7 @@ void bbhhAnalysis3(const char *inputfile, const char *outputfile, int nStart, in
 
 		// vertex clustering
 
-		SecondaryVertexConfig secVtxCfg;
-/*		secVtxCfg.TwoProngCut = 10;
-		secVtxCfg.TrackTrimCut = 10;
-		secVtxCfg.ResolverCut = 0.6;*/
-		//secVtxCfg.TwoProngCut = 10;
-		//secVtxCfg.TrackTrimCut = 20;
-		//secVtxCfg.ResolverCut = 20.;
+		TrackSelectorConfig secVtxCfg;
 		// AND
 		// original setup 110214
  		secVtxCfg.maxD0 = 10;
@@ -813,22 +809,22 @@ void bbhhAnalysis3(const char *inputfile, const char *outputfile, int nStart, in
 		secVtxCfg.minVtxHitsWithoutTpcFtd = 3;
 		secVtxCfg.minVtxPlusFtdHits = 0;
 
-    LcfiInterface interface(&evt);
-
 		JetConfig jetCfg;
 		jetCfg.nJet = njets;
 		JetFinder* jetFinder = new JetFinder(jetCfg);
 		double ycut = 0;
 
 		// cut bad tracks
-		const vector<Track *> &tracks = evt.getTracks();
-		vector<Track *> passedTracks;
+		const vector<Track *> &tracks = event->getTracks();
+		vector<Track *> passedTracks = TrackSelector() (tracks, secVtxCfg);
 		vector<Vertex *> vertices;
 
-		for(unsigned int i=0;i<tracks.size();i++){
+		LcfiInterface interface(event);
+
+/*		for(unsigned int i=0;i<tracks.size();i++){
 			if(interface.passesCut(tracks[i], secVtxCfg))
 				passedTracks.push_back(tracks[i]);
-		}
+		}*/
 		cerr << "Track preselection: passed " << passedTracks.size() << "/" << tracks.size() << endl;
 
 		// build up vertexing
@@ -838,7 +834,7 @@ void bbhhAnalysis3(const char *inputfile, const char *outputfile, int nStart, in
 		}
 
 		if(vtx >= 2){
-			vector<Jet*> prejets = jetFinder->run(tracks, evt.getNeutrals(), &ycut);
+			vector<Jet*> prejets = jetFinder->run(tracks, event->getNeutrals(), &ycut);
 			vector<Track *> passedTracksJet[njets];
 			vector<Vertex *> verticesTmp[njets];
 
@@ -847,18 +843,21 @@ void bbhhAnalysis3(const char *inputfile, const char *outputfile, int nStart, in
 				vertices.push_back(ip);
 
 				for(unsigned int j=0;j<prejets.size();j++){
-					for(unsigned int i=0;i<prejets[j]->getTracks().size();i++){
+					passedTracksJet[j] = TrackSelector() (prejets[j]->getTracks(), secVtxCfg);
+/*					for(unsigned int i=0;i<prejets[j]->getTracks().size();i++){
 						if(interface.passesCut(prejets[j]->getTracks()[i],secVtxCfg))
 							passedTracksJet[j].push_back(prejets[j]->getTracks()[i]);
-					}
+					}*/
 					VertexFinderSuehara::buildUp(passedTracksJet[j], verticesTmp[j], 25, 25,10,0.3, 1.0,ip);
 				  VertexFinderSuehara::associateIPTracks(verticesTmp[j]);
 					vertices.insert(vertices.end(), verticesTmp[j].begin()+1, verticesTmp[j].end());//exclude ip
 				}
 			}
 			else if(vtx >= 3){
+				SecondaryVertexConfig svc;
+				svc.TrackQualityCuts = secVtxCfg;
 				for(unsigned int j=0;j<prejets.size();j++){
-					verticesTmp[j] = interface.findSecondaryVertices( prejets[j], secVtxCfg );
+					verticesTmp[j] = interface.findSecondaryVertices( prejets[j], svc );
 					vertices.insert(vertices.end(), verticesTmp[j].begin(), verticesTmp[j].end());
 				}
 			}
@@ -930,8 +929,8 @@ void bbhhAnalysis3(const char *inputfile, const char *outputfile, int nStart, in
 		double fracgoodvtxtrack = double(goodtrack)/double(allvtxtrack);
 
 		// Jet clustering
-		vector<Jet*> jets = jetFinder->run(residualTracks, evt.getNeutrals(), selectedVertices, &ycut, true);
-//		vector<Jet*> njets = jetFinder->run(tracks, evt.getNeutrals(), &ymin);
+		vector<Jet*> jets = jetFinder->run(residualTracks, event->getNeutrals(), selectedVertices, &ycut, true);
+//		vector<Jet*> njets = jetFinder->run(tracks, event->getNeutrals(), &ymin);
 
 		residualTracks.clear();
 		vector<Track *> assignedTracks;
@@ -1036,10 +1035,10 @@ void bbhhAnalysis2(const char *inputfile, const char *outputfile, int nStart, in
 		cout << "Event #" << nev << endl;
 
 //		ts.GetEntry(nev);
-		Event evt;
+		Event *event = Event::Instance();
 
-		const vector<MCParticle *>& mcps = evt.getMCParticles();
-//		const vector<Track *>& tracks = evt.getTracks();
+		const vector<MCParticle *>& mcps = event->getMCParticles();
+//		const vector<Track *>& tracks = event->getTracks();
 
 		// check bbbbbb (reject H->WW etc.)
 		int hcount = 0;
@@ -1080,7 +1079,7 @@ void bbhhAnalysis2(const char *inputfile, const char *outputfile, int nStart, in
 			JetFinder* jetFinder = new JetFinder(jetCfg);
 			double ycut;
 
-			vector<Jet*> jets = jetFinder->run(evt.getTracks(),evt.getNeutrals(),&ycut);
+			vector<Jet*> jets = jetFinder->run(event->getTracks(),event->getNeutrals(),&ycut);
 
 			vector<Track *> assignedTracks, residualTracks;
 			map<Jet *, int > nbmap;
@@ -1162,10 +1161,10 @@ void bbhhAnalysis(const char *inputfile, const char *outputfile, int nStart, int
 		cout << "Event #" << nev << endl;
 
 //		ts.GetEntry(nev);
-		Event evt;
+		Event *event = Event::Instance();
 
-		const vector<MCParticle *>& mcps = evt.getMCParticles();
-		const vector<Track *>& tracks = evt.getTracks();
+		const vector<MCParticle *>& mcps = event->getMCParticles();
+		const vector<Track *>& tracks = event->getTracks();
 		// check bbbbbb (reject H->WW etc.)
 		int hcount = 0;
 		for(unsigned int i=0;i<mcps.size();i++){
@@ -1201,7 +1200,7 @@ void bbhhAnalysis(const char *inputfile, const char *outputfile, int nStart, int
 		JetConfig jetCfg;
 		jetCfg.nJet = 6;
 		JetFinder* jetFinder = new JetFinder(jetCfg);
-		vector<Jet*> jets = jetFinder->run(evt.getTracks(),evt.getNeutrals());
+		vector<Jet*> jets = jetFinder->run(event->getTracks(),event->getNeutrals());
 
 		// semistable B
 		vector<MCParticle *> blist;
@@ -1277,8 +1276,8 @@ void bbhhAnalysis(const char *inputfile, const char *outputfile, int nStart, int
 				ntAllTracks->Fill(tr->Px(), tr->Py(), tr->Pz(), tr->P(), tr->getD0(), tr->getZ0());
 			}
 			// run ZVTOP
-			vector<Vertex *> *pvreco = findTearDownVertices(evt, jreco);
-			vector<Vertex *> *pvall = findTearDownVertices(evt, jall);
+			vector<Vertex *> *pvreco = findTearDownVertices(*event, jreco);
+			vector<Vertex *> *pvall = findTearDownVertices(*event, jall);
 			cout << ", recoVertex: " << pvreco->size() << "/" << pvall->size();// << endl;
 
 			sumvreco += pvreco->size();
@@ -1346,8 +1345,8 @@ void bbhhAnalysis(const char *inputfile, const char *outputfile, int nStart, int
 
 void pointTest()
 {
-	flavtag::Point::SVector3 pos(0,0,0);
-	flavtag::Point::SMatrixSym3 err;
+	lcfiplus::Point::SVector3 pos(0,0,0);
+	lcfiplus::Point::SMatrixSym3 err;
 	err(0,0) = 1;
 	err(1,1) = 1;
 	err(2,2) = 1;
@@ -1355,7 +1354,7 @@ void pointTest()
 	err(0,2) = 0;
 	err(1,2) = 0;
 
-	flavtag::Point pt(pos,err);
+	lcfiplus::Point pt(pos,err);
 	TVector3 v(1,1,0);
 
 	pt.LogLikelihood(v);
@@ -1363,12 +1362,12 @@ void pointTest()
 
 void helixTest()
 {
-	flavtag::Helix::SVector5 track(1000,0,0,0.001,1);
-	flavtag::Helix::SVector5 track2(0,0,TMath::Pi()/2,0.01,1);
-	flavtag::Helix::SMatrixSym5 err;
+	lcfiplus::Helix::SVector5 track(1000,0,0,0.001,1);
+	lcfiplus::Helix::SVector5 track2(0,0,TMath::Pi()/2,0.01,1);
+	lcfiplus::Helix::SMatrixSym5 err;
 
-	flavtag::Helix hel(track,err,1);
-	flavtag::Helix hel2(track2,err,-1);
+	lcfiplus::Helix hel(track,err,1);
+	lcfiplus::Helix hel2(track2,err,-1);
 
 	cout << "Track 1" << endl;
 	for(int t=0;t<10;t++){
@@ -1390,17 +1389,17 @@ void helixTest()
 void helixVarianceTest()
 {
 	// d0, z0, phi0, omega, tandip
-	flavtag::Helix::SVector5 track1( 1, 0.001,             0, -0.0002, -0.0001);
-	flavtag::Helix::SVector5 track2(-1,-0.001, TMath::Pi()/2,  0.0001,  0.0001);
-	flavtag::Helix::SMatrixSym5 err;
+	lcfiplus::Helix::SVector5 track1( 1, 0.001,             0, -0.0002, -0.0001);
+	lcfiplus::Helix::SVector5 track2(-1,-0.001, TMath::Pi()/2,  0.0001,  0.0001);
+	lcfiplus::Helix::SMatrixSym5 err;
 	err(0,0) = 10;
 	err(1,1) = 1e-3;
 	err(2,2) = 1e-3;
 	err(3,3) = 1e-5;
 	err(4,4) = 1e-2;
 
-	flavtag::Helix hel1(track1,err,1);
-	flavtag::Helix hel2(track2,err,-1);
+	lcfiplus::Helix hel1(track1,err,1);
+	lcfiplus::Helix hel2(track2,err,-1);
 
 	cout << "Track 1" << endl;
 	for(int t=-10;t<10;t++){
@@ -1444,11 +1443,11 @@ void simpleAnalysis(const char *inputfile, const char *outputfile, int nStart, i
 		if(nev >= nEnd)break;
 		cout << "Event #" << nev << endl;
 
-		Event evt;
+		Event *event = Event::Instance();
 //		GeometryHandler *gh = GeometryHandler::Instance();
 
-//		const vector<MCParticle *>& mcps = evt.getMCParticles();
-		vector<Track *> tracks = evt.getTracks();
+//		const vector<MCParticle *>& mcps = event->getMCParticles();
+		vector<Track *> tracks = event->getTracks();
 
 		// sort by D0
 		sort(tracks.begin(),tracks.end(), CompD0);
@@ -1459,9 +1458,9 @@ void simpleAnalysis(const char *inputfile, const char *outputfile, int nStart, i
 			cout << tracks[i]->getPDG() << ", " << tracks[i]->getMcp()->getPDG() << ", " << tracks[i]->E() << endl;
 		}
 #if 0
-		flavtag::Helix hel0(tracks[0]);
+		lcfiplus::Helix hel0(tracks[0]);
 		for(unsigned int i=0;i<tracks.size();i++){
-			flavtag::Helix hel(tracks[i]);
+			lcfiplus::Helix hel(tracks[i]);
 
 			cout << "Track #" << i << " ##########################" << endl;
 			cout << "Track parameters: d0=" << tracks[i]->getD0() << ", z0=" << tracks[i]->getZ0()
@@ -1532,10 +1531,10 @@ void VertexAnalysis110214(const char *inputfile, const char *outputfile, int nSt
 		cout << "Event #" << nev << endl;
 
 //		ts.GetEntry(nev);
-		Event evt;
+		Event *event = Event::Instance();
 
-		const vector<MCParticle *>& mcps = evt.getMCParticles();
-//		const vector<Track *>& tracks = evt.getTracks();
+		const vector<MCParticle *>& mcps = event->getMCParticles();
+//		const vector<Track *>& tracks = event->getTracks();
 
 		// check bbbbbb (reject H->WW etc.)
 		int hcount = 0;
@@ -1565,7 +1564,7 @@ void VertexAnalysis110214(const char *inputfile, const char *outputfile, int nSt
 
 		// vertex clustering
 
-		SecondaryVertexConfig secVtxCfg;
+		TrackSelectorConfig secVtxCfg;
 /*		secVtxCfg.TwoProngCut = 10;
 		secVtxCfg.TrackTrimCut = 10;
 		secVtxCfg.ResolverCut = 0.6;*/
@@ -1591,17 +1590,15 @@ void VertexAnalysis110214(const char *inputfile, const char *outputfile, int nSt
 		secVtxCfg.minVtxHitsWithoutTpcFtd = 3;
 		secVtxCfg.minVtxPlusFtdHits = 0;
 
-    LcfiInterface interface(&evt);
-
 		// cut bad tracks
-		const vector<Track *> &tracks = evt.getTracks();
-		vector<Track *> passedTracks;
+		const vector<Track *> &tracks = event->getTracks();
+		vector<Track *> passedTracks = TrackSelector() (tracks, secVtxCfg);
 		vector<Vertex *> vertices;
 
-		for(unsigned int i=0;i<tracks.size();i++){
+/*		for(unsigned int i=0;i<tracks.size();i++){
 			if(interface.passesCut(tracks[i], secVtxCfg))
 				passedTracks.push_back(tracks[i]);
-		}
+		}*/
 		cout << "Track preselection: passed " << passedTracks.size() << "/" << tracks.size() << endl;
 
 		// passed tracks
@@ -1748,10 +1745,10 @@ void VertexAnalysis110215(const char *inputfile, const char *outputfile, int nSt
 		cout << "Event #" << nev << endl;
 
 //		ts.GetEntry(nev);
-		Event evt;
+		Event *event = Event::Instance();
 
-		const vector<MCParticle *>& mcps = evt.getMCParticles();
-//		const vector<Track *>& tracks = evt.getTracks();
+		const vector<MCParticle *>& mcps = event->getMCParticles();
+//		const vector<Track *>& tracks = event->getTracks();
 
 		// check bbbbbb (reject H->WW etc.)
 		int hcount = 0;
@@ -1779,7 +1776,7 @@ void VertexAnalysis110215(const char *inputfile, const char *outputfile, int nSt
 			}
 		}
 
-		const vector<Track *> &tracks = evt.getTracks();
+		const vector<Track *> &tracks = event->getTracks();
 		for(unsigned int i=0;i<tracks.size();i++){
 			if(tracks[i]->getMcp() == 0)continue;
 
@@ -1828,10 +1825,10 @@ void TrackDist110218(const char *inputfile, const char *outputfile, int nStart, 
 		cout << "Event #" << nev << endl;
 
 //		ts.GetEntry(nev);
-		Event evt;
+		Event *event = Event::Instance();
 
-		const vector<MCParticle *>& mcps = evt.getMCParticles();
-		const vector<Track *>& tracks = evt.getTracks();
+		const vector<MCParticle *>& mcps = event->getMCParticles();
+		const vector<Track *>& tracks = event->getTracks();
 
 		// check bbbbbb (reject H->WW etc.)
 		int hcount = 0;
@@ -1898,7 +1895,7 @@ void TrackDist110218(const char *inputfile, const char *outputfile, int nStart, 
 
 vector<Jet *> SueharaJetClustering(Event &evt, int njets)
 {
-	SecondaryVertexConfig secVtxCfg;
+	TrackSelectorConfig secVtxCfg;
 	// original setup 110214
 	secVtxCfg.maxD0 = 10;
 	secVtxCfg.maxZ0 = 20;
@@ -1915,22 +1912,21 @@ vector<Jet *> SueharaJetClustering(Event &evt, int njets)
 	secVtxCfg.minVtxHitsWithoutTpcFtd = 3;
 	secVtxCfg.minVtxPlusFtdHits = 0;
 
-	LcfiInterface interface(&evt);
-
 	JetConfig jetCfg;
 	jetCfg.nJet = njets;
 	JetFinder* jetFinder = new JetFinder(jetCfg);
 	double ycut = 0;
 
+	Event *event = &evt;
 	// cut bad tracks
-	const vector<Track *> &tracks = evt.getTracks();
-	vector<Track *> passedTracks;
+	const vector<Track *> &tracks = event->getTracks();
+	vector<Track *> passedTracks = TrackSelector() (tracks, secVtxCfg);
 	vector<Vertex *> vertices;
 
-	for(unsigned int i=0;i<tracks.size();i++){
-		if(interface.passesCut(tracks[i], secVtxCfg))
-			passedTracks.push_back(tracks[i]);
-	}
+// 	for(unsigned int i=0;i<tracks.size();i++){
+// 		if(interface.passesCut(tracks[i], secVtxCfg))
+// 			passedTracks.push_back(tracks[i]);
+// 	}
 
 	// build up vertexing
 	VertexFinderSuehara::buildUp(passedTracks, vertices, 25,9, 10);
@@ -1952,5 +1948,5 @@ vector<Jet *> SueharaJetClustering(Event &evt, int njets)
 			}
 		}
 	}
-	return jetFinder->run(residualTracks, evt.getNeutrals(), selectedVertices, &ycut);
+	return jetFinder->run(residualTracks, event->getNeutrals(), selectedVertices, &ycut);
 }

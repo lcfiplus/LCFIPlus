@@ -14,10 +14,11 @@
 #include "EventStore.h"
 #include "JetFinder.h"
 #include "LcfiInterface.h"
+#include "TrackSelector.h"
 
 #include <stdlib.h>
 
-namespace flavtag {
+namespace lcfiplus {
 
   LcfiInstance LcfiInstance::_instance;
 
@@ -47,7 +48,7 @@ namespace flavtag {
     return _zvres;
   }
 
-  LcfiInterface::LcfiInterface(Event* event, Vertex* primaryVertex) : debug(false), _primaryVertex(0) {
+  LcfiInterface::LcfiInterface(const Event* event, const Vertex* primaryVertex) : debug(false), _primaryVertex(0) {
 		if (primaryVertex) {
 			_primaryVertex = lcfiVertex(primaryVertex,true); // it's important that this is set first
 		}
@@ -61,7 +62,7 @@ namespace flavtag {
   }
 
   vertex_lcfi::Track*
-  LcfiInterface::lcfiTrack(vertex_lcfi::Event* MyEvent, Track* track) const {
+  LcfiInterface::lcfiTrack(vertex_lcfi::Event* MyEvent, const Track* track) const {
     HelixRep H;
     H.d0()	= track->getD0();
     H.z0()	= track->getZ0();
@@ -107,7 +108,7 @@ namespace flavtag {
     return MyTrack;
   }
 
-  vertex_lcfi::Event* LcfiInterface::lcfiEvent(Event* event, vertex_lcfi::Vertex* ipVertex) const
+  vertex_lcfi::Event* LcfiInterface::lcfiEvent(const Event* event, vertex_lcfi::Vertex* ipVertex) const
   {
     vertex_lcfi::Event* ret;
 
@@ -181,7 +182,7 @@ namespace flavtag {
   }
 
 	vertex_lcfi::Vertex*
-  LcfiInterface::lcfiVertex(Vertex* flavtagVertex, bool isPrimary) const {
+  LcfiInterface::lcfiVertex(const Vertex* flavtagVertex, bool isPrimary) const {
 
 		//Vertex(Event* Event, const std::vector<Track*> & Tracks, const Vector3 & Position, const SymMatrix3x3 & PosError, bool IsPrimary, double Chi2, double Probability, std::map<Track*,double> ChiTrack);
 
@@ -226,7 +227,7 @@ namespace flavtag {
 
     return vtxList;
   }
-
+/*
   bool LcfiInterface::passesCut(const Track* trk, const SecondaryVertexConfig& cfg) {
     if (fabs(trk->getD0()) > cfg.maxD0) {
       //printf("d0 cut fail: %f\n",trk->par[Track::d0]);
@@ -247,11 +248,9 @@ namespace flavtag {
     if (trk->Pt() < cfg.minPt) {
       return false;
     }
-    /*
-    if (trk->getRadiusOfInnermostHit() > cfg.maxInnermostHitRadius) {
-      return false;
-    }
-    */
+//    if (trk->getRadiusOfInnermostHit() > cfg.maxInnermostHitRadius) {
+//      return false;
+//    }
 
     // OR cuts
     if (trk->getTpcHits() >= cfg.minTpcHits) {
@@ -263,15 +262,13 @@ namespace flavtag {
     if (trk->getVtxHits() >= cfg.minVtxHitsWithoutTpcFtd) {
       return true;
     }
-    /*
-    if (trk->getVtxHits() + trk->getFtdHits() >= cfg.minVtxPlusFtdHits) {
-      return true;
-    }
-    */
+//    if (trk->getVtxHits() + trk->getFtdHits() >= cfg.minVtxPlusFtdHits) {
+//      return true;
+//    }
 
     return false;
   }
-
+*/
   ///////////////////////
 #include <marlin/Global.h>
 #include <gear/BField.h>
@@ -329,8 +326,9 @@ namespace flavtag {
     const vector<Neutral*> neutrals = jet->getNeutrals();
 
     int usedTracks(0);
+		TrackSelector trackSel;
     for (vector<Track*>::const_iterator iter = tracks.begin(); iter != tracks.end(); ++iter) {
-      if (passesCut(*iter,cfg)) {
+      if (trackSel.passesCut(*iter,cfg.TrackQualityCuts)) {
         lcfiJet->addTrack( lcfiTrack(_event, *iter) );
         ++usedTracks;
       }
@@ -399,7 +397,7 @@ namespace flavtag {
 		return chi2;
 	}
 
-  double LcfiInterface::vertexMassPtCorrection( Vertex* secondary, Vertex* primary, const TVector3& momentum, float sigmax ) const
+  double LcfiInterface::vertexMassPtCorrection( const Vertex* secondary, const Vertex* primary, const TVector3& momentum, float sigmax ) const
 	{
 		vertex_lcfi::Vector3 mom;
 		mom[0] = momentum.X();

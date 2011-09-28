@@ -1,5 +1,5 @@
-#ifndef FlavtagProcessor_h
-#define FlavtagProcessor_h 1
+#ifndef LcfiplusProcessor_h
+#define LcfiplusProcessor_h 1
 
 #include "marlin/Processor.h"
 #include "lcio.h"
@@ -25,17 +25,17 @@ using namespace marlin ;
  * @param CollectionName Name of the MCParticle collection
  * 
  * @author F. Gaede, DESY
- * @version $Id: FlavtagProcessor.h,v 1.1.1.1 2009/06/04 00:16:27 suehara Exp $ 
+ * @version $Id: LcfiplusProcessor.h,v 1.1.1.1 2009/06/04 00:16:27 suehara Exp $ 
  */
 
-class FlavtagProcessor : public Processor {
+class LcfiplusProcessor : public Processor {
   
  public:
   
-  virtual Processor*  newProcessor() { return new FlavtagProcessor ; }
+  virtual Processor*  newProcessor() { return new LcfiplusProcessor ; }
   
   
-  FlavtagProcessor() ;
+  LcfiplusProcessor() ;
   
   /** Called at the begin of the job before anything is read.
    * Use to initialize the processor, e.g. book histograms.
@@ -61,7 +61,7 @@ class FlavtagProcessor : public Processor {
  private:
 
 	// lciostorer singleton
-	static flavtag::LCIOStorer *_lcio;
+	static lcfiplus::LCIOStorer *_lcio;
 	bool _lcioowner;
 
   /** Input collection name.
@@ -70,8 +70,8 @@ class FlavtagProcessor : public Processor {
 	std::string _mcpCollectionName;
 	std::string _mcpfoRelationName;
 
-	std::vector<flavtag::FlavtagAlgorithm *> _algos;
-	flavtag::FlavtagParameters * _param;
+	std::vector<lcfiplus::LcfiplusAlgorithm *> _algos;
+	lcfiplus::LcfiplusParameters * _param;
 
   int _nRun ;
   int _nEvt ;

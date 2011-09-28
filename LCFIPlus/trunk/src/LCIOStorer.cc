@@ -1,6 +1,6 @@
 // LCIOStorer.cc
 #include "LCIOStorer.h"
-#include "flavtag.h"
+#include "lcfiplus.h"
 #include "EventStore.h"
 #include "JetFinder.h"
 
@@ -26,7 +26,7 @@
 
 //using namespace lcio;
 
-namespace flavtag{
+namespace lcfiplus{
 
 	// ctor/dtor
 	LCIOStorer::LCIOStorer(const char *inputfile, const char *outputfile, bool autoconvert, const char *outPrefix)
@@ -84,24 +84,38 @@ namespace flavtag{
 	void LCIOStorer::InitCollections(const char *pfoColName, const char *mcColName, const char *mcpfoColName,
 				const char *trackName, const char *neutralName, const char *mcpName)
 	{
+		/*
+		cout << "LCIOStorer::InitCollections: registering collections" << endl;
+		cout << "LCIOStorer::InitCollections:     pfo collection:   " << pfoColName << endl; 
+		cout << "LCIOStorer::InitCollections:     MC collection:    " << mcColName << endl; 
+		cout << "LCIOStorer::InitCollections:     mcpfo collection: " << mcpfoColName << endl; 
+		cout << "LCIOStorer::InitCollections:     track name:       " << trackName << endl; 
+		cout << "LCIOStorer::InitCollections:     neutral name:     " << neutralName << endl; 
+		cout << "LCIOStorer::InitCollections:     mcp name:         " << mcpName << endl; 
+		*/
 		_pfoColName = pfoColName;
 		_mcColName = mcColName;
 		_mcpfoColName = mcpfoColName;
 
-		EventStore::Instance()->Register<Track>(trackName,_pTracks);
-		EventStore::Instance()->Register<Neutral>(neutralName,_pNeutrals);
-		EventStore::Instance()->Register<MCParticle>(mcpName,_pMCPs);
+		Event *event = Event::Instance();
+		event->Register<Track>(trackName,_pTracks);
+		event->Register<Neutral>(neutralName,_pNeutrals);
+		event->Register<MCParticle>(mcpName,_pMCPs);
+
+		event->setDefaultTracks(trackName);
+		event->setDefaultNeutrals(neutralName);
+		event->setDefaultMCParticles(mcpName);
 
 		if(!_pTracks || !_pNeutrals || !_pMCPs){
-			cout << "[ERROR] LCIOStorer::InitCollections: failed to register LCIO collections in LCFIPlus namespace." << endl;
-			throw(Exception("LCIOStorer::InitCollections: failed to register LCIO collections in LCFIPlus namespace."));
+			cout << "[ERROR] LCIOStorer::InitCollections: failed to register LCIO collections in lcfiplus namespace." << endl;
+			throw(Exception("LCIOStorer::InitCollections: failed to register LCIO collections in lcfiplus namespace."));
 		}
 	}
 	
 	void LCIOStorer::InitVertexCollection(const char *lcioName, const char *flavtagName)
 	{
-		vector<flavtag::Vertex *> *vtxcol = 0;
-		EventStore::Instance()->Register<Vertex>(flavtagName,vtxcol);
+		vector<lcfiplus::Vertex *> *vtxcol = 0;
+		Event::Instance()->Register<Vertex>(flavtagName,vtxcol);
 		
 		_importVertexCols[ lcioName ] = vtxcol;
 	}
@@ -112,7 +126,7 @@ namespace flavtag{
 		for(unsigned int i=0;i<pcolnames->size();i++){
 			lcio::LCCollection* colvtx = evt->getCollection((*pcolnames)[i]);
 			const char *colname = (*pcolnames)[i].c_str();
-			if((!EventStore::Instance()->IsExist(colname)) && colvtx->getTypeName() == lcio::LCIO::VERTEX){
+			if((!Event::Instance()->IsExist(colname)) && colvtx->getTypeName() == lcio::LCIO::VERTEX){
 				InitVertexCollection(colname, colname);
 			}
 		}
@@ -124,7 +138,7 @@ namespace flavtag{
 		for(unsigned int i=0;i<pcolnames->size();i++){
 			lcio::LCCollection* coljet = evt->getCollection((*pcolnames)[i]);
 			const char *colname = (*pcolnames)[i].c_str();
-			if((_pfoColName != colname) && (!EventStore::Instance()->IsExist(colname)) && coljet->getTypeName() == lcio::LCIO::RECONSTRUCTEDPARTICLE){
+			if((_pfoColName != colname) && (!Event::Instance()->IsExist(colname)) && coljet->getTypeName() == lcio::LCIO::RECONSTRUCTEDPARTICLE){
 				InitJetCollection(colname, colname);
 			}
 		}
@@ -132,8 +146,8 @@ namespace flavtag{
 
 	void LCIOStorer::InitJetCollection(const char *lcioName, const char *flavtagName)
 	{
-		vector<flavtag::Jet *> *jetcol = 0;
-		EventStore::Instance()->Register<Jet>(flavtagName,jetcol);
+		vector<lcfiplus::Jet *> *jetcol = 0;
+		Event::Instance()->Register<Jet>(flavtagName,jetcol);
 		
 		_importJetCols[ lcioName ] = jetcol;
 	}
@@ -148,7 +162,7 @@ namespace flavtag{
 
 	void LCIOStorer::AutoConvert()
 	{
-		EventStore *s = EventStore::Instance();
+		EventStore *s = Event::Instance();
 		const map<string, EventStore::StoredEntry> & emap = s->GetObjectMap();
 		
 		const vector<string> * lcionames = _event->getCollectionNames();
@@ -165,10 +179,10 @@ namespace flavtag{
 					continue; // skip collections that is already existed in lcio event
 				}
 				
-				if(it->second.classname == "vector<flavtag::Vertex*>"){
+				if(it->second.classname == "vector<lcfiplus::Vertex*>"){
 					ConvertVertex(it->first.c_str(), newname.c_str());
 				}
-				else if(it->second.classname == "vector<flavtag::Jet*>"){
+				else if(it->second.classname == "vector<lcfiplus::Jet*>"){
 					bool extractVertex = it->second.flag & EventStore::JET_EXTRACT_VERTEX;
 					ConvertJet(it->first.c_str(), newname.c_str(), extractVertex);
 				}else{
@@ -218,7 +232,7 @@ namespace flavtag{
 	void LCIOStorer::SetEvent(lcio::LCEvent *evt)
 	{
 		// buffer check
-//		if(_pTracks == NULL || _pNeutrals == NULL || _pMCPs == NULL)throw(new flavtag::Exception("LCIOStorer::SetEvent: Event buffer not set."));
+//		if(_pTracks == NULL || _pNeutrals == NULL || _pMCPs == NULL)throw(new lcfiplus::Exception("LCIOStorer::SetEvent: Event buffer not set."));
 		_event = evt;
 		if(_pTracks == NULL || _pNeutrals == NULL || _pMCPs == NULL)return;
 
@@ -236,6 +250,8 @@ namespace flavtag{
 		_pNeutrals->reserve(colPFO->getNumberOfElements());
 		_pTracks->reserve(colPFO->getNumberOfElements());
 
+		//cout << "PFO size: " << colPFO->getNumberOfElements() << endl;
+
 		_mcpLCIORel.clear();
 		_trackLCIORel.clear();
 		_neutralLCIORel.clear();
@@ -244,8 +260,8 @@ namespace flavtag{
 		_trackLCIORel.reserve(colPFO->getNumberOfElements());
 		_neutralLCIORel.reserve(colPFO->getNumberOfElements());
 
-		// Relation of MCParticle between LCIO and flavtag
-		map<lcio::MCParticle *, flavtag::MCParticle *> mcpMap;
+		// Relation of MCParticle between LCIO and lcfiplus
+		map<lcio::MCParticle *, lcfiplus::MCParticle *> mcpMap;
 		
 		int mcIdCounter(0);
 		// convert MCParticle /////////////////////////////////////////////////////////////////////////
@@ -256,11 +272,11 @@ namespace flavtag{
 			
 			// find parent id
 			// TODO Really OK for single parent??
-			flavtag::MCParticle *parent = 0;
+			lcfiplus::MCParticle *parent = 0;
 			if (mcp->getParents().size()>0) {
-				map<lcio::MCParticle*,flavtag::MCParticle *>::iterator iter = mcpMap.find(mcp->getParents()[0]);
+				map<lcio::MCParticle*,lcfiplus::MCParticle *>::iterator iter = mcpMap.find(mcp->getParents()[0]);
 
-				if ( iter == mcpMap.end() )	throw(new flavtag::Exception("parent not found in association map"));
+				if ( iter == mcpMap.end() )	throw(new lcfiplus::Exception("parent not found in association map"));
 			
 				parent = iter->second;
 			}
@@ -275,7 +291,7 @@ namespace flavtag{
 
 			
 			// convert into MCParticle
-			flavtag::MCParticle *mcpNew = new MCParticle(mcIdCounter, mcp->getPDG(), parent, mcp->getCharge(),
+			lcfiplus::MCParticle *mcpNew = new MCParticle(mcIdCounter, mcp->getPDG(), parent, mcp->getCharge(),
 					TLorentzVector(TVector3(mcp->getMomentum()),mcp->getEnergy()), TVector3(v));
 			
 			// add to MCP list
@@ -305,7 +321,7 @@ namespace flavtag{
 		for (unsigned int n=0; n<pfo_list.size(); ++n ) {
 			lcio::ReconstructedParticle *pfo = pfo_list[n];
 			lcio::MCParticle *mcp = NULL;
-			flavtag::MCParticle *mcpf = NULL;
+			lcfiplus::MCParticle *mcpf = NULL;
 			if(nav->getRelatedToObjects(pfo).size()){
 				mcp = dynamic_cast<lcio::MCParticle *>(nav->getRelatedToObjects(pfo)[0]); // TODO [0] OK?
 				mcpf = mcpMap[mcp];
@@ -330,9 +346,10 @@ namespace flavtag{
 				int trkSize = pfo->getTracks().size();
 				assert(trkSize>0);
 
-				flavtag::Track * track = new flavtag::Track;
+				lcfiplus::Track * track = new lcfiplus::Track;
 
-				track->setId(++trkIdCounter); // start from 1...
+				//				track->setId(++trkIdCounter); // start from 1...
+				track->setId(trkIdCounter++); // start from 0. 110927 suehara
 				track->setMcp(mcpf);
 				track->setPDG(pfo->getType());
 				/*
@@ -385,18 +402,18 @@ namespace flavtag{
 				assert( trk->getTanLambda() == trk->getTanLambda() );
 				
 				// fill track parameters	
-				float par[flavtag::tpar::parN];
-				par[flavtag::tpar::d0] = trk->getD0();
-				par[flavtag::tpar::z0] = trk->getZ0();
-				par[flavtag::tpar::ph] = trk->getPhi();
-				par[flavtag::tpar::om] = trk->getOmega();
-				par[flavtag::tpar::td] = trk->getTanLambda();
+				float par[lcfiplus::tpar::parN];
+				par[lcfiplus::tpar::d0] = trk->getD0();
+				par[lcfiplus::tpar::z0] = trk->getZ0();
+				par[lcfiplus::tpar::ph] = trk->getPhi();
+				par[lcfiplus::tpar::om] = trk->getOmega();
+				par[lcfiplus::tpar::td] = trk->getTanLambda();
 				track->setHelix(par);
 				
 				// ... and the covariance matrix
 				const vector<float>& cov = trk->getCovMatrix();
-				float fcov[flavtag::tpar::covN];
-				for (int i=0; i<flavtag::tpar::covN; ++i) {
+				float fcov[lcfiplus::tpar::covN];
+				for (int i=0; i<lcfiplus::tpar::covN; ++i) {
 					fcov[i] = cov[i];
 				}
 				track->setCovMatrix(fcov);
@@ -405,8 +422,8 @@ namespace flavtag{
 				track->setNdf(trk->getNdf());
 
 				// store detector hit numbers
-				float nhits[flavtag::tpar::hitN];
-				for (int i=0; i<flavtag::tpar::hitN; ++i) {
+				float nhits[lcfiplus::tpar::hitN];
+				for (int i=0; i<lcfiplus::tpar::hitN; ++i) {
 					nhits[i] = trk->getSubdetectorHitNumbers()[i];
 				}
 				track->setTrackHits(nhits);
@@ -423,8 +440,8 @@ namespace flavtag{
 				// assert(clusSize>0);
 				// above is not necessarily true e.g. for a V0 which just has two tracks
 
-				flavtag::Neutral *neut = new Neutral;
-				neut->setId(++neutIdCounter);
+				lcfiplus::Neutral *neut = new Neutral;
+				neut->setId(neutIdCounter++); // start from 0. 110927 suehara
 				neut->setMcp(mcpf);
 				neut->setPDG(pfo->getType());
 				/*
@@ -469,7 +486,7 @@ namespace flavtag{
 			}
 		}
 		// vertex
-		map<string, vector<flavtag::Vertex *> *>::iterator it;
+		map<string, vector<lcfiplus::Vertex *> *>::iterator it;
 		for(it = _importVertexCols.begin(); it != _importVertexCols.end(); it++){
 			it->second->clear();
 			lcio::LCCollection* colvtx = evt->getCollection(it->first);
@@ -480,7 +497,7 @@ namespace flavtag{
 				float cov[6];
 				for(int i=0;i<6;i++)cov[i] = lciovtx->getCovMatrix()[i];
 				
-				flavtag::Vertex *flavtx = new flavtag::Vertex(lciovtx->getChi2(), lciovtx->getProbability(), 
+				lcfiplus::Vertex *flavtx = new lcfiplus::Vertex(lciovtx->getChi2(), lciovtx->getProbability(), 
 					lciovtx->getPosition()[0], lciovtx->getPosition()[1], lciovtx->getPosition()[2], cov);
 				flavtx->setId(n);
 				
@@ -504,7 +521,7 @@ namespace flavtag{
 		}
 		
 		// jet
-		map<string, vector<flavtag::Jet *> *>::iterator itj;
+		map<string, vector<lcfiplus::Jet *> *>::iterator itj;
 		for(itj = _importJetCols.begin(); itj != _importJetCols.end(); itj++){
 			itj->second->clear();
 			lcio::LCCollection* coljet = evt->getCollection(itj->first);
@@ -512,7 +529,7 @@ namespace flavtag{
 			for(int n=0;n<coljet->getNumberOfElements();n++){
 				lcio::ReconstructedParticle *lciojet = dynamic_cast<lcio::ReconstructedParticle*>(coljet->getElementAt(n));
 				
-				flavtag::Jet *flajet = new flavtag::Jet;
+				lcfiplus::Jet *flajet = new lcfiplus::Jet;
 				flajet->setId(n);
 				
 				for(unsigned int npart = 0; npart < lciojet->getParticles().size(); npart++){
@@ -551,7 +568,7 @@ namespace flavtag{
 			return ;
 		}
 		const vector<Vertex *> *pvvtx;
-		EventStore::Instance()->Get(vertexName, pvvtx);
+		Event::Instance()->Get(vertexName, pvvtx);
 	
 		if(!pvvtx){
 			cerr << "LCIOStorer::ConvertVertex: failed to obtain vertices from the specified name: " << vertexName << endl;
@@ -565,8 +582,8 @@ namespace flavtag{
 		lcio::LCCollectionVec *col = new lcio::LCCollectionVec(lcio::LCIO::VERTEX);
 		lcio::LCCollectionVec *colRP = new lcio::LCCollectionVec(lcio::LCIO::RECONSTRUCTEDPARTICLE);
 		for(unsigned int n=0;n<pvvtx->size();n++){
-			// set ID to the flavtag::Vertex
-			flavtag::Vertex *flavtx = (*pvvtx)[n];
+			// set ID to the lcfiplus::Vertex
+			lcfiplus::Vertex *flavtx = (*pvvtx)[n];
 			flavtx->setId(n);
 			
 			// make new vertex
@@ -578,7 +595,7 @@ namespace flavtag{
 			TLorentzVector lv;
 			float charge = 0.;
 			for(unsigned int ntr = 0; ntr < flavtx->getTracks().size(); ntr++){
-				flavtag::Track *flatr = flavtx->getTracks()[ntr];
+				lcfiplus::Track *flatr = flavtx->getTracks()[ntr];
 				lcio::ReconstructedParticle *lciotr = _trackLCIORel[flatr->getId()];
 				lv += (*flatr);
 				charge += flatr->getCharge();
@@ -598,13 +615,38 @@ namespace flavtag{
 			
 			// vertex initialization
 			lciovtx->setPrimary(n==0); // TODO: too simple
-			lciovtx->setAlgorithmType("flavtag");
+			lciovtx->setAlgorithmType("lcfiplus");
 			lciovtx->setPosition(vpos);
 			lciovtx->setCovMatrix(flavtx->getCov());
 			lciovtx->setChi2(flavtx->getChi2());
 			lciovtx->setProbability(flavtx->getProb());
 			lciovtx->setAssociatedParticle(lciorp);
+
+			/*
+			cout << scientific << "ConvertVertex position: "
+				<< vpos[0] << ","
+				<< vpos[1] << ","
+				<< vpos[2] << fixed << endl;
 			
+			const float* cov = flavtx->getCov();
+			cout << scientific << "ConvertVertex covMatrix: "
+				<< cov[0] << ","
+				<< cov[1] << ","
+				<< cov[2] << ","
+				<< cov[3] << ","
+				<< cov[4] << ","
+				<< cov[5] << fixed << endl;
+
+			const vector<float>& cov2 = lciovtx->getCovMatrix();
+			cout << scientific << "ConvertVertex covMatrix (lcio): "
+				<< cov2[0] << ","
+				<< cov2[1] << ","
+				<< cov2[2] << ","
+				<< cov2[3] << ","
+				<< cov2[4] << ","
+				<< cov2[5] << fixed << endl;
+			 */
+
 			// store relation
 			_vtxLCIORel[flavtx] = lciovtx;
 			
@@ -614,7 +656,7 @@ namespace flavtag{
 		_event->addCollection(col, (newName ? newName : vertexName));
 		_event->addCollection(colRP, newRPName ? newRPName : (const char *)TString::Format("%s_RP", newName ? newName : vertexName));
 		
-		cout << "ConvertVertex finished. # vertices = " << col->getNumberOfElements() << endl;
+		//cout << "ConvertVertex finished. # vertices = " << col->getNumberOfElements() << endl;
 
 	}
 
@@ -625,7 +667,7 @@ namespace flavtag{
 			return ;
 		}
 		const vector<Jet *> *pvjet;
-		EventStore::Instance()->Get(jetName, pvjet);
+		Event::Instance()->Get(jetName, pvjet);
 	
 		if(!pvjet){
 			cerr << "LCIOStorer::ConvertJet: failed to obtain jets from the specified name: " << jetName << endl;
@@ -638,8 +680,8 @@ namespace flavtag{
 		// make collection
 		lcio::LCCollectionVec *col = new lcio::LCCollectionVec(lcio::LCIO::RECONSTRUCTEDPARTICLE);
 		for(unsigned int n=0;n<pvjet->size();n++){
-			// set ID to the flavtag::Vertex
-			flavtag::Jet *flajet = (*pvjet)[n];
+			// set ID to the lcfiplus::Vertex
+			lcfiplus::Jet *flajet = (*pvjet)[n];
 			flajet->setId(n);
 			
 			// make new recoparticle including vertex
@@ -648,29 +690,32 @@ namespace flavtag{
 			// associate particles
 			float charge = 0.;
 			for(unsigned int ntr = 0; ntr < flajet->getTracks().size(); ntr++){
-				flavtag::Track *flatr = flajet->getTracks()[ntr];
+				lcfiplus::Track *flatr = flajet->getTracks()[ntr];
 				lcio::ReconstructedParticle *lciotr = _trackLCIORel[flatr->getId()];
 				charge += flatr->getCharge();
 				lciojet->addParticle(lciotr);
+				//cout << "LCIOStorer::ConvertJet: add track: id = " << flatr->getId() << ", energy = " << flatr->E() << flush;
+				//cout << ", lcio energy = " << lciotr->getEnergy() << endl;
 			}
 			for(unsigned int nneut = 0; nneut < flajet->getNeutrals().size(); nneut++){
-				flavtag::Neutral *flaneut = flajet->getNeutrals()[nneut];
+				lcfiplus::Neutral *flaneut = flajet->getNeutrals()[nneut];
 				lcio::ReconstructedParticle *lcioneut = _neutralLCIORel[flaneut->getId()];
 				lciojet->addParticle(lcioneut);
 			}
 			for(unsigned int nvtx = 0; nvtx < flajet->getVertices().size(); nvtx++){
-				flavtag::Vertex *flavtx = flajet->getVertices()[nvtx];
+				lcfiplus::Vertex *flavtx = flajet->getVertices()[nvtx];
 				if(!extractVertex && flavtx->getId() >= 0){ // valid ID
 					lcio::ReconstructedParticle *lciovtx = _vtxLCIORel[flavtx]->getAssociatedParticle();
 					charge += lciovtx->getCharge();
 					lciojet->addParticle(lciovtx);
 				}else{ // ID not available, add daughter particles
 					for(unsigned int ntr = 0; ntr < flavtx->getTracks().size(); ntr++){
-						flavtag::Track *flatr = flavtx->getTracks()[ntr];
+						lcfiplus::Track *flatr = flavtx->getTracks()[ntr];
 						lcio::ReconstructedParticle *lciotr = _trackLCIORel[flatr->getId()];
 						charge += flatr->getCharge();
 						lciojet->addParticle(lciotr);
 					}
+					//cout << "LCIOStorer::ConvertJet: add " << flavtx->getTracks().size() << "tracks in jet." << endl;
 				}
 			}
 			

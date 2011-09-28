@@ -2,7 +2,7 @@
 #include <math.h>
 #include "EventNavigator.h"
 #include "EventStore.h"
-#include "flavtag.h"
+#include "lcfiplus.h"
 #include "JetFinder.h"
 #include "LcfiInterface.h"
 #include "LCIOStorer.h"
@@ -25,10 +25,10 @@
 #include "TEveTrans.h"
 #include "TEveVSDStructs.h"
 
-using namespace flavtag;
-using namespace flavtag::algoEtc;
+using namespace lcfiplus;
+using namespace lcfiplus::algoEtc;
 
-namespace flavtag {
+namespace lcfiplus {
 
   EventNavigator::EventNavigator(const char* input, int start) : _start(start) {
 		_ls = new LCIOStorer(input);
@@ -53,7 +53,7 @@ namespace flavtag {
     int nB(0);
 
 		// default constructor initializes with default collection names (Tracks, Neutrals, MCParticles)
-		Event* event = new Event;
+		Event* event = Event::Instance();
 
 		/*
     while (nB != 2) {
@@ -99,18 +99,13 @@ namespace flavtag {
     JetFinder jetFinder(jetCfg);
     vector<Jet*> jets = jetFinder.run(event->getTracks(),event->getNeutrals());
 
-		SecondaryVertexConfig secVtxCfg;
-		secVtxCfg.TwoProngCut = 10;
-		secVtxCfg.TrackTrimCut = 10;
-		secVtxCfg.ResolverCut = 0.6;
-		//secVtxCfg.TwoProngCut = 10;
-		//secVtxCfg.TrackTrimCut = 20;
-		//secVtxCfg.ResolverCut = 20.;
+		TrackSelectorConfig secVtxCfg;
+
 		// AND
 		secVtxCfg.maxD0 = 10;
-		secVtxCfg.maxD0Err = 0.25;
+		secVtxCfg.maxD0Err = .1;
 		secVtxCfg.maxZ0 = 20;
-		secVtxCfg.maxZ0Err = 1e10;
+		secVtxCfg.maxZ0Err = .1;
 		secVtxCfg.minPt = 0.1;
 		secVtxCfg.maxInnermostHitRadius = 1e10;
 		// OR
@@ -119,12 +114,10 @@ namespace flavtag {
 		secVtxCfg.minVtxHitsWithoutTpcFtd = 3;
 		secVtxCfg.minVtxPlusFtdHits = 0;
 
-    LcfiInterface interface(event);
-
 		/////////////////////////////////////////////////////////////////////////////////
 		// LCFI stuff: primary and secondary vertex finding
 		/////////////////////////////////////////////////////////////////////////////////
-
+/*
 		//Vertex* primaryVertex = interface.findPrimaryVertex();
 
 		// prepare tracks for primary vertex finder
@@ -132,11 +125,6 @@ namespace flavtag {
 		for (vector<Track*>::const_iterator it = tracks.begin(); it != tracks.end(); ++it) {
 			Track* trk = *it;
 
-			/*
-				 if (trk->getVtxHits() + trk->getFtdHits() >= 3 && trk->getRadiusOfInnermostHit() <20) {
-				 tracksForPrimary.push_back( new Track(*trk) );
-				 }
-			 */
 			//tracksForPrimary.push_back( trk );
 			//if (fabs(trk->getD0())<50 && fabs(trk->getZ0())<50) {
 			if (fabs(trk->getD0())<10 && fabs(trk->getZ0())<10) {
@@ -157,34 +145,26 @@ namespace flavtag {
 
 		LcfiInterface interface2(event2);
 		Vertex* primaryVertex2 = interface2.findPrimaryVertex();
-
-
-
-
-
-
-
-
-
+*/
 
     vector<Track*> vtxTracks;
-    vector<Vertex*> vtxList[njet];
+    //vector<Vertex*> vtxList[njet];
 
-    vector<Vertex*> tearDownVtxList[njet];
+    //vector<Vertex*> tearDownVtxList[njet];
     vector<Track*> tearDownVtxTracks;
 
 		vector<Vertex*> buildUpVtxList;
     vector<Track*> vtxTracksBU;
  
 		// buildup vertex
-		vector<Track *> passedTracks;
-		for(unsigned int i=0;i<tracks.size();i++){
-			if(interface.passesCut(tracks[i], secVtxCfg))
-				passedTracks.push_back(tracks[i]);
-		}
+		vector<Track *> passedTracks = TrackSelector() (tracks, secVtxCfg);
+//		for(unsigned int i=0;i<tracks.size();i++){
+//			if(interface.passesCut(tracks[i], secVtxCfg))
+//				passedTracks.push_back(tracks[i]);
+//		}
 //		VertexFinderSuehara::buildUp(tracks, buildUpVtxList, 25, 10);
-		VertexFinderSuehara::buildUp(passedTracks, buildUpVtxList, 25, 9, 10);
-		VertexFinderSuehara::associateIPTracks(buildUpVtxList,1.);
+		VertexFinderSuehara::buildUp(passedTracks, buildUpVtxList, 25, 9, 10,0.3,1.0);
+		VertexFinderSuehara::associateIPTracks(buildUpVtxList,0,0,2);
 
 		cout << "Buildup: " << buildUpVtxList.size() << " vertices found." << endl;
 		for(unsigned int i=0;i<buildUpVtxList.size();i++){
@@ -214,7 +194,7 @@ namespace flavtag {
 				}
 			}
 		}
-
+/*
     for (unsigned int iJet=0; iJet<jets.size(); ++iJet) {
 
 			// zvtop
@@ -268,7 +248,7 @@ namespace flavtag {
       }
 
     }
-
+*/
 
     static TEveCompound* eveMCParticles(0);
     static TEveCompound* eveTracks(0);
@@ -305,7 +285,7 @@ namespace flavtag {
     eveTracks->SetMainColor(kRed);
     eveTracks->SetName("Tracks");
     eveTracks->OpenCompound();
-
+/*
     eveVertices = new TEveCompound();
     eveVertices->SetMainColor(kRed);
     eveVertices->SetName("Vertices");
@@ -315,7 +295,7 @@ namespace flavtag {
     eveTDVertices->SetMainColor(kGreen);
     eveTDVertices->SetName("TearDownVertices");
     eveTDVertices->OpenCompound();
-
+*/
     eveBUVertices = new TEveCompound();
     eveBUVertices->SetMainColor(kCyan);
     eveBUVertices->SetName("BuildUpVertices");
@@ -329,19 +309,19 @@ namespace flavtag {
 
     TEveCompound* compoundTracks   = new TEveCompound("Tracks", "All charged tracks");
     compoundTracks->SetMainColor(kRed);
-
+/*
     TEveCompound* compoundVertices   = new TEveCompound("Vertices", "All charged tracks");
     compoundVertices->SetMainColor(kGreen);
 
     TEveCompound* compoundTDVertices   = new TEveCompound("TearDownVertices", "All charged tracks");
     compoundTDVertices->SetMainColor(kGreen);
-
+*/
     TEveCompound* compoundBUVertices   = new TEveCompound("BuildUpVertices", "All charged tracks");
     compoundBUVertices->SetMainColor(kGreen);
 
     int nMCParticle =  mcps.size();
     int nTrack = tracks.size();
-
+/*
     TEvePointSet* vbox0 = new TEvePointSet();
     vbox0->SetMarkerColor(33);
     vbox0->SetMarkerStyle(3);
@@ -392,7 +372,7 @@ namespace flavtag {
 				compoundTDVertices->AddElement(vbox2);
       }
     }
-
+*/
     for (unsigned int iVtx=0; iVtx<buildUpVtxList.size(); ++iVtx) {
       Vertex* vtx = buildUpVtxList[iVtx];
       float x0 = vtx->getX();
@@ -413,7 +393,7 @@ namespace flavtag {
 			compoundBUVertices->AddElement(vbox2);
     }
 
-
+/*
     compoundVertices->CloseCompound();
     eveVertices->AddElement(compoundVertices);
     eveVertices->CloseCompound();
@@ -421,7 +401,7 @@ namespace flavtag {
     compoundTDVertices->CloseCompound();
     eveTDVertices->AddElement(compoundTDVertices);
     eveTDVertices->CloseCompound();
-    compoundBUVertices->CloseCompound();
+*/    compoundBUVertices->CloseCompound();
     eveBUVertices->AddElement(compoundBUVertices);
     eveBUVertices->CloseCompound();
 
@@ -629,8 +609,8 @@ namespace flavtag {
     std::cout<<"End of Building MC Tracks"<<endl;
 
     gEve->AddElement(eveBUVertices);
-    gEve->AddElement(eveVertices);
-    gEve->AddElement(eveTDVertices);
+//    gEve->AddElement(eveVertices);
+//    gEve->AddElement(eveTDVertices);
     gEve->AddElement(eveMCParticles);
     gEve->AddElement(eveTracks);
     gEve->FullRedraw3D(kTRUE);

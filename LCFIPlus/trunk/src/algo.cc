@@ -1,11 +1,11 @@
 #include "algo.h"
 #include <math.h>
 
-#include "flavtag.h"
+#include "lcfiplus.h"
 
 //#define R 0.61803399
 //#define C (1.0-R)
-namespace flavtag {
+namespace lcfiplus {
 //#define SHFT(a,b,c,d) (a)=(b);(b)=(c);(c)=(d);
 //#define SHFT2(a,b,c) (a)=(b);(b)=(c);
 //#define SHFT3(a,b,c,d) (a)=(b);(b)=(c);(c)=(d);

@@ -3,37 +3,40 @@
 
 #ifdef __CINT__
 
-#pragma link C++ class flavtag::TrackData+;
-#pragma link C++ class std::vector<flavtag::TrackData>+;
-//#pragma link C++ class flavtag::NeutralData+;
-//#pragma link C++ class std::vector<flavtag::NeutralData>+;
-//#pragma link C++ class flavtag::MCParticleData+;
-//#pragma link C++ class std::vector<flavtag::MCParticleData>+;
-#pragma link C++ class flavtag::Track+;
-#pragma link C++ class std::vector<flavtag::Track*>+;
-#pragma link C++ class flavtag::Neutral+;
-#pragma link C++ class std::vector<flavtag::Neutral*>+;
-#pragma link C++ class flavtag::MCParticle+;
-#pragma link C++ class std::vector<flavtag::MCParticle*>+;
-#pragma link C++ class flavtag::Vertex+;
-#pragma link C++ class std::vector<flavtag::Vertex*>+;
-#pragma link C++ class flavtag::MCVertex+;
-#pragma link C++ class std::vector<flavtag::MCVertex*>+;
-#pragma link C++ class flavtag::Jet+;
-#pragma link C++ class std::vector<flavtag::Jet*>+;
+//#pragma link C++ class lcfiplus::TrackData+;
+//#pragma link C++ class std::vector<lcfiplus::TrackData>+;
+//#pragma link C++ class lcfiplus::NeutralData+;
+//#pragma link C++ class std::vector<lcfiplus::NeutralData>+;
+//#pragma link C++ class lcfiplus::MCParticleData+;
+//#pragma link C++ class std::vector<lcfiplus::MCParticleData>+;
+#pragma link C++ class lcfiplus::Track+;
+#pragma link C++ class std::vector<lcfiplus::Track*>+;
+#pragma link C++ class lcfiplus::Neutral+;
+#pragma link C++ class std::vector<lcfiplus::Neutral*>+;
+#pragma link C++ class lcfiplus::MCParticle+;
+#pragma link C++ class std::vector<lcfiplus::MCParticle*>+;
+#pragma link C++ class lcfiplus::Vertex+;
+#pragma link C++ class std::vector<lcfiplus::Vertex*>+;
+#pragma link C++ class lcfiplus::MCVertex+;
+#pragma link C++ class std::vector<lcfiplus::MCVertex*>+;
+#pragma link C++ class lcfiplus::Jet+;
+#pragma link C++ class std::vector<lcfiplus::Jet*>+;
 
-#pragma link C++ class flavtag::LCIOStorer;
-#pragma link C++ class flavtag::TreeStorer;
-#pragma link C++ class flavtag::EventStore;
-#pragma link C++ class flavtag::EventNavigator;
+#pragma link C++ class lcfiplus::LCIOStorer;
+#pragma link C++ class lcfiplus::TreeStorer;
+#pragma link C++ class lcfiplus::EventStore;
+#pragma link C++ class lcfiplus::EventNavigator;
 
-#pragma link C++ class flavtag::FlavtagAlgorithm;
-#pragma link C++ class flavtag::BuildUpVertex;
-#pragma link C++ class flavtag::JetClustering;
-#pragma link C++ class flavtag::MakeNtuple;
-#pragma link C++ class flavtag::TrainMVA;
+#pragma link C++ class lcfiplus::LcfiplusAlgorithm;
+//#pragma link C++ class lcfiplus::FlavtagAlgorithm;
+#pragma link C++ class lcfiplus::BuildUpVertex;
+#pragma link C++ class lcfiplus::JetClustering;
+#pragma link C++ class lcfiplus::PrimaryVertexFinder;
+#pragma link C++ class lcfiplus::FlavorTag;
+#pragma link C++ class lcfiplus::MakeNtuple;
+#pragma link C++ class lcfiplus::TrainMVA;
 
-//#pragma link C++ class flavtag::Event;
+//#pragma link C++ class lcfiplus::Event;
 
 #pragma link C++ function lcioTest;
 #pragma link C++ function lcioToTree;

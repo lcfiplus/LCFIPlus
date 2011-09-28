@@ -5,7 +5,7 @@
 //#include "TQObject.h"
 
 
-namespace flavtag {
+namespace lcfiplus {
 
   class Event;
 	class LCIOStorer;

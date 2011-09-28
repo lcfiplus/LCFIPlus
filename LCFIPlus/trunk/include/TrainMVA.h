@@ -7,28 +7,36 @@ class TFile;
 class TTree;
 
 #include "interface.h"
+#include "lcfiplus.h"
 #include "flavtag.h"
-#include "FlavtagCategory.h"
 
 #include "TMVA/Factory.h"
 #include "TMVA/Tools.h"
 #include "TMVA/Types.h"
 
-namespace flavtag{
+namespace lcfiplus{
 
-	class TrainMVA : public FlavtagAlgorithm {
+	class TrainMVA : public LcfiplusAlgorithm {
 		public:
 			TrainMVA(){}
 			virtual ~TrainMVA(){}
 
-			void init(FlavtagParameters *param);
+			void init(LcfiplusParameters *param);
 			void process();
 			void end();
 
 		private:
 			bool _verbose;
 
-			TString _inputFile;
+			TString _inputFileB;
+			TString _inputFileC;
+			TString _inputFileO;
+			TString _treeNameB;
+			TString _treeNameC;
+			TString _treeNameO;
+			TString _cutB;
+			TString _cutC;
+			TString _cutO;
 			TString _outputDirectory;
 			TString _outputPrefix;
 			TString _treeName;
@@ -37,10 +45,11 @@ namespace flavtag{
 			TString _tmvaBookName;
 			TString _tmvaBookOptions;
 
-			vector<FlavtagCategory> _categoryList;
-			vector<FlavtagType> _typeList;
+			vector<FlavtagCategory> _categories;
 
 			ClassDef(TrainMVA,1);
+
+			void splitVars(const std::string& s, char c, std::vector<std::string>& v);
 	};
 
 }

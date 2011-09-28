@@ -3,10 +3,10 @@
 #ifndef AlgoEtc_h
 #define AlgoEtc_h 1
 
-#include "flavtag.h"
+#include "lcfiplus.h"
 #include "JetFinder.h"
 
-namespace flavtag{
+namespace lcfiplus{
 namespace algoEtc{
 
 	// beam pseudo-tracks for primary vertex fitter

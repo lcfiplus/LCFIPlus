@@ -3,7 +3,7 @@
 #ifndef VertexFitterLCFI_h
 #define VertexFitterLCFI_h 1
 
-#include "flavtag.h"
+#include "lcfiplus.h"
 #include "LcfiInterface.h"
 
 // ZVTOP includes
@@ -11,9 +11,9 @@
 #include <util/inc/util.h>
 
 using namespace std;
-using namespace flavtag;
+using namespace lcfiplus;
 
-namespace flavtag {
+namespace lcfiplus {
 
 	template<class Iterator>
 		class VertexFitterLCFI {
@@ -78,6 +78,13 @@ namespace flavtag {
 				cov[3] = vtxerr(0,2);
 				cov[4] = vtxerr(1,2);
 				cov[5] = vtxerr(2,2);
+
+				/*
+				cout << "VertexFitterLCFI pos: " << scientific
+					<< vtxpos(0) << "  " << vtxpos(1) << "  " << vtxpos(2) << fixed << endl;
+				cout << "VertexFitterLCFI cov: " << scientific
+					<< cov[0] << "  " << cov[1] << "  " << cov[2] << "  " << cov[3] << "  " << cov[4] << "  " << cov[5] << fixed << endl;
+				 */
 
 				Vertex *vtx = new Vertex(chi2fit, prob,vtxpos(0), vtxpos(1), vtxpos(2),cov);
 				for(unsigned int i=0;i<trackStates.size();i++){

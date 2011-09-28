@@ -3,7 +3,7 @@
 #ifndef VertexFinderSuehara_h
 #define VertexFinderSuehara_h 1
 
-#include "flavtag.h"
+#include "lcfiplus.h"
 #include "VertexFitterLCFI.h"
 #include "VertexFitterSimple.h"
 #include <list>
@@ -12,9 +12,9 @@
 #include "algoSigProb.h"
 
 using namespace std;
-using namespace flavtag::algoSigProb;
+using namespace lcfiplus::algoSigProb;
 
-namespace flavtag {
+namespace lcfiplus {
 
 	namespace VertexFinderSuehara{
 		class SortTracksByIPSig{ // decending order
@@ -34,12 +34,12 @@ namespace flavtag {
 
 		// find 2-track vertices
 		// track, chi-square threshold, maximum invmass, minimum impact parameter significance of tracks (either)
-		vector<flavtag::Vertex*> * findCandidates(const vector<Track *> &tracks, double chi2th, double massth, double ipsigth);
+		vector<lcfiplus::Vertex*> * findCandidates(const vector<Track *> &tracks, double chi2th, double massth, double ipsigth);
 
 		// find one vertex with build-up method
-		flavtag::Vertex* findOne(list<Track *> &tracks, double chi2th, double massth, bool removeTracks);
+		lcfiplus::Vertex* findOne(list<Track *> &tracks, double chi2th, double massth, bool removeTracks);
 		// VertexFitterSimple version
-		flavtag::Vertex* findOne2(list<Track *> &tracks, double chi2th, double massth, bool removeTracks);
+		lcfiplus::Vertex* findOne2(list<Track *> &tracks, double chi2th, double massth, bool removeTracks);
 
 		// compare functions
 		bool VertexNearer(const Vertex *vtx1, const Vertex *vtx2);
@@ -49,14 +49,14 @@ namespace flavtag {
 		void GetVertexList(list<Track *> &tracks, vector<Vertex *> &vtx, double chi2th, double massth, double posth = 0.3, double chi2orderinglimit = 1.0);
 
 		// associating tracks to an existing vertex
-		flavtag::Vertex * associateTracks(Vertex *vertex, list<Track *> &tracks, double chi2th, double massth, list<Track *> *residualTracks = 0);
+		lcfiplus::Vertex * associateTracks(Vertex *vertex, list<Track *> &tracks, double chi2th, double massth, list<Track *> *residualTracks = 0);
 		void associateIPTracks(vector<Vertex *> &vertices, double minimumdist = 0., int chi2mode = 0, double chi2ratio = 2.0);
 
 		void buildUp(const vector<Track *> &tracks, vector<Vertex *> &vtx, double chi2thpri, double chi2thsec, double massth, double posth = 0.3, double chi2orderinglimit = 1.0, Vertex *ip = 0);
 		void buildUpForJetClustering(const vector<Track *> &tracks, vector<Vertex *> &vtx);
 	}
 
-	//vector<flavtag::Vertex*> * findSueharaVertices(const Event& evt, const Jet& jet);
+	//vector<lcfiplus::Vertex*> * findSueharaVertices(const Event& evt, const Jet& jet);
 }
 
 #endif

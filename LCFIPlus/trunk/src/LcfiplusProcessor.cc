@@ -1,4 +1,4 @@
-#include "FlavtagProcessor.h"
+#include "LcfiplusProcessor.h"
 #include "EventStore.h"
 
 // ----- include for verbosity dependent logging ---------
@@ -15,17 +15,17 @@
 using namespace std;
 using namespace lcio ;
 using namespace marlin ;
-using namespace flavtag ;
+using namespace lcfiplus ;
 
-FlavtagProcessor aFlavtagProcessor ;
+LcfiplusProcessor aLcfiplusProcessor ;
 
 // static object initialization
-LCIOStorer * FlavtagProcessor::_lcio = 0;
+LCIOStorer * LcfiplusProcessor::_lcio = 0;
 
-FlavtagProcessor::FlavtagProcessor() : Processor("FlavtagProcessor") {
+LcfiplusProcessor::LcfiplusProcessor() : Processor("LcfiplusProcessor") {
   
   // modify processor description
-	_description = "Flavtag general processor" ;
+	_description = "Lcfiplus general processor" ;
 
 	// input collections 
 	registerInputCollection(LCIO::RECONSTRUCTEDPARTICLE, "PFOCollection" , "Particle flow output collection",
@@ -42,12 +42,12 @@ FlavtagProcessor::FlavtagProcessor() : Processor("FlavtagProcessor") {
 	int argc = 0;
 	if(gROOT->GetApplication() == 0){
 		//TApplication *theapp =
-		new TApplication("FlavtagProcessor",&argc,0);
+		new TApplication("LcfiplusProcessor",&argc,0);
 		SLM << "TApplication created." << endl;
 	}
 }
 
-void FlavtagProcessor::init() { 
+void LcfiplusProcessor::init() { 
 
   streamlog_out(DEBUG) << "   init called  " 
 		       << std::endl ;
@@ -59,19 +59,19 @@ void FlavtagProcessor::init() {
 
 	// obtain algorithm name
 	if(!parameter->isParameterSet("algorithm")){
-		SLM << "Flavtag algorithm not set. run nothing." << endl;
+		SLM << "Lcfiplus algorithm not set. run nothing." << endl;
 		return;
 	}
 	vector<string> algos;
 	parameter->getStringVals("algorithm", algos);
 
 	if(algos.size() == 0){
-		SLM << "Flavtag algorithm size is 0. run nothing." << endl;
+		SLM << "Lcfiplus algorithm size is 0. run nothing." << endl;
 		return;
 	}
 
-	// conversion StringParameters -> FlavtagParameters
-	_param = new FlavtagParameters;
+	// conversion StringParameters -> LcfiplusParameters
+	_param = new LcfiplusParameters;
 	
 	StringVec keys;
 	parameter->getStringKeys(keys);
@@ -85,7 +85,8 @@ void FlavtagProcessor::init() {
 	// initialize LCIOStorer
 	if(!_lcio){
 		_lcio = new LCIOStorer(0,0,true,0); // no file
-		_lcio->InitCollections(_pfoCollectionName.c_str(), _mcpCollectionName.c_str(), _mcpfoRelationName.c_str());
+		//_lcio->InitCollections(_pfoCollectionName.c_str(), _mcpCollectionName.c_str(), _mcpfoRelationName.c_str());
+		_lcio->InitCollections();
 		_lcioowner = true;
 	}
 	else
@@ -93,14 +94,14 @@ void FlavtagProcessor::init() {
 
 	// make algorithm classes and pass param to init
 	for(unsigned int i=0;i<algos.size();i++){
-		string s = "flavtag::";
+		string s = "lcfiplus::";
 		s += algos[i];
 		TClass *cl = TClass::GetClass(s.c_str());
-		if(!cl || !cl->InheritsFrom("flavtag::FlavtagAlgorithm")){
+		if(!cl || !cl->InheritsFrom("lcfiplus::LcfiplusAlgorithm")){
 			SLM << "Algorithm " << algos[i] << " is not valid. skip." << endl;
 			continue;
 		}
-		FlavtagAlgorithm *newalgo = (FlavtagAlgorithm *)cl->New();
+		LcfiplusAlgorithm *newalgo = (LcfiplusAlgorithm *)cl->New();
 		if(!newalgo){SLM << "Initialization failed!." << endl; break;}
 		_algos.push_back(newalgo);
 		SLM << "Algorithm " << algos[i] << " is being initialized." << endl;
@@ -114,12 +115,16 @@ void FlavtagProcessor::init() {
   
 }
 
-void FlavtagProcessor::processRunHeader( LCRunHeader* run) { 
+void LcfiplusProcessor::processRunHeader( LCRunHeader* run) { 
 
   _nRun++ ;
 } 
 
-void FlavtagProcessor::processEvent( LCEvent * evt ) { 
+void LcfiplusProcessor::processEvent( LCEvent * evt ) { 
+
+	cout << "processEvent: event # " << _nEvt << endl;
+
+	if (_lcio == false) return;
 
 	// auto register collections
 	if(_autoVertex)
@@ -143,19 +148,19 @@ void FlavtagProcessor::processEvent( LCEvent * evt ) {
 }
 
 
-void FlavtagProcessor::check( LCEvent * evt ) { 
+void LcfiplusProcessor::check( LCEvent * evt ) { 
   // nothing to check here - could be used to fill checkplots in reconstruction processor
 }
 
 
-void FlavtagProcessor::end(){ 
+void LcfiplusProcessor::end(){ 
   
 	for(unsigned int i=0;i<_algos.size();i++){
 		_algos[i]->end();
 	}
 
 
-   std::cout << "FlavtagProcessor::end()  " << name() 
+   std::cout << "LcfiplusProcessor::end()  " << name() 
  	    << " processed " << _nEvt << " events in " << _nRun << " runs "
  	    << std::endl ;
 

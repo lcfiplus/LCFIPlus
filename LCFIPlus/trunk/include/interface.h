@@ -1,7 +1,7 @@
 #ifndef interface_h
 #define interface_h 1
 
-#include "flavtag.h"
+#include "lcfiplus.h"
 
 #include <vector>
 #include <sstream>
@@ -11,13 +11,13 @@
 
 using namespace std;
 
-namespace flavtag {
+namespace lcfiplus {
 
-	class FlavtagParameters
+	class LcfiplusParameters
 	{
 	public:
-		FlavtagParameters(bool as = true) : _allowstring(as){}
-		~FlavtagParameters(){
+		LcfiplusParameters(bool as = true) : _allowstring(as){}
+		~LcfiplusParameters(){
 			// TODO: delete map objects!
 		}
 
@@ -89,24 +89,24 @@ public:
 		bool _allowstring;
 	}; 
 
-	class FlavtagAlgorithm
+	class LcfiplusAlgorithm
 	{
 	public:
-		FlavtagAlgorithm(){_param = 0;}
-		virtual ~FlavtagAlgorithm(){}
+		LcfiplusAlgorithm(){_param = 0;}
+		virtual ~LcfiplusAlgorithm(){}
 
-		virtual void init(FlavtagParameters *param){
+		virtual void init(LcfiplusParameters *param){
 			_param = param;
 		}
 		virtual void process() = 0;
 		virtual void end(){}
 
 	protected:
-		FlavtagParameters * GetParam()const{return _param;}
+		LcfiplusParameters * GetParam()const{return _param;}
 	private:
-		FlavtagParameters *_param;
+		LcfiplusParameters *_param;
 
-		ClassDef(FlavtagAlgorithm,1);
+		ClassDef(LcfiplusAlgorithm,1);
 	};
 
 }

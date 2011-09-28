@@ -1,9 +1,9 @@
-#include "flavtag.h"
+#include "lcfiplus.h"
 #include "JetFinder.h"
 
 #include "algoSigProb.h"
 
-namespace flavtag{
+namespace lcfiplus{
 namespace algoSigProb{
 
 float rpars[7] = {
@@ -31,6 +31,23 @@ float trackD0Significance(const Track* trk, const Vertex* pri) {
 	float y0 = trk->getY();
 	float priErr = ( pri->getCov()[Vertex::xx]*x0*x0 + 2.0*pri->getCov()[Vertex::xy]*x0*y0 + pri->getCov()[Vertex::yy]*y0*y0 ) / (x0*x0+y0*y0);
 
+	/*
+	printf("pri ntrk = %d\n",(int)pri->getTracks().size());
+	printf("pri: x=%e, y=%e, z=%e\n",
+			pri->getX(),
+			pri->getY(),
+			pri->getZ());
+
+	printf("pri: xx=%e, yy=%e, zz=%e, xy=%e, yz=%e, zx=%e\n",
+			pri->getCov()[Vertex::xx],
+			pri->getCov()[Vertex::yy],
+			pri->getCov()[Vertex::zz],
+			pri->getCov()[Vertex::xy],
+			pri->getCov()[Vertex::yz],
+			pri->getCov()[Vertex::xz]
+			);
+	 */
+
 	// include error from primary vertex
 	TrackPocaXY pocaXY(trk,pri);
 	trk->setFlightLength( pocaXY.getFlightLength() );
@@ -46,11 +63,19 @@ float trackD0Significance(const Track* trk, const Vertex* pri) {
 	float d0sig = d0/d0err;
 
 	if ( d0 != d0 ) printf("d0 nan\n");
-	if ( d0err != d0err ) printf("d0err nan\n");
+	float d0cov = trk->getCovMatrix()[tpar::d0d0];
+	if ( d0cov != d0cov ) printf("d0cov nan\n");
+	if ( d0cov < 0 ) printf("d0cov %f\n",d0cov);
+
+	if ( priErr != priErr ) printf("priErr nan\n");
+	if ( priErr != priErr ) printf("priErr nan\n");
+	if ( d0err != d0err ) printf("d0err nan, d0cov %f, priErr=%f\n", d0cov, priErr);
+	/*
 	if ( d0sig != d0sig ) {
 		printf("d0sig nan\n");
 		printf("d0=%f, d0err=%f\n",d0,d0err);
 	}
+	*/
 
 	/*
 	printf("(pri_x,pri_y,pri_z) = (%f,%f,%f)\n",pri->getX(),pri->getY(),pri->getZ());
@@ -144,17 +169,17 @@ float prob1D(float sig, float maxsig, float* pars) {
 	return prob;
 }
 
-float trackProbD0(Track* trk, Vertex* pri) {
+float trackProbD0(const Track* trk, const Vertex* pri) {
 	float sig = fabs( trackD0Significance(trk,pri) );
 	return prob1D(sig,200,rpars)/prob1D(0,200,rpars);
 }
 
-float trackProbZ0(Track* trk, Vertex* pri) {
+float trackProbZ0(const Track* trk, const Vertex* pri) {
 	float sig = fabs( trackZ0Significance(trk,pri) );
 	return prob1D(sig,200,zpars)/prob1D(0,200,zpars);
 }
 
-float jointProbD0(Jet* jet, Vertex* pri) {
+float jointProbD0(const Jet* jet, const Vertex* pri) {
 	float maxd0sig = 200.;
 
 	float prod(1);
@@ -197,7 +222,7 @@ float jointProbD0(Jet* jet, Vertex* pri) {
 	return jprob;
 }
 
-float jointProbZ0(Jet* jet, Vertex* pri) {
+float jointProbZ0(const Jet* jet, const Vertex* pri) {
 	float maxz0sig = 200.;
 
 	float prod(1);
@@ -237,12 +262,16 @@ float jointProbZ0(Jet* jet, Vertex* pri) {
 
 ///////////////////////////////////////////////////
 
-void findMostSignificantTrack(Jet* jet, Vertex* pri, float sigVec[6]) {
-	float trk1d0sig(-1e12);
-	float trk2d0sig(-1e12);
+void findMostSignificantTrack(const Jet* jet, const Vertex* pri, float sigVec[6]) {
+	float trk1d0sig(-1e3);
+	float trk2d0sig(-1e3);
 	Track* trk1(0);
 	Track* trk2(0);
 	const vector<Track*>& tracks = jet->getTracks();
+
+	for (int i=0; i<6; ++i) {
+		sigVec[i] = 0;
+	}
 
 	if (tracks.size()<2) {
 		printf("Number of tracks fewer than two, skipping significance calculation\n");

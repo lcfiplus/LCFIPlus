@@ -4,19 +4,40 @@
 #define process_h 1
 
 #include "interface.h"
-#include "flavtag.h"
-//#include "LcfiInterface.h"
+#include "lcfiplus.h"
 
-namespace flavtag{
-	struct SecondaryVertexConfig;
+namespace lcfiplus{
+	struct TrackSelectorConfig;
 
-	class BuildUpVertex : public FlavtagAlgorithm
+	class PrimaryVertexFinder : public LcfiplusAlgorithm
+	{
+	public:
+		PrimaryVertexFinder(){}
+		virtual ~PrimaryVertexFinder(){}
+
+		void init(LcfiplusParameters *param);
+		void process();
+		void end();
+
+		ClassDef(PrimaryVertexFinder,1);
+
+	private:
+		vector<Vertex *> * _vertex;	//!
+
+		// parameters
+		double _chi2th;
+
+		// track cut parameters
+		TrackSelectorConfig *_secVtxCfg; //!
+	};
+
+	class BuildUpVertex : public LcfiplusAlgorithm
 	{
 	public:
 		BuildUpVertex(){}
 		virtual ~BuildUpVertex(){}
 
-		void init(FlavtagParameters *param);
+		void init(LcfiplusParameters *param);
 		void process();
 
 		ClassDef(BuildUpVertex,1);
@@ -39,16 +60,16 @@ namespace flavtag{
 		double _chi2ratio;
 
 		// track cut parameters
-		SecondaryVertexConfig *_secVtxCfg; //!
+		TrackSelectorConfig *_secVtxCfg; //!
 	};
 
-	class JetClustering : public FlavtagAlgorithm
+	class JetClustering : public LcfiplusAlgorithm
 	{
 	public:
 		JetClustering(){}
 		virtual ~JetClustering(){}
 
-		void init(FlavtagParameters *param);
+		void init(LcfiplusParameters *param);
 		void process();
 		void end();
 

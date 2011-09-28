@@ -3,7 +3,7 @@
 #ifndef Suehara_h
 #define Suehara_h 1
 
-#include "flavtag.h"
+#include "lcfiplus.h"
 #include "JetFinder.h"
 
 //extern int piuToTree(const char *infile = "input.piu", const char *outfile = "test.root");

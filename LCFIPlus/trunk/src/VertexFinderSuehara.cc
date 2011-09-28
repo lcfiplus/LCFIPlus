@@ -1,6 +1,6 @@
 // VertexFinderSuehara.cc
 
-#include "flavtag.h"
+#include "lcfiplus.h"
 #include "VertexFinderSuehara.h"
 #include "VertexFinderTearDown.h"
 #include "LcfiInterface.h"
@@ -8,12 +8,12 @@
 #include "algoEtc.h"
 #include "algoSigProb.h"
 
-using namespace flavtag;
-using namespace flavtag::VertexFinderSuehara;
+using namespace lcfiplus;
+using namespace lcfiplus::VertexFinderSuehara;
 
-vector<flavtag::Vertex*> * flavtag::VertexFinderSuehara::findCandidates(const vector<Track *> &tracks, double chi2th, double massth, double ipchi2th) {
-	vector<flavtag::Vertex *> * pvertices;
-	pvertices = new vector<flavtag::Vertex*>;
+vector<lcfiplus::Vertex*> * lcfiplus::VertexFinderSuehara::findCandidates(const vector<Track *> &tracks, double chi2th, double massth, double ipchi2th) {
+	vector<lcfiplus::Vertex *> * pvertices;
+	pvertices = new vector<lcfiplus::Vertex*>;
 
 	// primary vertex
 	Vertex *priVertex = findPrimaryVertex(tracks, 25);
@@ -213,7 +213,7 @@ vector<flavtag::Vertex*> * flavtag::VertexFinderSuehara::findCandidates(const ve
 	return pvertices;
 }
 
-flavtag::Vertex* VertexFinderSuehara::findOne(list<Track *> &tracks, double chi2th, double massth, bool removeTracks){
+lcfiplus::Vertex* VertexFinderSuehara::findOne(list<Track *> &tracks, double chi2th, double massth, bool removeTracks){
 	// copy tracks in the jet into a list
 	//const vector<Track *> &v = jets[nj]->getTracks();
 	bool verbose = false;
@@ -328,7 +328,7 @@ flavtag::Vertex* VertexFinderSuehara::findOne(list<Track *> &tracks, double chi2
 	return curvtx;
 }
 
-flavtag::Vertex* VertexFinderSuehara::findOne2(list<Track *> &tracks, double chi2th, double massth, bool removeTracks){
+lcfiplus::Vertex* VertexFinderSuehara::findOne2(list<Track *> &tracks, double chi2th, double massth, bool removeTracks){
 	// copy tracks in the jet into a list
 	//const vector<Track *> &v = jets[nj]->getTracks();
 	bool verbose = false;
@@ -765,7 +765,7 @@ void VertexFinderSuehara::buildUp(const vector<Track *> &tracks, vector<Vertex *
 /*
 	Vertex *v;
 	do{
-//	flavtag::Vertex* VertexFinderSuehara::findOne2(list<Track *> &tracks, double chi2th, double massth, bool removeTracks){
+//	lcfiplus::Vertex* VertexFinderSuehara::findOne2(list<Track *> &tracks, double chi2th, double massth, bool removeTracks){
 		v = findOne2(residualTracks, 9, massth, true);
 		if(v){
 			vtx.push_back(v);

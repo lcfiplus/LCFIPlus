@@ -1,5 +1,5 @@
-#ifndef flavtag_algo_h
-#define flavtag_algo_h 1
+#ifndef lcfiplus_algo_h
+#define lcfiplus_algo_h 1
 
 #include <math.h>
 #include <stdio.h>
@@ -7,7 +7,7 @@
 
 class TrackPocaXY;
 
-namespace flavtag {
+namespace lcfiplus {
 
 	const double R=0.61803399;
 	const double C=(1.0-R);

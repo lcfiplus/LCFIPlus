@@ -2,7 +2,7 @@
 #include <string>
 
 #include "EventStore.h"
-#include "LcfiInterface.h"
+#include "TrackSelector.h"
 #include "JetFinder.h"
 #include "VertexFitterLCFI.h"
 #include "VertexFinderTearDown.h"
@@ -20,22 +20,71 @@
 #include "process.h"
 #include "geometry.h"
 
-using namespace flavtag;
-using namespace flavtag::algoEtc;
+using namespace lcfiplus;
+using namespace lcfiplus::algoEtc;
 
-namespace flavtag{
+namespace lcfiplus{
 
-	void BuildUpVertex::init(FlavtagParameters *param){
-		FlavtagAlgorithm::init(param);
+	void PrimaryVertexFinder::init(LcfiplusParameters *param){
+		LcfiplusAlgorithm::init(param);
+
+		_vertex = 0;
+
+		string vcolname = param->get("PrimaryVertexCollectionName",string("PrimaryVertex"));
+		Event::Instance()->Register(vcolname.c_str(), _vertex, EventStore::PERSIST);
+
+		// default setting
+		Event::Instance()->setDefaultPrimaryVertex(vcolname.c_str());
+
+		// parameters...(should be exported)
+		_secVtxCfg = new TrackSelectorConfig;
+
+		/*
+		_secVtxCfg->maxD0 = 50.;
+		_secVtxCfg->maxZ0 = 50.;
+		_secVtxCfg->maxInnermostHitRadius = 20.;
+		_secVtxCfg->minVtxPlusFtdHits = 3;
+		*/
+
+		_secVtxCfg->maxD0 = 20.;
+		_secVtxCfg->maxZ0 = 20.;
+		_secVtxCfg->maxInnermostHitRadius = 20.;
+		_secVtxCfg->minVtxPlusFtdHits = 5;
+
+		_chi2th = 25.;
+	}
+
+	void PrimaryVertexFinder::process(){
+		Event *event = Event::Instance();
+
+		// clearing old vertices
+		if (_vertex->size()>0){delete (*_vertex)[0]; _vertex->clear();}
+
+		// cut bad tracks
+		const vector<Track *> &tracks = event->getTracks();
+		vector<Track *> passedTracks = TrackSelector() (tracks, *_secVtxCfg);
+
+		// primary vertex finder
+		Vertex * vtx = findPrimaryVertex(passedTracks,_chi2th);
+		_vertex->push_back(vtx);
+	}
+
+	void PrimaryVertexFinder::end() {
+		delete _secVtxCfg;
+	}
+
+
+	void BuildUpVertex::init(LcfiplusParameters *param){
+		LcfiplusAlgorithm::init(param);
 
 		// register collection
 //		string vcolname = (*param)["VertexCollectionName"];
 		string vcolname = param->get("VertexCollectionName",string("BuildUpVertex"));
-		EventStore::Instance()->Register(vcolname.c_str(), _vertices, EventStore::PERSIST);
+		Event::Instance()->Register(vcolname.c_str(), _vertices, EventStore::PERSIST);
 
 		// configuration
 		// track cut
-		_secVtxCfg = new SecondaryVertexConfig; // todo: memory leak
+		_secVtxCfg = new TrackSelectorConfig; // todo: memory leak
 
 		_secVtxCfg->maxD0 = param->get("TrackCut.MaxD0", 10.);
 		_secVtxCfg->maxZ0 = param->get("TrackCut.MaxZ0", 20.);
@@ -63,23 +112,16 @@ namespace flavtag{
 	}
 
 	void BuildUpVertex::process(){
-		Event evt;
+		Event *event = Event::Instance();
 
 		// clearing old vertices
 		for(unsigned int n=0;n<_vertices->size();n++)
 			delete (*_vertices)[n];
 		_vertices->clear();
 
-		LcfiInterface interface(&evt);
-
 		// cut bad tracks
-		const vector<Track *> &tracks = evt.getTracks();
-		vector<Track *> passedTracks;
-
-		for(unsigned int i=0;i<tracks.size();i++){
-			if(interface.passesCut(tracks[i], *_secVtxCfg))
-				passedTracks.push_back(tracks[i]);
-		}
+		const vector<Track *> &tracks = event->getTracks();
+		vector<Track *> passedTracks = TrackSelector() (tracks, *_secVtxCfg);
 
 		// build up vertexing
 		VertexFinderSuehara::buildUp(passedTracks, *_vertices, _chi2thpri, _chi2thsec, _massth, _posth, _chi2orderinglimit);
@@ -87,13 +129,13 @@ namespace flavtag{
 			VertexFinderSuehara::associateIPTracks(*_vertices,_minimumdist, 0, _chi2ratio);
 	}
 
-	void JetClustering::init(FlavtagParameters *param){
-		FlavtagAlgorithm::init(param);
+	void JetClustering::init(LcfiplusParameters *param){
+		LcfiplusAlgorithm::init(param);
 
 		string vcolname = param->get("VertexCollectionName",string("BuildUpVertex"));
-		EventStore::Instance()->Get(vcolname.c_str(), _vertices);
+		Event::Instance()->Get(vcolname.c_str(), _vertices);
 		string jcolname = param->get("JetCollectionName",string("Jets"));
-		EventStore::Instance()->Register(jcolname.c_str(), _jets, EventStore::PERSIST | EventStore::JET_EXTRACT_VERTEX);
+		Event::Instance()->Register(jcolname.c_str(), _jets, EventStore::PERSIST | EventStore::JET_EXTRACT_VERTEX);
 
 		_njets = param->get("NJetsRequested",int(6));
 		_ycut = param->get("YCut", double(0));
@@ -102,7 +144,7 @@ namespace flavtag{
 
 		_vsMinDist = param->get("VertexSelectionMinimumDistance", double(0.3));
 		_vsMaxDist = param->get("VertexSelectionMaximumDistance", double(30.));
-		_vsK0MassWidth = param->get("VertexSelectionK0MassWidth", double(20.));
+		_vsK0MassWidth = param->get("VertexSelectionK0MassWidth", double(0.02));
 	}
 
 	void JetClustering::process()
@@ -112,7 +154,7 @@ namespace flavtag{
 			delete (*_jets)[n];
 		_jets->clear();
 
-		Event evt;
+		Event *event = Event::Instance();
 
 		JetConfig jetCfg;
 		jetCfg.nJet = _njets;
@@ -121,7 +163,7 @@ namespace flavtag{
 
 		// select vertices
 		vector<Vertex *> selectedVertices;
-		vector<Track *> residualTracks = evt.getTracks();
+		vector<Track *> residualTracks = event->getTracks();
 		for(vector<Vertex *>::const_iterator it = _vertices->begin(); it != _vertices->end();it++){
 			Vertex *v = *it;
 			double mass = 0.;
@@ -136,13 +178,52 @@ namespace flavtag{
 				}
 			}
 		}
-		*_jets = jetFinder->run(residualTracks, evt.getNeutrals(), selectedVertices, &ycut, _useMuonID);
+		*_jets = jetFinder->run(residualTracks, event->getNeutrals(), selectedVertices, &ycut, _useMuonID);
+
+		/*
+		cout << "JetClustering: _vertices.size() = " << _vertices->size() << endl;
+		cout << "JetClustering: selectedVertices.size() = " << selectedVertices.size() << endl;
+
+		for (vector<Jet*>::const_iterator it = _jets->begin(); it != _jets->end(); ++it) {
+			Jet* jet = *it;
+			cout << "   Jet nvtx = " << jet->getVertices().size() << endl;
+		}
+		*/
 	}
 
-	void JetClustering::end()
-	{
-		cout << "ENDO" << endl;
+	void JetClustering::end() {
+		//cout << "ENDO" << endl;
 	}
 
+
+	/*
+	void JetVertexRefiner::init() {
+		LcfiplusAlgorithm::init(param);
+
+		string vcolname = param->get("JetVertexRefinerInputJetCollectionName",string("VertexJets"));
+		Event::Instance()->Get(vcolname.c_str(), _inputJets);
+		string jcolname = param->get("JetVertexRefinerOutputJetCollectionName",string("RefinedJets"));
+		Event::Instance()->Register(jcolname.c_str(), _outputJets, EventStore::PERSIST | EventStore::JET_EXTRACT_VERTEX);
+	}
+
+	void JetVertexRefiner::process() {
+		// clearing old jets
+		for(unsigned int n=0;n<_outputJets->size();n++)
+			delete (*_outputJets)[n];
+		_outputJets->clear();
+
+		Event *event = Event::Instance();
+
+		vector<Track*> residualTracks = event->getTracks();
+		for(vector<Jet*>::const_iterator it = _inputJets->begin(); it != _inputJets->end();++it){
+			Jet* jet = *it;
+
+			const vector<Track*>& tracks = jet->getTracks();
+			const vector<Vertex*>& vertices = jet->getVertices();
+			for (vector<Vertex*>::const_iterator it2 = vertices.begin(); it2 != vertices.end(); ++it2) {
+			}
+		}
+	}
+	*/
 }
 

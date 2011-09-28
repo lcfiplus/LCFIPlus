@@ -10,7 +10,7 @@
 
 using namespace std;
 
-namespace flavtag {
+namespace lcfiplus {
 
  	class EventStore{
 			/*
@@ -27,21 +27,21 @@ namespace flavtag {
 			*/
 
 		public:
-			// singleton
-			static EventStore * Instance();
+			// singleton is tranfered to Event class
+//			static EventStore * Instance();
 
 			// register flags
 			enum{PERSIST = 1, JET_EXTRACT_VERTEX = 2};
 
 			// Check collection
-			bool IsExist(const char *name);
+			bool IsExist(const char *name)const;
 
 			// Object retrieval
-			const char * GetClassName(const char *name);
-			void * GetObject(const char *name); // CAUTION: no type check
-			template<typename T> bool Get(const char *name, const vector<T*> *& buf);	// for pointer-vector classes
-			template<typename T> bool Get(const char *name, const vector<T> *& buf);	// for vector classes
-			template<typename T> bool Get(const char *name, const T*& buf);						// for non-vector
+			const char * GetClassName(const char *name)const;
+			void * GetObject(const char *name)const; // CAUTION: no type check
+			template<typename T> bool Get(const char *name, const vector<T*> *& buf)const;	// for pointer-vector classes
+			template<typename T> bool Get(const char *name, const vector<T> *& buf)const;	// for vector classes
+			template<typename T> bool Get(const char *name, const T*& buf)const;						// for non-vector
 
 			// Object registration
 			void * RegisterObject(const char *name, const char *classname, int flags = 0);
@@ -50,10 +50,10 @@ namespace flavtag {
 			template<typename T> bool Register(const char *name, T* &buf, int flags = 0);					// for non-vector
 
 			// print object map
-			void Print();
+			void Print()const;
 
 			// public dtor
-			~EventStore();
+			virtual ~EventStore();
 
 			// for persistency classes /////////////////////////////
 			// internal storing structure
@@ -66,27 +66,30 @@ namespace flavtag {
 			};
 
 			// map accessor
-			const map<string, flavtag::EventStore::StoredEntry > & GetObjectMap()const{return _objectMap;}
+			const map<string, lcfiplus::EventStore::StoredEntry > & GetObjectMap()const{return _objectMap;}
+
+		protected:
+			// reference retrieval: internal use
+			void * const& GetObjectRef(const char *name)const; // CAUTION: no type check
+			// constructor not public: use Event class
+			EventStore();
 
     private:
-			map<string, flavtag::EventStore::StoredEntry > _objectMap;
-			mutable map<string, flavtag::EventStore::StoredEntry >::iterator _itMap;
+			map<string, lcfiplus::EventStore::StoredEntry > _objectMap;
+			mutable map<string, lcfiplus::EventStore::StoredEntry >::const_iterator _itMap;
 
-			// constructor not public: use Instance()
-			EventStore();
-			static EventStore * _theInstance;
   };
 
 
 	// template implementations
-	template<typename T> bool EventStore::Get(const char *name, const T*&buf){
+	template<typename T> bool EventStore::Get(const char *name, const T*&buf)const{
 		_itMap = _objectMap.find(name);
 		if(_itMap == _objectMap.end() || string(_itMap->second.classname) != TClass::GetClass(typeid(T))->GetName())return false;
 		buf = static_cast<const T*>(GetObject(name));
 		return true;
 	}
 	// vector version
-	template<typename T> bool EventStore::Get(const char *name, const vector<T>* &buf){
+	template<typename T> bool EventStore::Get(const char *name, const vector<T>* &buf)const{
 		const char *elemclasname = TClass::GetClass(typeid(T))->GetName();
 		string vectclasname = "vector<";
 		vectclasname += elemclasname;
@@ -100,7 +103,7 @@ namespace flavtag {
 		return true;
 	}
 	// pointer-vector version
-	template<typename T> bool EventStore::Get(const char *name, const vector<T*>* &buf){
+	template<typename T> bool EventStore::Get(const char *name, const vector<T*>* &buf)const{
 		const char *elemclasname = TClass::GetClass(typeid(T))->GetName();
 		string vectclasname = "vector<";
 		vectclasname += elemclasname;
@@ -115,7 +118,9 @@ namespace flavtag {
 	}
 
 	template<typename T> bool EventStore::Register(const char *name, T *&buf, int flags){
-		buf = static_cast<T*>(RegisterObject(name, TClass::GetClass(typeid(T))->GetName(), flags));
+		string classname = TClass::GetClass(typeid(T))->GetName();
+		classname += "*";
+		buf = static_cast<T*>(RegisterObject(name, classname.c_str(), flags));
 		return buf;
 	}
 	template<typename T> bool EventStore::Register(const char *name, vector<T> *&buf, int flags){
