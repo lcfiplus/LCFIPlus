@@ -30,6 +30,8 @@ using namespace lcfiplus::algoEtc;
 
 namespace lcfiplus {
 
+#ifdef BUILD_EVE
+
   EventNavigator::EventNavigator(const char* input, int start) : _start(start) {
 		_ls = new LCIOStorer(input);
 		_ls->InitCollections();
@@ -39,8 +41,6 @@ namespace lcfiplus {
   EventNavigator::~EventNavigator() {
 		delete _ls;
 	}
-
-#ifndef NO_EVE
 
   void EventNavigator::Fwd() {
     std::cout << "Fwd()\n";
@@ -616,9 +616,9 @@ namespace lcfiplus {
     gEve->FullRedraw3D(kTRUE);
   }
 #else
-	void EventNavigator::Fwd(){}
-	void EventNavigator::Bck(){}
-	void EventNavigator::drawEvent(Event* event){}
+	//void EventNavigator::Fwd(){}
+	//void EventNavigator::Bck(){}
+	//void EventNavigator::drawEvent(Event* event){}
 
-#endif // NO_EVE
+#endif // BUILD_EVE
 }

@@ -12,7 +12,7 @@ namespace lcfiplus {
 
   //class EventNavigator : protected TQObject {
   class EventNavigator {
-#ifndef NO_EVE
+#ifdef BUILD_EVE
     public:
       EventNavigator(const char* input, int start=0);
 			~EventNavigator();
@@ -23,6 +23,11 @@ namespace lcfiplus {
     private:
 			LCIOStorer* _ls;
 			int _start;
+#else
+    public:
+      EventNavigator(const char* input, int start=0) {}
+			~EventNavigator() {}
+
 #endif
   };
 }

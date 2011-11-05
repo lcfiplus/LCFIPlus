@@ -3,10 +3,11 @@
 
 #include "TTree.h"
 #include "TFile.h"
+#include "TTreeFormula.h"
 
 namespace lcfiplus {
 
-	double FTAlgo::getValue() {
+	float FTAlgo::getValue() {
 		return _result;
 	}
 
@@ -21,9 +22,7 @@ namespace lcfiplus {
 	// singleton
 	FTManager FTManager::_theInstance;
 
-	FTManager::FTManager() : _file(0), _tree(0), _ntpName("ntp")
-	{
-	}
+	FTManager::FTManager() : _file(0), _tree(0), _ntpName("ntp"), _evaluate(false) {}
 
 	void FTManager::add(FTAlgo* obj) {
 		_algoList.push_back(obj);
@@ -35,6 +34,18 @@ namespace lcfiplus {
 			exit(1);
 		}
 		_tree->Fill();
+	}
+
+	void FTManager::openTree() {
+		_tree = new TTree(_ntpName.c_str(),"flavor tagging data");
+		char buf[1024];
+		for ( vector<FTAlgo*>::iterator iter = _algoList.begin(); iter != _algoList.end(); ++iter ) {
+			FTAlgo* algo = *iter;
+			snprintf( buf, 1000, "%s/F", algo->getName().c_str() );
+			_tree->Branch( algo->getName().c_str(), algo->getValueAddress(), buf );
+
+			cout << "Setting branch address for variable '" << algo->getName() << "'" << endl;
+		}
 	}
 
 	void FTManager::openFile(const char* filename) {
@@ -51,8 +62,8 @@ namespace lcfiplus {
 		char buf[1024];
 		for ( vector<FTAlgo*>::iterator iter = _algoList.begin(); iter != _algoList.end(); ++iter ) {
 			FTAlgo* algo = *iter;
-			snprintf( buf, 1000, "%s/D", algo->getName() );
-			_tree->Branch( algo->getName(), algo->getValueAddress(), buf );
+			snprintf( buf, 1000, "%s/F", algo->getName().c_str() );
+			_tree->Branch( algo->getName().c_str(), algo->getValueAddress(), buf );
 
 			cout << "Setting branch address for variable '" << algo->getName() << "'" << endl;
 		}
@@ -84,7 +95,40 @@ namespace lcfiplus {
 				algo->process();
 			}
 
+			if (_evaluate) {
+				float btag(-1);
+				float ctag(-1);
+				int ncat = _categories.size();
+				for (int i=0; i<ncat; ++i) {
+					TTreeFormula form( "form", _categories[i].definition, _tree );
+					//cout << "category " << i << " evaluates to: " << form.EvalInstance() << endl;
+					if ( form.EvalInstance() == 1 ) {
+						btag = _readers[0]->EvaluateMulticlass("bdt")[0];
+						ctag = _readers[0]->EvaluateMulticlass("bdt")[1];
+
+						cout << "jet category is " << i << " [btag=" << btag << ", ctag=" << ctag << "]" << endl;
+					}
+				}
+
+			}
+
 			if (_file) fillTree();
 		}
+	}
+
+	float* FTManager::getVarAddress(const string& varname) {
+		std::vector<FTAlgo*>::iterator iter;
+		for (iter = _algoList.begin(); iter != _algoList.end(); ++iter) {
+			FTAlgo* algo = *iter;
+			if ( varname == algo->getName().c_str() )
+				return algo->getValueAddress();
+		}
+
+		throw(Exception("FTManager::getVarAddress(): variable name not found."));
+	}
+
+	void FTManager::addReader(TMVA::Reader* reader, const FlavtagCategory& c) {
+		_readers.push_back(reader);
+		_categories.push_back(c);
 	}
 }

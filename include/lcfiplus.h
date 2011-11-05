@@ -53,6 +53,121 @@ namespace lcfiplus {
 	class Jet;
 
 
+	class Exception : std::exception{
+		public:
+			Exception(const char *message){_message = message;}
+			virtual ~Exception()throw(){}
+
+			virtual const char * what() const throw(){return _message.c_str();}
+			void Print(){cerr << "lcfiplus_Exception: " << _message << endl;}
+
+		private:
+			string _message;
+	};
+
+	// generic parameter class
+	class LcfiplusParameters
+	{
+	public:
+		LcfiplusParameters(bool as = true) : _allowstring(as){}
+		~LcfiplusParameters(){
+			// TODO: delete map objects!
+		}
+
+		// fetch for non-vector
+		template<typename T> void fetch(const char *key, T &ret, T def = T())const
+		{
+			if(_map.find(key) == _map.end()){
+				cout << "Parameter " << key << " not found." << endl;
+				ret = def;
+			}
+			else if(_map.find(key)->second.first == typeid(T).name())ret = *(T *)(_map.find(key)->second.second);
+			else if(_allowstring && _map.find(key)->second.first == typeid(string).name()){
+				istringstream str(*(string *)_map.find(key)->second.second);
+				str >> ret;
+			}
+			else if(_allowstring && _map.find(key)->second.first == typeid(vector<string>).name()){
+				istringstream str((*(const vector<string> *)_map.find(key)->second.second)[0]);
+				str >> ret;
+			}
+			else
+				throw(Exception("Parameter type invalid."));
+			return;
+		}
+
+		// fetch for vector
+		template<typename T> void fetchArray(const char *key, vector<T> &ret)const
+		{
+			if(_map.find(key) == _map.end()){
+				cout << "Parameter " << key << " not found." << endl;
+			}
+			else if(_map.find(key)->second.first == typeid(vector<T>).name())ret = *(vector<T> *)(_map.find(key)->second.second);
+			else if(_map.find(key)->second.first == typeid(T).name())ret.push_back(*(T *)(_map.find(key)->second.second));
+			else if(_allowstring && _map.find(key)->second.first == typeid(string).name()){
+				ret.push_back(T());
+
+				istringstream str(*(string *)_map.find(key)->second.second);
+				str >> ret[0];
+			}
+			else if(_allowstring && _map.find(key)->second.first == typeid(vector<string>).name()){
+				const vector<string> *svec = (const vector<string> *)_map.find(key)->second.second;
+				ret.resize(svec->size());
+				for(unsigned int n=0;n<svec->size();n++){
+					istringstream str((*svec)[n]);
+					str >> ret[n];
+				}
+			}
+			else
+				throw(Exception("Parameter type invalid."));
+		}
+
+	public:
+		// for non-vector only (if string parameter)
+		template<typename T> T get(const char *key, T def = T())const{
+			T ret;
+			fetch(key, ret, def);
+			return ret;
+		}
+
+		template<typename T> std::vector<T> getVec(const char *key)const {
+			std::vector<T> ret;
+			fetchArray(key, ret);
+			return ret;
+		}
+
+		bool exist(const char *key)const{return _map.find(key) != _map.end();}
+
+		template<typename T> void add(const char *key, T &data){
+			if(_map.find(key) != _map.end())throw(Exception("Double entry."));
+
+			_map[key] = pair<string, void *>(typeid(T).name(), new T(data));
+		}
+
+	private:
+		map<string, pair<string, void *> > _map;
+		bool _allowstring;
+	}; 
+
+	class LcfiplusAlgorithm
+	{
+	public:
+		LcfiplusAlgorithm(){_param = 0;}
+		virtual ~LcfiplusAlgorithm(){}
+
+		virtual void init(LcfiplusParameters *param){
+			_param = param;
+		}
+		virtual void process() = 0;
+		virtual void end(){}
+
+	protected:
+		LcfiplusParameters * GetParam()const{return _param;}
+	private:
+		LcfiplusParameters *_param;
+
+		ClassDef(LcfiplusAlgorithm,1);
+	};
+
 	class Event : public EventStore {
 		public:
 			~Event();
@@ -461,27 +576,28 @@ namespace lcfiplus {
 
 			double sphericity() const;
 
+			// parameter contrl
+			void addParam(const char *paramname, LcfiplusParameters &param, bool forcereset = false){
+				if(!forcereset && _params.count(paramname) == 1)throw(Exception("Jet::addParam: parameter of the specified name has been already registered."));
+				_params[paramname] = param;
+			}
+
+			const LcfiplusParameters * getParam(const char *paramname)const{
+				if(_params.count(paramname) == 0)throw(Exception("Jet::getParam: parameter of the specified name is not registered."));
+				return &(_params.find(paramname)->second);
+			}
+
     private:
       vector<Track*> _tracks;
       vector<Neutral*> _neutrals;
 			vector<Vertex*> _vertices;
 
+			map<string, LcfiplusParameters> _params;
+
 			int _id;
 
 			ClassDefNV(Jet, 1);
   };
-
-	class Exception : std::exception{
-		public:
-			Exception(const char *message){_message = message;}
-			virtual ~Exception()throw(){}
-
-			virtual const char * what() const throw(){return _message.c_str();}
-			void Print(){cerr << "lcfiplus_Exception: " << _message << endl;}
-
-		private:
-			string _message;
-	};
 
 
 }

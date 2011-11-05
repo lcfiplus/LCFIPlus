@@ -222,6 +222,17 @@ using namespace lcfiplus::algoEtc;
 
 		void testSuehara()
 		{
+			Jet j;
+			LcfiplusParameters para;
+			double pi = 3.14159;
+			para.add("test", pi);
+
+			j.addParam("testpara", para);
+
+			const LcfiplusParameters *para2 = j.getParam("testpara");
+			cout << (double)para2->get("test",0.) << endl;
+
+/*
 			TreeStorer ts("share/zpole_v.root","FlavTagTree",TreeStorer::mode_input);
 			ts.RegisterAll();
 			Event::Instance()->Print();
@@ -233,6 +244,7 @@ using namespace lcfiplus::algoEtc;
 				ts.GetEntry(nev);
 				cout << (*pvertices).size() << " " << (*pvertices)[0]->getChi2() << endl;
 			}
+*/
 		}
 
 		void TearDownVertexing(const char *inputfile, const char *outputfile,

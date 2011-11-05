@@ -24,8 +24,7 @@
 #include "TRootBrowser.h"
 #include "TRint.h"
 #include "TSystem.h"
-#ifdef NO_EVE
-#else
+#ifdef BUILD_EVE
 #include "TEveManager.h"
 #include "TEveBrowser.h"
 #endif
@@ -34,10 +33,7 @@
 #include "TGButton.h"
 #include "EventNavigator.h"
 
-#ifdef NO_EVE
-//TEveManager* gEve;
-//TSystem* gSystem;
-#else
+#ifdef BUILD_EVE
 extern TEveManager* gEve;
 extern TSystem* gSystem;
 #endif
@@ -1959,7 +1955,7 @@ void processEvents(const char* input, const char* output, int nStart, int nEnd) 
 
 
 		void eventDisplay(const char* input, int start) {
-#ifndef NO_EVE
+#ifdef BUILD_EVE
 			TRint* theApp = 0;
 			theApp = new TRint("ROOT",0,0);
 
@@ -2003,7 +1999,7 @@ void processEvents(const char* input, const char* output, int nStart, int nEnd) 
 			gEve->FullRedraw3D(kTRUE);
 			theApp->Run();
 #else
-			cerr << "NO_EVE is defined. event display is inactivated." << endl;
+			cerr << "BUILD_EVE not defined. event display is inactivated." << endl;
 #endif
 		}
 
