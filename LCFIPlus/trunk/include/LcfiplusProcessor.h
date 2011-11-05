@@ -5,7 +5,6 @@
 #include "lcio.h"
 #include <string>
 
-#include "interface.h"
 #include "LCIOStorer.h"
 
 using namespace lcio ;

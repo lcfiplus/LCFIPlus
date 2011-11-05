@@ -3,7 +3,6 @@
 #ifndef process_h
 #define process_h 1
 
-#include "interface.h"
 #include "lcfiplus.h"
 
 namespace lcfiplus{

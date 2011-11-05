@@ -6,7 +6,6 @@
 class TFile;
 class TTree;
 
-#include "interface.h"
 #include "lcfiplus.h"
 
 namespace lcfiplus{

@@ -35,6 +35,7 @@
 #pragma link C++ class lcfiplus::FlavorTag;
 #pragma link C++ class lcfiplus::MakeNtuple;
 #pragma link C++ class lcfiplus::TrainMVA;
+#pragma link C++ class lcfiplus::ReadMVA;
 
 //#pragma link C++ class lcfiplus::Event;
 

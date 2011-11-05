@@ -21,6 +21,10 @@
 #include "TRandom3.h"
 #include "TSystem.h"
 
+#include "TMVA/Factory.h"
+#include "TMVA/Tools.h"
+#include "TMVA/Reader.h"
+#include "TMVA/Config.h"
 
 using namespace lcfiplus;
 using namespace lcfiplus::algoSigProb;
@@ -43,35 +47,50 @@ void TrainMVA::init(LcfiplusParameters *param) {
 
 	_verbose = param->get("TrainVerbose",true);
 
-	_outputDirectory = param->get("TrainOutputDirectory",TString("lcfiplus"));
-	_outputPrefix = param->get("TrainOutputPrefix",TString("BDT"));
+	// set output directory for weight files
+	_outputDirectory = param->get("TrainOutputDirectory",TString("lcfiweights"));
+	cout << "TrainOutputDirectory set to: " << _outputDirectory << endl;
 
+	// 
+	_outputPrefix = param->get("TrainOutputPrefix",TString("zpole_v00"));
+	cout << "TrainOutputPrefix set to: " << _outputPrefix << endl;
+
+	// set TMVA method (e.g. BDT, MLP)
 	TString bookTypeString = param->get("TrainBookType",TString("BDT"));
 
 	if (bookTypeString == "BDT") {
 		_tmvaBookType = TMVA::Types::kBDT;
 	} else if (bookTypeString == "MLP") {
 		_tmvaBookType = TMVA::Types::kMLP;
-	} else if (bookTypeString == "Fisher") {
-		_tmvaBookType = TMVA::Types::kFisher;
 	} else {
 		cout << "unknown TMVA type: " << bookTypeString << endl;
 	}
 
 	_tmvaBookName = param->get("TrainBookName",TString("bdt"));
+	_tmvaBookOptions = param->get("TrainBookOptions",TString(""));
 
-	_tmvaBookOptions = param->get("TrainBookOptions",TString("!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.30:UseBaggedGrad:GradBaggingFraction=0.6:SeparationType=GiniIndex:nCuts=20:PruneMethod=CostComplexity:PruneStrength=50:NNodesMax=5"));
+	if (_tmvaBookOptions == "") {
+		if (_tmvaBookType == TMVA::Types::kBDT)
+			_tmvaBookOptions = "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.10:UseBaggedGrad:GradBaggingFraction=0.50:nCuts=20:NNodesMax=8";
+		else if (_tmvaBookType == TMVA::Types::kMLP)
+			_tmvaBookOptions = "!H:!V:NeuronType=tanh:NCycles=1000:HiddenLayers=N+5,5:TestRate=5:EstimatorType=MSE";
+	}
 
+	cout << "book type: " << _tmvaBookType << endl;
+	cout << "book name: " << _tmvaBookName << endl;
+	cout << "book opts: " << _tmvaBookOptions << endl;
 
 	// process categories & variables
-
 	for (int i=1; ; ++i) {
 		FlavtagCategory c;
 
 		stringstream catTag;
 		catTag << "FlavorTagCategoryDefinition" << i;
 		c.definition = param->get(catTag.str().c_str(),string(""));
-		if (c.definition == "") break;
+		if (c.definition == "") {
+			cout << "definition for index " << i << " not found, skipping" << endl;
+			break;
+		}
 
 		stringstream psTag;
 		psTag << "FlavorTagCategoryPreselection" << i;
@@ -80,24 +99,21 @@ void TrainMVA::init(LcfiplusParameters *param) {
 		// assumes comma separated values
 		stringstream varTag;
 		varTag << "FlavorTagCategoryVariables" << i;
-		string vars = param->get(varTag.str().c_str(),string(""));
-		splitVars( vars, ',', c.vars );
+		param->fetchArray( varTag.str().c_str(), c.vars );
+
+		cout << "FlavorTag category: " << c.definition << endl;
+		cout << "FlavorTag preselection: " << c.preselection << endl;
+		for (unsigned int i=0; i<c.vars.size(); ++i)
+			cout << "FlavorTag variable: " << c.vars[i] << endl;
 
 		_categories.push_back(c);
 	}
 
-}
-
-void TrainMVA::splitVars(const std::string& s, char c, std::vector<std::string>& v) {
-	string::size_type i(0);
-	string::size_type j( s.find(c) );
-	while (j != string::npos) {
-		v.push_back(s.substr(i, j-1));
-		i = ++j;
-		j = s.find(c,j);
-		if (j==string::npos)
-			v.push_back(s.substr(i,s.length()));
+	if (_categories.size() == 0) {
+		cout << "FlavorTag category definition was not found, aborting" << endl;
+		exit(1);
 	}
+
 }
 
 void TrainMVA::process() {
@@ -105,6 +121,8 @@ void TrainMVA::process() {
 }
 
 void TrainMVA::end() {
+
+	cout << "TrainMVA::end" << endl;
 
 	TFile* fileB = new TFile(_inputFileB);
 	if (!fileB->IsOpen()) throw Exception( "could not open file" );
@@ -126,47 +144,46 @@ void TrainMVA::end() {
 
 	gSystem->MakeDirectory(_outputDirectory);
 
-#if 0
-
 	for (unsigned int icat=0; icat<_categories.size(); ++icat) {
-		TString prefix = _outputPrefix+(ULong_t)icat;
-		TString s = _outputDirectory + prefix + ".root";
+		const FlavtagCategory& c = _categories[icat];
+
+		// specify output directory
+		TString prefix = _outputPrefix + "_c";
+		prefix += icat;
+		TString s = _outputDirectory + "/" + prefix + ".root";
 		TFile* outputFile = new TFile(s,"RECREATE");
+
+		TMVA::gConfig().GetIONames().fWeightFileDir = _outputDirectory;
 		TMVA::Factory* factory = new TMVA::Factory(prefix,outputFile,
-			"!V:Silent:Color:DrawProgressBar:Transformations=I;D;P;G,D:AnalysisType=multiclass" );
-		//"!V:Silent:Color:DrawProgressBar:Transofrmations=I;D;P;G,D");
+			"!V:!Silent:Color:DrawProgressBar:Transformations=I;D;P;G,D:AnalysisType=multiclass" );
 
 		// define signal and background trees
-		for (unsigned int itype=0; itype<_typeList.size(); ++itype) {
-			TCut cut( _categoryList[icat].cut );
-			cut += _typeList[itype].cut;
-			TTree* tmpTree = tree->CopyTree(cut);
-			factory->AddTree(tmpTree, _typeList[itype].name);
-		}
+		factory->AddTree( treeB, TString("jetB"), 1., TCut(c.definition) );
+		factory->AddTree( treeC, TString("jetC"), 1., TCut(c.definition) );
+		factory->AddTree( treeO, TString("jetO"), 1., TCut(c.definition) );
 
 		// add variables
-		const FlavtagCategory& c = _categoryList[icat];
 		for (unsigned int iv=0; iv<c.vars.size(); ++iv) {
 			factory->AddVariable( c.vars[iv], 'F' );
-			if (_verbose) {
-				std::cout << "  - Adding variable '" << c.vars[iv] << "'" << std::endl;
-			}
+			if (_verbose) std::cout << "  - Adding variable '" << c.vars[iv] << "'" << std::endl;
 		}
 
 		// add spectators
 		for (unsigned int is=0; is<c.spec.size(); ++is) {
 			factory->AddSpectator( c.spec[is] );
-			if (_verbose) {
-				std::cout << "  - Adding spectator '" << c.spec[is] << "'" << std::endl;
-			}
+			if (_verbose) std::cout << "  - Adding spectator '" << c.spec[is] << "'" << std::endl;
 		}
 
+
+		factory->PrepareTrainingAndTestTree( "", "SplitMode=Random:NormMode=NumEvents:!V" );
 		factory->BookMethod( _tmvaBookType, _tmvaBookName, _tmvaBookOptions );
 		factory->TrainAllMethods();
+		factory->TestAllMethods();
+		factory->EvaluateAllMethods();
 
 		outputFile->Close();
 		delete outputFile;
 		delete factory;
 	}
-#endif
+
 }

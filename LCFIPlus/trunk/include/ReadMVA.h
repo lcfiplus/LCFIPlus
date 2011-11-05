@@ -1,7 +1,7 @@
-// TrainMVA.h
+// ReadMVA.h
 
-#ifndef TrainMVA_h
-#define TrainMVA_h 1
+#ifndef ReadMVA_h
+#define ReadMVA_h 1
 
 class TFile;
 class TTree;
@@ -10,19 +10,20 @@ class TTree;
 #include "flavtag.h"
 
 #include "TMVA/Types.h"
+#include "TMVA/Reader.h"
 
 namespace lcfiplus{
 
-	class TrainMVA : public LcfiplusAlgorithm {
+	class ReadMVA : public LcfiplusAlgorithm {
 		public:
-			TrainMVA(){}
-			virtual ~TrainMVA(){}
+			ReadMVA() {}
+			~ReadMVA() {}
 
 			void init(LcfiplusParameters *param);
 			void process();
 			void end();
 
-		private:
+		protected:
 			bool _verbose;
 
 			TString _inputFileB;
@@ -43,8 +44,9 @@ namespace lcfiplus{
 			TString _tmvaBookOptions;
 
 			vector<FlavtagCategory> _categories;
+			vector<TMVA::Reader*> _readers;
 
-			ClassDef(TrainMVA,1);
+			ClassDef(ReadMVA,1);
 	};
 
 }

@@ -55,11 +55,11 @@ SET( ROOT_DICT_DEPENDENCIES
 		${PROJECT_SOURCE_DIR}/include/TreeStorer.h
 		${PROJECT_SOURCE_DIR}/include/EventNavigator.h
 		${PROJECT_SOURCE_DIR}/include/JetFinder.h
-		${PROJECT_SOURCE_DIR}/include/interface.h
 		${PROJECT_SOURCE_DIR}/include/process.h
 		${PROJECT_SOURCE_DIR}/include/FlavorTag.h
 		${PROJECT_SOURCE_DIR}/include/MakeNtuple.h
 		${PROJECT_SOURCE_DIR}/include/TrainMVA.h
+		${PROJECT_SOURCE_DIR}/include/ReadMVA.h
 		${PROJECT_SOURCE_DIR}/include/LinkDef.h
 )
 ADD_CUSTOM_COMMAND(
@@ -95,7 +95,7 @@ ADD_EXECUTABLE( lcfiplus EXCLUDE_FROM_ALL ${library_sources} )
 EXEC_PROGRAM( "root-config --libs" OUTPUT_VARIABLE lcfiplus_LIBRARIES )
 SET( lcfiplus_LIBRARIES
 		"${lcfiplus_LIBRARIES} -lMathMore -lMinuit -lMinuit2 -lTMVA -lXMLIO -lMLP -lTreePlayer -lGui -lEve -lGeom -lRGL -lGed -lEG" )
-SET_TARGET_PROPERTIES( lcfiplus PROPERTIES PREFIX "" LINK_FLAGS ${lcfiplus_LIBRARIES} )
+SET_TARGET_PROPERTIES( lcfiplus PROPERTIES PREFIX "" LINK_FLAGS ${lcfiplus_LIBRARIES} COMPILE_FLAGS "-DBUILD_EVE" )
 
 # display some variables and write them to cache
 DISPLAY_STD_VARIABLES()
