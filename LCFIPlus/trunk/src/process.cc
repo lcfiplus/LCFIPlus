@@ -61,8 +61,8 @@ namespace lcfiplus{
 		if (_vertex->size()>0){delete (*_vertex)[0]; _vertex->clear();}
 
 		// cut bad tracks
-		const vector<Track *> &tracks = event->getTracks();
-		vector<Track *> passedTracks = TrackSelector() (tracks, *_secVtxCfg);
+		TrackVec &tracks = event->getTracks();
+		TrackVec passedTracks = TrackSelector() (tracks, *_secVtxCfg);
 
 		// primary vertex finder
 		Vertex * vtx = findPrimaryVertex(passedTracks,_chi2th);
@@ -120,8 +120,8 @@ namespace lcfiplus{
 		_vertices->clear();
 
 		// cut bad tracks
-		const vector<Track *> &tracks = event->getTracks();
-		vector<Track *> passedTracks = TrackSelector() (tracks, *_secVtxCfg);
+		TrackVec &tracks = event->getTracks();
+		TrackVec passedTracks = TrackSelector() (tracks, *_secVtxCfg);
 
 		// build up vertexing
 		VertexFinderSuehara::buildUp(passedTracks, *_vertices, _chi2thpri, _chi2thsec, _massth, _posth, _chi2orderinglimit);
@@ -162,30 +162,43 @@ namespace lcfiplus{
 		double ycut = _ycut;
 
 		// select vertices
-		vector<Vertex *> selectedVertices;
-		vector<Track *> residualTracks = event->getTracks();
-		for(vector<Vertex *>::const_iterator it = _vertices->begin(); it != _vertices->end();it++){
-			Vertex *v = *it;
+		vector<const Vertex *> selectedVertices;
+		vector<const Track *> residualTracks = event->getTracks();
+		for(VertexVecIte it = _vertices->begin(); it != _vertices->end();it++){
+			const Vertex *v = *it;
 			double mass = 0.;
 			double k0mass = .498;
 			if(v->getTracks().size() == 2)
 				mass = (*(TLorentzVector *)(v->getTracks()[0]) + *(TLorentzVector *)(v->getTracks()[1])).M();
 			if((mass < k0mass - _vsK0MassWidth/2 || mass > k0mass + _vsK0MassWidth/2) && v->getPos().Mag() < _vsMaxDist && v->getPos().Mag() > _vsMinDist){
 				selectedVertices.push_back(v);
-				for(vector<Track *>::const_iterator itt = v->getTracks().begin(); itt != v->getTracks().end(); itt++){
-					vector<Track *>::iterator itt2 = remove_if(residualTracks.begin(), residualTracks.end(), bind2nd(equal_to<Track *>(), *itt));
+				for(TrackVecIte itt = v->getTracks().begin(); itt != v->getTracks().end(); itt++){
+					vector<const Track *>::iterator itt2 = remove_if(residualTracks.begin(), residualTracks.end(), bind2nd(equal_to<const Track *>(), *itt));
 					residualTracks.erase(itt2, residualTracks.end());
 				}
 			}
 		}
 		*_jets = jetFinder->run(residualTracks, event->getNeutrals(), selectedVertices, &ycut, _useMuonID);
 
-		/*
+		
 		cout << "JetClustering: _vertices.size() = " << _vertices->size() << endl;
 		cout << "JetClustering: selectedVertices.size() = " << selectedVertices.size() << endl;
+/*
+		LcfiplusParameters testPid;
+		testPid.add("testparapi", (double)3.14159);
+		testPid.add("testpara", (double)2.7183);
 
-		for (vector<Jet*>::const_iterator it = _jets->begin(); it != _jets->end(); ++it) {
-			Jet* jet = *it;
+		const vector<const Jet *> *testJets = constVector(_jets);
+
+		double a = 4.4444;
+		for (JetVecIte it = testJets->begin(); it != testJets->end(); ++it) {
+			const Jet* jet = *it;
+			testPid.assign("testpara",a);
+			jet->addParam("testPID", testPid);
+
+			a *= 2.;
+			cout << testPid.get("testpara", double(0.)) << endl;
+
 			cout << "   Jet nvtx = " << jet->getVertices().size() << endl;
 		}
 		*/
@@ -214,13 +227,13 @@ namespace lcfiplus{
 
 		Event *event = Event::Instance();
 
-		vector<Track*> residualTracks = event->getTracks();
-		for(vector<Jet*>::const_iterator it = _inputJets->begin(); it != _inputJets->end();++it){
+		TrackVec residualTracks = event->getTracks();
+		for(JetVecIte it = _inputJets->begin(); it != _inputJets->end();++it){
 			Jet* jet = *it;
 
-			const vector<Track*>& tracks = jet->getTracks();
-			const vector<Vertex*>& vertices = jet->getVertices();
-			for (vector<Vertex*>::const_iterator it2 = vertices.begin(); it2 != vertices.end(); ++it2) {
+			TrackVec & tracks = jet->getTracks();
+			VertexVec & vertices = jet->getVertices();
+			for (VertexVecIte it2 = vertices.begin(); it2 != vertices.end(); ++it2) {
 			}
 		}
 	}

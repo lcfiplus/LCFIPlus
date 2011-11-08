@@ -86,32 +86,32 @@ namespace lcfiplus {
     _Yfunc = JetFinder::funcDurham;
   }
 
-  vector<Jet*> JetFinder::run(vector<Track*> tracks) {
+  vector<Jet*> JetFinder::run(TrackVec &tracks) {
     vector<Jet*> jets;
-    for (vector<Track*>::iterator iter = tracks.begin(); iter != tracks.end(); ++iter) {
-      Track* trk = *iter;
+    for (TrackVecIte iter = tracks.begin(); iter != tracks.end(); ++iter) {
+      const Track* trk = *iter;
       Jet* j = new Jet(trk);
       jets.push_back(j);
     }
     return run(jets);
   }
 
-  vector<Jet*> JetFinder::run(vector<Track*> tracks, vector<Neutral*> neutrals,double *pymin) {
+  vector<Jet*> JetFinder::run(TrackVec &tracks,NeutralVec &neutrals,double *pymin) {
     vector<Jet*> jets;
-    for (vector<Track*>::iterator iter = tracks.begin(); iter != tracks.end(); ++iter) {
-      Track* trk = *iter;
+    for (TrackVecIte iter = tracks.begin(); iter != tracks.end(); ++iter) {
+      const Track* trk = *iter;
       Jet* j = new Jet(trk);
       jets.push_back(j);
     }
-    for (vector<Neutral*>::iterator iter = neutrals.begin(); iter != neutrals.end(); ++iter) {
-      Neutral* neut = *iter;
+    for (NeutralVecIte iter = neutrals.begin(); iter != neutrals.end(); ++iter) {
+      const Neutral* neut = *iter;
       Jet* j = new Jet(neut);
       jets.push_back(j);
     }
     return run(jets,pymin);
   }
 
-  vector<Jet*> JetFinder::run(vector<Track*> tracks, vector<Neutral*> neutrals, vector<Vertex *> vertices, double *pymin, bool findmu)
+  vector<Jet*> JetFinder::run(TrackVec &tracks, NeutralVec &neutrals, VertexVec &vertices_, double *pymin, bool findmu)
 	{
 
 		// angle to combine two vertices
@@ -126,10 +126,13 @@ namespace lcfiplus {
 		vector<bool> usedTracks(tracks.size(), false);
 		vector<bool> usedNeutrals(neutrals.size(), false);
 
+		// copy vertices
+		vector<const Vertex *> vertices = vertices_;
+
 		if(findmu){
 			// lepton tag
 			for(unsigned int i=0;i<tracks.size();i++){
-				Track *tr = tracks[i];
+				const Track *tr = tracks[i];
 				double dist = sqrt(tr->getD0() *tr->getD0() + tr->getZ0() * tr->getZ0());
 				double sigd0 = fabs(tr->getD0()) / sqrt(tr->getCovMatrix()[tpar::d0d0]);
 				double sigz0 = fabs(tr->getZ0()) / sqrt(tr->getCovMatrix()[tpar::z0z0]);
@@ -224,7 +227,7 @@ namespace lcfiplus {
 				Jet *jet = jets[j];
 
 				for(unsigned int k=0;k<jet->getVertices().size();k++){
-					Vertex *vtx = jet->getVertices()[k];
+					const Vertex *vtx = jet->getVertices()[k];
 					TVector3 vpos = vtx->getPos();
 
 					double angle = vpos.Angle(tracks[i]->Vect());
@@ -249,7 +252,7 @@ namespace lcfiplus {
 				Jet *jet = jets[j];
 
 				for(unsigned int k=0;k<jet->getVertices().size();k++){
-					Vertex *vtx = jet->getVertices()[k];
+					const Vertex *vtx = jet->getVertices()[k];
 					TVector3 vpos = vtx->getPos();
 
 					double angle = vpos.Angle(neutrals[i]->Vect());
@@ -381,6 +384,8 @@ namespace lcfiplus {
     }
 
     return run(jets,pymin);
+		// TODO: delete fakevtx
+
 	}
 
 
@@ -492,17 +497,16 @@ namespace lcfiplus {
   CheatedJetFinder::CheatedJetFinder(const JetConfig& cfg) : _cfg(cfg) {
   }
 
-  vector<MCParticle*> CheatedJetFinder::originalPartons( const vector<MCParticle*>& mcps ) {
+  vector<MCParticle*> CheatedJetFinder::originalPartons( MCParticleVec & mcps ) {
     vector<MCParticle*> quarks;
     vector<MCParticle*> quarksAfterGluonEmission;
 
-    for (vector<MCParticle*>::const_iterator it = mcps.begin(); it != mcps.end(); ++it) {
-      MCParticle* mcp = *it;
+    for (MCParticleVecIte it = mcps.begin(); it != mcps.end(); ++it) {
+      const MCParticle* mcp = *it;
       if (mcp->getPDG() == 92) {
         printf(" color singlet: %d\n", mcp->getPDG());
       }
     }
-
 
     return quarksAfterGluonEmission;
   }
@@ -521,30 +525,25 @@ namespace lcfiplus {
     return jets;
   }
 
-	Jet* convertJetVertex(Jet* jet) {
+	Jet* convertJetVertex(const Jet* jet) {
 		Jet* newjet = new Jet();
 
-    const vector<Track*>& tracks  = jet->getTracks();
-    const vector<Neutral*>& neutrals = jet->getNeutrals();
-    const vector<Vertex*>& vertices = jet->getVertices();
+		TrackVec & tracks  = jet->getTracks();
+		NeutralVec & neutrals = jet->getNeutrals();
+		VertexVec & vertices = jet->getVertices();
 
-
-		for (vector<Track*>::const_iterator iter = tracks.begin();
-				iter != tracks.end(); ++iter) {
+		for (TrackVecIte iter = tracks.begin(); iter != tracks.end(); ++iter) {
 			newjet->add(*iter);
 		}
 
-		for (vector<Neutral*>::const_iterator iter = neutrals.begin();
-				iter != neutrals.end(); ++iter) {
+		for (NeutralVecIte iter = neutrals.begin(); iter != neutrals.end(); ++iter) {
 			newjet->add(*iter);
 		}
 
-		for (vector<Vertex*>::const_iterator iter = vertices.begin();
-				iter != vertices.end(); ++iter) {
+		for (VertexVecIte iter = vertices.begin(); iter != vertices.end(); ++iter) {
 			const Vertex* vertex = *iter;
-			const vector<Track*>& tracks2  = vertex->getTracks();
-			for (vector<Track*>::const_iterator iter = tracks2.begin();
-					iter != tracks2.end(); ++iter) {
+			TrackVec & tracks2  = vertex->getTracks();
+			for (TrackVecIte iter = tracks2.begin(); iter != tracks2.end(); ++iter) {
 				newjet->add(*iter);
 			}
 		}

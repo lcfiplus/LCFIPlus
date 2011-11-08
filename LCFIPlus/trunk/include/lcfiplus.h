@@ -33,6 +33,9 @@ namespace lcfiplus {
 
   template <class T> struct DeleteVector { bool operator() (T x) const { delete x; return true; } };
 
+	template <class T> vector<const T*> *constVector(vector<T *> *ptr){return reinterpret_cast<vector<const T*> *>(ptr);}
+	template <class T> const vector<const T*> *constVector(const vector<T *> *ptr){return reinterpret_cast<const vector<const T*> *>(ptr);}
+
   // used for error rescaling of the track parameters
   // in bins of cosTheta and momentum
   struct ErrorRescale {
@@ -45,6 +48,7 @@ namespace lcfiplus {
     float pullerr; // pull error
   };
 
+	// basic types
   class Event;
   class Track;
   class Neutral;
@@ -52,6 +56,19 @@ namespace lcfiplus {
 	class Vertex;
 	class Jet;
 
+	// const vectors
+	typedef const vector<const Track *> TrackVec;
+	typedef const vector<const Neutral *> NeutralVec;
+	typedef const vector<const MCParticle *> MCParticleVec;
+	typedef const vector<const Vertex *> VertexVec;
+	typedef const vector<const Jet *> JetVec;
+
+	// const iterators
+	typedef vector<const Track *>::const_iterator TrackVecIte;
+	typedef vector<const Neutral *>::const_iterator NeutralVecIte;
+	typedef vector<const MCParticle *>::const_iterator MCParticleVecIte;
+	typedef vector<const Vertex *>::const_iterator VertexVecIte;
+	typedef vector<const Jet *>::const_iterator JetVecIte;
 
 	class Exception : std::exception{
 		public:
@@ -71,7 +88,7 @@ namespace lcfiplus {
 	public:
 		LcfiplusParameters(bool as = true) : _allowstring(as){}
 		~LcfiplusParameters(){
-			// TODO: delete map objects!
+			// TODO: delete value objects!
 		}
 
 		// fetch for non-vector
@@ -137,11 +154,22 @@ namespace lcfiplus {
 
 		bool exist(const char *key)const{return _map.find(key) != _map.end();}
 
-		template<typename T> void add(const char *key, T &data){
+		template<typename T> void add(const char *key, T data){ // change T& data to T data for convenience
 			if(_map.find(key) != _map.end())throw(Exception("Double entry."));
 
 			_map[key] = pair<string, void *>(typeid(T).name(), new T(data));
 		}
+
+		template<typename T> void assign(const char *key, T data){
+			if(_map.find(key) == _map.end())throw(Exception("LcfiplusParameters::assign(): the key has not been registered."));
+			else if(_map.find(key)->second.first != typeid(T).name())throw(Exception("LcfiplusParameters::assign(): the value type is imcompatible."));
+
+			// assign
+			*static_cast<T*>(_map.find(key)->second.second) = data;
+		}
+
+		// direct accessors: avoiding copy to handle names
+		const map<string, pair<string, void *> > & paramMap()const{return _map;}
 
 	private:
 		map<string, pair<string, void *> > _map;
@@ -178,15 +206,15 @@ namespace lcfiplus {
 			// standard collections retrievers
 			// for other collections: use EventStore::Get()
 			//const vector<Track*>& getTracks(const char *trackname = 0) const;
-			const vector<Track*>& getTracks(const char *trackname = "Tracks") const;
+			const vector<const Track*>& getTracks(const char *trackname = "Tracks") const;
 			//const vector<Neutral*>& getNeutrals(const char *neutralname = 0) const;
-			const vector<Neutral*>& getNeutrals(const char *neutralname = "Neutrals") const;
+			const vector<const Neutral*>& getNeutrals(const char *neutralname = "Neutrals") const;
 			//const vector<MCParticle*>& getMCParticles(const char *mcpname = 0) const;
-			const vector<MCParticle*>& getMCParticles(const char *mcpname = "MCParticles") const;
+			const vector<const MCParticle*>& getMCParticles(const char *mcpname = "MCParticles") const;
 			//const Vertex* getPrimaryVertex(const char *privtxname = 0) const;
 			const Vertex* getPrimaryVertex(const char *privtxname = "PrimaryVertex") const;
-			const vector<Vertex*>& getSecondaryVertices(const char *secvtxname = 0) const;
-			const vector<Jet*>& getJets(const char *jetname = 0) const;
+			const vector<const Vertex*>& getSecondaryVertices(const char *secvtxname = 0) const;
+			const vector<const Jet*>& getJets(const char *jetname = 0) const;
 
 			// standard collection name setter/getter
 			void setDefaultTracks(const char *name){_defTrackName = name;}
@@ -204,10 +232,10 @@ namespace lcfiplus {
 			const char * getDefaultJets()const{return _defJetName.c_str();}
 
 			// utility functions for MCParticles
-      MCParticle* getMCParticle(int id) const;
-      MCParticle* getMCParticle(const Track* trk) const;
+      const MCParticle* getMCParticle(int id) const;
+      const MCParticle* getMCParticle(const Track* trk) const;
 
-      vector<MCParticle*> mcGetColorStrings() const;
+      vector<const MCParticle*> mcGetColorStrings() const;
       int mcNumberOfB() const;
       int mcNumberOfC() const;
 
@@ -246,8 +274,8 @@ namespace lcfiplus {
 			int getId() const { return _id; }
 			void setId(int id) {_id = id;}
 
-			lcfiplus::MCParticle * getMcp() const { return _mcp; }
-			void setMcp(lcfiplus::MCParticle *mcp) {_mcp = mcp;}
+			const lcfiplus::MCParticle * getMcp() const { return _mcp; }
+			void setMcp(const lcfiplus::MCParticle *mcp) {_mcp = mcp;}
 
 			int getPDG() const { return _pdg; }
 			void setPDG(int pdg) { _pdg = pdg;}
@@ -302,7 +330,7 @@ namespace lcfiplus {
       mutable float _flt;
 
 			int _id;
-			lcfiplus::MCParticle * _mcp;
+			const lcfiplus::MCParticle * _mcp;
 			int _pdg;
 			float _charge;
 
@@ -329,8 +357,8 @@ namespace lcfiplus {
 
 			int getId() const { return _id; }
 			void setId(int id) {_id = id;}
-			lcfiplus::MCParticle * getMcp() const { return _mcp; }
-			void setMcp(lcfiplus::MCParticle *mcp) {_mcp = mcp;}
+			const lcfiplus::MCParticle * getMcp() const { return _mcp; }
+			void setMcp(const lcfiplus::MCParticle *mcp) {_mcp = mcp;}
 			int getPDG() const { return _pdg; }
 			void setPDG(int pdg) { _pdg = pdg;}
 
@@ -345,7 +373,7 @@ namespace lcfiplus {
 			int _id;
 			int _pdg;
 			int _isV0;
-			lcfiplus::MCParticle * _mcp;
+			const lcfiplus::MCParticle * _mcp;
 
 			float _calo[tpar::caloN];
 
@@ -361,7 +389,7 @@ namespace lcfiplus {
 			MCParticle(){}
 			~MCParticle(){}
 
-			// initialization
+			// initialization: non-const parent is needed because of adding me to the daughter list
 			void Init(int id, int pdg, MCParticle *parent, float charge, const TLorentzVector &p, const TVector3 &v);
 
 			// simple accessors ///////////////////////////////////////////////////
@@ -376,20 +404,20 @@ namespace lcfiplus {
 
 			const TVector3 & getVertex() const { return _vertex;}
 			void setVertex(const TVector3 &v){_vertex = v;}
-			const TVector3 & getEndVertex();
+			const TVector3 & getEndVertex()const;
 
-			MCParticle* getParent() const {return _parent;}
-			void setParent(MCParticle *parent){_parent = parent;}
+			const MCParticle* getParent() const {return _parent;}
+			void setParent(const MCParticle *parent){_parent = parent;}
 			//vector<MCParticle*> getParents() const;
 
-			const vector<lcfiplus::MCParticle*>& getDaughters() const { return _dau; }
-			void addDaughter(MCParticle* mcp);
+			const vector<const MCParticle*>& getDaughters() const { return _dau; }
+			void addDaughter(const MCParticle* mcp);
 
-			bool isParent(MCParticle *mcp)const;
+			bool isParent(const MCParticle *mcp)const;
 
 		// more intelligent accessors
       int getFlavor() const;
-      MCParticle* getColorString();
+      const MCParticle* getColorString()const;
 
       bool isStableTrack() const;
 			bool isStable() const;
@@ -397,42 +425,42 @@ namespace lcfiplus {
       bool isSemiStableC() const;
       bool isSemiStableS() const;
       bool isSemiStable() const;
-      MCParticle* semileptonicDecay() const; // return MCParticle of lepton
+      const MCParticle* semileptonicDecay() const; // return MCParticle of lepton
       int getFlavorTagCategory() const;
-      MCParticle* getSemiStableParent() const;
+      const MCParticle* getSemiStableParent() const;
 
       // end points
-      float decayDistance();
-      MCParticle* findDauForDecay();
-      float getEx();
-      float getEy();
-      float getEz();
+      float decayDistance()const;
+      const MCParticle* findDauForDecay()const;
+      float getEx()const;
+      float getEy()const;
+      float getEz()const;
 
-      vector<lcfiplus::MCParticle*> promptTracks();
+      vector<const lcfiplus::MCParticle*> promptTracks()const;
 
       // helix stuff
-      float getD0();
-      float getZ0();
-      float getPhi();
-      float getOmega();
-      float getTanLambda();
+      float getD0()const;
+      float getZ0()const;
+      float getPhi()const;
+      float getOmega()const;
+      float getTanLambda()const;
 
     private:
 			// basic properties
 			int _id;
 			int _pdg;
 			float _charge;
-			MCParticle *_parent;
+			const MCParticle *_parent;
 			TVector3 _vertex;
       // list of daughters
-      vector<lcfiplus::MCParticle*> _dau;
+      vector<const lcfiplus::MCParticle*> _dau;
 
-      MCParticle* _dauForDecay; //! cached object
+      mutable const MCParticle* _dauForDecay; //! cached object
 
       // helix stuff
-      void makeHelix();
-      bool _helixOK;						//!
-      HelixClass _helix;				//!
+      void makeHelix()const ;
+      mutable bool _helixOK;						//!
+      mutable HelixClass _helix;				//!
 
 		ClassDef(lcfiplus::MCParticle, 2);
   };
@@ -451,9 +479,9 @@ namespace lcfiplus {
 			}
 
       ~Vertex() {};
-      void add(Track* trk);
-      void add(Track* trk,float chi2);
-			void setId(int id){ _id = id; }
+      void add(const Track* trk);
+      void add(const Track* trk,float chi2);
+			void setId(int id)const{ _id = id; }
 
 			int getId() const { return _id;}
       float getChi2() const { return _chi2; }
@@ -463,14 +491,14 @@ namespace lcfiplus {
       float getZ() const { return _z; }
 			TVector3 getPos() const {return TVector3(_x, _y,_z);}
       const float* getCov() const { return _cov; }
-      const vector<lcfiplus::Track*> & getTracks() const { return _tracks; }
-			const map<lcfiplus::Track *, float> & getTracksChi2Map() const {return _chi2Tracks;}
-			float getChi2Track(Track *tr){
-				map<Track*,float>::iterator it = _chi2Tracks.find(tr);
+      const vector<const Track*> & getTracks() const { return _tracks; }
+			const map<const lcfiplus::Track *, float> & getTracksChi2Map() const {return _chi2Tracks;}
+			float getChi2Track(const Track *tr){
+				map<const Track*,float>::iterator it = _chi2Tracks.find(tr);
 				if(it != _chi2Tracks.end())return it->second;
 				else return -1;
 			}
-			Track * getWorstTrack() const;
+			const Track * getWorstTrack() const;
 
       float length(const Vertex* primary=0) const;
       float significance(const Vertex* primary) const;
@@ -479,14 +507,14 @@ namespace lcfiplus {
 			float getVertexMass(const Vertex *daughter = 0, const TVector3 *paxis = 0, const double dmass = 1.87, double *ppt = 0, double *pp = 0)const;
 			float getVertexAngle(const Vertex *daughter, const Vertex *primary = 0)const;
 
-			MCParticle *getMcp()const;
+			const MCParticle *getMcp()const;
 
 			double dirdot(const Vertex* primary=0) const;
 			bool passesV0selection(const Vertex* primary=0) const;
 			TLorentzVector getFourMomentum() const;
 
     private:
-			int _id; // necessary for LCIO relation; -1 if not used
+			mutable int _id; // necessary for LCIO relation; -1 if not used, mutable for modification in ConvertVertex()
 
       float _chi2;
       float _prob;
@@ -494,8 +522,8 @@ namespace lcfiplus {
       float _y;
       float _z;
       float _cov[6];
-      vector<Track*> _tracks;
-			map<Track*, float> _chi2Tracks;
+      vector<const lcfiplus::Track*> _tracks;
+			map<const Track*, float> _chi2Tracks;
 
 			ClassDefNV(Vertex, 1);
   };
@@ -503,20 +531,20 @@ namespace lcfiplus {
 	class MCVertex {
 		public:
 			MCVertex() : _parent(0), _recoVtx(0) {}
-			void setParent(MCParticle* parent) { _parent = parent; }
-			MCParticle* getParent() const  { return _parent; }
-			void add(MCParticle* mcp) { _dauVec.push_back(mcp); }
-			void add(Track* trk) { _recoTrks.push_back(trk); }
-			void setRecoVertex(Vertex* vtx) { _recoVtx = vtx; }
-			const vector<MCParticle*>& getDaughters() const { return _dauVec; }
-			const vector<Track*>& getRecoTracks() const { return _recoTrks; }
-			Vertex* getRecoVertex() const { return _recoVtx; }
+			void setParent(const MCParticle* parent) { _parent = parent; }
+			const MCParticle* getParent() const  { return _parent; }
+			void add(const MCParticle* mcp) { _dauVec.push_back(mcp); }
+			void add(const Track* trk) { _recoTrks.push_back(trk); }
+			void setRecoVertex(const Vertex* vtx) { _recoVtx = vtx; }
+			const vector<const MCParticle*>& getDaughters() const { return _dauVec; }
+			const vector<const Track*>& getRecoTracks() const { return _recoTrks; }
+			const Vertex* getRecoVertex() const { return _recoVtx; }
 		private:
-			MCParticle* _parent;
-			vector<MCParticle*> _dauVec;
+			const MCParticle* _parent;
+			vector<const MCParticle*> _dauVec;
 
-			vector<Track*> _recoTrks;
-			Vertex* _recoVtx;
+			vector<const Track*> _recoTrks;
+			const Vertex* _recoVtx;
 
 			ClassDefNV(MCVertex, 1);
 	};
@@ -546,23 +574,23 @@ namespace lcfiplus {
     public:
       // constructors
       Jet() : _id(-1) {};
-      Jet(Track* trk);
-      Jet(Neutral* neutral);
-			Jet(Vertex *vtx) : _id(-1){add(vtx);}
+      Jet(const Track* trk);
+      Jet(const Neutral* neutral);
+			Jet(const Vertex *vtx) : _id(-1){add(vtx);}
       ~Jet() {};
 
-			void setId(int id){_id = id;}
+			void setId(int id)const{_id = id;}
 			int getId()const {return _id;}
 
-      const vector<Track*>& getTracks() const { return _tracks; }
-      const vector<Neutral*>& getNeutrals() const { return _neutrals; }
-      const vector<Vertex*>& getVertices() const { return _vertices; }
+      const vector<const Track*>& getTracks() const { return _tracks; }
+      const vector<const Neutral*>& getNeutrals() const { return _neutrals; }
+      const vector<const Vertex*>& getVertices() const { return _vertices; }
 
       // methods
       void add(const Jet& jet);
-      void add(Track *trk){_tracks.push_back(trk); *(TLorentzVector *)this += *(TLorentzVector *)trk;}
-      void add(Neutral *neut){_neutrals.push_back(neut); *(TLorentzVector *)this += *(TLorentzVector *)neut;}
-      void add(Vertex *vtx){
+      void add(const Track *trk){_tracks.push_back(trk); *(TLorentzVector *)this += *(TLorentzVector *)trk;}
+      void add(const Neutral *neut){_neutrals.push_back(neut); *(TLorentzVector *)this += *(TLorentzVector *)neut;}
+      void add(const Vertex *vtx){
 				_vertices.push_back(vtx);
 				for(unsigned int i=0;i<vtx->getTracks().size();i++){
 					*(TLorentzVector *)this += *(TLorentzVector *)(vtx->getTracks()[i]);
@@ -577,8 +605,9 @@ namespace lcfiplus {
 			double sphericity() const;
 
 			// parameter contrl
-			void addParam(const char *paramname, LcfiplusParameters &param, bool forcereset = false){
-				if(!forcereset && _params.count(paramname) == 1)throw(Exception("Jet::addParam: parameter of the specified name has been already registered."));
+//			void addParam(const char *paramname, LcfiplusParameters &param, bool forcereset = false){
+			void addParam(const char *paramname, LcfiplusParameters &param)const{
+				if(_params.count(paramname) == 1)throw(Exception("Jet::addParam: parameter of the specified name has been already registered."));
 				_params[paramname] = param;
 			}
 
@@ -587,14 +616,16 @@ namespace lcfiplus {
 				return &(_params.find(paramname)->second);
 			}
 
+			const map<string, LcfiplusParameters> & params()const{return _params;}
+
     private:
-      vector<Track*> _tracks;
-      vector<Neutral*> _neutrals;
-			vector<Vertex*> _vertices;
+      vector<const Track*> _tracks;
+      vector<const Neutral*> _neutrals;
+			vector<const Vertex*> _vertices;
 
-			map<string, LcfiplusParameters> _params;
+			mutable map<string, LcfiplusParameters> _params;
 
-			int _id;
+			mutable int _id;
 
 			ClassDefNV(Jet, 1);
   };

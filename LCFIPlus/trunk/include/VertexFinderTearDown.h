@@ -17,27 +17,27 @@ namespace lcfiplus {
 
 	class SortTracksByChi2{ // decending order
 		public:
-			bool operator() (const pair<Track *, float> &p1, const pair<Track *, float> &p2){return p1.second > p2.second;}
+			bool operator() (const pair<const Track *, float> &p1, const pair<const Track *, float> &p2){return p1.second > p2.second;}
 	};
 
 	// Function for recursive search of vertices using TearDown method
 	vector<lcfiplus::Vertex*> * findTearDownVertices(const Event& evt, const Jet& jet);
 
 	// Primary Vertex finder with TearDown method
-	lcfiplus::Vertex * findPrimaryVertex(const vector<Track *> &tracks, double chi2 = 9.0);
+	lcfiplus::Vertex * findPrimaryVertex(TrackVec &tracks, double chi2 = 9.0);
 //	lcfiplus::Vertex * findPrimaryVertex(const vector<Track *> &tracks, const vector<Track *> &beamTracks, double chi2 = 9.0);
 
 	// implementation of TearDown method
 	template<template<class T, class Allocator=allocator<T> > class Container = std::vector, template<class Iterator> class VertexFitter = VertexFitterLCFI >
 		class VertexFinderTearDown{
 		public:
-			Vertex * operator () (const Container<Track *> &tracks, const Container<Track *> *fixedTracks = 0,
-														double chiSquareThreshold = 9.0, Container<Track *> *residual = 0, Vertex *pointConstraint = 0)
+			Vertex * operator () (const Container<const Track *> &tracks, const Container<const Track *> *fixedTracks = 0,
+														double chiSquareThreshold = 9.0, Container<const Track *> *residual = 0, Vertex *pointConstraint = 0)
 			{
 				// copy tracks into a list
-				list<Track *>trackList;
+				list<const Track *>trackList;
 				trackList.resize(tracks.size() + (fixedTracks ? fixedTracks->size() : 0));
-				list<Track *>::iterator listIt = copy(tracks.begin(), tracks.end(), trackList.begin());
+				list<const Track *>::iterator listIt = copy(tracks.begin(), tracks.end(), trackList.begin());
 				if(fixedTracks){
 					copy(fixedTracks->begin(), fixedTracks->end(), listIt);
 				}
@@ -45,12 +45,12 @@ namespace lcfiplus {
 				Vertex *resultVertex = 0;
 				float worstChi2;
 				while(trackList.size() >= 2){
-					resultVertex = VertexFitter<list<Track *>::iterator>() (trackList.begin(), trackList.end(), pointConstraint);
-					Track *worstTrack = resultVertex->getWorstTrack();
+					resultVertex = VertexFitter<list<const Track *>::iterator>() (trackList.begin(), trackList.end(), pointConstraint);
+					const Track *worstTrack = resultVertex->getWorstTrack();
 					if(fixedTracks && find(fixedTracks->begin(), fixedTracks->end(), worstTrack) != fixedTracks->end()){
 						// sort Chi2Tracks
-						vector<pair<Track *, float> > vpair;
-						const map<Track *, float> &mpair = resultVertex->getTracksChi2Map();
+						vector<pair<const Track *, float> > vpair;
+						const map<const Track *, float> &mpair = resultVertex->getTracksChi2Map();
 						vpair.resize(mpair.size());
 						partial_sort_copy(mpair.begin(), mpair.end(), vpair.begin(), vpair.end(), SortTracksByChi2());
 

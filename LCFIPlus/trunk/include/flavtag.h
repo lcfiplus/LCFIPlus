@@ -68,7 +68,7 @@ namespace lcfiplus {
 			void openTree();
 			void openFile(const char* filename);
 			void closeFile();
-			void process(const Event* event, const vector<Jet*>& jets);
+			void process(const Event* event, JetVec & jets);
 
 			float* getVarAddress(const string& varname);
 			void setEval(bool seteval) { _evaluate = seteval; }

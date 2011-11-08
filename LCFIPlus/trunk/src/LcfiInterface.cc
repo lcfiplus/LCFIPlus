@@ -134,7 +134,7 @@ namespace lcfiplus {
 			if (debug) {
 	    	printf("lcfiEvent: converting %d tracks\n",(int)event->getTracks().size());
 			}
-	    for (vector<Track*>::const_iterator iter = event->getTracks().begin();
+	    for (TrackVecIte iter = event->getTracks().begin();
 	        iter != event->getTracks().end(); ++iter) {
 	      vertex_lcfi::Track* t = lcfiTrack(ret, *iter);
 	      ret->addTrack(t);
@@ -203,7 +203,7 @@ namespace lcfiplus {
 		cov(2,1) = flavtagVertex->_cov[4];
 		cov(2,2) = flavtagVertex->_cov[5];
 
-    for (vector<Track*>::const_iterator iter = flavtagVertex->getTracks().begin();
+    for (TrackVecIte iter = flavtagVertex->getTracks().begin();
         iter < flavtagVertex->getTracks().end(); ++iter) {
 			tracks.push_back( lcfiTrack(*iter) );
     }
@@ -311,7 +311,7 @@ namespace lcfiplus {
   */
 
   vector<Vertex*>
-  LcfiInterface::findSecondaryVertices(Jet* jet, const SecondaryVertexConfig& cfg) {
+  LcfiInterface::findSecondaryVertices(const Jet* jet, const SecondaryVertexConfig& cfg) {
     LcfiInstance::getInstance().getZVRES()->setDoubleParameter("TwoProngCut", cfg.TwoProngCut);
     LcfiInstance::getInstance().getZVRES()->setDoubleParameter("TrackTrimCut", cfg.TrackTrimCut);
 		LcfiInstance::getInstance().getZVRES()->setDoubleParameter("ResolverCut",cfg.ResolverCut);
@@ -322,12 +322,12 @@ namespace lcfiplus {
         jet->E(),Vector3(jet->Px(), jet->Py(), jet->Pz()),0);
     vertex_lcfi::MemoryManager<vertex_lcfi::Jet>::Event()->registerObject(lcfiJet);
 
-    const vector<Track*> tracks = jet->getTracks();
-    const vector<Neutral*> neutrals = jet->getNeutrals();
+    TrackVec & tracks = jet->getTracks();
+    NeutralVec & neutrals = jet->getNeutrals();
 
     int usedTracks(0);
 		TrackSelector trackSel;
-    for (vector<Track*>::const_iterator iter = tracks.begin(); iter != tracks.end(); ++iter) {
+    for (TrackVecIte iter = tracks.begin(); iter != tracks.end(); ++iter) {
       if (trackSel.passesCut(*iter,cfg.TrackQualityCuts)) {
         lcfiJet->addTrack( lcfiTrack(_event, *iter) );
         ++usedTracks;
@@ -359,8 +359,8 @@ namespace lcfiplus {
         jet.E(),Vector3(jet.Px(), jet.Py(), jet.Pz()),0);
     vertex_lcfi::MemoryManager<vertex_lcfi::Jet>::Event()->registerObject(lcfiJet);
 
-		const vector<Track*>& tracks = jet.getTracks();
-    for (vector<Track*>::const_iterator iter = tracks.begin(); iter != tracks.end(); ++iter) {
+		TrackVec & tracks = jet.getTracks();
+    for (TrackVecIte iter = tracks.begin(); iter != tracks.end(); ++iter) {
 			lcfiJet->addTrack( lcfiTrack(_event, *iter) );
     }
 
@@ -376,7 +376,7 @@ namespace lcfiplus {
     return vtxList;
   }
 
-	double LcfiInterface::getChi2TrackVtx(Vertex *vtx, Track *trk) const
+	double LcfiInterface::getChi2TrackVtx(const Vertex *vtx, const Track *trk) const
 	{
 		vertex_lcfi::Track* ptr = lcfiTrack(trk);
 		vertex_lcfi::TrackState *pstate = ptr->makeState();

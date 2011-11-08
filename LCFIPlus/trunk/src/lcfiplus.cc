@@ -28,28 +28,28 @@ namespace lcfiplus {
 		_theInstance = 0;
 	}
 
-	const vector<Track*>& Event::getTracks(const char *trackname) const
+	TrackVec & Event::getTracks(const char *trackname) const
 	{
 		if(!IsExist(trackname))throw(Exception("Event::getTracks(): collection not found."));
 		if(strcmp("vector<lcfiplus::Track*>", GetClassName(trackname)))throw(Exception("Event::getTracks(): type invalid."));
 
-		return *(vector<Track*>*&)GetObjectRef(trackname ? trackname : _defTrackName.c_str());
+		return *(TrackVec*&)GetObjectRef(trackname ? trackname : _defTrackName.c_str());
 	}
 
-	const vector<Neutral*>& Event::getNeutrals(const char *neutralname) const
+	NeutralVec & Event::getNeutrals(const char *neutralname) const
 	{
 		if(!IsExist(neutralname))throw(Exception("Event::getNeutrals(): collection not found."));
 		if(strcmp("vector<lcfiplus::Neutral*>", GetClassName(neutralname)))throw(Exception("Event::getNeutrals(): type invalid."));
 
-		return *(vector<Neutral*>*&)GetObjectRef(neutralname ? neutralname : _defNeutralName.c_str());
+		return *(NeutralVec*&)GetObjectRef(neutralname ? neutralname : _defNeutralName.c_str());
 	}
 
-	const vector<MCParticle*>& Event::getMCParticles(const char *mcpname) const
+	MCParticleVec & Event::getMCParticles(const char *mcpname) const
 	{
 		if(!IsExist(mcpname))throw(Exception("Event::getMCParticles(): collection not found."));
 		if(strcmp("vector<lcfiplus::MCParticle*>", GetClassName(mcpname)))throw(Exception("Event::getMCParticles(): type invalid."));
 
-		return *(vector<MCParticle*>*&)GetObjectRef(mcpname ? mcpname : _defMcpName.c_str());
+		return *(MCParticleVec*&)GetObjectRef(mcpname ? mcpname : _defMcpName.c_str());
 	}
 
 	const Vertex* Event::getPrimaryVertex(const char *privtxname) const
@@ -57,31 +57,31 @@ namespace lcfiplus {
 		if(!IsExist(privtxname))throw(Exception("Event::getPrimaryVertex(): collection not found."));
 		if(strcmp("vector<lcfiplus::Vertex*>", GetClassName(privtxname)))throw(Exception("Event::getPrimaryVertex(): type invalid."));
 
-		return (*(vector<lcfiplus::Vertex*>*)GetObject(privtxname ? privtxname : _defPriVtxName.c_str()))[0];
+		return (*(vector<const lcfiplus::Vertex*>*)GetObject(privtxname ? privtxname : _defPriVtxName.c_str()))[0];
 	}
 
-	const vector<Vertex*>& Event::getSecondaryVertices(const char *secvtxname) const
+	const vector<const Vertex*>& Event::getSecondaryVertices(const char *secvtxname) const
 	{
 		if(!IsExist(secvtxname))throw(Exception("Event::getSecondaryVertices(): collection not found."));
 		if(strcmp("vector<lcfiplus::Vertex*>", GetClassName(secvtxname)))throw(Exception("Event::getSecondaryVertices(): type invalid."));
 
-		return *(vector<Vertex*>*&)GetObjectRef(secvtxname ? secvtxname : _defSecVtxName.c_str());
+		return *(vector<const Vertex*>*&)GetObjectRef(secvtxname ? secvtxname : _defSecVtxName.c_str());
 	}
 
-	const vector<Jet*>& Event::getJets(const char *jetname) const
+	const vector<const Jet*>& Event::getJets(const char *jetname) const
 	{
 		if(!IsExist(jetname))throw(Exception("Event::getJets(): collection not found."));
 		if(strcmp("vector<lcfiplus::Jet*>", GetClassName(jetname)))throw(Exception("Event::getJets(): type invalid."));
 
-		return *(vector<Jet*>*&)GetObjectRef(jetname ? jetname : _defJetName.c_str());
+		return *(vector<const Jet*>*&)GetObjectRef(jetname ? jetname : _defJetName.c_str());
 	}
 
 
   int Event::mcNumberOfB() const {
     int num(0);
-		const vector<MCParticle*> &mcps = getMCParticles();
-    for (vector<MCParticle*>::const_iterator it = mcps.begin(); it != mcps.end(); ++it) {
-      MCParticle* mcp = *it;
+		const vector<const MCParticle*> &mcps = getMCParticles();
+    for (MCParticleVecIte it = mcps.begin(); it != mcps.end(); ++it) {
+      const MCParticle* mcp = *it;
       if (mcp->isSemiStableB()) ++num;
     }
     return num;
@@ -89,33 +89,33 @@ namespace lcfiplus {
 
   int Event::mcNumberOfC() const {
     int num(0);
-		const vector<MCParticle*> &mcps = getMCParticles();
-    for (vector<MCParticle*>::const_iterator it = mcps.begin(); it != mcps.end(); ++it) {
-      MCParticle* mcp = *it;
+		MCParticleVec &mcps = getMCParticles();
+    for (MCParticleVecIte it = mcps.begin(); it != mcps.end(); ++it) {
+      const MCParticle* mcp = *it;
       if (mcp->isSemiStableC()) ++num;
     }
     return num;
   }
 
-  MCParticle* Event::getMCParticle(int id) const {
+  const MCParticle* Event::getMCParticle(int id) const {
     if (id == 0) return 0;
-		const vector<MCParticle*> &mcps = getMCParticles();
-    for (vector<MCParticle*>::const_iterator it = mcps.begin(); it != mcps.end(); ++it) {
-      MCParticle* mcp = *it;
+		MCParticleVec &mcps = getMCParticles();
+    for (MCParticleVecIte it = mcps.begin(); it != mcps.end(); ++it) {
+      const MCParticle* mcp = *it;
       if (mcp->getId() == id) return mcp;
     }
     return 0;
   }
 
-  MCParticle* Event::getMCParticle(const Track* trk) const {
+  const MCParticle* Event::getMCParticle(const Track* trk) const {
     return trk->getMcp();
   }
 
-  vector<MCParticle*> Event::mcGetColorStrings() const {
-    vector<MCParticle*> colorStrings;
-		const vector<MCParticle*> &mcps = getMCParticles();
-    for (vector<MCParticle*>::const_iterator it = mcps.begin(); it != mcps.end(); ++it) {
-      MCParticle* cs = (*it)->getColorString();
+  vector<const MCParticle*> Event::mcGetColorStrings() const {
+    vector<const MCParticle*> colorStrings;
+		MCParticleVec &mcps = getMCParticles();
+    for (MCParticleVecIte it = mcps.begin(); it != mcps.end(); ++it) {
+      const MCParticle* cs = (*it)->getColorString();
       if (find( colorStrings.begin(), colorStrings.end(), cs ) == colorStrings.end() ) {
         colorStrings.push_back(cs);
       }
@@ -147,8 +147,8 @@ namespace lcfiplus {
 
     printf("rescaleErrors() called\n");
 
-    for (vector<Track*>::iterator iter = _tracks.begin(); iter != _tracks.end(); ++iter) {
-      Track* trk = *iter;
+    for (TrackVecIte iter = _tracks.begin(); iter != _tracks.end(); ++iter) {
+      const Track* trk = *iter;
       float c = fabs(sin(atan(trk->getTanLambda())));
       float p = trk->P();
       float d0pull(1);
@@ -238,9 +238,9 @@ namespace lcfiplus {
 		_charge = charge;
 
 		// add myself to the parent particle
-		if(_parent)
-			_parent->addDaughter(this);
-  }
+		if(parent)
+			parent->addDaughter(this);
+	}
 
   int MCParticle::getFlavor() const {
     int mypdg = abs(getPDG());
@@ -253,9 +253,9 @@ namespace lcfiplus {
     return 0;
   }
 
-  MCParticle* MCParticle::getColorString() {
+  const MCParticle* MCParticle::getColorString() const {
     if (getPDG() == 92) return this;
-    MCParticle* parent = getParent();
+    const MCParticle* parent = getParent();
     if (parent == 0) return parent;
     return parent->getColorString();
   }
@@ -264,10 +264,11 @@ namespace lcfiplus {
   // only checks the immediate daughters.
   // if it is found to have decayed semileptonically (e, mu, tau),
   // the pointer to the lepton is returned; zero otherwise.
-  MCParticle* MCParticle::semileptonicDecay() const {
-/*    const vector<MCParticle*>& mcps = _event->getMCParticles();
-    for (vector<MCParticle*>::const_iterator it = mcps.begin(); it != mcps.end(); ++it) {
-      MCParticle* test = *it;
+  const MCParticle* MCParticle::semileptonicDecay() const {
+/*
+    MCParticleVec & mcps = _event->getMCParticles();
+    for (MCParticleVecIte it = mcps.begin(); it != mcps.end(); ++it) {
+      const MCParticle* test = *it;
       int abspdg = abs(test->getPDG());
       if (abspdg == 11 || abspdg == 13 || abspdg == 15) {
         if (test->getParent() == this)
@@ -276,7 +277,7 @@ namespace lcfiplus {
     }
     return 0;*/
 		for(unsigned int i=0;i<_dau.size();i++){
-			MCParticle *test = _dau[i];
+			const MCParticle *test = _dau[i];
       int abspdg = abs(test->getPDG());
       if (abspdg == 11 || abspdg == 13 || abspdg == 15) {
         return test;
@@ -476,8 +477,8 @@ namespace lcfiplus {
     }
   }
 
-  MCParticle* MCParticle::getSemiStableParent() const {
-    MCParticle* parent = getParent();
+  const MCParticle* MCParticle::getSemiStableParent() const {
+    const MCParticle* parent = getParent();
     if (parent == 0) return 0;
     /*
     printf(" current id: %d (pdg=%d), parent id: %d (pdg=%d)\n",
@@ -496,7 +497,7 @@ namespace lcfiplus {
   // iterates over parents to find the most immediate semi-stable particle
   int MCParticle::getFlavorTagCategory() const {
     int tag(0);
-    MCParticle* ssp = getSemiStableParent();
+    const MCParticle* ssp = getSemiStableParent();
 
     if (ssp == 0) {
       tag = 1;
@@ -524,7 +525,7 @@ namespace lcfiplus {
     return tag;
   }
 
-	const TVector3& MCParticle::getEndVertex() {
+	const TVector3& MCParticle::getEndVertex() const{
 		findDauForDecay();
 		return _dauForDecay->getVertex();
 	}
@@ -532,16 +533,16 @@ namespace lcfiplus {
   // find the decay distance by iterating over daughters
   // and grand-daughters (and possibly more generations)
   // to find the shortest distance where a daughter tracks splits off
-  float MCParticle::decayDistance() {
+  float MCParticle::decayDistance() const{
 		findDauForDecay();
     return ( (_dauForDecay->getVertex()-getVertex()).Mag());
   }
 
-  MCParticle* MCParticle::findDauForDecay() {
+  const MCParticle* MCParticle::findDauForDecay() const{
 		if (_dauForDecay) return _dauForDecay;
 
 		for (unsigned int i=0; i<_dau.size(); ++i) {
-			MCParticle* dau = _dau[i];
+			const MCParticle* dau = _dau[i];
 			//printf("  checking dau: %d\n",dau->getPDG());
 			float test = ( dau->getVertex()-getVertex() ).Mag();
 			if (test > 0 && (dau->isStable() || dau->isSemiStable())) {
@@ -554,9 +555,9 @@ namespace lcfiplus {
 		// look at grand daughters if the immediate daughter is unstable
 		// this will actually iterate until we find the first stable particle
 		for (unsigned int i=0; i<_dau.size(); ++i) {
-      MCParticle* dau = _dau[i];
+      const MCParticle* dau = _dau[i];
 			//printf("  calling findDauForDecay for dau %d\n", dau->getPDG());
-			MCParticle* dautmp = dau->findDauForDecay();
+			const MCParticle* dautmp = dau->findDauForDecay();
 			if (dautmp != dau) {
 				_dauForDecay = dautmp;
 				return _dauForDecay;
@@ -567,22 +568,22 @@ namespace lcfiplus {
 		return this;
   }
 
-  float MCParticle::getEx() {
+  float MCParticle::getEx() const{
     if (_dauForDecay == 0) findDauForDecay();
     return _dauForDecay->getVertex().x();
   }
 
-  float MCParticle::getEy() {
+  float MCParticle::getEy() const{
     if (_dauForDecay == 0) findDauForDecay();
     return _dauForDecay->getVertex().y();
   }
 
-  float MCParticle::getEz() {
+  float MCParticle::getEz() const{
     if (_dauForDecay == 0) findDauForDecay();
     return _dauForDecay->getVertex().z();
   }
 
-	bool MCParticle::isParent(MCParticle *mcp)const
+	bool MCParticle::isParent(const MCParticle *mcp)const
 	{
 		if(getParent() == 0)return false;
 		if(getParent() == mcp)return true;
@@ -592,17 +593,17 @@ namespace lcfiplus {
 
   // find all the tracks which originate promptly,
   // including tracks from unstable daughters
-  vector<MCParticle*> MCParticle::promptTracks() {
-    vector<MCParticle*> ret;
+  vector<const MCParticle*> MCParticle::promptTracks() const{
+    vector<const MCParticle*> ret;
     //printf("promptTracks called for particle: %d\n",getPDG());
     //printf("  has daughters: ");
-    for (vector<MCParticle*>::const_iterator it = _dau.begin(); it != _dau.end(); ++it) {
+    for (MCParticleVecIte it = _dau.begin(); it != _dau.end(); ++it) {
       //MCParticle* dau = *it;
       //printf("%d ",dau->getPDG());
     }
     //printf("\n");
-    for (vector<MCParticle*>::const_iterator it = _dau.begin(); it != _dau.end(); ++it) {
-      MCParticle* dau = *it;
+    for (MCParticleVecIte it = _dau.begin(); it != _dau.end(); ++it) {
+      const MCParticle* dau = *it;
       //printf("  - checking daughter: %d\n",dau->getPDG());
       if (dau->getCharge() != 0) {
         if ( dau->isStableTrack() ) {
@@ -612,14 +613,14 @@ namespace lcfiplus {
           //printf("    [%d] is semistable; ignored\n",dau->getPDG());
         } else {
           //printf("    [%d] not stable, looking at daughter\n",dau->getPDG());
-          vector<MCParticle*> more = dau->promptTracks();
+          vector<const MCParticle*> more = dau->promptTracks();
           ret.insert(ret.end(), more.begin(), more.end());
         }
       } else {
         // treat neutral particles
         if ( dau->decayDistance() == decayDistance() ) {
           //printf("    [%d] is neutral and decays promptly, looking at daughter\n",dau->getPDG());
-          vector<MCParticle*> more = dau->promptTracks();
+          vector<const MCParticle*> more = dau->promptTracks();
           ret.insert(ret.end(), more.begin(), more.end());
         } else {
           //printf("    [%d] is neutral and it flies; ignoring\n",dau->getPDG());
@@ -630,11 +631,11 @@ namespace lcfiplus {
     return ret;
   }
 
-  void MCParticle::addDaughter(MCParticle* mcp) {
+  void MCParticle::addDaughter(const MCParticle* mcp) {
     _dau.push_back(mcp);
   }
 
-  void MCParticle::makeHelix() {
+  void MCParticle::makeHelix() const{
     if (_helixOK) return;
     float pos[3] = { getVertex().x(), getVertex().y(), getVertex().z() };
     float mom[3] = { Px(), Py(), Pz() };
@@ -642,41 +643,41 @@ namespace lcfiplus {
     _helixOK = true;
   }
 
-  float MCParticle::getD0() {
+  float MCParticle::getD0() const{
     makeHelix();
     return _helix.getD0();
   }
-  float MCParticle::getZ0() {
+  float MCParticle::getZ0() const{
     makeHelix();
     return _helix.getZ0();
   }
-  float MCParticle::getPhi() {
+  float MCParticle::getPhi() const{
     makeHelix();
     return _helix.getPhi0();
   }
-  float MCParticle::getOmega() {
+  float MCParticle::getOmega() const{
     makeHelix();
     return _helix.getOmega();
   }
-  float MCParticle::getTanLambda() {
+  float MCParticle::getTanLambda() const{
     makeHelix();
     return _helix.getTanLambda();
   }
 
-  void Vertex::add(Track* trk) {
+  void Vertex::add(const Track* trk) {
     _tracks.push_back(trk);
   }
-  void Vertex::add(Track* trk,float chi2){
+  void Vertex::add(const Track* trk,float chi2){
 		_tracks.push_back(trk);
 		_chi2Tracks[trk] = chi2;
 	}
 
-	Track * Vertex::getWorstTrack() const{
+	const Track * Vertex::getWorstTrack() const{
 		if(_chi2Tracks.size() ==0)return 0;
 
-		map<Track *, float>::const_iterator it;
+		map<const Track *, float>::const_iterator it;
 		float chi2max = 0;
-		Track * worstTrack = 0;
+		const Track * worstTrack = 0;
 		for(it = _chi2Tracks.begin(); it != _chi2Tracks.end();it++){
 			if(chi2max < it->second){
 				worstTrack = it->first;
@@ -800,7 +801,7 @@ namespace lcfiplus {
 
 	TLorentzVector Vertex::getFourMomentum() const {
 		TLorentzVector ret;
-		vector<Track*>::const_iterator iter;
+		TrackVecIte iter;
 		for (iter = _tracks.begin(); iter != _tracks.end(); ++iter) {
 			ret += **iter;
 		}
@@ -845,15 +846,15 @@ namespace lcfiplus {
     return distSq;
   }
 
-MCParticle * Vertex::getMcp()const
+const MCParticle * Vertex::getMcp()const
 {
-	map<MCParticle *, int>::iterator it;
-	map<MCParticle *, int> mapmcp;
+	map<const MCParticle *, int>::iterator it;
+	map<const MCParticle *, int> mapmcp;
 	for(unsigned int i=0;i<getTracks().size();i++){
-		MCParticle *mcp = getTracks()[i]->getMcp()->getSemiStableParent();
+		const MCParticle *mcp = getTracks()[i]->getMcp()->getSemiStableParent();
 		if(!mcp)continue;
 		if(mcp->getPDG() == 111){
-		  MCParticle *mcd = getTracks()[i]->getMcp();
+		  const MCParticle *mcd = getTracks()[i]->getMcp();
 		  cout << "pi0 found!" << mcd->getPDG() << ", " << mcd->getParent()->getPDG() << ", " << mcd->getParent()->getParent()->getPDG() << endl;
 		}
 		it = mapmcp.find(mcp);
@@ -862,7 +863,7 @@ MCParticle * Vertex::getMcp()const
 		else
 		  it->second = it->second + 1;
 	}
-	int nmcpmax = 0;MCParticle *mcpmax = 0;
+	int nmcpmax = 0;const MCParticle *mcpmax = 0;
 	for(it = mapmcp.begin(); it != mapmcp.end();it++){
 		if(it->second > nmcpmax){mcpmax = it->first;nmcpmax = it->second;}
 		cout << it->second << ": " << it->first->getPDG() << ", ";			
@@ -873,7 +874,7 @@ MCParticle * Vertex::getMcp()const
 
 double Vertex::dirdot(const Vertex* primary) const {
 	TLorentzVector sum;
-	for (vector<Track*>::const_iterator iter = _tracks.begin(); iter != _tracks.end(); ++iter) {
+	for (TrackVecIte iter = _tracks.begin(); iter != _tracks.end(); ++iter) {
 		sum += **iter;
 	}
 	TVector3 posip;
@@ -921,11 +922,11 @@ bool Vertex::passesV0selection(const Vertex* primary) const {
 	return false;
 }
 
-  Jet::Jet(Track* trk) : TLorentzVector(*trk), _id(-1) {
+  Jet::Jet(const Track* trk) : TLorentzVector(*trk), _id(-1) {
     _tracks.push_back(trk);
   }
   
-  Jet::Jet(Neutral* neut) : TLorentzVector(*neut), _id(-1) {
+  Jet::Jet(const Neutral* neut) : TLorentzVector(*neut), _id(-1) {
     _neutrals.push_back(neut);
   }
 
@@ -935,10 +936,10 @@ bool Vertex::passesV0selection(const Vertex* primary) const {
    */
   void Jet::add( const Jet& jet ) {
     *this += jet;
-    for (vector<Track*>::const_iterator iter = jet.getTracks().begin(); iter != jet.getTracks().end(); ++iter) {
+    for (TrackVecIte iter = jet.getTracks().begin(); iter != jet.getTracks().end(); ++iter) {
       _tracks.push_back(*iter);
     }
-    for (vector<Neutral*>::const_iterator iter = jet.getNeutrals().begin(); iter != jet.getNeutrals().end(); ++iter) {
+    for (NeutralVecIte iter = jet.getNeutrals().begin(); iter != jet.getNeutrals().end(); ++iter) {
       _neutrals.push_back(*iter);
     }
   }
@@ -956,8 +957,8 @@ bool Vertex::passesV0selection(const Vertex* primary) const {
 		sphMat(1,2) = 0;
 		sphMat(2,2) = 0;
 
-		const vector<Track*>& tracks = getTracks();
-		for (vector<Track*>::const_iterator iter = tracks.begin(); iter != tracks.end(); ++iter) {
+		TrackVec & tracks = getTracks();
+		for (TrackVecIte iter = tracks.begin(); iter != tracks.end(); ++iter) {
 			TLorentzVector trkVec(**iter);
 			trkVec.Boost(-jetBoost);
 			sphMat(0,0) += trkVec.X()*trkVec.X();

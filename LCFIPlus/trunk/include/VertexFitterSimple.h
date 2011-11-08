@@ -120,7 +120,7 @@ namespace lcfiplus {
 				return vtx;
 			}
 
-			double getChi2(Vertex *vtx, Track *trk, int mode=1){
+			double getChi2(Vertex *vtx, const Track *trk, int mode=1){
 				// 110510 suehara for IPassoc study
 				if(mode == 0){
 					// mode 0: no fit at all
@@ -161,8 +161,8 @@ namespace lcfiplus {
 		};
 
 
-		typedef VertexFitterSimple<vector<Track *>::const_iterator > VertexFitterSimple_V;
-		typedef VertexFitterSimple<list<Track *>::const_iterator > VertexFitterSimple_L;
+		typedef VertexFitterSimple<vector<const Track *>::const_iterator > VertexFitterSimple_V;
+		typedef VertexFitterSimple<list<const Track *>::const_iterator > VertexFitterSimple_L;
 }
 
 #endif

@@ -186,9 +186,9 @@ float jointProbD0(const Jet* jet, const Vertex* pri) {
 	int ntrk(0);
 	float hiprob(0);
 
-	vector<Track*> tracks = jet->getTracks();
-	for (vector<Track*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
-		Track* trk = *it;
+	TrackVec & tracks = jet->getTracks();
+	for (TrackVecIte it = tracks.begin(); it != tracks.end(); ++it) {
+		const Track* trk = *it;
 		if (trk->getD0() < 5 && trk->getZ0() < 5
 				&& trk->getVtxHits() >= 5) {
 
@@ -229,9 +229,9 @@ float jointProbZ0(const Jet* jet, const Vertex* pri) {
 	int ntrk(0);
 	float hiprob(0);
 
-	vector<Track*> tracks = jet->getTracks();
-	for (vector<Track*>::iterator it = tracks.begin(); it != tracks.end(); ++it) {
-		Track* trk = *it;
+	TrackVec &tracks = jet->getTracks();
+	for (TrackVecIte it = tracks.begin(); it != tracks.end(); ++it) {
+		const Track* trk = *it;
 		if (trk->getD0() < 5 && trk->getZ0() < 5
 				&& trk->getVtxHits() >= 5) {
 			float sig = fabs( trackZ0Significance(trk,pri) );
@@ -269,9 +269,9 @@ float jointProbZ0(const Jet* jet, const Vertex* pri) {
 void findMostSignificantTrack(const Jet* jet, const Vertex* pri, float sigVec[6]) {
 	float trk1d0sig(-1e3);
 	float trk2d0sig(-1e3);
-	Track* trk1(0);
-	Track* trk2(0);
-	const vector<Track*>& tracks = jet->getTracks();
+	const Track* trk1(0);
+	const Track* trk2(0);
+	const vector<const Track*>& tracks = jet->getTracks();
 
 	for (int i=0; i<6; ++i) {
 		sigVec[i] = 0;
@@ -282,8 +282,8 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, float sigVec[6]
 		return;
 	}
 
-	for (vector<Track*>::const_iterator iter = tracks.begin(); iter != tracks.end(); ++iter) {
-		Track* trk = *iter;
+	for (TrackVecIte iter = tracks.begin(); iter != tracks.end(); ++iter) {
+		const Track* trk = *iter;
 
 		int nHitCut = 5;
 		int nVTX = trk->getVtxHits();

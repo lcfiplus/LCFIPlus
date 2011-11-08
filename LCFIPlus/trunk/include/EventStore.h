@@ -31,7 +31,11 @@ namespace lcfiplus {
 //			static EventStore * Instance();
 
 			// register flags
-			enum{PERSIST = 1, JET_EXTRACT_VERTEX = 2};
+			enum{
+				DO_NOT_DELETE = 0x0001, // do not delete pointed object at ClearObjects(): to be used in reference collections
+				PERSIST = 0x0002, // lcio: to be saved in the output
+				JET_EXTRACT_VERTEX = 0x1000
+			};
 
 			// Check collection
 			bool IsExist(const char *name)const;
@@ -39,7 +43,8 @@ namespace lcfiplus {
 			// Object retrieval
 			const char * GetClassName(const char *name)const;
 			void * GetObject(const char *name)const; // CAUTION: no type check
-			template<typename T> bool Get(const char *name, const vector<T*> *& buf)const;	// for pointer-vector classes
+			template<typename T> bool Get(const char *name, const vector<const T*> *& buf)const;	// for pointer-vector classes, add const
+			template<typename T> bool Get(const char *name, const vector<T*> *& buf)const;	// non-const pointer vector prohibited: invoke error 
 			template<typename T> bool Get(const char *name, const vector<T> *& buf)const;	// for vector classes
 			template<typename T> bool Get(const char *name, const T*& buf)const;						// for non-vector
 
@@ -102,8 +107,16 @@ namespace lcfiplus {
 
 		return true;
 	}
-	// pointer-vector version
+
+	// non-const pointer-vector prohibited
 	template<typename T> bool EventStore::Get(const char *name, const vector<T*>* &buf)const{
+		T a = "abc"; // invoke compiler error
+		throw("EventStore::Get: non-const pointer-vector prohibited");
+		return false;
+	}
+
+	// pointer-vector version
+	template<typename T> bool EventStore::Get(const char *name, const vector<const T*>* &buf)const{
 		const char *elemclasname = TClass::GetClass(typeid(T))->GetName();
 		string vectclasname = "vector<";
 		vectclasname += elemclasname;
@@ -112,7 +125,7 @@ namespace lcfiplus {
 		_itMap = _objectMap.find(name);
 
 		if(_itMap == _objectMap.end() || _itMap->second.classname != vectclasname)return false;
-		buf = static_cast<const vector<T*>*>(GetObject(name));
+		buf = static_cast<const vector<const T*>*>(GetObject(name));
 
 		return true;
 	}
