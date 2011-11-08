@@ -34,26 +34,26 @@ namespace lcfiplus {
 
 		// find 2-track vertices
 		// track, chi-square threshold, maximum invmass, minimum impact parameter significance of tracks (either)
-		vector<lcfiplus::Vertex*> * findCandidates(const vector<Track *> &tracks, double chi2th, double massth, double ipsigth);
+		vector<lcfiplus::Vertex*> * findCandidates(TrackVec &tracks, double chi2th, double massth, double ipsigth);
 
 		// find one vertex with build-up method
-		lcfiplus::Vertex* findOne(list<Track *> &tracks, double chi2th, double massth, bool removeTracks);
+		lcfiplus::Vertex* findOne(list<const Track *> &tracks, double chi2th, double massth, bool removeTracks);
 		// VertexFitterSimple version
-		lcfiplus::Vertex* findOne2(list<Track *> &tracks, double chi2th, double massth, bool removeTracks);
+		lcfiplus::Vertex* findOne2(list<const Track *> &tracks, double chi2th, double massth, bool removeTracks);
 
 		// compare functions
 		bool VertexNearer(const Vertex *vtx1, const Vertex *vtx2);
 		bool VertexProbLarger(const Vertex *vtx1, const Vertex *vtx2);
 
 		// obtain vertex list
-		void GetVertexList(list<Track *> &tracks, vector<Vertex *> &vtx, double chi2th, double massth, double posth = 0.3, double chi2orderinglimit = 1.0);
+		void GetVertexList(list<const Track *> &tracks, vector<Vertex *> &vtx, double chi2th, double massth, double posth = 0.3, double chi2orderinglimit = 1.0);
 
 		// associating tracks to an existing vertex
-		lcfiplus::Vertex * associateTracks(Vertex *vertex, list<Track *> &tracks, double chi2th, double massth, list<Track *> *residualTracks = 0);
+		lcfiplus::Vertex * associateTracks(Vertex *vertex, list<const Track *> &tracks, double chi2th, double massth, list<const Track *> *residualTracks = 0);
 		void associateIPTracks(vector<Vertex *> &vertices, double minimumdist = 0., int chi2mode = 0, double chi2ratio = 2.0);
 
-		void buildUp(const vector<Track *> &tracks, vector<Vertex *> &vtx, double chi2thpri, double chi2thsec, double massth, double posth = 0.3, double chi2orderinglimit = 1.0, Vertex *ip = 0);
-		void buildUpForJetClustering(const vector<Track *> &tracks, vector<Vertex *> &vtx);
+		void buildUp(TrackVec &tracks, vector<Vertex *> &vtx, double chi2thpri, double chi2thsec, double massth, double posth = 0.3, double chi2orderinglimit = 1.0, Vertex *ip = 0);
+		void buildUpForJetClustering(TrackVec &tracks, vector<Vertex *> &vtx);
 	}
 
 	//vector<lcfiplus::Vertex*> * findSueharaVertices(const Event& evt, const Jet& jet);

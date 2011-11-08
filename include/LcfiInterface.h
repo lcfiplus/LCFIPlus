@@ -52,11 +52,11 @@ namespace lcfiplus {
       ~LcfiInterface();
 
       Vertex* findPrimaryVertex();
-      vector<Vertex*> findSecondaryVertices(Jet* jet, const SecondaryVertexConfig& cfg);
+      vector<Vertex*> findSecondaryVertices(const Jet* jet, const SecondaryVertexConfig& cfg);
       //void probMap( map<Track*,float>& probMap );
 			vector<Vertex*> forceZvtop(const Jet& jet);
 
-			double getChi2TrackVtx(Vertex *vtx, Track *trk) const;
+			double getChi2TrackVtx(const Vertex *vtx, const Track *trk) const;
 //      bool passesCut(const Track* trk, const SecondaryVertexConfig& cfg);
 			double vertexMassPtCorrection( const Vertex* secondary, const Vertex* primary, const TVector3& momentum, float sigmax ) const;
 			bool debug;

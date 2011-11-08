@@ -136,7 +136,7 @@ namespace lcfiplus {
 			void process() {
 				_result = 0;
 				TLorentzVector vtxp4;
-				const vector<Vertex*>& vtxList = _jet->getVertices();
+				const vector<const Vertex*>& vtxList = _jet->getVertices();
 				for (unsigned int j=0; j<vtxList.size(); ++j) {
 					vtxp4 += vtxList[j]->getFourMomentum();
 				}
@@ -171,7 +171,7 @@ namespace lcfiplus {
 				_result = 0;
 				if (_jet->getVertices().size()>0) {
 					TLorentzVector vtxp4;
-					const vector<Vertex*>& vtxList = _jet->getVertices();
+					const vector<const Vertex*>& vtxList = _jet->getVertices();
 					for (unsigned int j=0; j<vtxList.size(); ++j) {
 						vtxp4 += vtxList[j]->getFourMomentum();
 					}
@@ -191,9 +191,9 @@ namespace lcfiplus {
 				_result = 0;
 				if (_jet->getVertices().size()>0) {
 					double oneMinusProb = 1.;
-					const vector<Vertex*>& vtxList = _jet->getVertices();
+					VertexVec & vtxList = _jet->getVertices();
 					for (unsigned int j=0; j<vtxList.size(); ++j) {
-						const vector<Track*>& vtxTracks = vtxList[j]->getTracks();
+						TrackVec & vtxTracks = vtxList[j]->getTracks();
 						int ndf = 2*vtxTracks.size()-3;
 						double prob = TMath::Prob(vtxList[j]->getChi2(),ndf);
 						oneMinusProb *= (1-prob);
@@ -210,7 +210,7 @@ namespace lcfiplus {
 				_result = 0;
 				if (_jet->getVertices().size()>0) {
 					TLorentzVector vtxp4;
-					const vector<Vertex*>& vtxList = _jet->getVertices();
+					VertexVec & vtxList = _jet->getVertices();
 					for (unsigned int j=0; j<vtxList.size(); ++j) {
 						vtxp4 += vtxList[j]->getFourMomentum();
 					}
@@ -245,7 +245,7 @@ namespace lcfiplus {
 			void process() {
 				_result = 0;
 				if (_jet->getVertices().size()>0) {
-					const vector<Vertex*>& vtxList = _jet->getVertices();
+					VertexVec & vtxList = _jet->getVertices();
 					_result += vtxList.size();
 				}
 			}
@@ -405,14 +405,14 @@ namespace lcfiplus {
 		Event *event = Event::Instance();
 		if (event->getTracks().size() == 0) return;
 
-		const vector<Track*>& tracks = event->getTracks();
-		const vector<Jet*>* jetsPtr(0);
+		TrackVec & tracks = event->getTracks();
+		JetVec *jetsPtr(0);
 		bool success = event->Get("VertexJets", jetsPtr);
 		if (!success) {
 			cout << "jets could not be found" << endl;
 			return;
 		}
-		const vector<Jet*>& jets = *jetsPtr;
+		JetVec& jets = *jetsPtr;
 
 		FTManager &mgr = FTManager::getInstance();
 		mgr.process(event, jets);

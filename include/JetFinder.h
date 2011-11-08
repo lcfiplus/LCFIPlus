@@ -23,7 +23,7 @@ namespace lcfiplus {
     JetConfig() : nJet(0),Ycut(1),coneR(0),epsCut(0), coreThreshold(0),distCut(0),nIteration(5) {}
   };
 
-	Jet* convertJetVertex(Jet* jet);
+	Jet* convertJetVertex(const Jet* jet);
 
   class JetFinder {
     public:
@@ -35,9 +35,9 @@ namespace lcfiplus {
 
       JetFinder(const JetConfig& cfg);
       ~JetFinder() {};
-      vector<Jet*> run(vector<Track*> tracks);
-      vector<Jet*> run(vector<Track*> tracks, vector<Neutral*> neutrals, double *pymin = 0);
-      vector<Jet*> run(vector<Track*> tracks, vector<Neutral*> neutrals, vector<Vertex *> vertices, double *pymin = 0, bool findmu = false);
+      vector<Jet*> run(TrackVec &tracks);
+      vector<Jet*> run(TrackVec &tracks, NeutralVec &neutrals, double *pymin = 0);
+      vector<Jet*> run(TrackVec &tracks, NeutralVec &neutrals, VertexVec &vertices, double *pymin = 0, bool findmu = false);
       vector<Jet*> run(vector<Jet*> input, double *pymin = 0);
 
     private:
@@ -50,7 +50,7 @@ namespace lcfiplus {
       CheatedJetFinder(const JetConfig& cfg);
       ~CheatedJetFinder() {};
       vector<Jet*> run(Event* event);
-      vector<MCParticle*> originalPartons( const vector<MCParticle*>& mcps );
+      vector<MCParticle*> originalPartons( MCParticleVec & mcps );
 
     private:
       double (*_Yfunc)(Jet& jet1, Jet& jet2, double Evis2);

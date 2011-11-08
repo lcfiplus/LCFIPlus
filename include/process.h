@@ -75,7 +75,7 @@ namespace lcfiplus{
 		ClassDef(JetClustering,1);
 
 	private:
-		const std::vector<Vertex *> * _vertices; //!
+		VertexVec * _vertices; //!
 		std::vector<Jet *> * _jets; //!
 		int _njets;
 		double _ycut;

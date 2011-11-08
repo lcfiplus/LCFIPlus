@@ -16,13 +16,13 @@ vector<lcfiplus::Vertex*> * lcfiplus::findTearDownVertices(const Event& evt, con
 
 	// copy tracks in the jet into a list
 	//const vector<Track *> &v = jets[nj]->getTracks();
-	const vector<Track *> &v = jet.getTracks();
-	list<Track *> tracksInJet;
+	const vector<const Track *> &v = jet.getTracks();
+	list<const Track *> tracksInJet;
 	tracksInJet.resize(v.size());
 	copy(v.begin(), v.end(), tracksInJet.begin());
 
 	while(tracksInJet.size() >= 2){
-		list<Track *> residuals;
+		list<const Track *> residuals;
 		lcfiplus::Vertex *secvtx = lcfiplus::VertexFinderTearDown<list>()(tracksInJet,0, chi2, &residuals);
 		if(!secvtx)break;
 
@@ -32,7 +32,7 @@ vector<lcfiplus::Vertex*> * lcfiplus::findTearDownVertices(const Event& evt, con
 			cout << "    Secondary vertex found! pos = (" << secvtx->getX() << "," << secvtx->getY() << "," << secvtx->getZ() << "), chi2 = "
 				<< secvtx->getChi2() << endl;
 		for(unsigned int i=0;i<secvtx->getTracks().size();i++){
-			Track * tr = secvtx->getTracks()[i];
+			const Track * tr = secvtx->getTracks()[i];
 			if(verbose) {
 				cout << "        Track #" << i << ": p = (" << tr->Px() << "," << tr->Py() << "," << tr->Pz() << "), chi2 = "
 					<< secvtx->getChi2Track(tr) << ", mcFlavorType = "
@@ -45,7 +45,7 @@ vector<lcfiplus::Vertex*> * lcfiplus::findTearDownVertices(const Event& evt, con
 	return pvertices;
 }
 
-lcfiplus::Vertex * lcfiplus::findPrimaryVertex(const vector<Track *> &tracks, double chi2)
+lcfiplus::Vertex * lcfiplus::findPrimaryVertex(TrackVec &tracks, double chi2)
 {
 	Vertex *ip;
 	makeBeamVertex(ip);

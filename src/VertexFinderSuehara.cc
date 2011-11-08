@@ -11,7 +11,7 @@
 using namespace lcfiplus;
 using namespace lcfiplus::VertexFinderSuehara;
 
-vector<lcfiplus::Vertex*> * lcfiplus::VertexFinderSuehara::findCandidates(const vector<Track *> &tracks, double chi2th, double massth, double ipchi2th) {
+vector<lcfiplus::Vertex*> * lcfiplus::VertexFinderSuehara::findCandidates(TrackVec &tracks, double chi2th, double massth, double ipchi2th) {
 	vector<lcfiplus::Vertex *> * pvertices;
 	pvertices = new vector<lcfiplus::Vertex*>;
 
@@ -20,7 +20,7 @@ vector<lcfiplus::Vertex*> * lcfiplus::VertexFinderSuehara::findCandidates(const 
 
 	// copy tracks in the jet into a list
 	//const vector<Track *> &v = jets[nj]->getTracks();
-	list<Track *> trackList,trackList2;
+	list<const Track *> trackList,trackList2;
 	trackList.resize(tracks.size());
 	copy(tracks.begin(), tracks.end(), trackList.begin());
 
@@ -31,7 +31,7 @@ vector<lcfiplus::Vertex*> * lcfiplus::VertexFinderSuehara::findCandidates(const 
 
 	// create pair-vertex
 	cout << "TrackList size: " << trackList.size() << endl;
-	list<Track *>::iterator trkit1, trkit2, trkit3, trkit4;
+	list<const Track *>::iterator trkit1, trkit2, trkit3, trkit4;
 // 	for(trkit1 = trackList.begin(); trkit1 != trackList.end(); trkit1 ++)
 // 	{
 // //		double ipchi2 = lcfi.getChi2TrackVtx(priVertex, *trkit1);
@@ -86,7 +86,7 @@ vector<lcfiplus::Vertex*> * lcfiplus::VertexFinderSuehara::findCandidates(const 
 		{
 			unsigned int i;
 			for(i=0;i<pvertices->size();i++){
-				const vector<Track *> & trs = (*pvertices)[i]->getTracks();
+				TrackVec & trs = (*pvertices)[i]->getTracks();
 				if(find(trs.begin(), trs.end(), *trkit1) != trs.end() && find(trs.begin(), trs.end(), *trkit2) != trs.end())
 					break;
 			}
@@ -107,7 +107,7 @@ vector<lcfiplus::Vertex*> * lcfiplus::VertexFinderSuehara::findCandidates(const 
 			if(mass > massth)continue;
 
 			// obtain vertex
-			vector<Track *> vttmp;
+			vector<const Track *> vttmp;
 			vttmp.push_back(*trkit1);
 			vttmp.push_back(*trkit2);
 
@@ -139,16 +139,16 @@ vector<lcfiplus::Vertex*> * lcfiplus::VertexFinderSuehara::findCandidates(const 
 			cout << "Chi2 = " << vtx->getChi2() << ", Pos = (" << vtx->getX() << ", " << vtx->getY() << ", " << vtx->getZ() << "), ";
 			cout << "DIST: " << dist << ", POCA: " << hpos[0] << ", " << hpos[1] << ", " << hpos[2] << ", ";
 
-			MCParticle *mcp1 = vtx->getTracks()[0]->getMcp();
-			MCParticle *mcp2 = vtx->getTracks()[1]->getMcp();
+			const MCParticle *mcp1 = vtx->getTracks()[0]->getMcp();
+			const MCParticle *mcp2 = vtx->getTracks()[1]->getMcp();
 
-			MCParticle *p1 = mcp1->getSemiStableParent();
-			MCParticle *p2 = mcp2->getSemiStableParent();
+			const MCParticle *p1 = mcp1->getSemiStableParent();
+			const MCParticle *p2 = mcp2->getSemiStableParent();
 
 			bool sameVertex = false;
-			list<MCParticle *>palist;
+			list<const MCParticle *>palist;
 
-			MCParticle *p = p1;
+			const MCParticle *p = p1;
 			while(p){
 				palist.push_back(p);
 				p = p->getSemiStableParent();
@@ -213,7 +213,7 @@ vector<lcfiplus::Vertex*> * lcfiplus::VertexFinderSuehara::findCandidates(const 
 	return pvertices;
 }
 
-lcfiplus::Vertex* VertexFinderSuehara::findOne(list<Track *> &tracks, double chi2th, double massth, bool removeTracks){
+lcfiplus::Vertex* VertexFinderSuehara::findOne(list<const Track *> &tracks, double chi2th, double massth, bool removeTracks){
 	// copy tracks in the jet into a list
 	//const vector<Track *> &v = jets[nj]->getTracks();
 	bool verbose = false;
@@ -222,9 +222,9 @@ lcfiplus::Vertex* VertexFinderSuehara::findOne(list<Track *> &tracks, double chi
 
 	if(verbose)
 		cout << "Tracks: " << tracks.size() << endl;
-	list<Track *>::iterator trkit1, trkit2, trkit3, trkit4;
+	list<const Track *>::iterator trkit1, trkit2, trkit3, trkit4;
 
-	Track *tr1, *tr2;
+	const Track *tr1, *tr2;
 	double minimumchi2 = chi2th;
 	Vertex *curvtx = 0;
 	TLorentzVector vsum;
@@ -241,7 +241,7 @@ lcfiplus::Vertex* VertexFinderSuehara::findOne(list<Track *> &tracks, double chi
 			if(mass > massth)continue;
 
 			// obtain vertex
-			vector<Track *> vttmp;
+			vector<const Track *> vttmp;
 			vttmp.push_back(*trkit1);
 			vttmp.push_back(*trkit2);
 
@@ -285,12 +285,12 @@ lcfiplus::Vertex* VertexFinderSuehara::findOne(list<Track *> &tracks, double chi
 	if(removeTracks)tracks.remove(tr1);
 	if(removeTracks)tracks.remove(tr2);
 
-	vector<Track *> vt;
+	vector<const Track *> vt;
 	vt.push_back(tr1);
 	vt.push_back(tr2);
 
 	do{
-		Track *tra = 0;
+		const Track *tra = 0;
 		minimumchi2 = chi2th;
 		for(trkit1 = tracks.begin(); trkit1 != tracks.end(); trkit1 ++)
 		{
@@ -328,14 +328,14 @@ lcfiplus::Vertex* VertexFinderSuehara::findOne(list<Track *> &tracks, double chi
 	return curvtx;
 }
 
-lcfiplus::Vertex* VertexFinderSuehara::findOne2(list<Track *> &tracks, double chi2th, double massth, bool removeTracks){
+lcfiplus::Vertex* VertexFinderSuehara::findOne2(list<const Track *> &tracks, double chi2th, double massth, bool removeTracks){
 	// copy tracks in the jet into a list
 	//const vector<Track *> &v = jets[nj]->getTracks();
 	bool verbose = false;
 
 	if(verbose)
 		cout << "Tracks: " << tracks.size() << endl;
-	list<Track *>::iterator trkit1, trkit2;
+	list<const Track *>::iterator trkit1, trkit2;
 
 	double minchi2_2tr = chi2th;
 	double mindist_2tr = 1e+300;
@@ -355,7 +355,7 @@ lcfiplus::Vertex* VertexFinderSuehara::findOne2(list<Track *> &tracks, double ch
 			if(mass > massth)continue;
 
 			// obtain vertex
-			vector<Track *> vttmp;
+			vector<const Track *> vttmp;
 			vttmp.push_back(*trkit1);
 			vttmp.push_back(*trkit2);
 
@@ -425,14 +425,14 @@ bool VertexFinderSuehara::VertexProbLarger(const Vertex *vtx1, const Vertex *vtx
 	return vtx1->getProb() > vtx2->getProb();
 }
 
-void VertexFinderSuehara::GetVertexList(list<Track *> &tracks, vector<Vertex *> &vtx, double chi2th, double massth, double posth, double chi2orderinglimit)
+void VertexFinderSuehara::GetVertexList(list<const Track *> &tracks, vector<Vertex *> &vtx, double chi2th, double massth, double posth, double chi2orderinglimit)
 {
 	// lists of found vertices
 	list<Vertex *> tr3list;
 	list<Vertex *> tr2distlist;
 	list<Vertex *> tr2problist;
 
-	list<Track *>::iterator trkit1, trkit2;
+	list<const Track *>::iterator trkit1, trkit2;
 
 	bool verbose = false;
 
@@ -464,7 +464,7 @@ void VertexFinderSuehara::GetVertexList(list<Track *> &tracks, vector<Vertex *> 
 			if(mass > massth)continue;
 
 			// obtain vertex
-			vector<Track *> vttmp;
+			vector<const Track *> vttmp;
 			vttmp.push_back(*trkit1);
 			vttmp.push_back(*trkit2);
 
@@ -542,11 +542,11 @@ void VertexFinderSuehara::GetVertexList(list<Track *> &tracks, vector<Vertex *> 
 			for(itv = tr3list.begin();itv != tr3list.end(); itv ++){
 				Vertex *v = (*itv);
 				for(unsigned int itr=0;itr<curvtx->getTracks().size();itr++){
-					Track *tr = curvtx->getTracks()[itr];
+					const Track *tr = curvtx->getTracks()[itr];
 					if(find(v->getTracks().begin(), v->getTracks().end(), tr) != v->getTracks().end()){
 						// new vertex with smaller # of tracks
-						vector<Track *> vttmp = v->getTracks();
-						vector<Track *>::iterator itt = find(vttmp.begin(), vttmp.end(), tr);
+						vector<const Track *> vttmp = v->getTracks();
+						vector<const Track *>::iterator itt = find(vttmp.begin(), vttmp.end(), tr);
 						vttmp.erase(itt);
 
 						Vertex *vtx = VertexFitterSimple_V() (vttmp.begin(), vttmp.end(), 0);
@@ -571,7 +571,7 @@ void VertexFinderSuehara::GetVertexList(list<Track *> &tracks, vector<Vertex *> 
 			for(itv = tr2distlist.begin();itv != tr2distlist.end(); itv ++){
 				Vertex *v = (*itv);
 				for(unsigned int itr=0;itr<curvtx->getTracks().size();itr++){
-					Track *tr = curvtx->getTracks()[itr];
+					const Track *tr = curvtx->getTracks()[itr];
 					if(find(v->getTracks().begin(), v->getTracks().end(), tr) != v->getTracks().end()){
 						// vertex removed
 						delete v;
@@ -588,7 +588,7 @@ void VertexFinderSuehara::GetVertexList(list<Track *> &tracks, vector<Vertex *> 
 			for(itv = tr2problist.begin();itv != tr2problist.end(); itv ++){
 				Vertex *v = (*itv);
 				for(unsigned int itr=0;itr<curvtx->getTracks().size();itr++){
-					Track *tr = curvtx->getTracks()[itr];
+					const Track *tr = curvtx->getTracks()[itr];
 					if(find(v->getTracks().begin(), v->getTracks().end(), tr) != v->getTracks().end()){
 						// vertex removed
 						delete v;
@@ -605,9 +605,9 @@ void VertexFinderSuehara::GetVertexList(list<Track *> &tracks, vector<Vertex *> 
 }
 
 
-Vertex * VertexFinderSuehara::associateTracks(Vertex *vertex, list<Track *> &tracks, double chi2th, double massth, list<Track *> *residualTracks)
+Vertex * VertexFinderSuehara::associateTracks(Vertex *vertex, list<const Track *> &tracks, double chi2th, double massth, list<const Track *> *residualTracks)
 {
-	vector<Track *> vt;
+	vector<const Track *> vt;
 	TLorentzVector vsum;
 
 	if(residualTracks){
@@ -625,9 +625,9 @@ Vertex * VertexFinderSuehara::associateTracks(Vertex *vertex, list<Track *> &tra
 
 	Vertex * curvtx = vertex;
 
-	list<Track *>::iterator trkit1;
+	list<const Track *>::iterator trkit1;
 	do{
-		Track *tra = 0;
+		const Track *tra = 0;
 		double minchi2 = chi2th;
 		for(trkit1 = tracks.begin(); trkit1 != tracks.end(); trkit1 ++)
 		{
@@ -682,7 +682,7 @@ void VertexFinderSuehara::associateIPTracks(vector<Vertex *> &vertices, double m
 	bool verbose = true;
 
 	Vertex *ip = vertices[0];
-	vector<Track *>::const_iterator it;
+	vector<const Track *>::const_iterator it;
 
 	Vertex *vbeam;
 	algoEtc::makeBeamVertex(vbeam);
@@ -694,7 +694,7 @@ void VertexFinderSuehara::associateIPTracks(vector<Vertex *> &vertices, double m
 			v += *(vertices[i]->getTracks()[j]);
 		}
 
-		vector<Track *> iptracks;
+		vector<const Track *> iptracks;
 		for(it = ip->getTracks().begin(); it != ip->getTracks().end();it++){
 			TLorentzVector v2 = **it;
 			if((v + v2).M() - v.M() > min(v.E(), v2.E()))continue;
@@ -712,7 +712,7 @@ void VertexFinderSuehara::associateIPTracks(vector<Vertex *> &vertices, double m
 
 			if(chi2ip > chi2new * chi2ratio){
 				// invoke vertex fitter
-				vector<Track *> tracks = vertices[i]->getTracks();
+				vector<const Track *> tracks = vertices[i]->getTracks();
 				tracks.push_back(*it);
 				Vertex *vtx = VertexFitterSimple_V()(tracks.begin(), tracks.end(), vertices[i],true);
 
@@ -737,7 +737,7 @@ void VertexFinderSuehara::associateIPTracks(vector<Vertex *> &vertices, double m
 	delete vbeam;
 }
 
-void VertexFinderSuehara::buildUp(const vector<Track *> &tracks, vector<Vertex *> &vtx, double chi2thpri, double chi2thsec, double massth, double posth, double chi2orderinglimit, Vertex *ip)
+void VertexFinderSuehara::buildUp(TrackVec &tracks, vector<Vertex *> &vtx, double chi2thpri, double chi2thsec, double massth, double posth, double chi2orderinglimit, Vertex *ip)
 {
 	// obtain primary vertex
 	Vertex *nip = 0;
@@ -750,7 +750,7 @@ void VertexFinderSuehara::buildUp(const vector<Track *> &tracks, vector<Vertex *
 	}
 
 	// pickup residuals
-	list<Track *> residualTracks;
+	list<const Track *> residualTracks;
 	for(unsigned int i=0;i<tracks.size();i++){
 		if(find(ip->getTracks().begin(), ip->getTracks().end(), tracks[i]) == ip->getTracks().end()){
 			residualTracks.push_back(tracks[i]);
@@ -774,7 +774,7 @@ void VertexFinderSuehara::buildUp(const vector<Track *> &tracks, vector<Vertex *
 */
 }
 
-void VertexFinderSuehara::buildUpForJetClustering(const vector<Track *> &tracks, vector<Vertex *> &vtx)
+void VertexFinderSuehara::buildUpForJetClustering(TrackVec &tracks, vector<Vertex *> &vtx)
 {
 	double chi2th = 25.0;
 	double massth = 10.0;

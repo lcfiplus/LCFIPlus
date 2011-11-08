@@ -23,7 +23,7 @@ namespace lcfiplus {
 				LcfiInterface lcfi;
 
 				vector<vertex_lcfi::TrackState *> trackStates;
-				map<vertex_lcfi::TrackState *, Track *> trackMap;
+				map<vertex_lcfi::TrackState *, const Track *> trackMap;
 
 				for(Iterator it = tracksBegin; it != tracksEnd; it++){
 					vertex_lcfi::Track* ptr = lcfi.lcfiTrack(*it);
@@ -95,8 +95,8 @@ namespace lcfiplus {
 			}
 		};
 
-		typedef VertexFitterLCFI<vector<Track *>::const_iterator > VertexFitterLCFI_V;
-		typedef VertexFitterLCFI<list<Track *>::const_iterator > VertexFitterLCFI_L;
+		typedef VertexFitterLCFI<vector<const Track *>::const_iterator > VertexFitterLCFI_V;
+		typedef VertexFitterLCFI<list<const Track *>::const_iterator > VertexFitterLCFI_L;
 }
 
 #endif

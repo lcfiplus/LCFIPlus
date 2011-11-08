@@ -1,9 +1,6 @@
 // LCIOStorer.cc
-#include "LCIOStorer.h"
-#include "lcfiplus.h"
-#include "EventStore.h"
-#include "JetFinder.h"
 
+// LCIO includes
 #include "lcio.h"
 #include "EVENT/LCRunHeader.h"
 #include "UTIL/LCTOOLS.h"
@@ -19,7 +16,13 @@
 #include "EVENT/LCIO.h"
 
 #include "UTIL/LCRelationNavigator.h"
-//#include "UTIL/PIDHandler.h"
+#include "UTIL/PIDHandler.h"
+
+// lcfiplus includes
+#include "LCIOStorer.h"
+#include "lcfiplus.h"
+#include "EventStore.h"
+#include "JetFinder.h"
 
 #include <assert.h>
 #include <math.h>
@@ -567,7 +570,7 @@ namespace lcfiplus{
 			cerr << "LCIOStorer::ConvertVertex: LCIO event has not been initialized." << endl;
 			return ;
 		}
-		const vector<Vertex *> *pvvtx;
+		VertexVec *pvvtx;
 		Event::Instance()->Get(vertexName, pvvtx);
 	
 		if(!pvvtx){
@@ -583,7 +586,7 @@ namespace lcfiplus{
 		lcio::LCCollectionVec *colRP = new lcio::LCCollectionVec(lcio::LCIO::RECONSTRUCTEDPARTICLE);
 		for(unsigned int n=0;n<pvvtx->size();n++){
 			// set ID to the lcfiplus::Vertex
-			lcfiplus::Vertex *flavtx = (*pvvtx)[n];
+			const lcfiplus::Vertex *flavtx = (*pvvtx)[n];
 			flavtx->setId(n);
 			
 			// make new vertex
@@ -595,7 +598,7 @@ namespace lcfiplus{
 			TLorentzVector lv;
 			float charge = 0.;
 			for(unsigned int ntr = 0; ntr < flavtx->getTracks().size(); ntr++){
-				lcfiplus::Track *flatr = flavtx->getTracks()[ntr];
+				const lcfiplus::Track *flatr = flavtx->getTracks()[ntr];
 				lcio::ReconstructedParticle *lciotr = _trackLCIORel[flatr->getId()];
 				lv += (*flatr);
 				charge += flatr->getCharge();
@@ -666,7 +669,7 @@ namespace lcfiplus{
 			cerr << "LCIOStorer::ConvertJet: LCIO event has not been initialized." << endl;
 			return ;
 		}
-		const vector<Jet *> *pvjet;
+		JetVec *pvjet;
 		Event::Instance()->Get(jetName, pvjet);
 	
 		if(!pvjet){
@@ -681,7 +684,7 @@ namespace lcfiplus{
 		lcio::LCCollectionVec *col = new lcio::LCCollectionVec(lcio::LCIO::RECONSTRUCTEDPARTICLE);
 		for(unsigned int n=0;n<pvjet->size();n++){
 			// set ID to the lcfiplus::Vertex
-			lcfiplus::Jet *flajet = (*pvjet)[n];
+			const lcfiplus::Jet *flajet = (*pvjet)[n];
 			flajet->setId(n);
 			
 			// make new recoparticle including vertex
@@ -690,7 +693,7 @@ namespace lcfiplus{
 			// associate particles
 			float charge = 0.;
 			for(unsigned int ntr = 0; ntr < flajet->getTracks().size(); ntr++){
-				lcfiplus::Track *flatr = flajet->getTracks()[ntr];
+				const lcfiplus::Track *flatr = flajet->getTracks()[ntr];
 				lcio::ReconstructedParticle *lciotr = _trackLCIORel[flatr->getId()];
 				charge += flatr->getCharge();
 				lciojet->addParticle(lciotr);
@@ -698,19 +701,19 @@ namespace lcfiplus{
 				//cout << ", lcio energy = " << lciotr->getEnergy() << endl;
 			}
 			for(unsigned int nneut = 0; nneut < flajet->getNeutrals().size(); nneut++){
-				lcfiplus::Neutral *flaneut = flajet->getNeutrals()[nneut];
+				const lcfiplus::Neutral *flaneut = flajet->getNeutrals()[nneut];
 				lcio::ReconstructedParticle *lcioneut = _neutralLCIORel[flaneut->getId()];
 				lciojet->addParticle(lcioneut);
 			}
 			for(unsigned int nvtx = 0; nvtx < flajet->getVertices().size(); nvtx++){
-				lcfiplus::Vertex *flavtx = flajet->getVertices()[nvtx];
+				const lcfiplus::Vertex *flavtx = flajet->getVertices()[nvtx];
 				if(!extractVertex && flavtx->getId() >= 0){ // valid ID
 					lcio::ReconstructedParticle *lciovtx = _vtxLCIORel[flavtx]->getAssociatedParticle();
 					charge += lciovtx->getCharge();
 					lciojet->addParticle(lciovtx);
 				}else{ // ID not available, add daughter particles
 					for(unsigned int ntr = 0; ntr < flavtx->getTracks().size(); ntr++){
-						lcfiplus::Track *flatr = flavtx->getTracks()[ntr];
+						const lcfiplus::Track *flatr = flavtx->getTracks()[ntr];
 						lcio::ReconstructedParticle *lciotr = _trackLCIORel[flatr->getId()];
 						charge += flatr->getCharge();
 						lciojet->addParticle(lciotr);
@@ -719,7 +722,7 @@ namespace lcfiplus{
 				}
 			}
 			
-			TLorentzVector &lv = *flajet;
+			const TLorentzVector &lv = *flajet;
 			float mom[3] = {lv.Px(), lv.Py(), lv.Pz()};
 			lciojet->setType(4); // 0: unknown 1: single 2:v0 3: compound 4:jet
 			lciojet->setMomentum(mom);
@@ -728,6 +731,9 @@ namespace lcfiplus{
 			lciojet->setCharge(charge);
 			// ignore covmatrix of rp
 			
+			// add PID stuffs
+			WriteAllPIDs(col, lciojet, flajet);
+
 			// store relation
 			_jetLCIORel[flajet] = lciojet;
 			
@@ -740,4 +746,49 @@ namespace lcfiplus{
 	}
 }
 
+void LCIOStorer::WritePID(lcio::LCCollection *lciocol, lcio::ReconstructedParticle *lciojet, const lcfiplus::Jet *lcfijet, const char *paramname)
+{
+	// init pid handler
+	lcio::PIDHandler pidh(lciocol);
 
+	// obtain LcfiplusParameters
+	const LcfiplusParameters *lcfiparams = lcfijet->getParam(paramname);
+	const map<string, pair<string, void *> > & paramMap = lcfiparams->paramMap();
+	
+	vector<string> outParamNames;
+	vector<float> outParamData;
+
+	map<string, pair<string, void *> >::const_iterator it;
+	for(it = paramMap.begin(); it != paramMap.end(); it++){
+		string name = it->first;
+
+		double d = lcfiparams->get(name.c_str(),(double)0.);
+
+		outParamNames.push_back(name);
+		outParamData.push_back(d);
+	}
+
+	// register parameters
+	int algoID;
+	try{
+		algoID = pidh.getAlgorithmID(string(paramname));
+	}catch(lcio::UnknownAlgorithm &e){
+		algoID = pidh.addAlgorithm(paramname, outParamNames);
+	}
+
+	//                         type, PDG, likelihood: as same as old LCFI
+	pidh.setParticleID(lciojet, 42, 9999, 0.0, algoID, outParamData);
+}
+
+
+void LCIOStorer::WriteAllPIDs(lcio::LCCollection *lciocol, lcio::ReconstructedParticle *lciojet, const lcfiplus::Jet *lcfijet)
+{
+	const map<string, LcfiplusParameters> & parammap = lcfijet->params();
+
+	map<string, LcfiplusParameters>::const_iterator it;
+	for(it = parammap.begin(); it != parammap.end(); it++){
+		WritePID(lciocol, lciojet, lcfijet, it->first.c_str());
+	}
+
+	cerr << parammap.size() << " PID parameter sets written to jet." << endl;
+}

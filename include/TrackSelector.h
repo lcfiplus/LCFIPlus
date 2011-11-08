@@ -43,8 +43,8 @@ namespace lcfiplus {
 
 	class TrackSelector {
 	public:
-		vector<Track *> operator () (const vector<Track *> &tracks, TrackSelectorConfig & config){
-			vector<Track *> ret;
+		vector<const Track *> operator () (const vector<const Track *> &tracks, TrackSelectorConfig & config){
+			vector<const Track *> ret;
 
 			for(unsigned int i=0;i<tracks.size();i++){
 				if(passesCut(tracks[i], config))

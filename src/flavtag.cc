@@ -80,14 +80,14 @@ namespace lcfiplus {
 		}
 	}
 
-	void FTManager::process(const Event* event, const vector<Jet*>& jets) {
+	void FTManager::process(const Event* event, JetVec & jets) {
 		for ( vector<FTAlgo*>::iterator iter = _algoList.begin(); iter != _algoList.end(); ++iter ) {
 			FTAlgo* algo = *iter;
 			algo->setEvent(event);
 			algo->processEvent();
 		}
 
-		for (vector<Jet*>::const_iterator iter = jets.begin(); iter != jets.end(); ++iter) {
+		for (JetVecIte iter = jets.begin(); iter != jets.end(); ++iter) {
 			const Jet* jet = *iter;
 			for ( vector<FTAlgo*>::iterator iter2 = _algoList.begin(); iter2 != _algoList.end(); ++iter2 ) {
 				FTAlgo* algo = *iter2;
@@ -96,8 +96,8 @@ namespace lcfiplus {
 			}
 
 			if (_evaluate) {
-				float btag(-1);
-				float ctag(-1);
+				double btag(-1);
+				double ctag(-1);
 				int ncat = _categories.size();
 				for (int i=0; i<ncat; ++i) {
 					TTreeFormula form( "form", _categories[i].definition, _tree );
@@ -105,11 +105,15 @@ namespace lcfiplus {
 					if ( form.EvalInstance() == 1 ) {
 						btag = _readers[0]->EvaluateMulticlass("bdt")[0];
 						ctag = _readers[0]->EvaluateMulticlass("bdt")[1];
-
-						cout << "jet category is " << i << " [btag=" << btag << ", ctag=" << ctag << "]" << endl;
+						//cout << "jet category is " << i << " [btag=" << btag << ", ctag=" << ctag << "]" << endl;
 					}
 				}
 
+				LcfiplusParameters param;
+				param.add( "BTag", btag );
+				param.add( "CTag", ctag );
+
+				jet->addParam( "FlavorTag", param );
 			}
 
 			if (_file) fillTree();

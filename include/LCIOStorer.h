@@ -48,6 +48,10 @@ namespace lcfiplus{
 			void ConvertJet(const char *jetName, const char *outName = 0, bool extractVertex = false);
 // 			void ConvertJetWithFlavor(const char *jetName, const char *flavName);
 
+			// convert PID : lcfiplus -> LCIO
+			void WritePID(lcio::LCCollection *lciocol, lcio::ReconstructedParticle *lciojet, const lcfiplus::Jet *lcfijet, const char *paramname);
+			void WriteAllPIDs(lcio::LCCollection *lciocol, lcio::ReconstructedParticle *lciojet, const lcfiplus::Jet *lcfijet);
+
 			void WriteEvent(); // write to the outputfile
 			void AutoConvert(); // auto convert without WriteEvent()
 
@@ -82,8 +86,8 @@ namespace lcfiplus{
 			vector<lcio::MCParticle *> _mcpLCIORel;
 
 			// new classes
-			map<lcfiplus::Vertex *, lcio::Vertex *> _vtxLCIORel;
-			map<lcfiplus::Jet *, lcio::ReconstructedParticle *> _jetLCIORel;
+			map<const lcfiplus::Vertex *, lcio::Vertex *> _vtxLCIORel;
+			map<const lcfiplus::Jet *, lcio::ReconstructedParticle *> _jetLCIORel;
 
 			// autosave for output
 			bool _autoconvert;
