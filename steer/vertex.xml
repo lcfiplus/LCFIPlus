@@ -1,0 +1,31 @@
+<marlin>
+
+<execute>
+	<processor name="MyLcfiplusProcessor"/>
+	<processor name="MyLCIOOutputProcessor"/>
+</execute>
+
+<global>
+	<parameter name="LCIOInputFiles"> input.slcio </parameter>
+	<parameter name="GearXMLFile"> GearOutput.xml </parameter>  
+	<parameter name="MaxRecordNumber" value="0" />  
+	<parameter name="SkipNEvents" value="0" />  
+	<parameter name="SupressCheck" value="false" />  
+	<parameter name="Verbosity" options="DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT">WARNING</parameter> 
+</global>
+
+<processor name="MyLcfiplusProcessor" type="LcfiplusProcessor">
+	<parameter name="algorithm" type="stringVec"> PrimaryVertexFinder BuildUpVertex </parameter>
+	<parameter name="PFOCollection" type="string" value="PandoraPFOs" />
+	<parameter name="MCPCollection" type="string" value="MCParticlesSkimmed" />
+	<parameter name="MCPFORelation" type="string" value="RecoMCTruthLink" />
+	<parameter name="VertexCollectionName" type="string" value="BuildUpVertex" />
+	<parameter name="PrimaryVertexCollectionName" type="string" value="PrimaryVertex" />
+</processor>
+
+<processor name="MyLCIOOutputProcessor" type="LCIOOutputProcessor">
+	<parameter name="LCIOOutputFile" type="string"> vertex.slcio </parameter>
+	<parameter name="LCIOWriteMode" type="string" value="WRITE_NEW"/>
+</processor>
+
+</marlin>
