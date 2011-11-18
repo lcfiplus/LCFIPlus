@@ -10,7 +10,6 @@
 #include "algoSigProb.h"
 #include "algoEtc.h"
 #include "Driver.h"
-#include "Suehara.h"
 
 #include "TROOT.h"
 #include "TInterpreter.h"
@@ -400,12 +399,9 @@ namespace lcfiplus {
 
 	void FlavorTag::process() {
 
-		//cout << "FlavorTag::process()" << endl;
-
 		Event *event = Event::Instance();
 		if (event->getTracks().size() == 0) return;
 
-		TrackVec & tracks = event->getTracks();
 		JetVec *jetsPtr(0);
 		bool success = event->Get("VertexJets", jetsPtr);
 		if (!success) {

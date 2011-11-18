@@ -9,7 +9,6 @@
 #include "algoSigProb.h"
 #include "algoEtc.h"
 #include "Driver.h"
-#include "Suehara.h"
 
 #include "TROOT.h"
 #include "TInterpreter.h"
@@ -646,26 +645,15 @@ vector<const Track*> findSingleTracks(const Event& evt, const Jet& jet, const ve
 #endif
 		}
 
-void lcfiplus_default()
-{
-	//	lcioToTree();
-	processEvents("/data5/soft/samples/grid/users/walsh/zpole/samples/reconstructed/ILD_00/01-06/DST-01-06_M-06-07-p01_zpole-RAL_90GeV_Z_to_qq_ILD_00_LCPhys_0001.slcio","test.root",0,1000);
-}
-
 int main(int argc, char* argv[]) {
-	if (argc == 5) {
-		processEvents(argv[1],argv[2],atoi(argv[3]),atoi(argv[4]));
-		return 0;
-	}
 
-	// if argc==1 the default command is executed
+	// if argc==1 abort
 	// if argc==2 argv[1] macro is processed
 	// if argc==3 argv[2] function in argv[1] file is processed
 	// if argc==4 argv[2] function in argv[1] file is processed with param argv[3]
 	// if argc>=5 abort 
 
-	if(argc>=5){cout << "usage: lcfiplus [ filename [ funcname [ params ] ] ]" << endl; return 1;}
-	if(argc==1){lcfiplus_default();return 0;}
+	if(argc==1 || argc>=5){cout << "Usage: lcfiplus filename [ funcname [ params ] ]" << endl; return 1;}
 	const char *macroname = argv[1];
 	const char *funcname = (argc>2 ? argv[2] : "");
 	const char *params = (argc>3 ? argv[3] : "");

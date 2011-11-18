@@ -19,7 +19,6 @@
 #pragma link C++ class lcfiplus::LCIOStorer;
 #pragma link C++ class lcfiplus::TreeStorer;
 #pragma link C++ class lcfiplus::EventStore;
-#pragma link C++ class lcfiplus::EventNavigator;
 
 #pragma link C++ class lcfiplus::LcfiplusAlgorithm;
 #pragma link C++ class lcfiplus::BuildUpVertex;
@@ -29,10 +28,6 @@
 #pragma link C++ class lcfiplus::MakeNtuple;
 #pragma link C++ class lcfiplus::TrainMVA;
 #pragma link C++ class lcfiplus::ReadMVA;
-
-#pragma link C++ function processEvents;
-#pragma link C++ function eventDisplay;
-#pragma link C++ function testSuehara;
 
 #endif
 
