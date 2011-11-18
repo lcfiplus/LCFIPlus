@@ -13,12 +13,12 @@ class TTree;
 
 namespace lcfiplus{
 
-	class TrainMVA : public LcfiplusAlgorithm {
+	class TrainMVA : public Algorithm {
 		public:
 			TrainMVA(){}
 			virtual ~TrainMVA(){}
 
-			void init(LcfiplusParameters *param);
+			void init(Parameters *param);
 			void process();
 			void end();
 

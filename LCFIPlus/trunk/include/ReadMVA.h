@@ -14,12 +14,12 @@ class TTree;
 
 namespace lcfiplus{
 
-	class ReadMVA : public LcfiplusAlgorithm {
+	class ReadMVA : public Algorithm {
 		public:
 			ReadMVA() {}
 			~ReadMVA() {}
 
-			void init(LcfiplusParameters *param);
+			void init(Parameters *param);
 			void process();
 			void end();
 

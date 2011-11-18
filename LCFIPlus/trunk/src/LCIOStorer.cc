@@ -189,7 +189,7 @@ namespace lcfiplus{
 					bool extractVertex = it->second.flag & EventStore::JET_EXTRACT_VERTEX;
 					ConvertJet(it->first.c_str(), newname.c_str(), extractVertex);
 				}else{
-					cerr << "LCIOStorer::WriteEvent(): unknown conversion for lcio: class " << it->second.classname << ", ignored." << endl;
+					cout << "LCIOStorer::WriteEvent(): unknown conversion for lcio: class " << it->second.classname << ", ignored." << endl;
 				}
 			}
 		}
@@ -204,7 +204,7 @@ namespace lcfiplus{
 			_writer->writeEvent(_event);
 		}
 		else{
-			cerr << "LCIOStorer::WriteEvent(): event cannot be written." << endl;
+			cout << "LCIOStorer::WriteEvent(): event cannot be written." << endl;
 		}
 	}
 	
@@ -245,9 +245,7 @@ namespace lcfiplus{
 		lcio::LCRelationNavigator* nav = new lcio::LCRelationNavigator(evt->getCollection(_mcpfoColName));
 	
 		// memory allocation
-		_pMCPs->clear();
-		_pNeutrals->clear();
-		_pTracks->clear();
+		Event::Instance()->ClearObjects();
 		
 		_pMCPs->reserve(colMC->getNumberOfElements());
 		_pNeutrals->reserve(colPFO->getNumberOfElements());
@@ -493,7 +491,13 @@ namespace lcfiplus{
 		for(it = _importVertexCols.begin(); it != _importVertexCols.end(); it++){
 			it->second->clear();
 			lcio::LCCollection* colvtx = evt->getCollection(it->first);
-		
+
+			// skip if not found
+			if(colvtx == 0){
+				cout << "LCIOStorer::SetEvent(): vertex collection " << it->first << " not found, skip conversion." << endl;
+				continue; 
+			}		
+
 			for(int n=0;n<colvtx->getNumberOfElements();n++){
 				lcio::Vertex *lciovtx = dynamic_cast<lcio::Vertex*>(colvtx->getElementAt(n));
 				
@@ -529,6 +533,12 @@ namespace lcfiplus{
 			itj->second->clear();
 			lcio::LCCollection* coljet = evt->getCollection(itj->first);
 		
+			// skip if not found
+			if(coljet == 0){
+				cout << "LCIOStorer::SetEvent(): jet collection " << it->first << " not found, skip conversion." << endl;
+				continue; 
+			}		
+
 			for(int n=0;n<coljet->getNumberOfElements();n++){
 				lcio::ReconstructedParticle *lciojet = dynamic_cast<lcio::ReconstructedParticle*>(coljet->getElementAt(n));
 				
@@ -751,8 +761,8 @@ void LCIOStorer::WritePID(lcio::LCCollection *lciocol, lcio::ReconstructedPartic
 	// init pid handler
 	lcio::PIDHandler pidh(lciocol);
 
-	// obtain LcfiplusParameters
-	const LcfiplusParameters *lcfiparams = lcfijet->getParam(paramname);
+	// obtain Parameters
+	const Parameters *lcfiparams = lcfijet->getParam(paramname);
 	const map<string, pair<string, void *> > & paramMap = lcfiparams->paramMap();
 	
 	vector<string> outParamNames;
@@ -783,12 +793,13 @@ void LCIOStorer::WritePID(lcio::LCCollection *lciocol, lcio::ReconstructedPartic
 
 void LCIOStorer::WriteAllPIDs(lcio::LCCollection *lciocol, lcio::ReconstructedParticle *lciojet, const lcfiplus::Jet *lcfijet)
 {
-	const map<string, LcfiplusParameters> & parammap = lcfijet->params();
+	const map<string, Parameters> & parammap = lcfijet->params();
 
-	map<string, LcfiplusParameters>::const_iterator it;
+	map<string, Parameters>::const_iterator it;
 	for(it = parammap.begin(); it != parammap.end(); it++){
 		WritePID(lciocol, lciojet, lcfijet, it->first.c_str());
 	}
 
-	cerr << parammap.size() << " PID parameter sets written to jet." << endl;
+	if(parammap.size())
+		cout << parammap.size() << " PID parameter sets written to jet." << endl;
 }

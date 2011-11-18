@@ -494,6 +494,7 @@ namespace lcfiplus {
     return jets;
   }
 
+	/*
   CheatedJetFinder::CheatedJetFinder(const JetConfig& cfg) : _cfg(cfg) {
   }
 
@@ -524,6 +525,7 @@ namespace lcfiplus {
 
     return jets;
   }
+	*/
 
 	Jet* convertJetVertex(const Jet* jet) {
 		Jet* newjet = new Jet();

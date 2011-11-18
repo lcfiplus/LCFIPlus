@@ -354,8 +354,8 @@ namespace lcfiplus {
 			}
 	};
 
-	void FlavorTag::init(LcfiplusParameters *param) {
-		LcfiplusAlgorithm::init(param);
+	void FlavorTag::init(Parameters *param) {
+		Algorithm::init(param);
 
 		string outputFilename = param->get("TrainNtupleFile",string("lcfiplus.root"));
 		_nJet = (int)param->get("TrainNJet",float(2));
@@ -402,6 +402,7 @@ namespace lcfiplus {
 		Event *event = Event::Instance();
 		if (event->getTracks().size() == 0) return;
 
+		//TrackVec & tracks = event->getTracks();
 		JetVec *jetsPtr(0);
 		bool success = event->Get("VertexJets", jetsPtr);
 		if (!success) {

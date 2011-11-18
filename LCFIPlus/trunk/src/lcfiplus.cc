@@ -976,5 +976,14 @@ bool Vertex::passesV0selection(const Vertex* primary) const {
 	}
 
 
+	// under construction
+	Parameters::~Parameters(){
+	}
+	Parameters & Parameters::operator =(const Parameters &ref){
+
+		return *this;
+	}
 
 }
+
+

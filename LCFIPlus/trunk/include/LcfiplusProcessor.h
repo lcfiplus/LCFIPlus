@@ -10,20 +10,11 @@
 using namespace lcio ;
 using namespace marlin ;
 
-/**  Example processor for marlin.
+/**
+ *  Marlin processor for LCFIPlus.
  * 
- *  If compiled with MARLIN_USE_AIDA 
- *  it creates a histogram (cloud) of the MCParticle energies.
- * 
- *  <h4>Input - Prerequisites</h4>
- *  Needs the collection of MCParticles.
- *
- *  <h4>Output</h4> 
- *  A histogram.
- * 
- * @param CollectionName Name of the MCParticle collection
- * 
- * @author F. Gaede, DESY
+ * @author Tomohiko Tanabe, ICEPP, The University of Tokyo
+ * @author Taikan Suehara, ICEPP, The University of Tokyo
  * @version $Id: LcfiplusProcessor.h,v 1.1.1.1 2009/06/04 00:16:27 suehara Exp $ 
  */
 
@@ -37,7 +28,6 @@ class LcfiplusProcessor : public Processor {
   LcfiplusProcessor() ;
   
   /** Called at the begin of the job before anything is read.
-   * Use to initialize the processor, e.g. book histograms.
    */
   virtual void init() ;
   
@@ -69,8 +59,8 @@ class LcfiplusProcessor : public Processor {
 	std::string _mcpCollectionName;
 	std::string _mcpfoRelationName;
 
-	std::vector<lcfiplus::LcfiplusAlgorithm *> _algos;
-	lcfiplus::LcfiplusParameters * _param;
+	std::vector<lcfiplus::Algorithm *> _algos;
+	lcfiplus::Parameters * _param;
 
   int _nRun ;
   int _nEvt ;

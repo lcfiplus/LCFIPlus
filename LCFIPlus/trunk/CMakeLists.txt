@@ -57,6 +57,14 @@ LIST(APPEND library_sources ${ROOT_DICT_OUTPUT_SOURCES} )
 
 SET( binary_sources ./src/Driver.cc ./src/EventNavigator.cc )
 
+### DOCUMENTATION ###########################################################
+
+OPTION( INSTALL_DOC "Set to OFF to skip build/install Documentation" ON )
+
+IF( INSTALL_DOC )
+	ADD_SUBDIRECTORY( ./doc )
+ENDIF()
+
 ### LIBRARY #################################################################
 
 # include directories
