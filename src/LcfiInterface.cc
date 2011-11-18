@@ -323,7 +323,7 @@ namespace lcfiplus {
     vertex_lcfi::MemoryManager<vertex_lcfi::Jet>::Event()->registerObject(lcfiJet);
 
     TrackVec & tracks = jet->getTracks();
-    NeutralVec & neutrals = jet->getNeutrals();
+    //NeutralVec & neutrals = jet->getNeutrals();
 
     int usedTracks(0);
 		TrackSelector trackSel;

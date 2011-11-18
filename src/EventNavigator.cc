@@ -69,7 +69,7 @@ namespace lcfiplus {
 
     if (event) {
       //event->rescaleErrors();
-      vector<Track*> tracks = event->getTracks();
+      TrackVec& tracks = event->getTracks();
       printf(" nB=%d, ntrks=%d\n",nB,(int)tracks.size());
       drawEvent(event);
     } else {
@@ -91,8 +91,8 @@ namespace lcfiplus {
 
 		const int njet = 2;
 
-    vector<MCParticle*> mcps = event->getMCParticles();
-    vector<Track*> tracks = event->getTracks();
+    MCParticleVec& mcps = event->getMCParticles();
+    TrackVec& tracks = event->getTracks();
 
     JetConfig jetCfg;
     jetCfg.nJet = njet;
@@ -147,17 +147,17 @@ namespace lcfiplus {
 		Vertex* primaryVertex2 = interface2.findPrimaryVertex();
 */
 
-    vector<Track*> vtxTracks;
+    TrackVec vtxTracks;
     //vector<Vertex*> vtxList[njet];
 
     //vector<Vertex*> tearDownVtxList[njet];
-    vector<Track*> tearDownVtxTracks;
+    TrackVec tearDownVtxTracks;
 
 		vector<Vertex*> buildUpVtxList;
-    vector<Track*> vtxTracksBU;
+    vector<const Track*> vtxTracksBU;
  
 		// buildup vertex
-		vector<Track *> passedTracks = TrackSelector() (tracks, secVtxCfg);
+		TrackVec& passedTracks = TrackSelector() (tracks, secVtxCfg);
 //		for(unsigned int i=0;i<tracks.size();i++){
 //			if(interface.passesCut(tracks[i], secVtxCfg))
 //				passedTracks.push_back(tracks[i]);
@@ -171,7 +171,7 @@ namespace lcfiplus {
 			cout << "position: (" << buildUpVtxList[i]->getX() << ", " << buildUpVtxList[i]->getY() << ", " << buildUpVtxList[i]->getZ() << "), ";
 			cout << "tracks: ";
 			for(unsigned int j=0;j<buildUpVtxList[i]->getTracks().size();j++){
-				Track *tr = buildUpVtxList[i]->getTracks()[j];
+				const Track *tr = buildUpVtxList[i]->getTracks()[j];
 				cout << tr->getId() << ": " << tr->getMcp()->getId() << " : " << buildUpVtxList[i]->getChi2Track(tr) << ", ";
 
 				if(i>0)
@@ -406,7 +406,7 @@ namespace lcfiplus {
     eveBUVertices->CloseCompound();
 
     for(int i=0; i<nMCParticle; i++) {
-      MCParticle* part = mcps[i];
+      const MCParticle* part = mcps[i];
       // draw charged MCParticles only
       if (part->getCharge() == 0) continue;
 			// draw stable particles only
@@ -517,7 +517,7 @@ namespace lcfiplus {
     eveMCParticles->CloseCompound();
 
     for(int i=0; i<nTrack; i++) {
-      Track* part = tracks[i];
+      const Track* part = tracks[i];
       if (part->getCharge() == 0) continue;
 
       float px=part->Px();
