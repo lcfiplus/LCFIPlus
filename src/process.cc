@@ -25,8 +25,8 @@ using namespace lcfiplus::algoEtc;
 
 namespace lcfiplus{
 
-	void PrimaryVertexFinder::init(LcfiplusParameters *param){
-		LcfiplusAlgorithm::init(param);
+	void PrimaryVertexFinder::init(Parameters *param){
+		Algorithm::init(param);
 
 		_vertex = 0;
 
@@ -74,8 +74,8 @@ namespace lcfiplus{
 	}
 
 
-	void BuildUpVertex::init(LcfiplusParameters *param){
-		LcfiplusAlgorithm::init(param);
+	void BuildUpVertex::init(Parameters *param){
+		Algorithm::init(param);
 
 		// register collection
 //		string vcolname = (*param)["VertexCollectionName"];
@@ -129,8 +129,8 @@ namespace lcfiplus{
 			VertexFinderSuehara::associateIPTracks(*_vertices,_minimumdist, 0, _chi2ratio);
 	}
 
-	void JetClustering::init(LcfiplusParameters *param){
-		LcfiplusAlgorithm::init(param);
+	void JetClustering::init(Parameters *param){
+		Algorithm::init(param);
 
 		string vcolname = param->get("VertexCollectionName",string("BuildUpVertex"));
 		Event::Instance()->Get(vcolname.c_str(), _vertices);
@@ -184,7 +184,7 @@ namespace lcfiplus{
 		cout << "JetClustering: _vertices.size() = " << _vertices->size() << endl;
 		cout << "JetClustering: selectedVertices.size() = " << selectedVertices.size() << endl;
 /*
-		LcfiplusParameters testPid;
+		Parameters testPid;
 		testPid.add("testparapi", (double)3.14159);
 		testPid.add("testpara", (double)2.7183);
 
@@ -211,7 +211,7 @@ namespace lcfiplus{
 
 	/*
 	void JetVertexRefiner::init() {
-		LcfiplusAlgorithm::init(param);
+		Algorithm::init(param);
 
 		string vcolname = param->get("JetVertexRefinerInputJetCollectionName",string("VertexJets"));
 		Event::Instance()->Get(vcolname.c_str(), _inputJets);

@@ -10,12 +10,24 @@ class TTree;
 
 namespace lcfiplus{
 
-	class FlavorTag : public LcfiplusAlgorithm {
+	/**
+		Controls the event data and registers and holds algorithms for
+		the computation of flavor tagging variables.
+
+		This algorithm must be included in the
+		algorithm tag of the XML steering file
+		when using any of the flavor tagging features,
+		e.g. ntuple production, TMVA training, and evaluation.
+
+		@author T. Tanabe, ICEPP, The University of Tokyo
+		@version $Id:$
+	 */
+	class FlavorTag : public Algorithm {
 		public:
 			FlavorTag(){}
 			virtual ~FlavorTag(){}
 
-			void init(LcfiplusParameters *param);
+			void init(Parameters *param);
 			void process();
 			void end();
 

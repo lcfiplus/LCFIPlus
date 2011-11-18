@@ -42,9 +42,9 @@
  *    intersection points with planes parallel and perpendicular to <br>
  *    z (beam) axis and determination of the distance of closest approach<br>
  *    from arbitrary 3D point to the helix. <br>
- *    @author A. Raspereza (DESY)<br>
- *    @version $Id: HelixClass.h,v 1.16 2008/06/05 13:47:18 rasp Exp $<br>
  *
+ *    @author A. Raspereza (DESY)<br>
+ *    @version $Id$
  */
 
 //#include "LineClass.h"

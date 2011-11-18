@@ -8,6 +8,7 @@
 
 // Marlin stuff
 #include <marlin/Global.h>
+#include <marlin/Exceptions.h>
 
 #include "TROOT.h"
 #include "TApplication.h"
@@ -49,70 +50,79 @@ LcfiplusProcessor::LcfiplusProcessor() : Processor("LcfiplusProcessor") {
 
 void LcfiplusProcessor::init() { 
 
-  streamlog_out(DEBUG) << "   init called  " 
-		       << std::endl ;
+	try{
 
-  // usually a good idea to
-  printParameters() ;
+		streamlog_out(DEBUG) << "   init called  " 
+			<< std::endl ;
 
-	StringParameters *parameter = parameters();
+		// usually a good idea to
+		printParameters() ;
 
-	// obtain algorithm name
-	if(!parameter->isParameterSet("algorithm")){
-		SLM << "Lcfiplus algorithm not set. run nothing." << endl;
-		return;
-	}
-	vector<string> algos;
-	parameter->getStringVals("algorithm", algos);
+		StringParameters *parameter = parameters();
 
-	if(algos.size() == 0){
-		SLM << "Lcfiplus algorithm size is 0. run nothing." << endl;
-		return;
-	}
-
-	// conversion StringParameters -> LcfiplusParameters
-	_param = new LcfiplusParameters;
-	
-	StringVec keys;
-	parameter->getStringKeys(keys);
-
-	for(unsigned int i=0;i<keys.size();i++){
-		vector<string> vals;
-		parameter->getStringVals(keys[i], vals);
-		_param->add(keys[i].c_str(), vals);
-	}
-
-	// initialize LCIOStorer
-	if(!_lcio){
-		_lcio = new LCIOStorer(0,0,true,0); // no file
-		//_lcio->InitCollections(_pfoCollectionName.c_str(), _mcpCollectionName.c_str(), _mcpfoRelationName.c_str());
-		_lcio->InitCollections();
-		_lcioowner = true;
-	}
-	else
-		_lcioowner = false;
-
-	// make algorithm classes and pass param to init
-	for(unsigned int i=0;i<algos.size();i++){
-		string s = "lcfiplus::";
-		s += algos[i];
-		TClass *cl = TClass::GetClass(s.c_str());
-		if(!cl || !cl->InheritsFrom("lcfiplus::LcfiplusAlgorithm")){
-			SLM << "Algorithm " << algos[i] << " is not valid. skip." << endl;
-			continue;
+		// obtain algorithm name
+		if(!parameter->isParameterSet("algorithm")){
+			SLM << "Lcfiplus algorithm not set. run nothing." << endl;
+			return;
 		}
-		LcfiplusAlgorithm *newalgo = (LcfiplusAlgorithm *)cl->New();
-		if(!newalgo){SLM << "Initialization failed!." << endl; break;}
-		_algos.push_back(newalgo);
-		SLM << "Algorithm " << algos[i] << " is being initialized." << endl;
-		newalgo->init(_param);
+		vector<string> algos;
+		parameter->getStringVals("algorithm", algos);
 
-		SLM << "Algorithm " << algos[i] << " successfully initialized." << endl;
+		if(algos.size() == 0){
+			SLM << "Lcfiplus algorithm size is 0. run nothing." << endl;
+			return;
+		}
+
+		// conversion StringParameters -> Parameters
+		_param = new Parameters;
+		
+		StringVec keys;
+		parameter->getStringKeys(keys);
+
+		for(unsigned int i=0;i<keys.size();i++){
+			vector<string> vals;
+			parameter->getStringVals(keys[i], vals);
+			_param->add(keys[i].c_str(), vals);
+		}
+
+		// initialize LCIOStorer
+		if(!_lcio){
+			_lcio = new LCIOStorer(0,0,true,0); // no file
+			//_lcio->InitCollections(_pfoCollectionName.c_str(), _mcpCollectionName.c_str(), _mcpfoRelationName.c_str());
+			_lcio->InitCollections();
+			_lcioowner = true;
+		}
+		else
+			_lcioowner = false;
+
+		// make algorithm classes and pass param to init
+		for(unsigned int i=0;i<algos.size();i++){
+			string s = "lcfiplus::";
+			s += algos[i];
+			TClass *cl = TClass::GetClass(s.c_str());
+			if(!cl || !cl->InheritsFrom("lcfiplus::Algorithm")){
+				SLM << "Algorithm " << algos[i] << " is not valid. skip." << endl;
+				continue;
+		}
+			Algorithm *newalgo = (Algorithm *)cl->New();
+			if(!newalgo){SLM << "Initialization failed!." << endl; break;}
+			_algos.push_back(newalgo);
+			SLM << "Algorithm " << algos[i] << " is being initialized." << endl;
+			newalgo->init(_param);
+
+			SLM << "Algorithm " << algos[i] << " successfully initialized." << endl;
+		}
+
+		// printing EventStore collections
+		Event::Instance()->Print();
+
+		_nRun = 0 ;
+		_nEvt = 0 ;
+
+	}catch(lcfiplus::Exception &e){
+		e.Print();
+		throw(marlin::StopProcessingException(this));
 	}
-
-  _nRun = 0 ;
-  _nEvt = 0 ;
-  
 }
 
 void LcfiplusProcessor::processRunHeader( LCRunHeader* run) { 
@@ -126,25 +136,31 @@ void LcfiplusProcessor::processEvent( LCEvent * evt ) {
 
 	if (_lcio == false) return;
 
-	// auto register collections
-	if(_autoVertex)
-		_lcio->InitVertexCollectionsAuto(evt);
-	if(_autoJet)
-		_lcio->InitJetCollectionsAuto(evt);
+	try{
 
-	// set LCEvent
-	if(_lcioowner)
-		_lcio->SetEvent(evt);
+		// auto register collections
+		if(_autoVertex)
+			_lcio->InitVertexCollectionsAuto(evt);
+		if(_autoJet)
+			_lcio->InitJetCollectionsAuto(evt);
 
-	// process registered algorithms
-	for(unsigned int i=0;i<_algos.size();i++){
-		_algos[i]->process();
+		// set LCEvent
+		if(_lcioowner)
+			_lcio->SetEvent(evt);
+
+		// process registered algorithms
+		for(unsigned int i=0;i<_algos.size();i++){
+			_algos[i]->process();
+		}
+
+		// convert persistent collections
+		_lcio->AutoConvert();
+
+		_nEvt ++ ;
+	}catch(lcfiplus::Exception &e){
+		e.Print();
+		throw(marlin::StopProcessingException(this));
 	}
-
-	// convert persistent collections
-	_lcio->AutoConvert();
-
-  _nEvt ++ ;
 }
 
 
@@ -159,10 +175,11 @@ void LcfiplusProcessor::end(){
 		_algos[i]->end();
 	}
 
+	Event::Instance()->ClearObjects();
 
-   std::cout << "LcfiplusProcessor::end()  " << name() 
- 	    << " processed " << _nEvt << " events in " << _nRun << " runs "
- 	    << std::endl ;
+	std::cout << "LcfiplusProcessor::end()  " << name() 
+		<< " processed " << _nEvt << " events in " << _nRun << " runs "
+		<< std::endl ;
 
 }
 

@@ -83,13 +83,20 @@ namespace lcfiplus {
 	};
 
 	// generic parameter class
-	class LcfiplusParameters
+	class Parameters
 	{
 	public:
-		LcfiplusParameters(bool as = true) : _allowstring(as){}
-		~LcfiplusParameters(){
-			// TODO: delete value objects!
+		Parameters(bool as = true) : _allowstring(as){}
+
+		// destructor for destroying objects in the map
+		~Parameters(); // in lcfiplus.cc
+		// copy operator/constructor
+		Parameters(const Parameters &ref){
+			_allowstring = ref._allowstring;
+
+			*this = ref;
 		}
+		Parameters & operator =(const Parameters &ref); // in lcfiplus.cc
 
 		// fetch for non-vector
 		template<typename T> void fetch(const char *key, T &ret, T def = T())const
@@ -161,8 +168,8 @@ namespace lcfiplus {
 		}
 
 		template<typename T> void assign(const char *key, T data){
-			if(_map.find(key) == _map.end())throw(Exception("LcfiplusParameters::assign(): the key has not been registered."));
-			else if(_map.find(key)->second.first != typeid(T).name())throw(Exception("LcfiplusParameters::assign(): the value type is imcompatible."));
+			if(_map.find(key) == _map.end())throw(Exception("Parameters::assign(): the key has not been registered."));
+			else if(_map.find(key)->second.first != typeid(T).name())throw(Exception("Parameters::assign(): the value type is imcompatible."));
 
 			// assign
 			*static_cast<T*>(_map.find(key)->second.second) = data;
@@ -176,24 +183,24 @@ namespace lcfiplus {
 		bool _allowstring;
 	}; 
 
-	class LcfiplusAlgorithm
+	class Algorithm
 	{
 	public:
-		LcfiplusAlgorithm(){_param = 0;}
-		virtual ~LcfiplusAlgorithm(){}
+		Algorithm(){_param = 0;}
+		virtual ~Algorithm(){}
 
-		virtual void init(LcfiplusParameters *param){
+		virtual void init(Parameters *param){
 			_param = param;
 		}
 		virtual void process() = 0;
 		virtual void end(){}
 
 	protected:
-		LcfiplusParameters * GetParam()const{return _param;}
+		Parameters * GetParam()const{return _param;}
 	private:
-		LcfiplusParameters *_param;
+		Parameters *_param;
 
-		ClassDef(LcfiplusAlgorithm,1);
+		ClassDef(Algorithm,1);
 	};
 
 	class Event : public EventStore {
@@ -605,25 +612,25 @@ namespace lcfiplus {
 			double sphericity() const;
 
 			// parameter contrl
-//			void addParam(const char *paramname, LcfiplusParameters &param, bool forcereset = false){
-			void addParam(const char *paramname, LcfiplusParameters &param)const{
+//			void addParam(const char *paramname, Parameters &param, bool forcereset = false){
+			void addParam(const char *paramname, Parameters &param)const{
 				if(_params.count(paramname) == 1)throw(Exception("Jet::addParam: parameter of the specified name has been already registered."));
 				_params[paramname] = param;
 			}
 
-			const LcfiplusParameters * getParam(const char *paramname)const{
+			const Parameters * getParam(const char *paramname)const{
 				if(_params.count(paramname) == 0)throw(Exception("Jet::getParam: parameter of the specified name is not registered."));
 				return &(_params.find(paramname)->second);
 			}
 
-			const map<string, LcfiplusParameters> & params()const{return _params;}
+			const map<string, Parameters> & params()const{return _params;}
 
     private:
       vector<const Track*> _tracks;
       vector<const Neutral*> _neutrals;
 			vector<const Vertex*> _vertices;
 
-			mutable map<string, LcfiplusParameters> _params;
+			mutable map<string, Parameters> _params;
 
 			mutable int _id;
 

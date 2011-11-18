@@ -8,13 +8,13 @@
 namespace lcfiplus{
 	struct TrackSelectorConfig;
 
-	class PrimaryVertexFinder : public LcfiplusAlgorithm
+	class PrimaryVertexFinder : public Algorithm
 	{
 	public:
 		PrimaryVertexFinder(){}
 		virtual ~PrimaryVertexFinder(){}
 
-		void init(LcfiplusParameters *param);
+		void init(Parameters *param);
 		void process();
 		void end();
 
@@ -30,13 +30,13 @@ namespace lcfiplus{
 		TrackSelectorConfig *_secVtxCfg; //!
 	};
 
-	class BuildUpVertex : public LcfiplusAlgorithm
+	class BuildUpVertex : public Algorithm
 	{
 	public:
 		BuildUpVertex(){}
 		virtual ~BuildUpVertex(){}
 
-		void init(LcfiplusParameters *param);
+		void init(Parameters *param);
 		void process();
 
 		ClassDef(BuildUpVertex,1);
@@ -62,13 +62,13 @@ namespace lcfiplus{
 		TrackSelectorConfig *_secVtxCfg; //!
 	};
 
-	class JetClustering : public LcfiplusAlgorithm
+	class JetClustering : public Algorithm
 	{
 	public:
 		JetClustering(){}
 		virtual ~JetClustering(){}
 
-		void init(LcfiplusParameters *param);
+		void init(Parameters *param);
 		void process();
 		void end();
 

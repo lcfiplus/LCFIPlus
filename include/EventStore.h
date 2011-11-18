@@ -12,19 +12,21 @@ using namespace std;
 
 namespace lcfiplus {
 
+	/**
+		A simple named storage for event data.
+
+		To obtain data: use Get(name) (in compiled code) or GetObject(name) (in CINT)
+
+		CAUTION: GetObject() does not have type-check.
+
+		To register data: use Register(name) or RegisterObject(name, class)
+		Use a pointer returned (cannot register a pointer from the caller).
+		Any classes or vector of classes with ClassDef() can be registered.
+
+		@author T. Suehara, ICEPP, The University of Tokyo
+		@version $Id:$
+	 */
  	class EventStore{
-			/*
-				EventStore: a simple named storage for event data
-
-				To obtain data: use Get(name) (in compiled code) or GetObject(name) (in CINT)
-					CAUTION: GetObject() does not have type-check.
-
-				To register data: use Register(name) or RegisterObject(name, class)
-					Use a pointer returned (cannot register a pointer from the caller).
-					Any classes or vector of classes with ClassDef() can be registered.
-
-				2010/07/07 suehara Initial version
-			*/
 
 		public:
 			// singleton is tranfered to Event class
@@ -56,6 +58,9 @@ namespace lcfiplus {
 
 			// print object map
 			void Print()const;
+
+			// clear current objects: to switch event
+			void ClearObjects();
 
 			// public dtor
 			virtual ~EventStore();
@@ -141,7 +146,7 @@ namespace lcfiplus {
 		string vectclasname = "vector<";
 		vectclasname += elemclasname;
 		vectclasname += ">";
-		cout << vectclasname << endl;
+//		cout << vectclasname << endl;
 		buf = static_cast<vector<T>*>(RegisterObject(name, vectclasname.c_str(), flags));
 		return buf;
 	}
@@ -150,7 +155,7 @@ namespace lcfiplus {
 		string vectclasname = "vector<";
 		vectclasname += elemclasname;
 		vectclasname += "*>";
-		cout << vectclasname << endl;
+//		cout << vectclasname << endl;
 		buf = static_cast<vector<T*>*>(RegisterObject(name, vectclasname.c_str(), flags));
 		return buf;
 	}

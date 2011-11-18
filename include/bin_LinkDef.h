@@ -20,7 +20,7 @@
 #pragma link C++ class lcfiplus::TreeStorer;
 #pragma link C++ class lcfiplus::EventStore;
 
-#pragma link C++ class lcfiplus::LcfiplusAlgorithm;
+#pragma link C++ class lcfiplus::Algorithm;
 #pragma link C++ class lcfiplus::BuildUpVertex;
 #pragma link C++ class lcfiplus::JetClustering;
 #pragma link C++ class lcfiplus::PrimaryVertexFinder;

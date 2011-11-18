@@ -10,12 +10,12 @@ class TTree;
 
 namespace lcfiplus{
 
-	class MakeNtuple : public LcfiplusAlgorithm {
+	class MakeNtuple : public Algorithm {
 		public:
 			MakeNtuple(){}
 			virtual ~MakeNtuple(){}
 
-			void init(LcfiplusParameters *param);
+			void init(Parameters *param);
 			void process() {}
 			void end();
 

@@ -30,8 +30,8 @@ using namespace lcfiplus;
 using namespace lcfiplus::algoSigProb;
 using namespace lcfiplus::algoEtc;
 
-void TrainMVA::init(LcfiplusParameters *param) {
-	LcfiplusAlgorithm::init(param);
+void TrainMVA::init(Parameters *param) {
+	Algorithm::init(param);
 
 	_inputFileB = param->get("TrainNtupleFileB",string("lcfiplusB.root"));
 	_inputFileC = param->get("TrainNtupleFileC",string("lcfiplusC.root"));

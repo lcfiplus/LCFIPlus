@@ -109,7 +109,7 @@ namespace lcfiplus {
 					}
 				}
 
-				LcfiplusParameters param;
+				Parameters param;
 				param.add( "BTag", btag );
 				param.add( "CTag", ctag );
 

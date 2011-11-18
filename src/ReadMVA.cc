@@ -29,8 +29,8 @@ using namespace lcfiplus;
 using namespace lcfiplus::algoSigProb;
 using namespace lcfiplus::algoEtc;
 
-void ReadMVA::init(LcfiplusParameters *param) {
-	LcfiplusAlgorithm::init(param);
+void ReadMVA::init(Parameters *param) {
+	Algorithm::init(param);
 
 	// get FTManager for variable registration
 	FTManager &mgr = FTManager::getInstance();
