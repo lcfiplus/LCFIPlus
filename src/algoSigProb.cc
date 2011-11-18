@@ -1,5 +1,6 @@
 #include "lcfiplus.h"
 #include "JetFinder.h"
+#include <cmath>
 
 #include "algoSigProb.h"
 
