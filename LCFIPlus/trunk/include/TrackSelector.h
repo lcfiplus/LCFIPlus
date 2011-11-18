@@ -5,6 +5,7 @@
 
 #include "lcfiplus.h"
 #include <vector>
+#include <cmath>
 
 using namespace std;
 using namespace lcfiplus;
