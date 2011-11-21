@@ -61,10 +61,9 @@ SET( binary_sources ./src/Driver.cc ./src/EventNavigator.cc )
 
 OPTION( INSTALL_DOC "Set to OFF to skip build/install Documentation" ON )
 
-# --- uncomment if do exists ...
-#IF( INSTALL_DOC )
-#	ADD_SUBDIRECTORY( ./doc )
-#ENDIF()
+IF( INSTALL_DOC )
+	ADD_SUBDIRECTORY( ./doc )
+ENDIF()
 
 ### LIBRARY #################################################################
 
