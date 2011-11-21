@@ -1,22 +1,19 @@
 #ifndef lcfiplus_h
 #define lcfiplus_h 1
 
-//#ifdef lib_lcfiplus_EXPORTS
-#define NO_EVE 1
-//#endif
-
 #include <vector>
 #include <map>
 #include <iostream>
 #include <sstream>
 #include <exception>
-#include "HelixClass.h"
 #include "Rtypes.h"
 #include "TObject.h"
 #include "TLorentzVector.h"
 #include "TVector3.h"
 
 #include "EventStore.h"
+
+#include <typeinfo>
 
 using namespace std;
 
@@ -89,7 +86,7 @@ namespace lcfiplus {
 		Parameters(bool as = true) : _allowstring(as){}
 
 		// destructor for destroying objects in the map
-		~Parameters(); // in lcfiplus.cc
+		~Parameters(){clear();}
 		// copy operator/constructor
 		Parameters(const Parameters &ref){
 			_allowstring = ref._allowstring;
@@ -105,12 +102,12 @@ namespace lcfiplus {
 				cout << "Parameter " << key << " not found." << endl;
 				ret = def;
 			}
-			else if(_map.find(key)->second.first == typeid(T).name())ret = *(T *)(_map.find(key)->second.second);
-			else if(_allowstring && _map.find(key)->second.first == typeid(string).name()){
+			else if(_map.find(key)->second.first == &typeid(T))ret = *(T *)(_map.find(key)->second.second);
+			else if(_allowstring && _map.find(key)->second.first == &typeid(string)){
 				istringstream str(*(string *)_map.find(key)->second.second);
 				str >> ret;
 			}
-			else if(_allowstring && _map.find(key)->second.first == typeid(vector<string>).name()){
+			else if(_allowstring && _map.find(key)->second.first == &typeid(vector<string>)){
 				istringstream str((*(const vector<string> *)_map.find(key)->second.second)[0]);
 				str >> ret;
 			}
@@ -125,15 +122,15 @@ namespace lcfiplus {
 			if(_map.find(key) == _map.end()){
 				cout << "Parameter " << key << " not found." << endl;
 			}
-			else if(_map.find(key)->second.first == typeid(vector<T>).name())ret = *(vector<T> *)(_map.find(key)->second.second);
-			else if(_map.find(key)->second.first == typeid(T).name())ret.push_back(*(T *)(_map.find(key)->second.second));
-			else if(_allowstring && _map.find(key)->second.first == typeid(string).name()){
+			else if(_map.find(key)->second.first == &typeid(vector<T>))ret = *(vector<T> *)(_map.find(key)->second.second);
+			else if(_map.find(key)->second.first == &typeid(T))ret.push_back(*(T *)(_map.find(key)->second.second));
+			else if(_allowstring && _map.find(key)->second.first == &typeid(string)){
 				ret.push_back(T());
 
 				istringstream str(*(string *)_map.find(key)->second.second);
 				str >> ret[0];
 			}
-			else if(_allowstring && _map.find(key)->second.first == typeid(vector<string>).name()){
+			else if(_allowstring && _map.find(key)->second.first == &typeid(vector<string>)){
 				const vector<string> *svec = (const vector<string> *)_map.find(key)->second.second;
 				ret.resize(svec->size());
 				for(unsigned int n=0;n<svec->size();n++){
@@ -164,22 +161,32 @@ namespace lcfiplus {
 		template<typename T> void add(const char *key, T data){ // change T& data to T data for convenience
 			if(_map.find(key) != _map.end())throw(Exception("Double entry."));
 
-			_map[key] = pair<string, void *>(typeid(T).name(), new T(data));
+			_map[key] = pair<const type_info *, void *>(&typeid(T), new T(data));
+
 		}
+		void remove(const char *key){remove(key, true);}
+		void clear();
 
 		template<typename T> void assign(const char *key, T data){
 			if(_map.find(key) == _map.end())throw(Exception("Parameters::assign(): the key has not been registered."));
-			else if(_map.find(key)->second.first != typeid(T).name())throw(Exception("Parameters::assign(): the value type is imcompatible."));
+			else if(_map.find(key)->second.first != &typeid(T))throw(Exception("Parameters::assign(): the value type is imcompatible."));
 
 			// assign
 			*static_cast<T*>(_map.find(key)->second.second) = data;
 		}
 
 		// direct accessors: avoiding copy to handle names
-		const map<string, pair<string, void *> > & paramMap()const{return _map;}
+		const map<string, pair<const type_info *, void *> > & paramMap()const{return _map;}
 
 	private:
-		map<string, pair<string, void *> > _map;
+		void remove(const string &key, bool delmap);
+
+		template<typename T> void deleteData(const string &key){
+			T *p = static_cast<T*>(_map[key].second);
+			delete p;
+		}
+
+		map<string, pair<const type_info *, void *> > _map;
 		bool _allowstring;
 	}; 
 
@@ -463,11 +470,6 @@ namespace lcfiplus {
       vector<const lcfiplus::MCParticle*> _dau;
 
       mutable const MCParticle* _dauForDecay; //! cached object
-
-      // helix stuff
-      void makeHelix()const ;
-      mutable bool _helixOK;						//!
-      mutable HelixClass _helix;				//!
 
 		ClassDef(lcfiplus::MCParticle, 2);
   };

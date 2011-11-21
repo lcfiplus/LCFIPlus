@@ -30,8 +30,6 @@ using namespace lcfiplus::algoEtc;
 
 namespace lcfiplus {
 
-#ifdef BUILD_EVE
-
   EventNavigator::EventNavigator(const char* input, int start) : _start(start) {
 		_ls = new LCIOStorer(input);
 		_ls->InitCollections();
@@ -615,10 +613,4 @@ namespace lcfiplus {
     gEve->AddElement(eveTracks);
     gEve->FullRedraw3D(kTRUE);
   }
-#else
-	//void EventNavigator::Fwd(){}
-	//void EventNavigator::Bck(){}
-	//void EventNavigator::drawEvent(Event* event){}
-
-#endif // BUILD_EVE
 }

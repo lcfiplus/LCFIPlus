@@ -20,7 +20,7 @@ namespace lcfiplus {
 		@version $Id$
 		*/
   class EventNavigator {
-#ifdef BUILD_EVE
+
     public:
 			/**
 				Constructor.
@@ -43,25 +43,6 @@ namespace lcfiplus {
     private:
 			LCIOStorer* _ls;
 			int _start;
-#else
-    public:
-			/**
-				Constructor.
-
-				This build of LCFIPlus does not support the event display.
-				Please recompile with the BUILD_EVE flag set
-				to use the event display feature.
-
-				@param[in] input input file which contains events to inspect.
-				@param[in] start skips given number of events.
-				*/
-      EventNavigator(const char* input, int start=0) {}
-			/**
-				Destructor.
-				*/
-			~EventNavigator() {}
-
-#endif
   };
 }
 

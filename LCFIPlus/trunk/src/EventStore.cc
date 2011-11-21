@@ -75,6 +75,8 @@ namespace lcfiplus {
 		// register the map
 		_objectMap[name] = StoredEntry(string(classname), newobj, flags);
 
+		cout << "EventStore::Register: collection " << name << " registered with type " << classname << endl;
+
 		return newobj;
 	}
 
