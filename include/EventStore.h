@@ -94,6 +94,7 @@ namespace lcfiplus {
 	// template implementations
 	template<typename T> bool EventStore::Get(const char *name, const T*&buf)const{
 		_itMap = _objectMap.find(name);
+		buf = 0;
 		if(_itMap == _objectMap.end() || string(_itMap->second.classname) != TClass::GetClass(typeid(T))->GetName())return false;
 		buf = static_cast<const T*>(GetObject(name));
 		return true;
@@ -107,6 +108,7 @@ namespace lcfiplus {
 
 		_itMap = _objectMap.find(name);
 
+		buf = 0;
 		if(_itMap == _objectMap.end() || _itMap->second.classname != vectclasname)return false;
 		buf = static_cast<const vector<T>*>(GetObject(name));
 
@@ -129,6 +131,7 @@ namespace lcfiplus {
 
 		_itMap = _objectMap.find(name);
 
+		buf = 0;
 		if(_itMap == _objectMap.end() || _itMap->second.classname != vectclasname)return false;
 		buf = static_cast<const vector<const T*>*>(GetObject(name));
 
@@ -146,7 +149,6 @@ namespace lcfiplus {
 		string vectclasname = "vector<";
 		vectclasname += elemclasname;
 		vectclasname += ">";
-//		cout << vectclasname << endl;
 		buf = static_cast<vector<T>*>(RegisterObject(name, vectclasname.c_str(), flags));
 		return buf;
 	}

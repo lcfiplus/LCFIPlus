@@ -9,7 +9,6 @@
 #include "VertexFinderTearDown.h"
 #include "algoSigProb.h"
 #include "algoEtc.h"
-#include "Driver.h"
 
 #include "TROOT.h"
 #include "TInterpreter.h"

@@ -8,7 +8,6 @@
 #include <algorithm>
 #include <vector>
 #include <math.h>
-#include <HelixClass.h>
 #include <TMatrixTSym.h>
 #include <functional>
 

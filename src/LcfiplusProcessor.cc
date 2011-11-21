@@ -36,16 +36,27 @@ LcfiplusProcessor::LcfiplusProcessor() : Processor("LcfiplusProcessor") {
 	registerInputCollection(LCIO::LCRELATION, "MCPFORelation", "Relation between MC and PFO particles",
 		_mcpfoRelationName, std::string("RecoMCTruthLink"));
 
-	registerProcessorParameter("VertexAutoLoad", "Loading LCIO vertices automatically", _autoVertex, int(0));
+	registerProcessorParameter("VertexAutoLoad", "Loading LCIO vertices automatically", _autoVertex, int(1));
 	registerProcessorParameter("JetAutoLoad", "Loading LCIO jets automatically", _autoJet, int(1));
 
 	// ROOT object
-	int argc = 0;
+/*	int argc = 0;
 	if(gROOT->GetApplication() == 0){
 		//TApplication *theapp =
 		new TApplication("LcfiplusProcessor",&argc,0);
 		SLM << "TApplication created." << endl;
 	}
+*/
+}
+
+LcfiplusProcessor::~LcfiplusProcessor()
+{
+/*
+	if(gROOT->GetApplication()){
+		cout << "We have application" << endl;
+		delete gROOT->GetApplication();
+	}
+*/
 }
 
 void LcfiplusProcessor::init() { 

@@ -83,6 +83,7 @@ namespace lcfiplus{
 		double _vsMinDist;
 		double _vsMaxDist;
 		double _vsK0MassWidth;
+		std::string _vcolname;
 	};
 
 }

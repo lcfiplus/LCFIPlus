@@ -23,82 +23,19 @@
 #include "TRootBrowser.h"
 #include "TRint.h"
 #include "TSystem.h"
-#ifdef BUILD_EVE
 #include "TEveManager.h"
 #include "TEveBrowser.h"
-#endif
 #include "TGClient.h"
 #include "TGFrame.h"
 #include "TGButton.h"
 #include "EventNavigator.h"
 
-#ifdef BUILD_EVE
-extern TEveManager* gEve;
-extern TSystem* gSystem;
-#endif
+//extern TEveManager* gEve;
+//extern TSystem* gSystem;
 
 using namespace lcfiplus;
 using namespace lcfiplus::algoSigProb;
 using namespace lcfiplus::algoEtc;
-
-TRandom3 _rand;
-
-const double PION_MASS = 0.13957018;
-const double PION_MASS2 = PION_MASS*PION_MASS;
-
-#if 0
-void ioTest(int argc, char* argv[]) {
-	/*
-		 EventCollection* store = new EventCollection();
-		 store->openWrite("data.gz");
-		 for (int i=0; i<10; ++i) {
-		 Event* event = new Event();
-
-		 for (int j=0; j<8; ++j) {
-		 Track* track = new Track();
-		 track->id = j;
-		 track->par[Track::d0] = 0.11*j;
-		 event->add(track);
-		 }
-
-		 for (int j=0; j<3; ++j) {
-		 MCParticle* mcp = new MCParticle();
-		 mcp->id = j;
-		 mcp->px = 0.35*j;
-		 event->add(mcp);
-		 }
-
-		 store->write(event);
-		 }
-		 store->closeWrite();
-	 */
-
-	char* input = "input.piu";
-	char* output = "output.piu";
-
-	if (argc>2) {
-		input = argv[1];
-		output = argv[2];
-	}
-
-	int nev(0);
-	EventColRaw* store2 = new EventColRaw();
-	store2->open(input);
-	//store2->open("data.gz");
-	store2->openWrite(output);
-	EventData* eventData;
-	while ( (eventData = store2->nextData()) ) {
-		if ( (++nev % 100) == 0 ) {
-			printf("nev = %d\n",nev);
-		}
-		store2->write(eventData);
-		delete eventData;
-	}
-	store2->close();
-	store2->closeWrite();
-}
-#endif
-
 
 /* Associate MC particle with jets by closest angle.
 	 If the jet has >=1 MC particle with heavy flavor,
@@ -597,7 +534,6 @@ vector<const Track*> findSingleTracks(const Event& evt, const Jet& jet, const ve
 }
 
 		void eventDisplay(const char* input, int start) {
-#ifdef BUILD_EVE
 			TRint* theApp = 0;
 			theApp = new TRint("ROOT",0,0);
 
@@ -640,9 +576,6 @@ vector<const Track*> findSingleTracks(const Event& evt, const Jet& jet, const ve
 
 			gEve->FullRedraw3D(kTRUE);
 			theApp->Run();
-#else
-			cerr << "BUILD_EVE not defined. event display is inactivated." << endl;
-#endif
 		}
 
 int main(int argc, char* argv[]) {
@@ -675,4 +608,36 @@ int main(int argc, char* argv[]) {
 	}
 
 	return 0;
+}
+
+
+/////////////////////////////////////////////////////////////////////////
+
+void testSuehara()
+{
+		{
+			cout << "para1" << endl;
+			Parameters *tp = new Parameters;
+			vector<string> v;
+			v.push_back(string("test1"));
+			v.push_back(string("test2"));
+			tp->add("test1",v);
+			tp->add("test2",int(35));
+
+			cout << "para2" << endl;
+			Parameters *tp2 = new Parameters(*tp);
+			cout << "para3" << endl;
+			delete tp;
+			cout << "para4" << endl;
+
+			string t1 = tp2->get("test1",string());
+			int t2 = tp2->get("test2",int(0));
+
+			vector<string> v2 = tp2->getVec<string>("test1");
+
+			cout << "para5" << endl;
+			cout << "test1 = " << t1 << ", test2 = " << t2 << ", test1.2 = " << v2[1] << endl;
+			delete tp2;
+		}
+
 }

@@ -11,6 +11,7 @@
 using namespace lcfiplus;
 using namespace lcfiplus::VertexFinderSuehara;
 
+#if 0
 vector<lcfiplus::Vertex*> * lcfiplus::VertexFinderSuehara::findCandidates(TrackVec &tracks, double chi2th, double massth, double ipchi2th) {
 	vector<lcfiplus::Vertex *> * pvertices;
 	pvertices = new vector<lcfiplus::Vertex*>;
@@ -414,6 +415,7 @@ lcfiplus::Vertex* VertexFinderSuehara::findOne2(list<const Track *> &tracks, dou
 
 	return curvtx;
 }
+#endif
 
 // vertex compare functions
 bool VertexFinderSuehara::VertexNearer(const Vertex *vtx1, const Vertex *vtx2)

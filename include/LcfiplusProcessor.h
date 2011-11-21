@@ -24,8 +24,8 @@ class LcfiplusProcessor : public Processor {
   
   virtual Processor*  newProcessor() { return new LcfiplusProcessor ; }
   
-  
   LcfiplusProcessor() ;
+  virtual ~LcfiplusProcessor() ;
   
   /** Called at the begin of the job before anything is read.
    */

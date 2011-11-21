@@ -490,11 +490,12 @@ namespace lcfiplus{
 		map<string, vector<lcfiplus::Vertex *> *>::iterator it;
 		for(it = _importVertexCols.begin(); it != _importVertexCols.end(); it++){
 			it->second->clear();
-			lcio::LCCollection* colvtx = evt->getCollection(it->first);
-
-			// skip if not found
-			if(colvtx == 0){
-				cout << "LCIOStorer::SetEvent(): vertex collection " << it->first << " not found, skip conversion." << endl;
+			lcio::LCCollection* colvtx;
+			try{
+				colvtx = evt->getCollection(it->first);
+			}catch(lcio::DataNotAvailableException &e){
+				cout << "LCIOStorer::SetEvent(): vertex collection not found. Skip conversion." << endl;
+				cout << e.what() << endl;
 				continue; 
 			}		
 
@@ -531,11 +532,12 @@ namespace lcfiplus{
 		map<string, vector<lcfiplus::Jet *> *>::iterator itj;
 		for(itj = _importJetCols.begin(); itj != _importJetCols.end(); itj++){
 			itj->second->clear();
-			lcio::LCCollection* coljet = evt->getCollection(itj->first);
-		
-			// skip if not found
-			if(coljet == 0){
-				cout << "LCIOStorer::SetEvent(): jet collection " << it->first << " not found, skip conversion." << endl;
+			lcio::LCCollection* coljet;
+			try{
+				coljet = evt->getCollection(itj->first);
+			}catch(lcio::DataNotAvailableException &e){
+				cout << "LCIOStorer::SetEvent(): jet collection not found. Skip conversion." << endl;
+				cout << e.what() << endl;
 				continue; 
 			}		
 
@@ -763,12 +765,12 @@ void LCIOStorer::WritePID(lcio::LCCollection *lciocol, lcio::ReconstructedPartic
 
 	// obtain Parameters
 	const Parameters *lcfiparams = lcfijet->getParam(paramname);
-	const map<string, pair<string, void *> > & paramMap = lcfiparams->paramMap();
+	const map<string, pair<const type_info *, void *> > & paramMap = lcfiparams->paramMap();
 	
 	vector<string> outParamNames;
 	vector<float> outParamData;
 
-	map<string, pair<string, void *> >::const_iterator it;
+	map<string, pair<const type_info *, void *> >::const_iterator it;
 	for(it = paramMap.begin(); it != paramMap.end(); it++){
 		string name = it->first;
 

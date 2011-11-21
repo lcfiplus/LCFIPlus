@@ -1,5 +1,5 @@
-#ifndef EVENTDISPLAY_LINKDEF_H_
-#define EVENTDISPLAY_LINKDEF_H_
+#ifndef LINKDEF_H_
+#define LINKDEF_H_
 
 #ifdef __CINT__
 
@@ -25,7 +25,7 @@
 #pragma link C++ class lcfiplus::LCIOStorer;
 #pragma link C++ class lcfiplus::TreeStorer;
 #pragma link C++ class lcfiplus::EventStore;
-
+ 
 #pragma link C++ class lcfiplus::Algorithm;
 #pragma link C++ class lcfiplus::BuildUpVertex;
 #pragma link C++ class lcfiplus::JetClustering;

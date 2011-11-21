@@ -132,8 +132,11 @@ namespace lcfiplus{
 	void JetClustering::init(Parameters *param){
 		Algorithm::init(param);
 
-		string vcolname = param->get("VertexCollectionName",string("BuildUpVertex"));
-		Event::Instance()->Get(vcolname.c_str(), _vertices);
+		_vcolname = param->get("VertexCollectionName",string("BuildUpVertex"));
+		Event::Instance()->Get(_vcolname.c_str(), _vertices);
+		if(!_vertices)
+			cout << "JetClustering::init: vertex collection not found; will try later." << endl;
+
 		string jcolname = param->get("JetCollectionName",string("Jets"));
 		Event::Instance()->Register(jcolname.c_str(), _jets, EventStore::PERSIST | EventStore::JET_EXTRACT_VERTEX);
 
@@ -154,6 +157,16 @@ namespace lcfiplus{
 			delete (*_jets)[n];
 		_jets->clear();
 
+		if(!_vertices){
+			// retry
+			Event::Instance()->Get(_vcolname.c_str(), _vertices);
+			if(!_vertices){
+				cout << "JetClustering::Process: Vertex not found, clustering without vertices..." << endl;
+			}
+			else
+				cout << "JetClustering::Process: Vertex found." << endl;
+		}
+
 		Event *event = Event::Instance();
 
 		JetConfig jetCfg;
@@ -164,25 +177,29 @@ namespace lcfiplus{
 		// select vertices
 		vector<const Vertex *> selectedVertices;
 		vector<const Track *> residualTracks = event->getTracks();
-		for(VertexVecIte it = _vertices->begin(); it != _vertices->end();it++){
-			const Vertex *v = *it;
-			double mass = 0.;
-			double k0mass = .498;
-			if(v->getTracks().size() == 2)
-				mass = (*(TLorentzVector *)(v->getTracks()[0]) + *(TLorentzVector *)(v->getTracks()[1])).M();
-			if((mass < k0mass - _vsK0MassWidth/2 || mass > k0mass + _vsK0MassWidth/2) && v->getPos().Mag() < _vsMaxDist && v->getPos().Mag() > _vsMinDist){
-				selectedVertices.push_back(v);
-				for(TrackVecIte itt = v->getTracks().begin(); itt != v->getTracks().end(); itt++){
-					vector<const Track *>::iterator itt2 = remove_if(residualTracks.begin(), residualTracks.end(), bind2nd(equal_to<const Track *>(), *itt));
-					residualTracks.erase(itt2, residualTracks.end());
+		if(_vertices){
+			for(VertexVecIte it = _vertices->begin(); it != _vertices->end();it++){
+				const Vertex *v = *it;
+				double mass = 0.;
+				double k0mass = .498;
+				if(v->getTracks().size() == 2)
+					mass = (*(TLorentzVector *)(v->getTracks()[0]) + *(TLorentzVector *)(v->getTracks()[1])).M();
+				if((mass < k0mass - _vsK0MassWidth/2 || mass > k0mass + _vsK0MassWidth/2) && v->getPos().Mag() < _vsMaxDist && v->getPos().Mag() > _vsMinDist){
+					selectedVertices.push_back(v);
+					for(TrackVecIte itt = v->getTracks().begin(); itt != v->getTracks().end(); itt++){
+						vector<const Track *>::iterator itt2 = remove_if(residualTracks.begin(), residualTracks.end(), bind2nd(equal_to<const Track *>(), *itt));
+						residualTracks.erase(itt2, residualTracks.end());
+					}
 				}
 			}
 		}
 		*_jets = jetFinder->run(residualTracks, event->getNeutrals(), selectedVertices, &ycut, _useMuonID);
 
-		
-		cout << "JetClustering: _vertices.size() = " << _vertices->size() << endl;
-		cout << "JetClustering: selectedVertices.size() = " << selectedVertices.size() << endl;
+		if(_vertices){
+			cout << "JetClustering: _vertices.size() = " << _vertices->size() << endl;
+			cout << "JetClustering: selectedVertices.size() = " << selectedVertices.size() << endl;
+		}
+
 /*
 		Parameters testPid;
 		testPid.add("testparapi", (double)3.14159);

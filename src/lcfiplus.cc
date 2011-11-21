@@ -8,6 +8,8 @@
 #include "TMatrixDSym.h"
 #include "HelixClass.h"
 #include "TVectorD.h"
+#include "TMethodCall.h"
+#include <HelixClass.h>
 
 #include "math.h"
 
@@ -229,7 +231,6 @@ namespace lcfiplus {
 	{
 		*(TLorentzVector *)this = p;
 		_dauForDecay = 0;
-		_helixOK = false;
 
 		_id = id;
 		_pdg = pdg;
@@ -635,33 +636,40 @@ namespace lcfiplus {
     _dau.push_back(mcp);
   }
 
-  void MCParticle::makeHelix() const{
-    if (_helixOK) return;
+  float MCParticle::getD0() const{
     float pos[3] = { getVertex().x(), getVertex().y(), getVertex().z() };
     float mom[3] = { Px(), Py(), Pz() };
-    _helix.Initialize_VP(pos,mom,getCharge(),3.5);
-    _helixOK = true;
-  }
-
-  float MCParticle::getD0() const{
-    makeHelix();
-    return _helix.getD0();
+    HelixClass h;
+		h.Initialize_VP(pos,mom,getCharge(),3.5);
+		return h.getD0();
   }
   float MCParticle::getZ0() const{
-    makeHelix();
-    return _helix.getZ0();
+    float pos[3] = { getVertex().x(), getVertex().y(), getVertex().z() };
+    float mom[3] = { Px(), Py(), Pz() };
+    HelixClass h;
+		h.Initialize_VP(pos,mom,getCharge(),3.5);
+		return h.getZ0();
   }
   float MCParticle::getPhi() const{
-    makeHelix();
-    return _helix.getPhi0();
+    float pos[3] = { getVertex().x(), getVertex().y(), getVertex().z() };
+    float mom[3] = { Px(), Py(), Pz() };
+    HelixClass h;
+		h.Initialize_VP(pos,mom,getCharge(),3.5);
+		return h.getPhi0();
   }
   float MCParticle::getOmega() const{
-    makeHelix();
-    return _helix.getOmega();
+    float pos[3] = { getVertex().x(), getVertex().y(), getVertex().z() };
+    float mom[3] = { Px(), Py(), Pz() };
+    HelixClass h;
+		h.Initialize_VP(pos,mom,getCharge(),3.5);
+		return h.getOmega();
   }
   float MCParticle::getTanLambda() const{
-    makeHelix();
-    return _helix.getTanLambda();
+    float pos[3] = { getVertex().x(), getVertex().y(), getVertex().z() };
+    float mom[3] = { Px(), Py(), Pz() };
+    HelixClass h;
+		h.Initialize_VP(pos,mom,getCharge(),3.5);
+		return h.getTanLambda();
   }
 
   void Vertex::add(const Track* trk) {
@@ -977,10 +985,71 @@ bool Vertex::passesV0selection(const Vertex* primary) const {
 
 
 	// under construction
-	Parameters::~Parameters(){
+	void Parameters::remove(const string &key, bool delmap){
+		if(_map.find(key) == _map.end())throw(Exception("Parameters::remove: key not found."));
+		else if(_map[key].first == &typeid(double))deleteData<double>(key);
+		else if(_map[key].first == &typeid(float))deleteData<float>(key);
+		else if(_map[key].first == &typeid(long))deleteData<long>(key);
+		else if(_map[key].first == &typeid(int))deleteData<int>(key);
+		else if(_map[key].first == &typeid(bool))deleteData<bool>(key);
+		else{
+			// looking for TClass
+			TClass *cl = TClass::GetClass(*(_map[key].first));
+			if(!cl)throw(Exception(TString::Format("Parameters::remove: definition of class %s not found in TClass table: cannot delete it.",_map[key].first->name())));
+
+			cl->Destructor(_map[key].second);
+		}
+
+		if(delmap)
+			_map.erase(key);
 	}
+
+	void Parameters::clear(){
+
+		map<string, pair<const type_info *, void *> >::iterator it;
+		for(it = _map.begin(); it != _map.end(); it++){
+			remove(it->first, false);
+		}
+
+		_map.clear();
+	}
+
 	Parameters & Parameters::operator =(const Parameters &ref){
 
+		clear();
+
+		map<string, pair<const type_info *, void *> >::const_iterator it;
+		for(it = ref._map.begin(); it != ref._map.end(); it++){
+			void *data = it->second.second;
+			const char *key = it->first.c_str();
+			const type_info *type = it->second.first;
+
+			// built-in types
+			if(type == &typeid(double))add(key,*(double*)data);
+			else if(type == &typeid(float))add(key,*(float*)data);
+			else if(type == &typeid(long))add(key,*(long*)data);
+			else if(type == &typeid(int))add(key,*(int*)data);
+			else if(type == &typeid(bool))add(key,*(bool*)data);
+			else{
+				// looking for TClass
+				TClass *cl = TClass::GetClass(*type);
+				if(!cl)throw(Exception(TString::Format("Parameters::operator=: definition of class %s not found in TClass table: cannot copy it.",type->name())));
+
+				// looking for operator =
+				TMethodCall mc;
+				TString opetype = TString::Format("const %s &", cl->GetName());
+				mc.InitWithPrototype(cl, "operator=", opetype);
+				mc.SetParamPtrs(&data, 1);
+
+				if(!mc.IsValid())
+					throw(Exception(TString::Format("Parameters::operator=: class copy operator not found, class name = %s, parameter type = %s", type->name(), (const char *)opetype)));
+
+				void *newdata = cl->New();
+				mc.Execute(newdata);
+
+				_map[it->first] = pair<const type_info*, void *>(type, newdata);
+			}
+		}
 		return *this;
 	}
 

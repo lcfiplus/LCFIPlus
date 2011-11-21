@@ -17,4 +17,6 @@ extern void matchMcVertexReco(const Event& evt, const vector<MCVertex*>& vtxList
 
 extern vector<const Track*> findSingleTracks(const Event& evt, const Jet& jet, const vector<lcfiplus::Vertex*>& vtxList);
 
+extern void testSuehara();
+
 #endif
