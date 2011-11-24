@@ -87,6 +87,8 @@ namespace lcfiplus{
 	void LCIOStorer::InitCollections(const char *pfoColName, const char *mcColName, const char *mcpfoColName,
 				const char *trackName, const char *neutralName, const char *mcpName)
 	{
+		_useMcp = true;
+
 		/*
 		cout << "LCIOStorer::InitCollections: registering collections" << endl;
 		cout << "LCIOStorer::InitCollections:     pfo collection:   " << pfoColName << endl; 
@@ -113,6 +115,29 @@ namespace lcfiplus{
 			cout << "[ERROR] LCIOStorer::InitCollections: failed to register LCIO collections in lcfiplus namespace." << endl;
 			throw(Exception("LCIOStorer::InitCollections: failed to register LCIO collections in lcfiplus namespace."));
 		}
+
+		cout << "LCIOStorer initialized with MCParticle collection." << endl;
+	}
+
+	void LCIOStorer::InitCollectionsWithoutMCP(const char *pfoColName, const char *trackName, const char *neutralName)
+	{
+		_useMcp = false;
+
+		_pfoColName = pfoColName;
+
+		Event *event = Event::Instance();
+		event->Register<Track>(trackName,_pTracks);
+		event->Register<Neutral>(neutralName,_pNeutrals);
+
+		event->setDefaultTracks(trackName);
+		event->setDefaultNeutrals(neutralName);
+
+		if(!_pTracks || !_pNeutrals){
+			cout << "[ERROR] LCIOStorer::InitCollections: failed to register LCIO collections in lcfiplus namespace." << endl;
+			throw(Exception("LCIOStorer::InitCollections: failed to register LCIO collections in lcfiplus namespace."));
+		}
+
+		cout << "LCIOStorer initialized without MCParticle collection." << endl;
 	}
 	
 	void LCIOStorer::InitVertexCollection(const char *lcioName, const char *flavtagName)
@@ -237,73 +262,84 @@ namespace lcfiplus{
 		// buffer check
 //		if(_pTracks == NULL || _pNeutrals == NULL || _pMCPs == NULL)throw(new lcfiplus::Exception("LCIOStorer::SetEvent: Event buffer not set."));
 		_event = evt;
-		if(_pTracks == NULL || _pNeutrals == NULL || _pMCPs == NULL)return;
+		if(_pTracks == NULL || _pNeutrals == NULL)return;
+		if(_useMcp && _pMCPs == NULL)return;
 
 		// collections
-		lcio::LCCollection* colMC = evt->getCollection(_mcColName);
 		lcio::LCCollection* colPFO = evt->getCollection(_pfoColName);
-		lcio::LCRelationNavigator* nav = new lcio::LCRelationNavigator(evt->getCollection(_mcpfoColName));
+		lcio::LCCollection* colMC = 0;
+		lcio::LCRelationNavigator* nav = 0;
+
+		if(_useMcp){
+			colMC = evt->getCollection(_mcColName);
+			nav = new lcio::LCRelationNavigator(evt->getCollection(_mcpfoColName));
+		}
 	
 		// memory allocation
 		Event::Instance()->ClearObjects();
 		
-		_pMCPs->reserve(colMC->getNumberOfElements());
-		_pNeutrals->reserve(colPFO->getNumberOfElements());
 		_pTracks->reserve(colPFO->getNumberOfElements());
+		_pNeutrals->reserve(colPFO->getNumberOfElements());
+		if(_useMcp)
+			_pMCPs->reserve(colMC->getNumberOfElements());
+
 
 		//cout << "PFO size: " << colPFO->getNumberOfElements() << endl;
 
-		_mcpLCIORel.clear();
 		_trackLCIORel.clear();
-		_neutralLCIORel.clear();
-		
-		_mcpLCIORel.reserve(colMC->getNumberOfElements());
 		_trackLCIORel.reserve(colPFO->getNumberOfElements());
+		_neutralLCIORel.clear();
 		_neutralLCIORel.reserve(colPFO->getNumberOfElements());
+
+		if(_useMcp){
+			_mcpLCIORel.clear();
+			_mcpLCIORel.reserve(colMC->getNumberOfElements());
+		}
 
 		// Relation of MCParticle between LCIO and lcfiplus
 		map<lcio::MCParticle *, lcfiplus::MCParticle *> mcpMap;
 		
 		int mcIdCounter(0);
 		// convert MCParticle /////////////////////////////////////////////////////////////////////////
-		for (mcIdCounter=0; mcIdCounter<colMC->getNumberOfElements(); ++mcIdCounter) {
-			lcio::MCParticle* mcp = dynamic_cast<lcio::MCParticle*>( colMC->getElementAt(mcIdCounter) );
-			assert(mcp != 0);
-			//if (mcp->isBackscatter()) continue;
-			
-			// find parent id
-			// TODO Really OK for single parent??
-			lcfiplus::MCParticle *parent = 0;
-			if (mcp->getParents().size()>0) {
-				map<lcio::MCParticle*,lcfiplus::MCParticle *>::iterator iter = mcpMap.find(mcp->getParents()[0]);
+		if(_useMcp){
+			for (mcIdCounter=0; mcIdCounter<colMC->getNumberOfElements(); ++mcIdCounter) {
+				lcio::MCParticle* mcp = dynamic_cast<lcio::MCParticle*>( colMC->getElementAt(mcIdCounter) );
+				assert(mcp != 0);
+				//if (mcp->isBackscatter()) continue;
+				
+				// find parent id
+				// TODO Really OK for single parent??
+				lcfiplus::MCParticle *parent = 0;
+				if (mcp->getParents().size()>0) {
+					map<lcio::MCParticle*,lcfiplus::MCParticle *>::iterator iter = mcpMap.find(mcp->getParents()[0]);
 
-				if ( iter == mcpMap.end() )	throw(new lcfiplus::Exception("parent not found in association map"));
+					if ( iter == mcpMap.end() )	throw(new lcfiplus::Exception("parent not found in association map"));
+				
+					parent = iter->second;
+				}
+
+				// fix against weird 1e-308 numbers
+				const double* vtmp = mcp->getVertex();
+				double v[3] = { vtmp[0], vtmp[1], vtmp[2] };
+				//printf("%d [%e,%e,%e]\n",mcp->getPDG(),v[0],v[1],v[2]);
+				if (v[0]*v[0]+v[1]*v[1]+v[2]*v[2] < 1e-100) {
+					v[0] = 0; v[1] = 0; v[2] = 0;
+				}
+
 			
-				parent = iter->second;
+				// convert into MCParticle
+				lcfiplus::MCParticle *mcpNew = new MCParticle(mcIdCounter, mcp->getPDG(), parent, mcp->getCharge(),
+						TLorentzVector(TVector3(mcp->getMomentum()),mcp->getEnergy()), TVector3(v));
+				
+				// add to MCP list
+				_pMCPs->push_back(mcpNew);
+				
+				// MC - id relation
+				mcpMap[mcp] = mcpNew;
+				// LCIO relation
+				_mcpLCIORel[mcIdCounter] = mcp;
 			}
-
-			// fix against weird 1e-308 numbers
-			const double* vtmp = mcp->getVertex();
-			double v[3] = { vtmp[0], vtmp[1], vtmp[2] };
-			//printf("%d [%e,%e,%e]\n",mcp->getPDG(),v[0],v[1],v[2]);
-			if (v[0]*v[0]+v[1]*v[1]+v[2]*v[2] < 1e-100) {
-				v[0] = 0; v[1] = 0; v[2] = 0;
-			}
-
-			
-			// convert into MCParticle
-			lcfiplus::MCParticle *mcpNew = new MCParticle(mcIdCounter, mcp->getPDG(), parent, mcp->getCharge(),
-					TLorentzVector(TVector3(mcp->getMomentum()),mcp->getEnergy()), TVector3(v));
-			
-			// add to MCP list
-			_pMCPs->push_back(mcpNew);
-			
-			// MC - id relation
-			mcpMap[mcp] = mcpNew;
-			// LCIO relation
-			_mcpLCIORel[mcIdCounter] = mcp;
 		}
-		
 	
 		// convert PFO ////////////////////////////////////////////////////////////////////////////////
 		// sorted PFO list
@@ -323,7 +359,7 @@ namespace lcfiplus{
 			lcio::ReconstructedParticle *pfo = pfo_list[n];
 			lcio::MCParticle *mcp = NULL;
 			lcfiplus::MCParticle *mcpf = NULL;
-			if(nav->getRelatedToObjects(pfo).size()){
+			if(_useMcp && nav->getRelatedToObjects(pfo).size()){
 				mcp = dynamic_cast<lcio::MCParticle *>(nav->getRelatedToObjects(pfo)[0]); // TODO [0] OK?
 				mcpf = mcpMap[mcp];
 			}

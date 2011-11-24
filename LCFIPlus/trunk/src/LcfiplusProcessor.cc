@@ -28,6 +28,9 @@ LcfiplusProcessor::LcfiplusProcessor() : Processor("LcfiplusProcessor") {
   // modify processor description
 	_description = "Lcfiplus general processor" ;
 
+	// MCP on/off
+	registerProcessorParameter("UseMCP", "Whether MCParticle collection is imported or not", _useMcp, int(0));
+
 	// input collections 
 	registerInputCollection(LCIO::RECONSTRUCTEDPARTICLE, "PFOCollection" , "Particle flow output collection",
 		_pfoCollectionName, std::string("PandoraPFOs"));
@@ -38,6 +41,8 @@ LcfiplusProcessor::LcfiplusProcessor() : Processor("LcfiplusProcessor") {
 
 	registerProcessorParameter("VertexAutoLoad", "Loading LCIO vertices automatically", _autoVertex, int(1));
 	registerProcessorParameter("JetAutoLoad", "Loading LCIO jets automatically", _autoJet, int(1));
+
+	registerProcessorParameter("Algorithms", "LCFIPlus algorithms to run", _algonames, vector<string>());
 
 	// ROOT object
 /*	int argc = 0;
@@ -70,7 +75,7 @@ void LcfiplusProcessor::init() {
 		printParameters() ;
 
 		StringParameters *parameter = parameters();
-
+/*
 		// obtain algorithm name
 		if(!parameter->isParameterSet("algorithm")){
 			SLM << "Lcfiplus algorithm not set. run nothing." << endl;
@@ -79,8 +84,11 @@ void LcfiplusProcessor::init() {
 		vector<string> algos;
 		parameter->getStringVals("algorithm", algos);
 
-		if(algos.size() == 0){
-			SLM << "Lcfiplus algorithm size is 0. run nothing." << endl;
+*/
+
+		// algorithm check
+		if(_algonames.size() == 0){
+			SLM << "No algorithms given to run. run nothing." << endl;
 			return;
 		}
 
@@ -99,29 +107,32 @@ void LcfiplusProcessor::init() {
 		// initialize LCIOStorer
 		if(!_lcio){
 			_lcio = new LCIOStorer(0,0,true,0); // no file
-			//_lcio->InitCollections(_pfoCollectionName.c_str(), _mcpCollectionName.c_str(), _mcpfoRelationName.c_str());
-			_lcio->InitCollections();
+			if(_useMcp)
+				_lcio->InitCollections(_pfoCollectionName.c_str(), _mcpCollectionName.c_str(), _mcpfoRelationName.c_str());
+			else
+				_lcio->InitCollectionsWithoutMCP(_pfoCollectionName.c_str());
+
 			_lcioowner = true;
 		}
 		else
 			_lcioowner = false;
 
 		// make algorithm classes and pass param to init
-		for(unsigned int i=0;i<algos.size();i++){
+		for(unsigned int i=0;i<_algonames.size();i++){
 			string s = "lcfiplus::";
-			s += algos[i];
+			s += _algonames[i];
 			TClass *cl = TClass::GetClass(s.c_str());
 			if(!cl || !cl->InheritsFrom("lcfiplus::Algorithm")){
-				SLM << "Algorithm " << algos[i] << " is not valid. skip." << endl;
+				SLM << "Algorithm " << _algonames[i] << " is not valid. skip." << endl;
 				continue;
 		}
 			Algorithm *newalgo = (Algorithm *)cl->New();
 			if(!newalgo){SLM << "Initialization failed!." << endl; break;}
 			_algos.push_back(newalgo);
-			SLM << "Algorithm " << algos[i] << " is being initialized." << endl;
+			SLM << "Algorithm " << _algonames[i] << " is being initialized." << endl;
 			newalgo->init(_param);
 
-			SLM << "Algorithm " << algos[i] << " successfully initialized." << endl;
+			SLM << "Algorithm " << _algonames[i] << " successfully initialized." << endl;
 		}
 
 		// printing EventStore collections

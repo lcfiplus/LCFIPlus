@@ -33,30 +33,30 @@ using namespace lcfiplus::algoEtc;
 void TrainMVA::init(Parameters *param) {
 	Algorithm::init(param);
 
-	_inputFileB = param->get("TrainNtupleFileB",string("lcfiplusB.root"));
-	_inputFileC = param->get("TrainNtupleFileC",string("lcfiplusC.root"));
-	_inputFileO = param->get("TrainNtupleFileO",string("lcfiplusO.root"));
+	_inputFileB = param->get("TrainMVA.InputRootFileB",string("lcfiplusB.root"));
+	_inputFileC = param->get("TrainMVA.InputRootFileC",string("lcfiplusC.root"));
+	_inputFileO = param->get("TrainMVA.InputRootFileO",string("lcfiplusO.root"));
 
-	_treeNameB = param->get("TrainTreeNameB",string("ntp"));
-	_treeNameC = param->get("TrainTreeNameC",string("ntp"));
-	_treeNameO = param->get("TrainTreeNameO",string("ntp"));
+	_treeNameB = param->get("TrainMVA.TreeNameB",string("ntp"));
+	_treeNameC = param->get("TrainMVA.TreeNameC",string("ntp"));
+	_treeNameO = param->get("TrainMVA.TreeNameO",string("ntp"));
 
-	_cutB = param->get("TrainPreSelectionB",string(""));
-	_cutC = param->get("TrainPreSelectionC",string(""));
-	_cutO = param->get("TrainPreSelectionO",string(""));
+	_cutB = param->get("TrainMVA.PreSelectionB",string(""));
+	_cutC = param->get("TrainMVA.PreSelectionC",string(""));
+	_cutO = param->get("TrainMVA.PreSelectionO",string(""));
 
-	_verbose = param->get("TrainVerbose",true);
+	_verbose = param->get("TrainMVA.Verbose",true);
 
 	// set output directory for weight files
-	_outputDirectory = param->get("TrainOutputDirectory",TString("lcfiweights"));
-	cout << "TrainOutputDirectory set to: " << _outputDirectory << endl;
+	_outputDirectory = param->get("FlavorTag.WeightsDirectory",TString("lcfiweights"));
+	cout << "WeightsDirectory set to: " << _outputDirectory << endl;
 
 	// 
-	_outputPrefix = param->get("TrainOutputPrefix",TString("zpole_v00"));
-	cout << "TrainOutputPrefix set to: " << _outputPrefix << endl;
+	_outputPrefix = param->get("FlavorTag.WeightsPrefix",TString("zpole_v00"));
+	cout << "WeightsPrefix set to: " << _outputPrefix << endl;
 
 	// set TMVA method (e.g. BDT, MLP)
-	TString bookTypeString = param->get("TrainBookType",TString("BDT"));
+	TString bookTypeString = param->get("TrainMVA.BookType",TString("BDT"));
 
 	if (bookTypeString == "BDT") {
 		_tmvaBookType = TMVA::Types::kBDT;
@@ -66,8 +66,8 @@ void TrainMVA::init(Parameters *param) {
 		cout << "unknown TMVA type: " << bookTypeString << endl;
 	}
 
-	_tmvaBookName = param->get("TrainBookName",TString("bdt"));
-	_tmvaBookOptions = param->get("TrainBookOptions",TString(""));
+	_tmvaBookName = param->get("FlavorTag.BookName",TString("bdt"));
+	_tmvaBookOptions = param->get("TrainMVA.BookOptions",TString(""));
 
 	if (_tmvaBookOptions == "") {
 		if (_tmvaBookType == TMVA::Types::kBDT)
@@ -85,7 +85,7 @@ void TrainMVA::init(Parameters *param) {
 		FlavtagCategory c;
 
 		stringstream catTag;
-		catTag << "FlavorTagCategoryDefinition" << i;
+		catTag << "FlavorTag.CategoryDefinition" << i;
 		c.definition = param->get(catTag.str().c_str(),string(""));
 		if (c.definition == "") {
 			cout << "definition for index " << i << " not found, skipping" << endl;
@@ -93,12 +93,12 @@ void TrainMVA::init(Parameters *param) {
 		}
 
 		stringstream psTag;
-		psTag << "FlavorTagCategoryPreselection" << i;
+		psTag << "FlavorTag.CategoryPreselection" << i;
 		c.preselection = param->get(psTag.str().c_str(),string(""));
 
 		// assumes comma separated values
 		stringstream varTag;
-		varTag << "FlavorTagCategoryVariables" << i;
+		varTag << "FlavorTag.CategoryVariables" << i;
 		param->fetchArray( varTag.str().c_str(), c.vars );
 
 		cout << "FlavorTag category: " << c.definition << endl;

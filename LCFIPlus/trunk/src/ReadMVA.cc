@@ -37,16 +37,16 @@ void ReadMVA::init(Parameters *param) {
 	mgr.setEval(true);
 
 	// read output directory & file names
-	_outputDirectory = param->get("TrainOutputDirectory",TString("lcfiweights"));
-	_outputPrefix = param->get("TrainOutputPrefix",TString("zpole_v00"));
-	_tmvaBookName = param->get("TrainBookName",TString("bdt"));
+	_outputDirectory = param->get("FlavorTag.WeightsDirectory",TString("lcfiweights"));
+	_outputPrefix = param->get("FlavorTag.WeightsPrefix",TString("zpole_v00"));
+	_tmvaBookName = param->get("FlavorTag.BookName",TString("bdt"));
 
 	// process categories & variables
 	for (int i=1; ; ++i) {
 		FlavtagCategory c;
 
 		stringstream catTag;
-		catTag << "FlavorTagCategoryDefinition" << i;
+		catTag << "FlavorTag.CategoryDefinition" << i;
 		c.definition = param->get(catTag.str().c_str(),string(""));
 		if (c.definition == "") {
 			cout << "definition for index " << i << " not found, skipping" << endl;
@@ -54,12 +54,12 @@ void ReadMVA::init(Parameters *param) {
 		}
 
 		stringstream psTag;
-		psTag << "FlavorTagCategoryPreselection" << i;
+		psTag << "FlavorTag.CategoryPreselection" << i;
 		c.preselection = param->get(psTag.str().c_str(),string(""));
 
 		// assumes comma separated values
 		stringstream varTag;
-		varTag << "FlavorTagCategoryVariables" << i;
+		varTag << "FlavorTag.CategoryVariables" << i;
 		param->fetchArray( varTag.str().c_str(), c.vars );
 
 		cout << "FlavorTag category: " << c.definition << endl;

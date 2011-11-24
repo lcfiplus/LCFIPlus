@@ -46,12 +46,12 @@ namespace lcfiplus{
 		_secVtxCfg->minVtxPlusFtdHits = 3;
 		*/
 
-		_secVtxCfg->maxD0 = 20.;
-		_secVtxCfg->maxZ0 = 20.;
-		_secVtxCfg->maxInnermostHitRadius = 20.;
-		_secVtxCfg->minVtxPlusFtdHits = 5;
+		_secVtxCfg->maxD0 = param->get("PrimaryVertexFinder.TrackMaxD0", 20.);
+		_secVtxCfg->maxZ0 = param->get("PrimaryVertexFinder.TrackMaxZ0", 20.);
+		_secVtxCfg->maxInnermostHitRadius = param->get("PrimaryVertexFinder.TrackMaxInnermostHitRadius",20.);
+		_secVtxCfg->minVtxPlusFtdHits = param->get("PrimaryVertexFinder.TrackMinVtxFtdHits", 5);
 
-		_chi2th = 25.;
+		_chi2th = param->get("PrimaryVertexFinder.Chi2Threshold", 25.);
 	}
 
 	void PrimaryVertexFinder::process(){
@@ -78,37 +78,36 @@ namespace lcfiplus{
 		Algorithm::init(param);
 
 		// register collection
-//		string vcolname = (*param)["VertexCollectionName"];
-		string vcolname = param->get("VertexCollectionName",string("BuildUpVertex"));
+		string vcolname = param->get("BuildUpVertexCollectionName",string("BuildUpVertex"));
 		Event::Instance()->Register(vcolname.c_str(), _vertices, EventStore::PERSIST);
 
 		// configuration
 		// track cut
-		_secVtxCfg = new TrackSelectorConfig; // todo: memory leak
+		_secVtxCfg = new TrackSelectorConfig;
 
-		_secVtxCfg->maxD0 = param->get("TrackCut.MaxD0", 10.);
-		_secVtxCfg->maxZ0 = param->get("TrackCut.MaxZ0", 20.);
-		_secVtxCfg->minPt = param->get("TrackCut.MinPt", 0.1);
+		_secVtxCfg->maxD0 = param->get("BuildUpVertex.TrackMaxD0", 10.);
+		_secVtxCfg->maxZ0 = param->get("BuildUpVertex.TrackMaxZ0", 20.);
+		_secVtxCfg->minPt = param->get("BuildUpVertex.TrackMinPt", 0.1);
 		_secVtxCfg->maxInnermostHitRadius = 1e10;
 
-		_secVtxCfg->maxD0Err = param->get("TrackCut.MaxD0Err", .1);
-		_secVtxCfg->maxZ0Err = param->get("TrackCut.MaxZ0Err", .1);
+		_secVtxCfg->maxD0Err = param->get("BuildUpVertex.TrackMaxD0Err", .1);
+		_secVtxCfg->maxZ0Err = param->get("BuildUpVertex.TrackMaxZ0Err", .1);
 
-		_secVtxCfg->minTpcHits = param->get("TrackCut.MinTpcHits", 20);
-		_secVtxCfg->minFtdHits = param->get("TrackCut.MinFtdHits", 3);
-		_secVtxCfg->minVtxHitsWithoutTpcFtd = param->get("TrackCut.MinVtxHits", 3);
-		_secVtxCfg->minVtxPlusFtdHits = param->get("TrackCut.MinVtxFtdHits", 0);
+		_secVtxCfg->minTpcHits = param->get("BuildUpVertex.TrackMinTpcHits", 20);
+		_secVtxCfg->minFtdHits = param->get("BuildUpVertex.TrackMinFtdHits", 3);
+		_secVtxCfg->minVtxHitsWithoutTpcFtd = param->get("BuildUpVertex.TrackMinVxdHits", 3);
+		_secVtxCfg->minVtxPlusFtdHits = param->get("BuildUpVertex.TrackMinVxdFtdHits", 0);
 
 		// buildup parameters
-		_chi2thpri = param->get("BuildUp.PrimaryChi2Threshold", 25.);
-		_chi2thsec = param->get("BuildUp.SecondaryChi2Threshold", 9.);
-		_massth = param->get("BuildUp.MassThreshold", 10.);
-		_posth = param->get("BuildUp.MinimumDistIP", 0.3);
-		_chi2orderinglimit = param->get("BuildUp.MaximumChi2ForDistOrder", 1.0);
+		_chi2thpri = param->get("BuildUpVertex.PrimaryChi2Threshold", 25.);
+		_chi2thsec = param->get("BuildUpVertex.SecondaryChi2Threshold", 9.);
+		_massth = param->get("BuildUpVertex.MassThreshold", 10.);
+		_posth = param->get("BuildUpVertex.MinDistFromIP", 0.3);
+		_chi2orderinglimit = param->get("BuildUpVertex.MaxChi2ForDistOrder", 1.0);
 
-		_doassoc = param->get("AssocIPTracks.DoAssoc", 1);
-		_minimumdist = param->get("AssocIPTracks.MinimumDist", 0.);
-		_chi2ratio = param->get("AssocIPTracks.Chi2RatioSecToPri", 2.0);
+		_doassoc = param->get("BuildUpVertex.AssocIPTracks", 1);
+		_minimumdist = param->get("BuildUpVertex.AssocIPTracksMinDist", 0.);
+		_chi2ratio = param->get("BuildUpVertex.AssocIPTracksChi2RatioSecToPri", 2.0);
 	}
 
 	void BuildUpVertex::process(){
@@ -129,25 +128,29 @@ namespace lcfiplus{
 			VertexFinderSuehara::associateIPTracks(*_vertices,_minimumdist, 0, _chi2ratio);
 	}
 
+	void BuildUpVertex::end(){
+		delete _secVtxCfg;
+	}
+
 	void JetClustering::init(Parameters *param){
 		Algorithm::init(param);
 
-		_vcolname = param->get("VertexCollectionName",string("BuildUpVertex"));
+		_vcolname = param->get("JetClustering.InputVertexCollectionName",string("BuildUpVertex"));
 		Event::Instance()->Get(_vcolname.c_str(), _vertices);
 		if(!_vertices)
 			cout << "JetClustering::init: vertex collection not found; will try later." << endl;
 
-		string jcolname = param->get("JetCollectionName",string("Jets"));
+		string jcolname = param->get("JetClustering.OutputJetCollectionName",string("Jets"));
 		Event::Instance()->Register(jcolname.c_str(), _jets, EventStore::PERSIST | EventStore::JET_EXTRACT_VERTEX);
 
-		_njets = param->get("NJetsRequested",int(6));
-		_ycut = param->get("YCut", double(0));
+		_njets = param->get("JetClustering.NJetsRequested",int(6));
+		_ycut = param->get("JetClustering.YCut", double(0));
 
-		_useMuonID = param->get("UseMuonID", int(1));
+		_useMuonID = param->get("JetClustering.UseMuonID", int(1));
 
-		_vsMinDist = param->get("VertexSelectionMinimumDistance", double(0.3));
-		_vsMaxDist = param->get("VertexSelectionMaximumDistance", double(30.));
-		_vsK0MassWidth = param->get("VertexSelectionK0MassWidth", double(0.02));
+		_vsMinDist = param->get("JetClustering.VertexSelectionMinimumDistance", double(0.3));
+		_vsMaxDist = param->get("JetClustering.VertexSelectionMaximumDistance", double(30.));
+		_vsK0MassWidth = param->get("JetClustering.VertexSelectionK0MassWidth", double(0.02));
 	}
 
 	void JetClustering::process()

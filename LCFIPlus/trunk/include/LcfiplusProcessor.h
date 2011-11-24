@@ -58,6 +58,7 @@ class LcfiplusProcessor : public Processor {
 	std::string _pfoCollectionName;
 	std::string _mcpCollectionName;
 	std::string _mcpfoRelationName;
+	std::vector<std::string> _algonames;
 
 	std::vector<lcfiplus::Algorithm *> _algos;
 	lcfiplus::Parameters * _param;
@@ -67,6 +68,9 @@ class LcfiplusProcessor : public Processor {
 
 	int _autoVertex;
 	int _autoJet;
+
+	int _useMcp;
+
 } ;
 
 #endif
