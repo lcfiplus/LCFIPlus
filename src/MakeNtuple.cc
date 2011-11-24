@@ -15,8 +15,8 @@ namespace lcfiplus {
 	void MakeNtuple::init(Parameters *param) {
 		Algorithm::init(param);
 
-		string outputFilename = param->get("TrainNtupleFile",string("flavtag.root"));
-		cout << "FlavtagAlgorithm: Ntuple file set to " << outputFilename << endl;
+		string outputFilename = param->get("MakeNtuple.OutputRootFileName",string("flavtag.root"));
+		cout << "MakeNtuple: Ntuple file set to " << outputFilename << endl;
 
 		FTManager::getInstance().openFile(outputFilename.c_str());
 	}

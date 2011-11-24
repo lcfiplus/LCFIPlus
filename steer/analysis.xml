@@ -16,32 +16,25 @@
 
 <processor name="MyLcfiplusProcessor" type="LcfiplusProcessor">
 
-	<parameter name="algorithm" type="stringVec">
+	<parameter name="Algorithms" type="stringVec">
 		PrimaryVertexFinder BuildUpVertex JetClustering FlavorTag ReadMVA
 	</parameter>
 	<parameter name="PFOCollection" type="string" value="PandoraPFOs" />
-	<parameter name="MCPCollection" type="string" value="MCParticlesSkimmed" />
-	<parameter name="MCPFORelation" type="string" value="RecoMCTruthLink" />
-	<parameter name="VertexCollectionName" type="string" value="BuildUpVertex" />
-	<parameter name="PrimaryVertexCollectionName" type="string" value="PrimaryVertex" />
-	<parameter name="JetCollectionName" type="string" value="VertexJets" />
-	<parameter name="NJetsRequested" type="int" value="2" />
 
-	<parameter name="TrainBookName" type="string" value="bdt" />
-	<parameter name="TrainBookType" type="string" value="BDT" />
+	<parameter name="FlavorTag.BookName" type="string" value="bdt" />
 
-	<parameter name="FlavorTagCategoryDefinition1" type="string">nvtx==0</parameter>
-	<parameter name="FlavorTagCategoryVariables1" type="stringVec">
+	<parameter name="FlavorTag.CategoryDefinition1" type="string">nvtx==0</parameter>
+	<parameter name="FlavorTag.CategoryVariables1" type="stringVec">
 		trk1d0sig trk2d0sig trk1z0sig trk2z0sig trk1pt trk2pt jprobr jprobz
 	</parameter>
 
-	<parameter name="FlavorTagCategoryDefinition2" type="string">nvtx==1</parameter>
-	<parameter name="FlavorTagCategoryVariables2" type="stringVec">
+	<parameter name="FlavorTag.CategoryDefinition2" type="string">nvtx==1</parameter>
+	<parameter name="FlavorTag.CategoryVariables2" type="stringVec">
 		trk1d0sig trk2d0sig trk1z0sig trk2z0sig trk1pt trk2pt jprobr jprobz
 	</parameter>
 
-	<parameter name="FlavorTagCategoryDefinition3" type="string">nvtx>=2</parameter>
-	<parameter name="FlavorTagCategoryVariables3" type="stringVec">
+	<parameter name="FlavorTag.CategoryDefinition3" type="string">nvtx>=2</parameter>
+	<parameter name="FlavorTag.CategoryVariables3" type="stringVec">
 		trk1d0sig trk2d0sig trk1z0sig trk2z0sig trk1pt trk2pt jprobr jprobz
 	</parameter>
 

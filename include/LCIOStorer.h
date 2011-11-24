@@ -34,6 +34,7 @@ namespace lcfiplus{
 			void InitCollections(const char *pfoColName = "PandoraPFOs", const char *mcColName = "MCParticlesSkimmed",
 				const char *mcpfoColName = "RecoMCTruthLink",
 				const char *trackName = "Tracks", const char *neutralName = "Neutrals", const char *mcpName = "MCParticles");
+			void InitCollectionsWithoutMCP(const char *pfoColName = "PandoraPFOs", const char *trackName = "Tracks", const char *neutralName = "Neutrals");
 
 			// initialize misc collections
 			void InitVertexCollection(const char *lcioName, const char *flavtagName);
@@ -92,6 +93,8 @@ namespace lcfiplus{
 			// autosave for output
 			bool _autoconvert;
 			string _savePrefix;
+
+			bool _useMcp;
 
 			ClassDef(LCIOStorer,0);
 	};

@@ -38,6 +38,7 @@ namespace lcfiplus{
 
 		void init(Parameters *param);
 		void process();
+		void end();
 
 		ClassDef(BuildUpVertex,1);
 
