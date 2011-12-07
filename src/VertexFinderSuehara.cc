@@ -699,8 +699,8 @@ void VertexFinderSuehara::associateIPTracks(vector<Vertex *> &vertices, double m
 		vector<const Track *> iptracks;
 		for(it = ip->getTracks().begin(); it != ip->getTracks().end();it++){
 			TLorentzVector v2 = **it;
-			if((v + v2).M() - v.M() > min(v.E(), v2.E()))continue;
-			if(v2.Vect().Dot(vertices[i]->getPos())< 0.)continue;
+			if((v + v2).M() - v.M() > min(v.E(), v2.E())){iptracks.push_back(*it);continue;}
+			if(v2.Vect().Dot(vertices[i]->getPos())< 0.){iptracks.push_back(*it);continue;}
 
 			double chi2ip = ip->getChi2Track(*it);
 			// vertex fitter
