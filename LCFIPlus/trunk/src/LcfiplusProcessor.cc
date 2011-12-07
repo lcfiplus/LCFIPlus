@@ -125,7 +125,7 @@ void LcfiplusProcessor::init() {
 			if(!cl || !cl->InheritsFrom("lcfiplus::Algorithm")){
 				SLM << "Algorithm " << _algonames[i] << " is not valid. skip." << endl;
 				continue;
-		}
+			}
 			Algorithm *newalgo = (Algorithm *)cl->New();
 			if(!newalgo){SLM << "Initialization failed!." << endl; break;}
 			_algos.push_back(newalgo);

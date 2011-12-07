@@ -180,10 +180,16 @@ namespace lcfiplus{
 		_importJetCols[ lcioName ] = jetcol;
 	}
 
-	bool LCIOStorer::Next()
+	bool LCIOStorer::Next(bool autovertex, bool autojet)
 	{
 		lcio::LCEvent *evt = _reader->readNextEvent();
 		if(!evt)return false;
+
+		if(autovertex)
+			InitVertexCollectionsAuto(evt);
+		if(autojet)
+			InitJetCollectionsAuto(evt);
+
 		SetEvent(evt);
 		return true;
 	}

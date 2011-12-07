@@ -46,6 +46,7 @@ namespace lcfiplus{
 		std::vector<Vertex *> * _vertices;	//!
 
 		// parameters
+		std::string _primvtxcolname;
 
 		// vertex formation limits
 		double _chi2thpri;

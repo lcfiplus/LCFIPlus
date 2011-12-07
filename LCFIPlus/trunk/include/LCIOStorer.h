@@ -26,7 +26,7 @@ namespace lcfiplus{
 			virtual ~LCIOStorer();
 
 			// in both func the obtained LCEvent is used for following operations
-			bool Next(); // file mode: move to the next event
+			bool Next(bool autovertex = false, bool autojet = false); // file mode: move to the next event
 			void SetEvent(lcio::LCEvent *event); // non-file mode
 
 			// LCIO -> lcfiplus

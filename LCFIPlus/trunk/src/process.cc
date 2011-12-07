@@ -63,10 +63,12 @@ namespace lcfiplus{
 		// cut bad tracks
 		TrackVec &tracks = event->getTracks();
 		TrackVec passedTracks = TrackSelector() (tracks, *_secVtxCfg);
+		cout << "PrimaryVertexFinder / track selection: " << passedTracks.size() << "/" << tracks.size() << " accepted." << endl;
 
 		// primary vertex finder
 		Vertex * vtx = findPrimaryVertex(passedTracks,_chi2th);
 		_vertex->push_back(vtx);
+		cout << "PrimaryVertexFinder: " << vtx->getTracks().size() << " tracks associated to the primary vertex." << endl;
 	}
 
 	void PrimaryVertexFinder::end() {
@@ -80,6 +82,8 @@ namespace lcfiplus{
 		// register collection
 		string vcolname = param->get("BuildUpVertexCollectionName",string("BuildUpVertex"));
 		Event::Instance()->Register(vcolname.c_str(), _vertices, EventStore::PERSIST);
+
+		_primvtxcolname = param->get("PrimaryVertexCollectionName",string("PrimaryVertex"));
 
 		// configuration
 		// track cut
@@ -122,8 +126,19 @@ namespace lcfiplus{
 		TrackVec &tracks = event->getTracks();
 		TrackVec passedTracks = TrackSelector() (tracks, *_secVtxCfg);
 
+		cout << "BuildUpVertex / track selection: " << passedTracks.size() << "/" << tracks.size() << " accepted." << endl;
+
+		Vertex *primvtx;
+
+		try{
+			primvtx = new Vertex(*event->getPrimaryVertex(_primvtxcolname.c_str()));
+		}catch(lcfiplus::Exception &e){
+			cout << "BuildUpVertex::process(): primary vertex not found - invoking primary vertex finder internally." << endl;
+			primvtx = 0;
+		}
+
 		// build up vertexing
-		VertexFinderSuehara::buildUp(passedTracks, *_vertices, _chi2thpri, _chi2thsec, _massth, _posth, _chi2orderinglimit);
+		VertexFinderSuehara::buildUp(passedTracks, *_vertices, _chi2thpri, _chi2thsec, _massth, _posth, _chi2orderinglimit, primvtx);
 		if(_doassoc)
 			VertexFinderSuehara::associateIPTracks(*_vertices,_minimumdist, 0, _chi2ratio);
 	}

@@ -43,7 +43,7 @@ namespace lcfiplus {
   void EventNavigator::Fwd() {
     std::cout << "Fwd()\n";
 
-		if (!_ls->Next()) {
+		if (!_ls->Next(true,true)) {
       printf("end of collection\n");
 			return;
 		}
@@ -79,6 +79,394 @@ namespace lcfiplus {
     std::cout << "Bck() - currently not implemented :(\n";
   }
 
+  void EventNavigator::drawEvent(Event* event) {
+    const float MAX_R(1000);
+    const float MAX_Z(1000);
+    //const float MAX_R(100);
+    //const float MAX_Z(100);
+    //const float MAX_R(10);
+    //const float MAX_Z(10);
+
+		// MC particles /////////////////////////////////////////////////////////////
+    MCParticleVec& mcps = event->getMCParticles();
+
+    static TEveCompound* eveMCParticles(0);
+    if (eveMCParticles != 0) {
+      eveMCParticles->DestroyElements();
+      eveMCParticles->Destroy();
+    }
+
+    eveMCParticles = new TEveCompound();
+    eveMCParticles->SetMainColor(kBlue);
+    eveMCParticles->SetName("MCParticles");
+    eveMCParticles->OpenCompound();
+
+    TEveTrackPropagator* propsetMCParticle = new TEveTrackPropagator();
+
+    TEveCompound* compoundMCParticles   = new TEveCompound("MCParticles", "All charged MCParticles");
+    compoundMCParticles->SetMainColor(kBlue);
+
+    int nMCParticle =  mcps.size();
+    for(int i=0; i<nMCParticle; i++) {
+      const MCParticle* part = mcps[i];
+      // draw charged MCParticles only
+      if (part->getCharge() == 0) continue;
+			// draw stable particles only
+      if ( !part->isStableTrack() ) continue;
+      // skip primary particles
+      //if (part->getFlavorTagCategory() == 1) continue;
+
+      float px=part->Px();
+      float py=part->Py();
+      float pz=part->Pz();
+      int pdg=part->getPDG();
+      float Vx=part->getVertex().x();
+      float Vy=part->getVertex().y();
+      float Vz=part->getVertex().z();
+      float Ex=part->getEx();
+      float Ey=part->getEy();
+      float Ez=part->getEz();
+      int charge=(int)part->getCharge();
+      //mass=part->getMass();
+      float energy=part->E();
+      float pt = part->Pt();
+      //ParentNum=part->getParents().size();
+      //DaughterNum=part->getDaughters().size();
+      TEveVector Vtx(Vx, Vy, Vz);
+      TEveVector End(Ex, Ey, Ez);
+			//if ( !part->isStableTrack() && (Vtx-End).Mag() < MAX_R*MAX_R+MAX_Z*MAX_Z ) { continue; }
+
+      TEveRecTrack* chargedTrack = new TEveRecTrack();
+      chargedTrack->fV.Set(Vtx);
+      chargedTrack->fP.Set(px, py, pz);
+      chargedTrack->fSign = (int) charge;
+
+      propsetMCParticle->SetMagFieldObj(new TEveMagFieldConst(0., 0., -0.35));
+      //propsetMCParticle->SetMagFieldObj(new TEveMagFieldDuo(350, -3.5, 2.0));
+
+      //Test for Charged Tracks
+      propsetMCParticle->SetName("Track propagator for charged particles");
+      propsetMCParticle->SetMaxR(MAX_R);
+      propsetMCParticle->SetMaxZ(MAX_Z);
+      propsetMCParticle->SetMaxOrbs(3.0);
+      //propsetMCParticle->SetDelta(0.01); // Step
+      propsetMCParticle->SetDelta(0.001); // Step
+      // propsetMCParticle->SetRnrCluster2Ds(kTRUE); // Show Clusters 2D
+      propsetMCParticle->RefPMAtt().SetMarkerColor(kYellow);
+      propsetMCParticle->RefPMAtt().SetMarkerStyle(kCircle);
+      propsetMCParticle->RefPMAtt().SetMarkerSize(1.0);
+      //End of Test
+
+      TEveTrack* track = new TEveTrack(chargedTrack, propsetMCParticle);
+      /*
+      if ( (Vtx-End).Mag() > 0 ) {
+        TEvePathMark* pm3 = new TEvePathMark(TEvePathMark::kDecay);
+        pm3->fV.Set(End);
+        track->AddPathMark(*pm3);
+      }
+      */
+
+      track->SetName(Form("Track %d", i));    // i = tracknum
+      track->SetLineColor(kRed);
+      track->SetLineWidth(1);
+      //track->SetLineStyle(7);
+      track->SetLineStyle(1);
+			/*
+			printf(" pdg=%d / ssp=%d / cat=%d / dist=%.3e\n",
+					part->getPDG(),
+					part->getSemiStableParent() ? part->getSemiStableParent()->getPDG() : 666,
+					part->getFlavorTagCategory(),
+					part->getVertex().Mag()
+					);
+			 */
+      switch (part->getFlavorTagCategory()) {
+        case 1: //p
+          track->SetLineColor(kBlue);
+          break;
+        case 2: //b
+          track->SetLineColor(kCyan);
+          break;
+        case 3: //c
+          track->SetLineColor(kYellow);
+          break;
+        case 4: //s
+          track->SetLineColor(kGreen);
+          break;
+        default:
+          track->SetLineColor(kWhite);
+          break;
+      }
+
+      /*
+      if (Vtx.Mag() > 0) {
+        track->SetLineColor(kGreen);
+      }
+      */
+
+      track->SetSmooth(kTRUE);
+      track->SetTitle(Form("MCParticle No.=%d\n""Charge=%d, pdg=%d\n"
+            "Energy=%f, Pt=%f\n"
+            "(Vx, Vy, Vz) = (%.3f, %.3f, %.3f)\n"
+            "(Ex, Ey, Ez) = (%.3f, %.3f, %.3f)\n"
+            "(Px, Py, Pz) = (%.3f, %.3f, %.3f)",
+            i, charge, pdg, energy, pt,
+            Vx, Vy, Vz, Ex, Ey, Ez, px, py, pz));
+      compoundMCParticles->AddElement(track);
+    }
+
+    compoundMCParticles->CloseCompound();
+    eveMCParticles->AddElement(compoundMCParticles);
+    eveMCParticles->CloseCompound();
+
+		// Reco tracks /////////////////////////////////////////////////////////////
+
+    TrackVec& tracks = event->getTracks();
+
+    static TEveCompound* eveTracks(0);
+    if (eveTracks != 0) {
+      eveTracks->DestroyElements();
+      eveTracks->Destroy();
+		}
+    eveTracks = new TEveCompound();
+    eveTracks->SetMainColor(kRed);
+    eveTracks->SetName("Tracks");
+    eveTracks->OpenCompound();
+
+    TEveTrackPropagator* propsetTrack = new TEveTrackPropagator();
+
+    TEveCompound* compoundTracks   = new TEveCompound("Tracks", "All charged tracks");
+    compoundTracks->SetMainColor(kRed);
+
+    int nTrack = tracks.size();
+    for(int i=0; i<nTrack; i++) {
+      const Track* part = tracks[i];
+      if (part->getCharge() == 0) continue;
+
+      float px=part->Px();
+      float py=part->Py();
+      float pz=part->Pz();
+      int pdg=part->getPDG();
+			// x0,y0,z0
+			double d0 = part->getD0();
+			double z0 = part->getZ0();
+			double phi0 = part->getPhi();
+//			double r = 1./fabs(part->getOmega());
+			int charge = (int)part->getCharge();
+//			double pi = 3.14159265359;
+
+			float Vx = -d0 * sin(phi0);
+			float Vy =  d0 * cos(phi0);
+			float Vz = z0;
+
+/*      float Vx=part->getX();
+      float Vy=part->getY();
+      float Vz=part->getZ();*/
+      //float Ex=part->getEx();
+      //float Ey=part->getEy();
+      //float Ez=part->getEz();
+      //mass=part->getMass();
+      float energy=part->E();
+      float pt = part->Pt();
+      //ParentNum=part->getParents().size();
+      //DaughterNum=part->getDaughters().size();
+      TEveVector Vtx(Vx, Vy, Vz);
+      //TEveVector End(Ex, Ey, Ez);
+
+      TEveRecTrack* chargedTrack = new TEveRecTrack();
+      chargedTrack->fV.Set(Vtx);
+      chargedTrack->fP.Set(px, py, pz);
+      chargedTrack->fSign = (int) charge;
+
+      propsetTrack->SetMagFieldObj(new TEveMagFieldConst(0., 0., -.35));
+      //propsetTrack->SetMagFieldObj(new TEveMagFieldDuo(350, -3.5, 2.0));
+
+      //Test for Charged Tracks
+      propsetTrack->SetName("Track propagator for charged particles");
+      propsetTrack->SetMaxR(MAX_R);
+      propsetTrack->SetMaxZ(MAX_Z);
+      propsetTrack->SetMaxOrbs(2.0);
+      //propsetTrack->SetDelta(0.01); // Step
+      propsetTrack->SetDelta(0.001); // Step
+      // propsetTrack->SetRnrCluster2Ds(kTRUE); // Show Clusters 2D
+      propsetTrack->RefPMAtt().SetMarkerColor(kYellow);
+      propsetTrack->RefPMAtt().SetMarkerStyle(kCircle);
+      propsetTrack->RefPMAtt().SetMarkerSize(1.0);
+      //End of Test
+
+      TEveTrack* track = new TEveTrack(chargedTrack, propsetTrack);
+      /*
+      if ( (Vtx-End).Mag() > 0 ) {
+        TEvePathMark* pm3 = new TEvePathMark(TEvePathMark::kDecay);
+        pm3->fV.Set(End);
+        track->AddPathMark(*pm3);
+      }
+      */
+/*
+      track->SetName(Form("Track %d", i));    // i = tracknum
+      if ( find( vtxTracksBU.begin(), vtxTracksBU.end(), part )
+          != vtxTracksBU.end() ) {
+        track->SetLineColor(kGreen);
+        track->SetLineWidth(2);
+      } else if ( find( vtxTracks.begin(), vtxTracks.end(), part )
+          != vtxTracks.end() ) {
+        track->SetLineColor(kRed);
+        track->SetLineWidth(2);
+      } else {
+        track->SetLineColor(kBlue);
+        track->SetLineWidth(2);
+      }*/
+      track->SetLineColor(kBlue);
+      track->SetLineWidth(2);
+      track->SetLineStyle(7);
+
+      track->SetSmooth(kTRUE);
+      track->SetTitle(Form("Track No.=%d\n""Charge=%d, pdg=%d\n"
+            "Energy=%f, Pt=%f\n"
+            "(Vx, Vy, Vz) = (%.3f, %.3f, %.3f)\n"
+            //"(Ex, Ey, Ez) = (%.3f, %.3f, %.3f)\n"
+            "(Px, Py, Pz) = (%.3f, %.3f, %.3f)",
+            i, charge, pdg, energy, pt,
+            Vx, Vy, Vz, /*Ex, Ey, Ez,*/ px, py, pz));
+      compoundTracks->AddElement(track);
+    }
+
+    compoundTracks->CloseCompound();
+    eveTracks->AddElement(compoundTracks);
+    eveTracks->CloseCompound();
+
+		// Vertices /////////////////////////////////////////////////////////////
+		const map<string, lcfiplus::EventStore::StoredEntry > & map_ = event->GetObjectMap();
+
+		static vector<TEveCompound *> eveVerticesVec;
+		for(unsigned int n=0;n<eveVerticesVec.size();n++){
+			eveVerticesVec[n]->DestroyElements();
+			eveVerticesVec[n]->Destroy();
+		}
+		eveVerticesVec.clear();
+
+		map<string, lcfiplus::EventStore::StoredEntry >::const_iterator it;
+		for(it = map_.begin(); it != map_.end(); it++){
+			if(it->second.classname == "vector<lcfiplus::Vertex*>"){
+				const char *vtxname = it->first.c_str();
+
+				cout << "Drawing vertex " << vtxname << " ..." << endl;
+				VertexVec &vtxvec = event->getSecondaryVertices(it->first.c_str());
+
+				TEveCompound *eveVertices = new TEveCompound();
+				eveVerticesVec.push_back(eveVertices);
+
+				eveVertices->SetMainColor(kCyan);
+				eveVertices->SetName(vtxname);
+				eveVertices->OpenCompound();
+
+				TEveCompound* compoundVertices   = new TEveCompound(vtxname, "Vertices");
+				compoundVertices->SetMainColor(kGreen);
+
+				for (unsigned int iVtx=0; iVtx < vtxvec.size(); ++iVtx) {
+					const Vertex* vtx = vtxvec[iVtx];
+
+					TEveCompound* compoundVertex   = new TEveCompound("Vertex", "Vertex");
+					compoundVertex->SetMainColor(kGreen);
+					compoundVertices->AddElement(compoundVertex);
+
+					float x0 = vtx->getX();
+					float y0 = vtx->getY();
+					float z0 = vtx->getZ();
+					//if (x0*x0+y0*y0+z0*z0 > MAX_R*MAX_R+MAX_Z*MAX_Z) continue;
+					TEvePointSet* vbox2 = new TEvePointSet();
+					vbox2->SetMarkerColor(vtx->getTracks().size() == 2 ? kWhite : kCyan);
+					vbox2->SetMarkerStyle(4);
+					vbox2->SetMarkerSize(2);
+					vbox2->SetNextPoint(x0,y0,z0);
+					vbox2->SetTitle(Form("Vertex No.=%d\n"
+						"Ntrk=%d, Chi2=%f\n"
+						"(Vx, Vy, Vz) = (%.3f, %.3f, %.3f)",
+						iVtx,
+						(int)vtx->getTracks().size(), vtx->getChi2(),
+						x0, y0, z0));
+					compoundVertex->AddElement(vbox2);
+
+			    int nTrack = vtx->getTracks().size();
+			    for(int i=0; i<nTrack; i++) {
+			      const Track* part = vtx->getTracks()[i];
+			      if (part->getCharge() == 0) continue;
+			
+			      float px=part->Px();
+			      float py=part->Py();
+			      float pz=part->Pz();
+			      int pdg=part->getPDG();
+						// x0,y0,z0
+						double d0 = part->getD0();
+						double z0 = part->getZ0();
+						double phi0 = part->getPhi();
+//						double r = 1./fabs(part->getOmega());
+						int charge = (int)part->getCharge();
+//						double pi = 3.14159265359;
+
+						float Vx = -d0 * sin(phi0);
+						float Vy =  d0 * cos(phi0);
+						float Vz = z0;
+
+			      //mass=part->getMass();
+			      float energy=part->E();
+			      float pt = part->Pt();
+			      //ParentNum=part->getParents().size();
+			      //DaughterNum=part->getDaughters().size();
+			      TEveVector Vtx(Vx, Vy, Vz);
+			      //TEveVector End(Ex, Ey, Ez);
+
+			      TEveRecTrack* chargedTrack = new TEveRecTrack();
+				    chargedTrack->fV.Set(Vtx);
+			      chargedTrack->fP.Set(px, py, pz);
+			      chargedTrack->fSign = (int) charge;
+
+			      propsetTrack->SetMagFieldObj(new TEveMagFieldConst(0., 0., -.35));
+			      //propsetTrack->SetMagFieldObj(new TEveMagFieldDuo(350, -3.5, 2.0));
+
+			      //Test for Charged Tracks
+			      propsetTrack->SetName("Track propagator for charged particles");
+			      propsetTrack->SetMaxR(MAX_R);
+			      propsetTrack->SetMaxZ(MAX_Z);
+			      propsetTrack->SetMaxOrbs(2.0);
+			      //propsetTrack->SetDelta(0.01); // Step
+			      propsetTrack->SetDelta(0.001); // Step
+			      // propsetTrack->SetRnrCluster2Ds(kTRUE); // Show Clusters 2D
+			      propsetTrack->RefPMAtt().SetMarkerColor(kYellow);
+			      propsetTrack->RefPMAtt().SetMarkerStyle(kCircle);
+			      propsetTrack->RefPMAtt().SetMarkerSize(1.0);
+			      //End of Test
+
+			      TEveTrack* track = new TEveTrack(chargedTrack, propsetTrack);
+			      track->SetLineStyle(7);
+		        track->SetLineColor(kGreen);
+		        track->SetLineWidth(2);
+
+			      track->SetSmooth(kTRUE);
+			      track->SetTitle(Form("Track No.=%d\n""Charge=%d, pdg=%d\n"
+			            "Energy=%f, Pt=%f\n"
+			            "(Vx, Vy, Vz) = (%.3f, %.3f, %.3f)\n"
+			            //"(Ex, Ey, Ez) = (%.3f, %.3f, %.3f)\n"
+			            "(Px, Py, Pz) = (%.3f, %.3f, %.3f)",
+			            i, charge, pdg, energy, pt,
+			            Vx, Vy, Vz, /*Ex, Ey, Ez,*/ px, py, pz));
+			      compoundVertex->AddElement(track);
+			    }
+				}
+
+				compoundVertices->CloseCompound();
+				eveVertices->AddElement(compoundVertices);
+				eveVertices->CloseCompound();
+				gEve->AddElement(eveVertices);
+
+			}
+		}
+		gEve->AddElement(eveMCParticles);
+		gEve->AddElement(eveTracks);
+
+    gEve->FullRedraw3D(kTRUE);
+  }
+
+#if 0
   void EventNavigator::drawEvent(Event* event) {
     const float MAX_R(1000);
     const float MAX_Z(1000);
@@ -613,4 +1001,5 @@ namespace lcfiplus {
     gEve->AddElement(eveTracks);
     gEve->FullRedraw3D(kTRUE);
   }
+#endif
 }
