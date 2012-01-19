@@ -134,7 +134,7 @@ namespace lcfiplus {
       r=(*bx-*ax)*(*fb-*fc);
       q=(*bx-*cx)*(*fb-*fa);
       u=(*bx)-((*bx-*cx)*q-(*bx-*ax)*r)/
-        (2.0*SIGN(std::max(fabs(q-r),TINY),q-r));
+        (2.0*SIGN(std::max((double)fabs(q-r),TINY),q-r));
       ulim=(*bx)+GLIMIT*(*cx-*bx);
       if ((*bx-u)*(u-*cx) > 0.0) {
         fu=(*func)(u);

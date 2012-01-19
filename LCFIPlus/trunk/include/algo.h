@@ -4,6 +4,9 @@
 #include <math.h>
 #include <stdio.h>
 #include <vector>
+#include <iostream>
+
+using namespace std;
 
 class TrackPocaXY;
 
@@ -215,24 +218,24 @@ namespace lcfiplus {
 					test,tmplam;
 
 		*check=0;
-		for (sum=0.0,i=1;i<=n;i++) sum += p[i]*p[i];
+		for (sum=0.0,i=0;i<n;i++) sum += p[i]*p[i];
 		sum=sqrt(sum);
 		if (sum > stpmax)
-			for (i=1;i<=n;i++) p[i] *= stpmax/sum;
-		for (slope=0.0,i=1;i<=n;i++)
+			for (i=0;i<n;i++) p[i] *= stpmax/sum;
+		for (slope=0.0,i=0;i<n;i++)
 			slope += g[i]*p[i];
 		test=0.0;
-		for (i=1;i<=n;i++) {
+		for (i=0;i<n;i++) {
 			temp=fabs(p[i])/FMAX(fabs(xold[i]),1.0);
 			if (temp > test) test=temp;
 		}
 		alamin=TOLX/test;
 		alam=1.0;
 		for (;;) {
-			for (i=1;i<=n;i++) x[i]=xold[i]+alam*p[i];
+			for (i=0;i<n;i++) x[i]=xold[i]+alam*p[i];
 			*f=(*obj)(x);
 			if (alam < alamin) {
-				for (i=1;i<=n;i++) x[i]=xold[i];
+				for (i=0;i<n;i++) x[i]=xold[i];
 				*check=1;
 				return;
 			} else if (*f <= fold+ALF*alam*slope) return;
@@ -263,6 +266,8 @@ namespace lcfiplus {
 
 	template<class T, class U>
   void dfpmin(double p[], int n, double gtol, int *iter, double *fret, T* obj, U* dobj) {
+		bool verbose = false;
+
 		const double EPS=3.0e-8;
 		const double TOLX=4*EPS;
 		const double STPMAX=100.0;
@@ -287,8 +292,8 @@ namespace lcfiplus {
 
 		(*dobj)(p,g);
 
-		for (i=1;i<=n;i++) {
-			for (j=1;j<=n;j++) hessin[i][j]=0.0;
+		for (i=0;i<n;i++) {
+			for (j=0;j<n;j++) hessin[i][j]=0.0;
 			hessin[i][i]=1.0;
 			xi[i] = -g[i];
 			sum += p[i]*p[i];
@@ -296,19 +301,29 @@ namespace lcfiplus {
 		stpmax=STPMAX*FMAX(sqrt(sum),(double)n);
 
 		for (its=1;its<=ITMAX;its++) {
+			if(verbose){
+				cout << "dfpmin: iteration " << its << ", p = ";
+				for(i=0; i<n;i++)cout << p[i] << " ";
+				cout << ", xi = ";
+				for(i=0; i<n;i++)cout << xi[i] << " ";
+			}
+
 			*iter=its;
 			lnsrch(n,p,fp,g,xi,pnew,fret,stpmax,&check,obj);
 			fp = *fret;
-			for (i=1;i<=n;i++) {
+			for (i=0;i<n;i++) {
 				xi[i]=pnew[i]-p[i];
 				p[i]=pnew[i];
 			}
 			test=0.0;
-			for (i=1;i<=n;i++) {
+			for (i=0;i<n;i++) {
 				temp=fabs(xi[i])/FMAX(fabs(p[i]),1.0);
 				if (temp > test) test=temp;
 			}
+			if(verbose) cout << "testtol = " << test;
 			if (test < TOLX) {
+				if(verbose) cout << endl;
+
 				delete[] dg;
 				delete[] g;
 				delete[] hdg;
@@ -320,14 +335,17 @@ namespace lcfiplus {
 				delete[] xi;
 				return;
 			}
-			for (i=1;i<=n;i++) dg[i]=g[i];
+			for (i=0;i<n;i++) dg[i]=g[i];
 			(*dobj)(p,g);
 			test=0.0;
 			den=FMAX(*fret,1.0);
-			for (i=1;i<=n;i++) {
+			for (i=0;i<n;i++) {
 				temp=fabs(g[i])*FMAX(fabs(p[i]),1.0)/den;
 				if (temp > test) test=temp;
 			}
+
+			if(verbose) cout << " testgtol = " << test << endl;
+
 			if (test < gtol) {
 				delete[] dg;
 				delete[] g;
@@ -340,13 +358,13 @@ namespace lcfiplus {
 				delete[] xi;
 				return;
 			}
-			for (i=1;i<=n;i++) dg[i]=g[i]-dg[i];
-			for (i=1;i<=n;i++) {
+			for (i=0;i<n;i++) dg[i]=g[i]-dg[i];
+			for (i=0;i<n;i++) {
 				hdg[i]=0.0;
-				for (j=1;j<=n;j++) hdg[i] += hessin[i][j]*dg[j];
+				for (j=0;j<n;j++) hdg[i] += hessin[i][j]*dg[j];
 			}
 			fac=fae=sumdg=sumxi=0.0;
-			for (i=1;i<=n;i++) {
+			for (i=0;i<n;i++) {
 				fac += dg[i]*xi[i];
 				fae += dg[i]*hdg[i];
 				sumdg += (dg[i]*dg[i]);
@@ -355,18 +373,18 @@ namespace lcfiplus {
 			if (fac > sqrt(EPS*sumdg*sumxi)) {
 				fac=1.0/fac;
 				fad=1.0/fae;
-				for (i=1;i<=n;i++) dg[i]=fac*xi[i]-fad*hdg[i];
-				for (i=1;i<=n;i++) {
-					for (j=i;j<=n;j++) {
+				for (i=0;i<n;i++) dg[i]=fac*xi[i]-fad*hdg[i];
+				for (i=0;i<n;i++) {
+					for (j=i;j<n;j++) {
 						hessin[i][j] += fac*xi[i]*xi[j]
 							-fad*hdg[i]*hdg[j]+fae*dg[i]*dg[j];
 						hessin[j][i]=hessin[i][j];
 					}
 				}
 			}
-			for (i=1;i<=n;i++) {
+			for (i=0;i<n;i++) {
 				xi[i]=0.0;
-				for (j=1;j<=n;j++) xi[i] -= hessin[i][j]*g[j];
+				for (j=0;j<n;j++) xi[i] -= hessin[i][j]*g[j];
 			}
 		}
 		fprintf(stderr,"too many iterations in dfpmin");

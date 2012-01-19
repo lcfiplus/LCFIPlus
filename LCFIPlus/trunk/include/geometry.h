@@ -14,6 +14,7 @@ namespace lcfiplus{
 	class PointBase;
 	class Point;
 	class Helix;
+	class VertexLine;
 
 	class PointBase // pure virtual point-base class
 	{
@@ -62,6 +63,26 @@ namespace lcfiplus{
 		typedef ROOT::Math::SMatrix<double, 3,3,ROOT::Math::MatRepSym<double,3> > SMatrixSym3; // used for xyz error
 		typedef ROOT::Math::SMatrix<double, 3,3> SMatrix3;
 
+		class HelixLineDistance2Functor{
+		public:
+			HelixLineDistance2Functor(const Helix *hel, const VertexLine *line): _hel(hel), _line(line){}
+			double operator() (const double *t);
+
+		private:
+			const Helix * _hel;
+			const VertexLine * _line;
+		};
+
+		class HelixLineDistance2DerivFunctor{
+		public:
+			HelixLineDistance2DerivFunctor(const Helix *hel, const VertexLine *line): _hel(hel), _line(line){}
+			void operator() (const double *t, double *output);
+
+		private:
+			const Helix * _hel;
+			const VertexLine * _line;
+		};
+
 		class VarianceFunctor{
 		public:
 			VarianceFunctor(const Helix *hel, TVector3 &p) : _hel(hel), _p(p){}
@@ -93,7 +114,9 @@ namespace lcfiplus{
 		double VarianceDeriv(TVector3 &p, double t)const;		// t-fixed version, internally used
 		double VarianceDeriv2(TVector3 &p, double t)const;		// t-fixed version, internally used
 		TVector3 GetPos(double t)const;
+		TVector3 GetPosDerivT(double t)const;
 		void GetPosErr(double t, SVector3 &pos, SMatrixSym3 &err)const;
+		void GetPosErr(double t, SVector3 &pos, SMatrixSym3 &err, SMatrix53& trackToXyz)const;
 		void GetPosErrDeriv(double t, SVector3 &pos, SMatrixSym3 &err)const;
 		void GetPosErrDeriv2(double t, SVector3 &pos, SMatrixSym3 &err)const;
 
@@ -107,11 +130,41 @@ namespace lcfiplus{
 		void FindZCross(double x, double y, double &zi, double &zp)const;
 		// obtain closest points in x-y plane and choose nearest z position - not the TRUE closest point
 		TVector3 ClosePoint(const Helix &hel)const;
+		TVector3 ClosePoint(const VertexLine &line, double *distance = 0)const;
 
 	private:
 		SVector5 _hel;
 		SMatrixSym5 _err;
 		int _charge;
+	};
+
+	class VertexLine : public PointBase // line with error for IP-vertex line
+	{
+		friend TVector3 Helix::ClosePoint(const VertexLine &line, double *distance)const;
+		friend class Helix::HelixLineDistance2Functor;
+		friend class Helix::HelixLineDistance2DerivFunctor;
+
+	public:
+		double LogLikelihood(TVector3 &p)const;
+		void LogLikelihoodDeriv(TVector3 &p, double* output)const;
+
+		VertexLine(){}
+		VertexLine(const TVector3 &origin, const TVector3 &dir){_origin = origin; _unit = dir.Unit();}
+		~VertexLine(){}
+
+		void Set(const TVector3 &origin, const TVector3 &dir){_origin = origin; _unit = dir.Unit();}
+
+	private:
+		// (x,y,z) = origin + t * unit
+		TVector3 _origin;
+		TVector3 _unit;
+/*
+		Vertex *_ip;
+		Vertex *_vertex;
+
+		double _dispersionNear;
+		double _dispersionFar;
+*/
 	};
 
 	class GeometryHandler

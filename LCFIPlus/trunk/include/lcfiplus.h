@@ -246,12 +246,16 @@ namespace lcfiplus {
 			const char * getDefaultJets()const{return _defJetName.c_str();}
 
 			// utility functions for MCParticles
-      const MCParticle* getMCParticle(int id) const;
-      const MCParticle* getMCParticle(const Track* trk) const;
+			const MCParticle* getMCParticle(int id) const;
+			const MCParticle* getMCParticle(const Track* trk) const;
 
-      vector<const MCParticle*> mcGetColorStrings() const;
-      int mcNumberOfB() const;
-      int mcNumberOfC() const;
+			vector<const MCParticle*> mcGetColorStrings() const;
+			int mcNumberOfB() const;
+			int mcNumberOfC() const;
+			vector<const MCParticle*> mcGetSemiStableBs() const;
+			vector<const MCParticle*> mcGetSemiStableCs() const;
+			vector<const MCParticle*> mcGetSemiStableBCs(bool separatebc) const;
+			int mcFindParent(MCParticleVec &vec, const MCParticle *p) const;
 
 //      void rescaleErrors();
 
@@ -442,6 +446,8 @@ namespace lcfiplus {
       const MCParticle* semileptonicDecay() const; // return MCParticle of lepton
       int getFlavorTagCategory() const;
       const MCParticle* getSemiStableParent() const;
+      const MCParticle* getSemiStableBParent() const;
+      const MCParticle* getSemiStableCParent() const;
 
       // end points
       float decayDistance()const;
@@ -536,7 +542,6 @@ namespace lcfiplus {
 
 			ClassDefNV(Vertex, 1);
   };
-
 	class MCVertex {
 		public:
 			MCVertex() : _parent(0), _recoVtx(0) {}
@@ -548,7 +553,12 @@ namespace lcfiplus {
 			const vector<const MCParticle*>& getDaughters() const { return _dauVec; }
 			const vector<const Track*>& getRecoTracks() const { return _recoTrks; }
 			const Vertex* getRecoVertex() const { return _recoVtx; }
+
+			const TVector3 & getPos()const{return _pos;}
+			void setPos(const TVector3 &pos){_pos = pos;}
+
 		private:
+			TVector3 _pos;
 			const MCParticle* _parent;
 			vector<const MCParticle*> _dauVec;
 

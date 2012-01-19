@@ -54,6 +54,9 @@ namespace lcfiplus {
 
 		void buildUp(TrackVec &tracks, vector<Vertex *> &vtx, double chi2thpri, double chi2thsec, double massth, double posth = 0.3, double chi2orderinglimit = 1.0, Vertex *ip = 0);
 		void buildUpForJetClustering(TrackVec &tracks, vector<Vertex *> &vtx);
+
+		vector<Vertex *> makeSingleTrackVertices(Jet *jet, TrackVec &tracks, Vertex *ip, double minpos, double maxpos, double maxangle, double min_separation_per_pos);
+
 	}
 
 	//vector<lcfiplus::Vertex*> * findSueharaVertices(const Event& evt, const Jet& jet);
