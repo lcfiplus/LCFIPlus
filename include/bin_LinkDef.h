@@ -6,6 +6,7 @@
 #pragma link C++ class lcfiplus::EventNavigator+;
 #pragma link C++ function eventDisplay;
 #pragma link C++ function testSuehara;
+#pragma link C++ function testTomohiko;
 
 #endif
 

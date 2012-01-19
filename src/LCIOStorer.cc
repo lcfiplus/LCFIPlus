@@ -26,6 +26,7 @@
 
 #include <assert.h>
 #include <math.h>
+#include <fstream>
 
 //using namespace lcio;
 
@@ -34,10 +35,25 @@ namespace lcfiplus{
 	// ctor/dtor
 	LCIOStorer::LCIOStorer(const char *inputfile, const char *outputfile, bool autoconvert, const char *outPrefix)
 	{
-		if(inputfile){	
+		if(inputfile){
 			_reader = lcio::LCFactory::getInstance()->createLCReader();
-			_reader->open(inputfile); // may throw exception...
-			cout << "Input LCIO file open: " << inputfile << " successful." << endl;
+
+			// if input file is not .slcio, treat as a list
+			if(strstr(inputfile, ".slcio") != inputfile + strlen(inputfile) - strlen(".slcio")){
+				// open stream
+				ifstream filelist(inputfile);
+				vector<string> *svec = new vector<string>;
+				copy(istream_iterator<string>(filelist), istream_iterator<string>(), back_inserter(*svec));
+
+				cout << "Input " << svec->size()  << " LCIO files:" << endl;
+				for(unsigned int i=0;i<svec->size();i++)
+					cout << "    " << (*svec)[i] << endl;
+
+				_reader->open(*svec);
+			}else{
+				_reader->open(inputfile); // may throw exception...
+				cout << "Input LCIO file open: " << inputfile << " successful." << endl;
+			}
 		}else
 			_reader = NULL;
 

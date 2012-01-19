@@ -6,14 +6,17 @@
 #include "LCIOStorer.h"
 #include "VertexFitterLCFI.h"
 #include "VertexFinderTearDown.h"
+#include "VertexFinderPerfect.h"
 #include "algoSigProb.h"
 #include "algoEtc.h"
 #include "Driver.h"
+#include "geometry.h"
 
 #include "TROOT.h"
 #include "TInterpreter.h"
 #include "TFile.h"
 #include "TTree.h"
+#include "TNtuple.h"
 #include "TLorentzVector.h"
 #include "TCut.h"
 #include <string>
@@ -613,31 +616,445 @@ int main(int argc, char* argv[]) {
 
 /////////////////////////////////////////////////////////////////////////
 
-void testSuehara()
+void testSuehara(const char *inputlist, const char *output)
 {
-		{
-			cout << "para1" << endl;
-			Parameters *tp = new Parameters;
-			vector<string> v;
-			v.push_back(string("test1"));
-			v.push_back(string("test2"));
-			tp->add("test1",v);
-			tp->add("test2",int(35));
 
-			cout << "para2" << endl;
-			Parameters *tp2 = new Parameters(*tp);
-			cout << "para3" << endl;
-			delete tp;
-			cout << "para4" << endl;
+	LCIOStorer ls(inputlist);
+	ls.InitCollections("PandoraPFOs","MCParticlesSkimmed","RecoMCTruthLink","Tracks","Neutrals","MCParticles");
+	ls.InitVertexCollection("BuildUpVertex", "BuildUpVertex");
 
-			string t1 = tp2->get("test1",string());
-			int t2 = tp2->get("test2",int(0));
+	cout << "LCIO initialization successful." << endl;
 
-			vector<string> v2 = tp2->getVec<string>("test1");
+	Event *event = Event::Instance();
+	event->Print();
 
-			cout << "para5" << endl;
-			cout << "test1 = " << t1 << ", test2 = " << t2 << ", test1.2 = " << v2[1] << endl;
-			delete tp2;
+	TFile f(output,"RECREATE");
+//	TNtuple *nt = new TNtuple("nt","nt","trackcategory:invertex:allsectracks:categorysectracks:d0:d0err:z0:z0err:e:pdg:mcvpos");
+	TNtuple *nt = new TNtuple("nt","nt","trackcategory:categorysectracks:d0:d0err:z0:z0err:e:pdg:mcvpos:truecombi:linedistance:angle:trackpos:vtxpos:vtxtracks:vtxbtracks:vtxctracks");
+//					nt->Fill(category, categorysectracks, d0,d0e,z0,z0e,e, mcp->getPDG(),mcvpos, truecombi, distance, angle, pos.Mag(), vtcs[nvtcs]->getPos());
+
+	struct {
+		float trackcategory;
+		float categorysectracks;
+		float d0;
+		float d0err;
+		float z0;
+		float z0err;
+		float e;
+		float pdg;
+		float mcvpos;
+		float truecombi;
+		float linedistance;
+		float angle;
+		float trackpos;
+		float vtxpos;
+		float vtxtracks;
+		float vtxbtracks;
+		float vtxctracks;
+	}data;
+
+	while(ls.Next()){
+		MCParticleVec& mcps = event->getMCParticles();
+/*
+		// check bbbbbb (reject H->WW etc.)
+		int hcount = 0;
+		for(unsigned int i=0;i<mcps.size();i++){
+			if(mcps[i]->getPDG() != 25)continue;
+
+			// higgs
+			if(mcps[i]->getDaughters().size() != 2){
+				cout << "ERR: # of higgs daughters = " << mcps[i]->getDaughters().size() << endl;
+				break;
+			}
+			if(abs(mcps[i]->getDaughters()[0]->getPDG()) != 5)break;
+			if(abs(mcps[i]->getDaughters()[1]->getPDG()) != 5)break;
+			hcount ++;
+		}
+		if(hcount < 2)continue;
+*/
+		TrackVec &tracks = event->getTracks();
+		VertexVec &vtcs = event->getSecondaryVertices("BuildUpVertex");
+		MCParticleVec bs = event->mcGetSemiStableBs();
+		MCParticleVec cs = event->mcGetSemiStableCs();
+
+		cout << "We have " << bs.size() << " bs & " << cs.size() << " cs." << endl;
+		cout << "# vertices = " << vtcs.size() << endl;
+		for(unsigned int n=0;n<vtcs.size();n++){
+			cout << "RecoVertices at (" << vtcs[n]->getX() << ", " << vtcs[n]->getY() << ", " << vtcs[n]->getZ() << "), # tracks = " << vtcs[n]->getTracks().size() << endl;
 		}
 
+		// perfect vertices
+		vector<MCVertex *> mcvtcs;
+		VertexFinderPerfect::findPerfectVertices(tracks, mcps, mcvtcs, 2);
+		cout << "MCVertices ( >= 2 tracks) : " << mcvtcs.size() << endl;
+		mcvtcs.clear();
+		VertexFinderPerfect::findPerfectVertices(tracks, mcps, mcvtcs, 1);
+		cout << "MCVertices ( >= 1 tracks) : " << mcvtcs.size() << endl;
+
+		vector<int> btracks, bctracks;
+		btracks.resize(bs.size());
+		bctracks.resize(bs.size());
+
+		// counting b/c tracks
+		for(unsigned int n=0;n<tracks.size();n++){
+			const MCParticle *mcp = tracks[n]->getMcp();
+
+			int npar = event->mcFindParent(bs, mcp);
+			if(npar < 0)continue; // non-bc track
+
+			btracks[npar] ++;
+			if(mcp->getSemiStableCParent())
+				bctracks[npar] ++;
+		}
+
+		// fill ntuple
+		for(unsigned int n=0;n<tracks.size();n++){
+			const MCParticle *mcp = tracks[n]->getMcp();
+
+			data.trackcategory = 0;
+			if(mcp->getSemiStableCParent()) data.trackcategory = 2;
+			else if(mcp->getSemiStableBParent()) data.trackcategory = 1;
+			else if(mcp->getSemiStableParent()) data.trackcategory = 3;
+
+			bool invertex = false;
+			for(unsigned int nvtcs = 1; nvtcs < vtcs.size(); nvtcs ++){
+				const Vertex *vtx = vtcs[nvtcs];
+
+				if(find(vtx->getTracks().begin(), vtx->getTracks().end(), tracks[n]) != vtx->getTracks().end())
+					invertex = true;
+			}
+
+			int nb = event->mcFindParent(bs, mcp);
+
+/*
+			if(!invertex && nb >= 0){
+				TVector3 ip(0,0,0);
+				VertexLine line(ip, bs[nb]->getEndVertex());
+				Helix hel(tracks[n]);
+
+				hel.ClosePoint(line);
+				cout << "MCVertex: " << mcp->getVertex().X() << ", " << mcp->getVertex().Y() << ", " << mcp->getVertex().Z() << endl;
+			}
+*/
+			int allsectracks = 0;
+			data.categorysectracks = 0;
+
+			if(nb >= 0){
+				allsectracks = btracks[nb];
+				if(data.trackcategory == 2)data.categorysectracks = bctracks[nb];
+				else data.categorysectracks = btracks[nb] - bctracks[nb];
+			}
+			data.d0 = tracks[n]->getD0();
+			data.d0err = sqrt(tracks[n]->getCovMatrix()[tpar::d0d0]);
+			data.z0 = tracks[n]->getZ0();
+			data.z0err = sqrt(tracks[n]->getCovMatrix()[tpar::z0z0]);
+			data.e = tracks[n]->E();
+			data.mcvpos = mcp->getVertex().Mag();
+			data.pdg = mcp->getPDG();
+
+//			nt->Fill(category, invertex, allsectracks, categorysectracks, d0,d0e,z0,z0e,e, mcp->getPDG(),mcvpos);
+			if(!invertex){
+				for(unsigned int nvtcs = 1; nvtcs < vtcs.size(); nvtcs ++){
+
+					// obtain vertex tracks
+					data.vtxtracks = vtcs[nvtcs]->getTracks().size();
+					data.vtxbtracks = 0;
+					data.vtxctracks = 0;
+					data.truecombi = 0;
+					for(unsigned int ntr = 0; ntr < data.vtxtracks; ntr ++)
+					{
+						const Track *tr = vtcs[nvtcs]->getTracks()[ntr];
+
+						if(tr->getMcp()->getSemiStableCParent())data.vtxctracks ++;
+						else if(tr->getMcp()->getSemiStableBParent())data.vtxbtracks ++;
+
+						if(tr->getMcp()->isParent(bs[nb]))data.truecombi++;
+					}
+
+					VertexLine line(vtcs[0]->getPos(), vtcs[nvtcs]->getPos());
+					Helix hel(tracks[n]);
+
+					double linedist = 0;
+					TVector3 pos = hel.ClosePoint(line, &linedist);
+					data.linedistance = linedist;
+
+					data.angle = vtcs[nvtcs]->getPos().Angle(tracks[n]->Vect());
+
+					data.trackpos = pos.Mag();
+					data.vtxpos = vtcs[nvtcs]->getPos().Mag();
+
+					nt->Fill((float *)&data);
+				}
+			}
+		}
+	}
+	f.Write();
+}
+
+#include "TrackSelector.h"
+
+typedef ROOT::Math::SVector<double, 2> SVector2;
+typedef ROOT::Math::SVector<double, 3> SVector3;
+typedef ROOT::Math::SMatrix<double, 2,2,ROOT::Math::MatRepStd<double,2,2> > SMatrix2;
+typedef ROOT::Math::SMatrix<double, 3,3,ROOT::Math::MatRepStd<double,3,3> > SMatrix3;
+typedef ROOT::Math::SMatrix<double, 2,2,ROOT::Math::MatRepSym<double,2> > SMatrixSym2;
+typedef ROOT::Math::SMatrix<double, 3,3,ROOT::Math::MatRepSym<double,3> > SMatrixSym3;
+typedef ROOT::Math::SMatrix<double, 5,5,ROOT::Math::MatRepSym<double,5> > SMatrixSym5;
+typedef ROOT::Math::SMatrix<double, 2,3,ROOT::Math::MatRepStd<double,2,3> > SMatrix23;
+typedef ROOT::Math::SMatrix<double, 3,2,ROOT::Math::MatRepStd<double,3,2> > SMatrix32;
+
+struct KalVtx {
+	SVector3 pos;
+	SMatrixSym3 cov;
+};
+
+struct KalTrk {
+	SVector2 _dz;
+	SVector3 _mom;
+	SMatrixSym5 _cov;
+	SMatrixSym2 _cov11;
+	SMatrixSym3 _cov22;
+	SMatrix23 _cov12;
+
+	SMatrix32 _matGain;
+	SVector2 _residual;
+
+	KalTrk(const Track& trk) {
+		_dz(0) = trk.getD0();
+		_dz(1) = trk.getZ0();
+		_mom(0) = trk.getPhi();
+		_mom(1) = trk.getOmega();
+		_mom(2) = trk.getTanLambda();
+		_cov(0,0) = trk.getCovMatrix()[tpar::d0d0];
+		_cov(0,1) = trk.getCovMatrix()[tpar::d0z0];
+		_cov(0,2) = trk.getCovMatrix()[tpar::d0ph];
+		_cov(0,3) = trk.getCovMatrix()[tpar::d0om];
+		_cov(0,4) = trk.getCovMatrix()[tpar::d0td];
+		_cov(1,1) = trk.getCovMatrix()[tpar::z0z0];
+		_cov(1,2) = trk.getCovMatrix()[tpar::z0ph];
+		_cov(1,3) = trk.getCovMatrix()[tpar::z0om];
+		_cov(1,4) = trk.getCovMatrix()[tpar::z0td];
+		_cov(2,2) = trk.getCovMatrix()[tpar::phph];
+		_cov(2,3) = trk.getCovMatrix()[tpar::phom];
+		_cov(2,4) = trk.getCovMatrix()[tpar::phtd];
+		_cov(3,3) = trk.getCovMatrix()[tpar::omom];
+		_cov(3,4) = trk.getCovMatrix()[tpar::omtd];
+		_cov(4,4) = trk.getCovMatrix()[tpar::tdtd];
+
+		for (int i=0; i<2; ++i) for (int j=i; j<2; ++j) _cov11(i,j) = _cov(i,j);
+		for (int i=0; i<3; ++i) for (int j=i; j<3; ++j) _cov22(i,j) = _cov(i+2,j+2);
+		for (int i=0; i<2; ++i) for (int j=i; j<3; ++j) _cov12(i,j) = _cov(i,j+2);
+	}
+
+	// computes & returns chi2 contribution
+	double compute(const KalVtx& vtx) {
+		SMatrix2 covRes;
+		double chi2(0.);
+
+		SVector2 dz2 = getClosestXY(vtx.pos);
+		_residual = dz2-_dz; // residual
+
+		/*
+		printf(" trk dz: (%.4e,%.4e)\n", _dz(0),_dz(1));
+		printf(" vtx dz: (%.4e,%.4e)\n", dz2(0),dz2(1));
+		printf("----------\n");
+		*/
+
+		if ( fabs(_residual(0)) > 1e-3) printf(" res warning\n");
+		//printf(" res: (%.3e,%.e)\n", res(0), res(1));
+
+		double phi0 = _mom(0);
+		double cphi0 = cos(phi0);
+		double sphi0 = sin(phi0);
+
+		SMatrix23 matA;
+		matA(0,0) = -sphi0;
+		matA(0,1) =  cphi0;
+		matA(0,2) = 0;
+		matA(1,0) = 0;
+		matA(1,1) = 0;
+		matA(1,2) = 1;
+
+		SMatrix23 matB;
+		matB(0,0) = -sphi0;
+		matB(0,1) =  cphi0;
+		matB(0,2) = 0;
+		matB(1,0) = 0;
+		matB(1,1) = 0;
+		matB(1,2) = 1;
+
+		// get linearized coefficient
+
+		return chi2;
+	}
+
+	void update(KalVtx& vtx) {
+		SVector3 delta = _matGain * _residual;
+		vtx.pos += delta;
+
+		//SMatrix
+
+		vtx.cov = vtx.cov - _matGain * matMtransp;
+	}
+
+	// compute closest point in xy plane
+	SVector2 getClosestXY( SVector3 pos ) {
+		double x0 = pos(0);
+		double y0 = pos(1);
+
+		double d0 = _dz(0);
+		double z0 = _dz(1);
+
+		double phi0 = _mom(0);
+		double cphi0 = cos(phi0);
+		double sphi0 = sin(phi0);
+
+		double om = _mom(1);
+		double R=1./om;
+
+		double tl = _mom(2);
+
+		double xc = -(d0+R)*sphi0;
+		double yc =  (d0+R)*cphi0;
+
+		double tandphi = ( x0*cphi0+y0*sphi0 )/( x0*sphi0-y0*cphi0+d0+R );
+		double dphi = atan( tandphi );
+		double cphi = cos( phi0+dphi );
+		double sphi = sin( phi0+dphi );
+
+		double x2 = -( d0+R )*sphi0+R*sphi;
+		double y2 =  ( d0+R )*cphi0-R*cphi;
+		double z2 = z0 + dphi*R*tl;
+
+		double x1 = -( d0+R )*sphi0+R*sphi0;
+		double y1 =  ( d0+R )*cphi0-R*cphi0;
+		double z1 = z0;
+
+		int sign1 = ( pow(x2-xc,2) + pow(y2-yc,2) > R*R ) ? 1 : -1 ;
+		int sign2 = ( pow(x0-xc,2) + pow(y0-yc,2) > R*R ) ? 1 : -1 ;
+		int sign3 = om/fabs(om)>0 ? 1 : -1 ;
+		
+		/*
+		printf(" dist criteria  = %d\n", sign1);
+		printf(" dist criteria2 = %d\n", sign2);
+		printf(" chrg criteria  = %d\n", sign3);
+		printf(" xc=%.2e, yc=%.2e\n", xc, yc);
+		printf(" x1=%.2e, y1=%.2e\n", x1, y1);
+		printf(" x2=%.2e, y2=%.2e\n", x2, y2);
+		printf(" x0=%.2e, y0=%.2e\n", x0, y0);
+		printf(" (x2-xc) = %.2e, (y2-yc) = %.2e, discr = %.2e,  R = %.2e\n",
+				x2-xc, y2-yc,
+				sqrt( (x2-xc)*(x2-xc) + (y2-yc)*(y2-yc) ),
+				R);
+		 */
+
+		double sign = sign2*sign3;
+
+		SVector2 trkpos;
+		trkpos(0) = sqrt( x2*x2+y2*y2 )*sign;
+		trkpos(1) = z2;
+		return trkpos;
+	}
+};
+
+void testTomohiko() {
+	LCIOStorer ls("input.slcio");
+	ls.InitCollections("PandoraPFOs","MCParticlesSkimmed","RecoMCTruthLink","Tracks","Neutrals","MCParticles");
+
+	LcfiInterface interface;
+
+	Event *event = Event::Instance();
+	event->Print();
+
+	TrackSelectorConfig _secVtxCfg;
+	_secVtxCfg.maxD0 = 20;
+	_secVtxCfg.maxZ0 = 20;
+	_secVtxCfg.maxInnermostHitRadius = 20;
+	_secVtxCfg.minVtxPlusFtdHits = 5;
+
+	int nEvt(0);
+
+	while(ls.Next()){
+		++nEvt; //if (nEvt>20) exit(0);
+
+		TrackVec& tracks = event->getTracks();
+		TrackVec passedTracks = TrackSelector() (tracks, _secVtxCfg);
+		//printf("all tracks: %d, selected: %d\n",tracks.size(),passedTracks.size());
+		Vertex *ip;
+		makeBeamVertex(ip);
+
+		/*
+		Vertex * vtx =  VertexFinderTearDown<vector, VertexFitterSimple>()(tracks, 0, 25., 0, ip);
+		//Vertex * vtx =  VertexFinderTearDown<vector>()(tracks, 0, 25., 0, ip);
+
+		if (vtx) {
+			printf("pri_vtx found: (%.2e,%.2e,%.2e)\n",vtx->getX(),vtx->getY(),vtx->getZ());
+		} else {
+			printf("pri_vtx not found\n");
+		}
+		*/
+
+		int ntrk(0);
+
+		KalVtx kvtx;
+		kvtx.pos(0)=1e-2;
+		kvtx.pos(1)=1e-2;
+		kvtx.pos(0)=0;
+		kvtx.pos(1)=0;
+
+		vector<KalTrk> kvtrks;
+		for (TrackVec::const_iterator iter = passedTracks.begin(); iter != passedTracks.end(); ++iter) {
+			const Track* trk = *iter;
+
+			/*
+			Helix hel(trk);
+			TVector3 vec = hel.GetPos(0);
+
+			double d0 = trk->getD0();
+			double z0 = trk->getZ0();
+			double om = trk->getOmega();
+			double tl = trk->getTanLambda();
+			double R=1./om;
+			double D=d0+R;
+
+			double phi0 = trk->getPhi();
+			double cphi0 = cos(phi0);
+			double sphi0 = sin(phi0);
+
+			double x=0;
+			double y=0;
+			double z=0;
+
+			{
+				double dphi = 1e-8;
+				double cphi = cos(phi0+dphi);
+				double sphi = sin(phi0+dphi);
+				x = -(d0+R)*sphi0+R*sphi;
+				y =  (d0+R)*cphi0-R*cphi;
+				z =  z0 + dphi*R*tl;
+				printf(" point closest to \n  (x,y,z)=(%.3e,%.3e,%.3e) is: \n", x,y,z);
+			}
+
+			double tandphi = (x*cphi0+y*sphi0)/(x*sphi0-y*cphi0+D);
+			double dphi = atan( tandphi );
+			double phi = phi0+dphi;
+			double cphi = cos(phi0+dphi);
+			double sphi = sin(phi0+dphi);
+
+			double x2 = -(d0+R)*sphi0+R*sphi;
+			double y2 =  (d0+R)*cphi0-R*cphi;
+			double z2 = z0 + dphi*R*tl;
+			printf("  (x,y,z)=(%.3e,%.3e,%.3e) with dphi=%.3e, phi=%.3e\n", x2,y2,z2, dphi, phi );
+
+			if (++ntrk>5) exit(0);
+			*/
+
+			KalTrk kvtrk( **iter );
+			kvtrks.push_back( kvtrk );
+			kvtrk.compute( kvtx );
+			kvtrk.update( kvtx );
+		}
+
+	}
+	printf("processed %d events.\n",nEvt);
 }

@@ -79,6 +79,7 @@ namespace lcfiplus {
 	}
 
 
+	// MCParticle utilities
   int Event::mcNumberOfB() const {
     int num(0);
 		const vector<const MCParticle*> &mcps = getMCParticles();
@@ -124,6 +125,53 @@ namespace lcfiplus {
     }
     return colorStrings;
   }
+
+	vector<const MCParticle*> Event::mcGetSemiStableBs() const {
+		vector<const MCParticle*> ret;
+		MCParticleVec &mcps = getMCParticles();
+		for (MCParticleVecIte it = mcps.begin(); it != mcps.end(); ++it) {
+			const MCParticle* ppart = (*it)->getSemiStableBParent();
+			if(ppart && find(ret.begin(), ret.end(), ppart) == ret.end())ret.push_back(ppart);
+		}
+
+		return ret;
+	}
+
+	vector<const MCParticle*> Event::mcGetSemiStableCs() const {
+		vector<const MCParticle*> ret;
+		MCParticleVec &mcps = getMCParticles();
+		for (MCParticleVecIte it = mcps.begin(); it != mcps.end(); ++it) {
+			const MCParticle* ppart = (*it)->getSemiStableCParent();
+			if(ppart && find(ret.begin(), ret.end(), ppart) == ret.end())ret.push_back(ppart);
+		}
+
+		return ret;
+	}
+
+	vector<const MCParticle*> Event::mcGetSemiStableBCs(bool separatebc) const {
+		vector<const MCParticle*> ret;
+		MCParticleVec &mcps = getMCParticles();
+		for (MCParticleVecIte it = mcps.begin(); it != mcps.end(); ++it) {
+			const MCParticle* ppartb = (*it)->getSemiStableBParent();
+			const MCParticle* ppartc = (*it)->getSemiStableCParent();
+			if(ppartb){
+				if(find(ret.begin(), ret.end(), ppartb) == ret.end())ret.push_back(ppartb);
+			}
+			if (ppartc && (separatebc || ppartb == 0)){
+				if(find(ret.begin(), ret.end(), ppartc) == ret.end())ret.push_back(ppartc);
+			}
+		}
+
+		return ret;
+	}
+
+	int Event::mcFindParent(MCParticleVec &vec, const MCParticle *p) const{
+		for (unsigned int i=0;i<vec.size();i++) {
+			if(p->isParent(vec[i]))return i;
+		}
+		return -1;
+	}
+
 /*
   void Event::readErrorRescaleTable() {
     FILE* file = fopen("table.dat","r");
@@ -488,6 +536,22 @@ namespace lcfiplus {
     if (parent->isSemiStable()) return parent;
     if (parent->isStable()) return parent;
     return parent->getSemiStableParent();
+  }
+
+  const MCParticle* MCParticle::getSemiStableBParent() const {
+    const MCParticle* parent = getParent();
+    if (parent == 0) return 0;
+
+    if (parent->isSemiStableB()) return parent;
+    return parent->getSemiStableBParent();
+  }
+
+  const MCParticle* MCParticle::getSemiStableCParent() const {
+    const MCParticle* parent = getParent();
+    if (parent == 0) return 0;
+
+    if (parent->isSemiStableC()) return parent;
+    return parent->getSemiStableCParent();
   }
 
   // classify the MCParticle according to its position in the MC tree

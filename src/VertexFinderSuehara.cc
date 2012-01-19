@@ -784,3 +784,12 @@ void VertexFinderSuehara::buildUpForJetClustering(TrackVec &tracks, vector<Verte
 	vector<Vertex *> buVertex;
 	buildUp(tracks, buVertex, chi2th, chi2th, massth);
 }
+
+vector<Vertex *> VertexFinderSuehara::makeSingleTrackVertices
+	(Jet *jet, TrackVec &tracks, Vertex *ip, double minpos, double maxpos, double maxangle, double min_separation_per_pos)
+{
+	// to be implemented
+
+	return vector<Vertex *>();
+}
+

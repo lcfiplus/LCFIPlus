@@ -168,6 +168,7 @@ namespace lcfiplus{
 		_vsK0MassWidth = param->get("JetClustering.VertexSelectionK0MassWidth", double(0.02));
 	}
 
+
 	void JetClustering::process()
 	{
 		// clearing old jets

@@ -7,6 +7,9 @@
 //#include "Math/GSLMinimizer1D.h"
 #include "Minuit2/Minuit2Minimizer.h"
 
+#include "TVector3.h"
+#include "TVector2.h"
+#include "TMath.h"
 #include "TError.h"
 
 #include "algo.h"
@@ -403,7 +406,12 @@ namespace lcfiplus{
 		return TVector3(x,y,z);
 	}
 
-	void Helix::GetPosErr(double t, SVector3 &pos, SMatrixSym3 &err)const
+	void Helix::GetPosErr(double t, SVector3 &pos, SMatrixSym3 &err)const {
+		SMatrix53 trackToXyz;
+		GetPosErr(t,pos,err,trackToXyz);
+	}
+
+	void Helix::GetPosErr(double t, SVector3 &pos, SMatrixSym3 &err, SMatrix53& trackToXyz)const
 	{
 		const double pi = TMath::Pi();
 
@@ -420,7 +428,6 @@ namespace lcfiplus{
 		pos(0) = x, pos(1) = y, pos(2) = z;
 
 		// 5-to-3 error-matrix conversion
-		SMatrix53 trackToXyz;
 		trackToXyz(0,0) = -sin(phi0);			// dx/dd0
 		trackToXyz(0,1) = cos(phi0);			// dy/dd0
 		trackToXyz(0,2) = 0;							// dz/dd0
@@ -452,6 +459,23 @@ namespace lcfiplus{
 
 		// xyz error matrix
 		err = ROOT::Math::SimilarityT(trackToXyz, _err);
+	}
+
+	TVector3 Helix::GetPosDerivT(double t)const
+	{
+		const double pi = TMath::Pi();
+
+//		double d0 = _hel(id0);
+//		double z0 = _hel(iz0);
+		double phi0 = _hel(iph);
+		double r = fabs(1./_hel(iom));
+		double tanlambda = _hel(itd);
+
+		double x =  r * _charge * sin(-_charge * t + phi0 + pi/2 * _charge);
+		double y = -r * _charge * cos(-_charge * t + phi0 + pi/2 * _charge);
+		double z =  r * tanlambda;
+
+		return TVector3(x,y,z);
 	}
 
 	void Helix::GetPosErrDeriv(double t, SVector3 &dpos, SMatrixSym3 &derr)const
@@ -684,7 +708,6 @@ namespace lcfiplus{
 		zp = 2. * pi * r * tanlambda;
 	}
 
-
 	TVector3 Helix::ClosePoint(const Helix &hel)const
 	{
 
@@ -825,6 +848,164 @@ namespace lcfiplus{
 		}
 
 		return TVector3(xc, yc, z1);
+	}
+
+	double Helix::HelixLineDistance2Functor::operator() (const double *t)
+	{
+		TVector3 pos = _hel->GetPos(t[0]);
+
+		TVector3 rminusx0 = pos - _line->_origin;
+		double lrminusx0 = rminusx0 * _line->_unit;
+		double delta2 = rminusx0 * rminusx0 - lrminusx0 * lrminusx0;
+
+//		cout << "HelixLineDistance2Functor: t = " << t[0] << ", delta2 = " << delta2 << endl;
+
+		return delta2;
+	}
+
+	void Helix::HelixLineDistance2DerivFunctor::operator() (const double *t, double *output)
+	{
+		TVector3 pos = _hel->GetPos(t[0]);
+		TVector3 dpos = _hel->GetPosDerivT(t[0]);
+
+		TVector3 rminusx0 = pos - _line->_origin;
+		double lddr = _line->_unit * dpos;
+
+		double deldelta2 = 2 * (rminusx0 * (dpos - _line->_unit * lddr));
+
+//		cout << "HelixLineDistance2DerivFunctor: t = " << t[0] << ", deldelta2 = " << deldelta2 << endl;
+
+		output[0] = deldelta2;
+	}
+
+	TVector3 Helix::ClosePoint(const VertexLine &line, double *distance)const
+	{
+		// 1st step: 2-d crossing point
+		double r = fabs(1./_hel(iom));
+		double x0,y0;
+		GetCenter(x0,y0);
+		TVector2 p0(x0,y0);
+
+		// 2d projection of line
+		TVector2 p1 = line._origin.XYvector();
+		TVector2 dir = line._unit.XYvector().Unit();
+
+		double costheta = dir * ((p0-p1).Unit()); // inner product of 2 unit vectors = costheta
+		double centerdistance = (p0-p1).Mod()* sin(acos(costheta));
+
+//		cout << "centerdistance = " << centerdistance << ", r = " << r << ", x0 = " << x0 << ", y0 = " << y0 << ", dir = " << dir.X() << ", " << dir.Y() 
+//				<< ", costheta = " << costheta << ", deltaphi = " << (p0-p1).DeltaPhi(dir) << endl;
+
+		TVector2 close2d[2];
+		int nclosepoint = 1;
+
+		TVector2 normal = dir.Rotate(TMath::Pi() / 2.);
+		if((p0-p1).DeltaPhi(dir)<0)normal *= -1;
+
+		if(r <= centerdistance){
+			close2d[0] = p0 - normal * r;
+			close2d[1] = p0 - normal * centerdistance;
+		}
+		else{
+			nclosepoint = 2;
+			normal *= centerdistance;
+			TVector2 dirvec = dir * sqrt(r*r-centerdistance*centerdistance);
+			close2d[0] = p0 - normal + dirvec;
+			close2d[1] = p0 - normal - dirvec;
+		}
+
+		// 2d close point obtained
+		double mindelta2 = 1e+300;
+		double minthelix = 0.;
+		for(int n=0;n<nclosepoint; n++){
+
+			double zorigin, zperiod;
+			FindZCross(close2d[n].X(), close2d[n].Y(), zorigin, zperiod);
+
+			TVector2 close2dline = (nclosepoint == 1 ? close2d[1] : close2d[n]);
+
+			double tline = (close2dline.X() - line._origin.X()) / line._unit.X();
+			double zline = line._origin.z() + tline * line._unit.z();
+
+			int nperiod = int((zline - zorigin) / zperiod + 0.5);
+			TVector3 vr(close2d[n].X(), close2d[n].Y(), zorigin + zperiod * nperiod);
+
+			TVector3 rminusx0 = vr - line._origin;
+			double lrminusx0 = rminusx0 * line._unit;
+			double delta2 = rminusx0 * rminusx0 - lrminusx0 * lrminusx0;
+
+			cout << "closepoint2d: line: " << close2dline.X() << ", " << close2dline.Y() << ", " << zline;
+			cout << " helix: " << close2d[n].X() << ", " << close2d[n].Y() << ", " << vr.z();
+			cout << " distance: " << sqrt(delta2) << endl;
+
+			if(delta2 < mindelta2){
+				mindelta2 = delta2;
+				minthelix = (vr.z() - _hel(iz0)) / r / _hel(itd);
+			}
+		}
+
+		TVector3 pos = GetPos(minthelix);
+		cout << "3D close point selected: " << pos.x() << " " << pos.y() << " " << pos.z() << ", delta = " << sqrt(mindelta2) << endl;
+
+		// 3d close point obtained
+		// fit with delta2 and delta2deriv
+
+		double minthelix2 = minthelix;
+
+		HelixLineDistance2Functor f(this, &line);
+		/*
+		HelixLineDistance2DerivFunctor df(this, &line);
+
+		// original method
+
+		int iter;
+		double fret;
+
+		dfpmin(&minthelix2, 1, 1e-7, &iter, &fret, &f, &df);
+
+		pos = GetPos(minthelix2);
+		cout << "3D point minimization result: " << pos.x() << " " << pos.y() << " " << pos.z() << ", delta = " << sqrt(fret) << endl;
+		*/
+
+		// minuit method
+
+		ROOT::Minuit2::Minuit2Minimizer min(ROOT::Minuit2::kMigrad);
+		ROOT::Math::Functor f2(f,1);
+		min.SetFunction(f2);
+		min.SetMaxFunctionCalls(10000);
+		min.SetMaxIterations(100);
+		min.SetTolerance(1e-7);
+		min.SetValidError(true);
+
+		//min.SetVariable(0,"x",initial.x(), 1e-6);
+		//min.SetVariable(1,"y",initial.y(), 1e-6);
+		//min.SetVariable(2,"z",initial.z(), 1e-6);
+		min.SetVariable(0,"t",minthelix, 1e-7);
+		min.SetPrintLevel(0);
+		bool success = min.Minimize();
+		if (!success && verbose) {
+			printf("minuit status: %d\n", min.Status());
+		}
+		const double *xx = min.X();
+		minthelix2 = xx[0];
+		pos = GetPos(minthelix2);
+
+		cout << "3D point minimization result2: " << pos.x() << " " << pos.y() << " " << pos.z() << ", delta = " << sqrt(f(&minthelix2)) << endl;
+
+		if(distance)
+			*distance = sqrt(f(&minthelix2));
+
+		return pos;
+	}
+
+	double VertexLine::LogLikelihood(TVector3 &p)const
+	{
+		return 0;
+	}
+
+	void VertexLine::LogLikelihoodDeriv(TVector3 &p, double *output)const
+	{
+	
 	}
 
 	// geometry operation ///////////////////////////////////////////////////////
