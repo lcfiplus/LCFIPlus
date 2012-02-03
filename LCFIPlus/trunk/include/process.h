@@ -78,14 +78,15 @@ namespace lcfiplus{
 
 	private:
 		VertexVec * _vertices; //!
-		std::vector<Jet *> * _jets; //!
-		int _njets;
-		double _ycut;
+		map<double, vector<Jet *> * > _jetsmap; //!
+		vector<int> _njets;
+		vector<double> _ycut;
 		bool _useMuonID;
 		double _vsMinDist;
 		double _vsMaxDist;
 		double _vsK0MassWidth;
-		std::string _vcolname;
+		string _vcolname;
+
 	};
 
 }

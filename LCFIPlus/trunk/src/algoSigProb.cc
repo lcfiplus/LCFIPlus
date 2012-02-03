@@ -207,6 +207,10 @@ float jointProbD0(const Jet* jet, const Vertex* pri) {
 		return 0;
 	}
 
+	if (hiprob == 0) {
+		return 0;
+	}
+
 	prod *= 1./hiprob;
 	--ntrk;
 
@@ -246,6 +250,10 @@ float jointProbZ0(const Jet* jet, const Vertex* pri) {
 	}
 
 	if (ntrk == 0) {
+		return 0;
+	}
+
+	if (hiprob == 0) {
 		return 0;
 	}
 

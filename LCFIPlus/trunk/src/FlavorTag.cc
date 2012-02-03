@@ -28,6 +28,16 @@ using namespace lcfiplus::algoEtc;
 
 namespace lcfiplus {
 
+	class FtAuxiliary : public FTAlgo {
+		private:
+			int _aux;
+		public:
+			FtAuxiliary(int aux) : FTAlgo("aux"), _aux(aux) {}
+			void process() {
+				_result = _aux;
+			}
+	};
+
 	class FtNvtx : public FTAlgo {
 		public:
 			FtNvtx() : FTAlgo("nvtx") {}
@@ -96,6 +106,36 @@ namespace lcfiplus {
 			}
 	};
 
+	class FtVtxSig1ByJetE : public FTAlgo {
+		public:
+			FtVtxSig1ByJetE() : FTAlgo("vtxsig1_jete") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVertices().size()>0)
+					_result = _jet->getVertices()[0]->significance( _event->getPrimaryVertex() ) / _jet->Energy();
+			}
+	};
+
+	class FtVtxSig2ByJetE : public FTAlgo {
+		public:
+			FtVtxSig2ByJetE() : FTAlgo("vtxsig2_jete") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVertices().size()>1)
+					_result = _jet->getVertices()[1]->significance( _event->getPrimaryVertex() ) / _jet->Energy();
+			}
+	};
+
+	class FtVtxSig12ByJetE : public FTAlgo {
+		public:
+			FtVtxSig12ByJetE() : FTAlgo("vtxsig12_jete") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVertices().size()>1)
+					_result = _jet->getVertices()[1]->significance( _jet->getVertices()[0] ) / _jet->Energy();
+			}
+	};
+
 	class FtVtxDirDot1 : public FTAlgo {
 		public:
 			static const char* name() { return "vtxdirdot1"; }
@@ -159,6 +199,40 @@ namespace lcfiplus {
 				_result = 0;
 				if (_jet->getVertices().size()>1)
 					_result = _jet->getVertices()[1]->getFourMomentum().Vect().Mag();
+			}
+	};
+
+	class FtVtxMomByJetE : public FTAlgo {
+		public:
+			FtVtxMomByJetE() : FTAlgo("vtxmom_jete") {}
+			void process() {
+				_result = 0;
+				TLorentzVector vtxp4;
+				const vector<const Vertex*>& vtxList = _jet->getVertices();
+				for (unsigned int j=0; j<vtxList.size(); ++j) {
+					vtxp4 += vtxList[j]->getFourMomentum();
+				}
+				_result = vtxp4.Vect().Mag() / _jet->Energy();
+			}
+	};
+
+	class FtVtxMom1ByJetE : public FTAlgo {
+		public:
+			FtVtxMom1ByJetE() : FTAlgo("vtxmom1_jete") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVertices().size()>0)
+					_result = _jet->getVertices()[0]->getFourMomentum().Vect().Mag() / _jet->Energy();
+			}
+	};
+
+	class FtVtxMom2ByJetE : public FTAlgo {
+		public:
+			FtVtxMom2ByJetE() : FTAlgo("vtxmom2_jete") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVertices().size()>1)
+					_result = _jet->getVertices()[1]->getFourMomentum().Vect().Mag() / _jet->Energy();
 			}
 	};
 
@@ -329,6 +403,26 @@ namespace lcfiplus {
 			}
 	};
 	
+	class FtTrk1PtByJetE : public FTAlgo {
+		public:
+			FtTrk1PtByJetE() : FTAlgo("trk1pt_jete") {}
+			void process() {
+				float sigVec[6];
+				findMostSignificantTrack(_jet,_event->getPrimaryVertex(),sigVec);
+				_result = sigVec[4] / _jet->Energy();
+			}
+	};
+
+	class FtTrk2PtByJetE : public FTAlgo {
+		public:
+			FtTrk2PtByJetE() : FTAlgo("trk2pt_jete") {}
+			void process() {
+				float sigVec[6];
+				findMostSignificantTrack(_jet,_event->getPrimaryVertex(),sigVec);
+				_result = sigVec[5] / _jet->Energy();
+			}
+	};
+	
 	class FtJProbR : public FTAlgo {
 		public:
 			FtJProbR() : FTAlgo("jprobr") {}
@@ -356,27 +450,37 @@ namespace lcfiplus {
 	void FlavorTag::init(Parameters *param) {
 		Algorithm::init(param);
 
-		string outputFilename = param->get("TrainNtupleFile",string("lcfiplus.root"));
-		_nJet = (int)param->get("TrainNJet",float(2));
+		_auxiliaryInfo = param->get("MakeNtuple.AuxiliaryInfo",int(-1));
 
-		cout << "FlavorTag: Ntuple file set to " << outputFilename << endl;
-		cout << "FlavorTag: Number of jet set to " << _nJet << endl;
+		//string outputFilename = param->get("TrainNtupleFile",string("lcfiplus.root"));
+		//_nJet = (int)param->get("TrainNJet",float(2));
+
+		//cout << "FlavorTag: Ntuple file set to " << outputFilename << endl;
+		//cout << "FlavorTag: Number of jet set to " << _nJet << endl;
 
 		FTManager& mgr = FTManager::getInstance();
 
+		mgr.add( new FtAuxiliary(_auxiliaryInfo) );
+
 		mgr.add( new FtNvtx() );
 		mgr.add( new FtVtxLen1() );
-		mgr.add( new FtVtxSig1() );
 		mgr.add( new FtVtxLen2() );
-		mgr.add( new FtVtxSig2() );
 		mgr.add( new FtVtxLen12() );
+		mgr.add( new FtVtxSig1() );
+		mgr.add( new FtVtxSig2() );
 		mgr.add( new FtVtxSig12() );
+		mgr.add( new FtVtxSig1ByJetE() );
+		mgr.add( new FtVtxSig2ByJetE() );
+		mgr.add( new FtVtxSig12ByJetE() );
 		mgr.add( new FtVtxDirDot1() );
 		mgr.add( new FtVtxDirDot2() );
 		mgr.add( new FtVtxDirDot12() );
 		mgr.add( new FtVtxMom() );
 		mgr.add( new FtVtxMom1() );
 		mgr.add( new FtVtxMom2() );
+		mgr.add( new FtVtxMomByJetE() );
+		mgr.add( new FtVtxMom1ByJetE() );
+		mgr.add( new FtVtxMom2ByJetE() );
 		mgr.add( new FtVtxMass() );
 		mgr.add( new FtVtxMass1() );
 		mgr.add( new FtVtxMass2() );
@@ -391,6 +495,8 @@ namespace lcfiplus {
 		mgr.add( new FtTrk2Z0Sig() );
 		mgr.add( new FtTrk1Pt() );
 		mgr.add( new FtTrk2Pt() );
+		mgr.add( new FtTrk1PtByJetE() );
+		mgr.add( new FtTrk2PtByJetE() );
 		mgr.add( new FtJProbR() );
 		mgr.add( new FtJProbZ() );
 		mgr.add( new FtSphericity() );

@@ -84,6 +84,7 @@ namespace lcfiplus {
   JetFinder::JetFinder(const JetConfig& cfg) : _cfg(cfg) {
     _Yfunc = JetFinder::funcDurham;
   }
+	void JetFinder::Configure(const JetConfig& cfg){_cfg = cfg;}
 
   vector<Jet*> JetFinder::run(TrackVec &tracks) {
     vector<Jet*> jets;
@@ -112,6 +113,12 @@ namespace lcfiplus {
 
   vector<Jet*> JetFinder::run(TrackVec &tracks, NeutralVec &neutrals, VertexVec &vertices_, double *pymin, bool findmu)
 	{
+		vector<Jet*> prejets = prerun(tracks, neutrals, vertices_, findmu);
+		return run(prejets, pymin);
+	}
+
+  vector<Jet*> JetFinder::prerun(TrackVec &tracks, NeutralVec &neutrals, VertexVec &vertices_, bool findmu, int *nVertexJets)
+	{
 
 		// angle to combine two vertices
 		const double vertexcombineangle = 0.2;
@@ -138,8 +145,8 @@ namespace lcfiplus {
 				double mudep = tracks[i]->getCaloEdep()[tpar::yoke];
 				double ecaldep = tracks[i]->getCaloEdep()[tpar::ecal];
 				double hcaldep = tracks[i]->getCaloEdep()[tpar::hcal];
-	
-				if(mudep>0)
+
+				if(mudep>0 && tr->getMcp() != 0)
 					cout << "Muon selection: " << tr->getMcp()->getPDG() << " " << sigd0 << " " << sigz0 << " " << tr->E() << " " << mudep << " " << ecaldep << " " << hcaldep << endl;
 				// muon selection criteria
 //				if(dist > 0.1 && dist < 2.0 && tr->E() > 5. && mudep > 0.05 && ecaldep < 1. && hcaldep > 1.5 && hcaldep < 4.){
@@ -215,6 +222,9 @@ namespace lcfiplus {
 			jets.erase(jets.begin() + minimumj);
 			cout << "JetFinder: Jet " << minimumi << " and " << minimumj << " are combined." << endl;
 		}
+
+		if(nVertexJets)
+			*nVertexJets = (int)jets.size();
 
 		for(unsigned int i=0;i<tracks.size();i++){
 			if(usedTracks[i])continue;
@@ -382,8 +392,8 @@ namespace lcfiplus {
 			}
     }
 
-    return run(jets,pymin);
 		// TODO: delete fakevtx
+		return jets;
 
 	}
 

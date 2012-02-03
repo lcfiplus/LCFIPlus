@@ -786,10 +786,41 @@ void VertexFinderSuehara::buildUpForJetClustering(TrackVec &tracks, vector<Verte
 }
 
 vector<Vertex *> VertexFinderSuehara::makeSingleTrackVertices
-	(Jet *jet, TrackVec &tracks, Vertex *ip, double minpos, double maxpos, double maxangle, double min_separation_per_pos)
+	(Jet *jet, TrackVec &tracks, Vertex *ip, double minpos, double maxpos, double maxangle, double max_separation_per_pos)
 {
-	// to be implemented
+	VertexVec &vtcs = jet->getVertices();
+	vector<Vertex *> singlevtcs;
 
-	return vector<Vertex *>();
+	for(unsigned int ntr = 0; ntr < tracks.size(); ntr ++){
+		const Track *track = tracks[ntr];
+		Helix hel(track);
+
+		for(unsigned int nvtcs = 0; nvtcs < vtcs.size(); nvtcs ++){
+			const Vertex *vtx = vtcs[nvtcs];
+
+			// angular preselection
+			double angle = vtx->getPos().Angle(track->Vect());
+			if(angle > maxangle)continue;
+
+			// calculate closest point
+			VertexLine line(ip->getPos(), vtx->getPos());
+			double linedist = 0;
+			TVector3 pos = hel.ClosePoint(line, &linedist);
+
+			// selection cuts
+			if(pos.Mag() < minpos || pos.Mag() > maxpos)continue; 
+			if(linedist / pos.Mag() > max_separation_per_pos)continue;
+
+			// all selection passed: make single track vertex
+			Vertex *newvtx = new Vertex(0,0,pos.x(), pos.y(), pos.z(), 0);
+			newvtx->add(track);
+
+			singlevtcs.push_back(newvtx);
+			break; // end searching for this track
+		}
+	}
+
+	cout << "makeSingleTrackVertices: " << singlevtcs.size() << " vertices found." << endl;
+	return singlevtcs;
 }
 

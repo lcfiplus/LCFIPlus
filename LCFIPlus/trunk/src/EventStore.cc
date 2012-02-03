@@ -113,7 +113,7 @@ namespace lcfiplus {
 						int nstart = entry.classname.find("<") + 1;
 						int nend = entry.classname.find("*");
 						string elementclassname = entry.classname.substr(nstart, nend-nstart);
-//						cout << "Deleting class name: " << elementclassname << endl;
+						//cout << "Deleting class name: " << elementclassname << ", pointer: " << (unsigned int)*it << endl;
 
 						TClass *cl = TClass::GetClass(elementclassname.c_str());
 						if(!cl){throw(Exception("EventStore::ClearObjects(); cannot get class info of element class for deletion"));}
