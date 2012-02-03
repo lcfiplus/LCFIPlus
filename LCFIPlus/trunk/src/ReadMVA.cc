@@ -57,10 +57,15 @@ void ReadMVA::init(Parameters *param) {
 		psTag << "FlavorTag.CategoryPreselection" << i;
 		c.preselection = param->get(psTag.str().c_str(),string(""));
 
-		// assumes comma separated values
+		// assumes space separated values
 		stringstream varTag;
 		varTag << "FlavorTag.CategoryVariables" << i;
 		param->fetchArray( varTag.str().c_str(), c.vars );
+
+		// read spectators
+		stringstream specTag;
+		specTag << "FlavorTag.CategorySpectators" << i;
+		param->fetchArray( specTag.str().c_str(), c.spec );
 
 		cout << "FlavorTag category: " << c.definition << endl;
 		cout << "FlavorTag preselection: " << c.preselection << endl;
