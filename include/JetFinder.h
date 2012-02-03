@@ -55,6 +55,10 @@ namespace lcfiplus {
       JetFinder(const JetConfig& cfg);
 			/** Destructor. */
       ~JetFinder() {};
+			/** Replace JetConfig.
+				@param[in] cfg specify the algorithm and the parameters
+				*/
+			void Configure(const JetConfig & cfg);
 			/**
 				Perform jet clustering with charged tracks only. */
       vector<Jet*> run(TrackVec &tracks);
@@ -67,7 +71,11 @@ namespace lcfiplus {
 				*/
       vector<Jet*> run(TrackVec &tracks, NeutralVec &neutrals, VertexVec &vertices, double *pymin = 0, bool findmu = false);
 			/**
-				Computes the Y function for the given result of jet clustering.
+				Lepton finder and vertex isolator/combiner, called from run() with vertices
+				*/
+      vector<Jet*> prerun(TrackVec &tracks, NeutralVec &neutrals, VertexVec &vertices, bool findmu = false, int *pnVertexJets = 0);
+			/**
+				Main function of jet clustering, called from other run() functions.
 				*/
       vector<Jet*> run(vector<Jet*> input, double *pymin = 0);
 

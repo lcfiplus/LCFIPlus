@@ -101,6 +101,11 @@ void TrainMVA::init(Parameters *param) {
 		varTag << "FlavorTag.CategoryVariables" << i;
 		param->fetchArray( varTag.str().c_str(), c.vars );
 
+		// read spectators
+		stringstream specTag;
+		specTag << "FlavorTag.CategorySpectators" << i;
+		param->fetchArray( specTag.str().c_str(), c.spec );
+
 		cout << "FlavorTag category: " << c.definition << endl;
 		cout << "FlavorTag preselection: " << c.preselection << endl;
 		for (unsigned int i=0; i<c.vars.size(); ++i)
@@ -155,7 +160,7 @@ void TrainMVA::end() {
 
 		TMVA::gConfig().GetIONames().fWeightFileDir = _outputDirectory;
 		TMVA::Factory* factory = new TMVA::Factory(prefix,outputFile,
-			"!V:!Silent:Color:DrawProgressBar:Transformations=I;D;P;G,D:AnalysisType=multiclass" );
+			"!V:!Silent:Color:!DrawProgressBar:Transformations=I;D;P;G,D:AnalysisType=multiclass" );
 
 		// define signal and background trees
 		factory->AddTree( treeB, TString("jetB"), 1., TCut(c.definition) );

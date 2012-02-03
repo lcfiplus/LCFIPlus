@@ -155,11 +155,50 @@ namespace lcfiplus{
 		if(!_vertices)
 			cout << "JetClustering::init: vertex collection not found; will try later." << endl;
 
-		string jcolname = param->get("JetClustering.OutputJetCollectionName",string("Jets"));
-		Event::Instance()->Register(jcolname.c_str(), _jets, EventStore::PERSIST | EventStore::JET_EXTRACT_VERTEX);
+		vector<string> jcolnames;
+		param->fetchArray("JetClustering.OutputJetCollectionName",jcolnames);
+		param->fetchArray("JetClustering.NJetsRequested",_njets);
+		param->fetchArray("JetClustering.YCut",_ycut);
 
-		_njets = param->get("JetClustering.NJetsRequested",int(6));
-		_ycut = param->get("JetClustering.YCut", double(0));
+		// checks
+		if(jcolnames.size() == 0)
+			throw(Exception(
+				"JetClustering::init: output jet collection is not specified. please include OutputJetCollectionName parameter."));
+
+		if(_njets.size() == 0 && _ycut.size() == 0)
+			throw(Exception(
+				"JetClustering::init: please specify at least either NJetsRequested or YCut parameter."));
+
+		if(_njets.size() > 1 && _ycut.size() > 1)
+			throw(Exception(
+				"JetClustering::init: cannot accept multiple NJetsRequested with multiple YCut."));
+
+		if(_njets.size() > jcolnames.size() || _ycut.size() > jcolnames.size())
+			throw(Exception(
+				"JetClustering::init: please specify enough number of OutputJetCollectionName to meet number of NJetsRequested or YCut."));
+
+		if(_njets.size() == 0)_njets.push_back(0);
+		if(_ycut.size() == 0)_ycut.push_back(0.);
+
+		// sort njetsrequested / ycut
+		if(_njets.size() > 1){
+			for(unsigned int n=0;n<_njets.size();n++){
+				vector<Jet *> *jets;
+				Event::Instance()->Register(jcolnames[n].c_str(), jets, EventStore::PERSIST | EventStore::JET_EXTRACT_VERTEX);
+				_jetsmap[(double)_njets[n]] = jets;
+			}
+			// sort njets
+			sort(_njets.begin(), _njets.end(), std::greater<int>());
+		}
+		else{
+			for(unsigned int n=0;n<_ycut.size();n++){
+				vector<Jet *> *jets;
+				Event::Instance()->Register(jcolnames[n].c_str(), jets, EventStore::PERSIST | EventStore::JET_EXTRACT_VERTEX);
+				_jetsmap[_ycut[n]] = jets;
+			}
+			// sort njets
+			sort(_ycut.begin(), _ycut.end(), std::less<double>());
+		}
 
 		_useMuonID = param->get("JetClustering.UseMuonID", int(1));
 
@@ -168,14 +207,17 @@ namespace lcfiplus{
 		_vsK0MassWidth = param->get("JetClustering.VertexSelectionK0MassWidth", double(0.02));
 	}
 
-
 	void JetClustering::process()
 	{
 		// clearing old jets
-		for(unsigned int n=0;n<_jets->size();n++)
-			delete (*_jets)[n];
-		_jets->clear();
-
+		map<double, vector<Jet *> * >::iterator it;
+		for(it = _jetsmap.begin(); it != _jetsmap.end(); it++){
+			vector<Jet *> *jets = it->second;
+			for(unsigned int n=0;n<jets->size();n++)
+				delete (*jets)[n];
+			jets->clear();
+		}
+	
 		if(!_vertices){
 			// retry
 			Event::Instance()->Get(_vcolname.c_str(), _vertices);
@@ -189,9 +231,9 @@ namespace lcfiplus{
 		Event *event = Event::Instance();
 
 		JetConfig jetCfg;
-		jetCfg.nJet = _njets;
+		jetCfg.nJet = _njets[0];
+		jetCfg.Ycut = _ycut[0];
 		JetFinder* jetFinder = new JetFinder(jetCfg);
-		double ycut = _ycut;
 
 		// select vertices
 		vector<const Vertex *> selectedVertices;
@@ -212,32 +254,65 @@ namespace lcfiplus{
 				}
 			}
 		}
-		*_jets = jetFinder->run(residualTracks, event->getNeutrals(), selectedVertices, &ycut, _useMuonID);
+
+		int nVertexJets;
+		vector<Jet *> curjets = jetFinder->prerun(residualTracks, event->getNeutrals(), selectedVertices, _useMuonID, &nVertexJets);
+		if(_njets.size() > 1){
+
+			for(unsigned int n=0;n<_njets.size();n++){
+				cout << "JetFinder: number of jets = " << _njets[n] << endl;
+
+				jetCfg.nJet = _njets[n];
+				jetFinder->Configure(jetCfg);
+
+				if (nVertexJets > _njets[n]){
+					cout << "JetFinder: number of vertex jets is larger than njet: reprocess from prerun..." << endl;
+
+					// clearing curjets...
+					for(unsigned int j=0;j<curjets.size();j++){
+						delete curjets[j];
+					}
+
+					// rerun prerun
+					curjets = jetFinder->prerun(residualTracks, event->getNeutrals(), selectedVertices, _useMuonID, &nVertexJets);
+				}
+
+				double ymin;
+				vector<Jet *> &jets = *(_jetsmap[_njets[n]]);
+				jets = jetFinder->run(curjets, &ymin);
+				curjets.clear();
+
+				// copy jets to curjets
+				for(unsigned int j=0;j<jets.size(); j++){
+					curjets.push_back(new Jet(*jets[j]));
+				}
+			}
+		}
+		else{
+
+			for(unsigned int n=0;n<_ycut.size();n++){
+				cout << "JetFinder: YCut = " << _ycut[n] << endl;
+
+				jetCfg.Ycut = _ycut[n];
+				jetFinder->Configure(jetCfg);
+
+				double ymin;
+				vector<Jet *> &jets = *(_jetsmap[_ycut[n]]);
+				jets = jetFinder->run(curjets, &ymin);
+				curjets.clear();
+
+				// copy jets to curjets
+				for(unsigned int j=0;j<jets.size(); j++){
+					curjets.push_back(new Jet(*jets[j]));
+				}
+			}
+		}
 
 		if(_vertices){
 			cout << "JetClustering: _vertices.size() = " << _vertices->size() << endl;
 			cout << "JetClustering: selectedVertices.size() = " << selectedVertices.size() << endl;
 		}
 
-/*
-		Parameters testPid;
-		testPid.add("testparapi", (double)3.14159);
-		testPid.add("testpara", (double)2.7183);
-
-		const vector<const Jet *> *testJets = constVector(_jets);
-
-		double a = 4.4444;
-		for (JetVecIte it = testJets->begin(); it != testJets->end(); ++it) {
-			const Jet* jet = *it;
-			testPid.assign("testpara",a);
-			jet->addParam("testPID", testPid);
-
-			a *= 2.;
-			cout << testPid.get("testpara", double(0.)) << endl;
-
-			cout << "   Jet nvtx = " << jet->getVertices().size() << endl;
-		}
-		*/
 	}
 
 	void JetClustering::end() {

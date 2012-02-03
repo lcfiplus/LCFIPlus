@@ -34,7 +34,8 @@ namespace lcfiplus{
 		private:
 			TFile* _file;
 			TTree* _t;
-			int _nJet;
+
+			int _auxiliaryInfo;
 
 			ClassDef(FlavorTag,1);
 	};
