@@ -391,11 +391,13 @@ namespace lcfiplus{
 			float clusEnergy(0);
 			float subE[6];
 			for (int i=0; i<6; ++i) subE[i]=0;
-			for (unsigned int iclus=0; iclus<clusters.size(); ++iclus) {
-				clusEnergy += clusters[iclus]->getEnergy();
-				for (int i=0; i<6; ++i) {
-					subE[i] = clusters[iclus]->getSubdetectorEnergies()[i];
-				}
+			if (_readSubdetectorEnergies) {
+			  for (unsigned int iclus=0; iclus<clusters.size(); ++iclus) {
+				  clusEnergy += clusters[iclus]->getEnergy();
+				  for (int i=0; i<6; ++i) {
+					  subE[i] = clusters[iclus]->getSubdetectorEnergies()[i];
+				  }
+			  }
 			}
 
 //			cerr << (pfo->getCharge() ? "[Track]" : "[Neutral]") << pfo->getEnergy() << ", " << (unsigned int)pfo << endl;

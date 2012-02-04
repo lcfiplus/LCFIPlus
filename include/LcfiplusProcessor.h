@@ -71,6 +71,8 @@ class LcfiplusProcessor : public Processor {
 
 	int _useMcp;
 
+	int _readSubdetectorEnergies;
+
 } ;
 
 #endif

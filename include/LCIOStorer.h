@@ -61,6 +61,8 @@ namespace lcfiplus{
 			//static bool energy_sort_mc(MCParticle *a, MCParticle *b);
 			static bool energy_sort_pfo(lcio::ReconstructedParticle *a, lcio::ReconstructedParticle *b);
 
+			void setReadSubdetectorEnergies(bool flag) { _readSubdetectorEnergies = flag; }
+
 		private:
 			lcio::LCEvent *_event;
 			lcio::LCReader *_reader;
@@ -95,6 +97,7 @@ namespace lcfiplus{
 			string _savePrefix;
 
 			bool _useMcp;
+			bool _readSubdetectorEnergies;
 
 			ClassDef(LCIOStorer,0);
 	};
