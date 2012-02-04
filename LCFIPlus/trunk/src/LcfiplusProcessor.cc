@@ -43,6 +43,7 @@ LcfiplusProcessor::LcfiplusProcessor() : Processor("LcfiplusProcessor") {
 	registerProcessorParameter("JetAutoLoad", "Loading LCIO jets automatically", _autoJet, int(1));
 
 	registerProcessorParameter("Algorithms", "LCFIPlus algorithms to run", _algonames, vector<string>());
+	registerProcessorParameter("ReadSubdetectorEnergies", "Read subdetector energies (ILD)", _readSubdetectorEnergies, int(1));
 
 	// ROOT object
 /*	int argc = 0;
@@ -111,6 +112,7 @@ void LcfiplusProcessor::init() {
 				_lcio->InitCollections(_pfoCollectionName.c_str(), _mcpCollectionName.c_str(), _mcpfoRelationName.c_str());
 			else
 				_lcio->InitCollectionsWithoutMCP(_pfoCollectionName.c_str());
+			_lcio->setReadSubdetectorEnergies(_readSubdetectorEnergies);
 
 			_lcioowner = true;
 		}
