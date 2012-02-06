@@ -79,6 +79,23 @@ namespace lcfiplus {
 			string _message;
 	};
 
+	// global parameters
+	class Globals {
+		public:
+			~Globals();
+			static Globals* Instance();
+			void setBField(double bField) {_bField=bField;}
+			double getBField()const{return _bField;}
+
+		private:
+			// value of b field to be read from GEAR
+			double _bField;
+			static Globals * _theInstance;
+
+			Globals();
+	};
+
+
 	// generic parameter class
 	class Parameters
 	{

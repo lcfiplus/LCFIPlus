@@ -436,7 +436,7 @@ namespace lcfiplus{
 				// after the first one for kinks and prongs, etc
 				
 				const float c = 2.99792458e8; // m*s^-1
-				const float B = 3.5;          // Tesla
+				const float B = Globals::Instance()->getBField(); // Tesla
 				const float mm2m = 1e-3;
 				const float eV2GeV = 1e-9;
 				const float eB = B*c*mm2m*eV2GeV;

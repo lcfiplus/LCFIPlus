@@ -33,7 +33,7 @@ void makeBeamTracks(Track *&t1, Track *&t2)
 		
     par[tpar::d0] = d0rand;
     par[tpar::z0] = z0rand;
-    par[tpar::om] = 0.3*3.5/250./beamtd*1000.;
+    par[tpar::om] = 0.3*Globals::Instance()->getBField()/250./beamtd*1000.;
     par[tpar::ph] = 0;
     par[tpar::td] = beamtd;
 		t1->setHelix(par);
@@ -55,7 +55,7 @@ void makeBeamTracks(Track *&t1, Track *&t2)
 
     par[tpar::d0] = d0rand;
     par[tpar::z0] = z0rand;
-    par[tpar::om] = 0.3*3.5/250./beamtd*1000.;
+    par[tpar::om] = 0.3*Globals::Instance()->getBField()/250./beamtd*1000.;
     par[tpar::ph] = 0;
     par[tpar::td] = -beamtd;
 		t2->setHelix(par);

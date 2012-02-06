@@ -618,6 +618,7 @@ int main(int argc, char* argv[]) {
 
 void testSuehara(const char *inputlist, const char *output)
 {
+	Globals::Instance()->setBField(3.5);
 
 	LCIOStorer ls(inputlist);
 	ls.InitCollections("PandoraPFOs","MCParticlesSkimmed","RecoMCTruthLink","Tracks","Neutrals","MCParticles");
@@ -894,7 +895,7 @@ struct KalTrk {
 
 		//SMatrix
 
-		vtx.cov = vtx.cov - _matGain * matMtransp;
+		//vtx.cov = vtx.cov - _matGain * matMtransp;
 	}
 
 	// compute closest point in xy plane
@@ -958,6 +959,7 @@ struct KalTrk {
 };
 
 void testTomohiko() {
+	Globals::Instance()->setBField(3.5);
 	LCIOStorer ls("input.slcio");
 	ls.InitCollections("PandoraPFOs","MCParticlesSkimmed","RecoMCTruthLink","Tracks","Neutrals","MCParticles");
 
