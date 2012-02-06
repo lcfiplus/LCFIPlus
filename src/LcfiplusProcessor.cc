@@ -10,6 +10,9 @@
 #include <marlin/Global.h>
 #include <marlin/Exceptions.h>
 
+// GEAR
+#include <gear/BField.h>
+
 #include "TROOT.h"
 #include "TApplication.h"
 
@@ -92,6 +95,10 @@ void LcfiplusProcessor::init() {
 			SLM << "No algorithms given to run. run nothing." << endl;
 			return;
 		}
+
+		// set globals
+		Globals::Instance()->setBField( marlin::Global::GEAR->getBField().at(gear::Vector3D(0.,0.,0.)).z() );
+
 
 		// conversion StringParameters -> Parameters
 		_param = new Parameters;

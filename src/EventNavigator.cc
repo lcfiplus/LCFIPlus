@@ -80,6 +80,8 @@ namespace lcfiplus {
   }
 
   void EventNavigator::drawEvent(Event* event) {
+		double bfield = 0.1*Globals::Instance()->getBField();
+
     const float MAX_R(1000);
     const float MAX_Z(1000);
     //const float MAX_R(100);
@@ -141,8 +143,8 @@ namespace lcfiplus {
       chargedTrack->fP.Set(px, py, pz);
       chargedTrack->fSign = (int) charge;
 
-      propsetMCParticle->SetMagFieldObj(new TEveMagFieldConst(0., 0., -0.35));
-      //propsetMCParticle->SetMagFieldObj(new TEveMagFieldDuo(350, -3.5, 2.0));
+      propsetMCParticle->SetMagFieldObj(new TEveMagFieldConst(0., 0., -bfield));
+      //propsetMCParticle->SetMagFieldObj(new TEveMagFieldDuo(350, -bfield, 2.0));
 
       //Test for Charged Tracks
       propsetMCParticle->SetName("Track propagator for charged particles");
@@ -277,8 +279,8 @@ namespace lcfiplus {
       chargedTrack->fP.Set(px, py, pz);
       chargedTrack->fSign = (int) charge;
 
-      propsetTrack->SetMagFieldObj(new TEveMagFieldConst(0., 0., -.35));
-      //propsetTrack->SetMagFieldObj(new TEveMagFieldDuo(350, -3.5, 2.0));
+      propsetTrack->SetMagFieldObj(new TEveMagFieldConst(0., 0., -bfield));
+      //propsetTrack->SetMagFieldObj(new TEveMagFieldDuo(350, -bfield, 2.0));
 
       //Test for Charged Tracks
       propsetTrack->SetName("Track propagator for charged particles");
@@ -420,8 +422,8 @@ namespace lcfiplus {
 			      chargedTrack->fP.Set(px, py, pz);
 			      chargedTrack->fSign = (int) charge;
 
-			      propsetTrack->SetMagFieldObj(new TEveMagFieldConst(0., 0., -.35));
-			      //propsetTrack->SetMagFieldObj(new TEveMagFieldDuo(350, -3.5, 2.0));
+			      propsetTrack->SetMagFieldObj(new TEveMagFieldConst(0., 0., -bfield));
+			      //propsetTrack->SetMagFieldObj(new TEveMagFieldDuo(350, -bfield, 2.0));
 
 			      //Test for Charged Tracks
 			      propsetTrack->SetName("Track propagator for charged particles");
@@ -825,8 +827,8 @@ namespace lcfiplus {
       chargedTrack->fP.Set(px, py, pz);
       chargedTrack->fSign = (int) charge;
 
-      propsetMCParticle->SetMagFieldObj(new TEveMagFieldConst(0., 0., -3.5));
-      //propsetMCParticle->SetMagFieldObj(new TEveMagFieldDuo(350, -3.5, 2.0));
+      propsetMCParticle->SetMagFieldObj(new TEveMagFieldConst(0., 0., -bfield));
+      //propsetMCParticle->SetMagFieldObj(new TEveMagFieldDuo(350, -bfield, 2.0));
 
       //Test for Charged Tracks
       propsetMCParticle->SetName("Track propagator for charged particles");
@@ -937,8 +939,8 @@ namespace lcfiplus {
       chargedTrack->fP.Set(px, py, pz);
       chargedTrack->fSign = (int) charge;
 
-      propsetTrack->SetMagFieldObj(new TEveMagFieldConst(0., 0., -3.5));
-      //propsetTrack->SetMagFieldObj(new TEveMagFieldDuo(350, -3.5, 2.0));
+      propsetTrack->SetMagFieldObj(new TEveMagFieldConst(0., 0., -bfield));
+      //propsetTrack->SetMagFieldObj(new TEveMagFieldDuo(350, -bfield, 2.0));
 
       //Test for Charged Tracks
       propsetTrack->SetName("Track propagator for charged particles");

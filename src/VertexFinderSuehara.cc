@@ -116,8 +116,8 @@ vector<lcfiplus::Vertex*> * lcfiplus::VertexFinderSuehara::findCandidates(TrackV
 			HelixClass h1, h2;
 // 			HelixClass::Initialize_Canonical(float phi0, float d0, float z0, float omega, 
 //                               float tanlambda, float B);
-			h1.Initialize_Canonical((*trkit1)->getPhi(), (*trkit1)->getD0(), (*trkit1)->getZ0(), (*trkit1)->getOmega(), (*trkit1)->getTanLambda(), 3.5);
-			h2.Initialize_Canonical((*trkit2)->getPhi(), (*trkit2)->getD0(), (*trkit2)->getZ0(), (*trkit2)->getOmega(), (*trkit2)->getTanLambda(), 3.5);
+			h1.Initialize_Canonical((*trkit1)->getPhi(), (*trkit1)->getD0(), (*trkit1)->getZ0(), (*trkit1)->getOmega(), (*trkit1)->getTanLambda(), Globals::Instance()->getBField());
+			h2.Initialize_Canonical((*trkit2)->getPhi(), (*trkit2)->getD0(), (*trkit2)->getZ0(), (*trkit2)->getOmega(), (*trkit2)->getTanLambda(), Globals::Instance()->getBField());
 // float HelixClass::getDistanceToHelix(HelixClass * helix, float * pos, float * mom);
 			float hpos[3], hmom[3];
 			float dist = h1.getDistanceToHelix(&h2, hpos,hmom);
@@ -251,9 +251,9 @@ lcfiplus::Vertex* VertexFinderSuehara::findOne(list<const Track *> &tracks, doub
 // 			HelixClass::Initialize_Canonical(float phi0, float d0, float z0, float omega, 
 //                               float tanlambda, float B);
 			h1.Initialize_Canonical((*trkit1)->getPhi(), (*trkit1)->getD0(), (*trkit1)->getZ0(),
-					(*trkit1)->getOmega(), (*trkit1)->getTanLambda(), 3.5);
+					(*trkit1)->getOmega(), (*trkit1)->getTanLambda(), Globals::Instance()->getBField());
 			h2.Initialize_Canonical((*trkit2)->getPhi(), (*trkit2)->getD0(), (*trkit2)->getZ0(),
-					(*trkit2)->getOmega(), (*trkit2)->getTanLambda(), 3.5);
+					(*trkit2)->getOmega(), (*trkit2)->getTanLambda(), Globals::Instance()->getBField());
 // float HelixClass::getDistanceToHelix(HelixClass * helix, float * pos, float * mom);
 			float hpos[3], hmom[3];
 			h1.getDistanceToHelix(&h2, hpos,hmom);

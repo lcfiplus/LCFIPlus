@@ -18,6 +18,18 @@
 namespace lcfiplus {
 
 	// singleton operations
+	Globals * Globals::_theInstance = NULL;
+	Globals * Globals::Instance()
+	{
+		if(_theInstance == NULL) _theInstance = new Globals;
+		return _theInstance;
+	}
+	Globals::Globals(){}
+  Globals::~Globals(){
+		_theInstance = 0;
+	}
+
+	// singleton operations
 	Event * Event::_theInstance = NULL;
 	Event * Event::Instance()
 	{
@@ -704,35 +716,35 @@ namespace lcfiplus {
     float pos[3] = { getVertex().x(), getVertex().y(), getVertex().z() };
     float mom[3] = { Px(), Py(), Pz() };
     HelixClass h;
-		h.Initialize_VP(pos,mom,getCharge(),3.5);
+		h.Initialize_VP(pos,mom,getCharge(),Globals::Instance()->getBField());
 		return h.getD0();
   }
   float MCParticle::getZ0() const{
     float pos[3] = { getVertex().x(), getVertex().y(), getVertex().z() };
     float mom[3] = { Px(), Py(), Pz() };
     HelixClass h;
-		h.Initialize_VP(pos,mom,getCharge(),3.5);
+		h.Initialize_VP(pos,mom,getCharge(),Globals::Instance()->getBField());
 		return h.getZ0();
   }
   float MCParticle::getPhi() const{
     float pos[3] = { getVertex().x(), getVertex().y(), getVertex().z() };
     float mom[3] = { Px(), Py(), Pz() };
     HelixClass h;
-		h.Initialize_VP(pos,mom,getCharge(),3.5);
+		h.Initialize_VP(pos,mom,getCharge(),Globals::Instance()->getBField());
 		return h.getPhi0();
   }
   float MCParticle::getOmega() const{
     float pos[3] = { getVertex().x(), getVertex().y(), getVertex().z() };
     float mom[3] = { Px(), Py(), Pz() };
     HelixClass h;
-		h.Initialize_VP(pos,mom,getCharge(),3.5);
+		h.Initialize_VP(pos,mom,getCharge(),Globals::Instance()->getBField());
 		return h.getOmega();
   }
   float MCParticle::getTanLambda() const{
     float pos[3] = { getVertex().x(), getVertex().y(), getVertex().z() };
     float mom[3] = { Px(), Py(), Pz() };
     HelixClass h;
-		h.Initialize_VP(pos,mom,getCharge(),3.5);
+		h.Initialize_VP(pos,mom,getCharge(),Globals::Instance()->getBField());
 		return h.getTanLambda();
   }
 
