@@ -19,7 +19,7 @@ namespace lcfiplus {
 		// firstly clear contents of the objects
 		ClearObjects();
 
-		map<string, lcfiplus::EventStore::StoredEntry >::iterator itMap;
+		multimap<string, lcfiplus::EventStore::StoredEntry >::iterator itMap;
 		// free all void * in the map
 		for(itMap = _objectMap.begin(); itMap != _objectMap.end(); itMap ++){
 			TClass *cl = TClass::GetClass(itMap->second.classname.c_str());
@@ -29,41 +29,87 @@ namespace lcfiplus {
 	}
 
 	// check existence of the named buffer
-	bool EventStore::IsExist(const char *name)const
+	int EventStore::Count(const char *name)const
 	{
-		return _objectMap.find(name) != _objectMap.end();
+		return _objectMap.count(name);
+	}
+
+	// check existence of the named buffer
+	bool EventStore::IsExist(const char *name, const char *classname)const
+	{
+		int count = _objectMap.count(name);
+		if(count == 0)return false;
+
+		int n=0;
+		for(n=0, _itMap = _objectMap.find(name); n<count;n++,_itMap++){
+			if(_itMap->second.classname == classname)return true;
+		}
+		return false;
 	}
 
 	// obtain class name of the named buffer
-	const char * EventStore::GetClassName(const char *name)const
+	const char * EventStore::GetClassName(const char *name, int idx)const
 	{
+		int count = _objectMap.count(name);
+		if(count <= idx)return NULL;
 		_itMap = _objectMap.find(name);
-		if(_itMap == _objectMap.end())return NULL;
-		else return _itMap->second.classname.c_str();
+		advance(_itMap,idx);
+		return _itMap->second.classname.c_str();
 	}
 
 	// provide read-only buffer
-	void * EventStore::GetObject(const char *name)const
+	void * EventStore::GetObject(const char *name, const char *classname)const
 	{
+		list<EventStoreObserver*>::const_iterator it;
+		for(it = _observerList.begin(); it != _observerList.end();it++)
+			(*it)->GetCallback(name,classname);
+
+		int count = _objectMap.count(name);
+		if(count == 0)return NULL;
+
 		_itMap = _objectMap.find(name);
-		if(_itMap == _objectMap.end())return NULL;
-		else return _itMap->second.obj;
+		if(strlen(classname) == 0)return _itMap->second.obj;
+
+		for(int i=0;i<count;i++,_itMap++){
+			if(_itMap->second.classname == classname)return _itMap->second.obj;
+		}
+		return NULL;
 	}
 
-	void * const& EventStore::GetObjectRef(const char *name)const
+	void * const &EventStore::GetObjectRef(const char *name, const char *classname)const
 	{
-		_itMap = _objectMap.find(name);
-		if(_itMap == _objectMap.end())throw(new Exception("EventStore::GetObjectRef: Object not found"));
+		list<EventStoreObserver*>::const_iterator it;
+		for(it = _observerList.begin(); it != _observerList.end();it++)
+			(*it)->GetCallback(name,classname);
 
+		int count = _objectMap.count(name);
+		if(count == 0)throw(new Exception("EventStore::GetObjectRef: Object not found"));
+
+		_itMap = _objectMap.find(name);
+		if(strlen(classname) == 0)return _itMap->second.obj;
+
+		for(int i=0;i<count;i++,_itMap++){
+			if(_itMap->second.classname == classname)return _itMap->second.obj;
+		}
+		throw(new Exception("EventStore::GetObjectRef: Object not found"));
 		return _itMap->second.obj;
 	}
 
 	// register new object
 	void * EventStore::RegisterObject(const char * name, const char *classname, int flags)
 	{
+		list<EventStoreObserver*>::iterator it;
+		for(it = _observerList.begin(); it != _observerList.end();it++)
+			(*it)->RegisterCallback(name,classname,flags);
+
 		// if already exists: return NULL
-		_itMap = _objectMap.find(name);
-		if(_itMap != _objectMap.end())return NULL;
+		int nreg = _objectMap.count(name);
+		int n=0;
+		if(nreg){
+			for(n=0, _itMap = _objectMap.find(name); n<nreg;n++,_itMap++){
+				if(_itMap->second.classname == classname)return NULL;
+			}
+		}
 
 		// make the class
 		void *newobj;
@@ -73,7 +119,7 @@ namespace lcfiplus {
 		if(!newobj)return NULL;
 
 		// register the map
-		_objectMap[name] = StoredEntry(string(classname), newobj, flags);
+		_objectMap.insert(pair<string, StoredEntry>(name, StoredEntry(string(classname), newobj, flags)));
 
 		cout << "EventStore::Register: collection " << name << " registered with type " << classname << endl;
 
@@ -113,7 +159,7 @@ namespace lcfiplus {
 						int nstart = entry.classname.find("<") + 1;
 						int nend = entry.classname.find("*");
 						string elementclassname = entry.classname.substr(nstart, nend-nstart);
-						//cout << "Deleting class name: " << elementclassname << ", pointer: " << (unsigned int)*it << endl;
+						//cout << "Deleting class name: " << elementclassname << ", pointer: " << (unsigned long)*it << endl;
 
 						TClass *cl = TClass::GetClass(elementclassname.c_str());
 						if(!cl){throw(Exception("EventStore::ClearObjects(); cannot get class info of element class for deletion"));}

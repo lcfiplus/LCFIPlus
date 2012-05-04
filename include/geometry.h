@@ -19,8 +19,8 @@ namespace lcfiplus{
 	class PointBase // pure virtual point-base class
 	{
 	public:
-		virtual double LogLikelihood(TVector3 &p)const  = 0;
-		virtual void LogLikelihoodDeriv(TVector3 &p,double* output)const  = 0;
+		virtual double LogLikelihood(const TVector3 &p)const  = 0;
+		virtual void LogLikelihoodDeriv(const TVector3 &p,double* output)const  = 0;
 		virtual ~PointBase(){}
 
 	protected:
@@ -33,8 +33,8 @@ namespace lcfiplus{
 		typedef ROOT::Math::SVector<double, 3> SVector3;
 		typedef ROOT::Math::SMatrix<double, 3,3,ROOT::Math::MatRepSym<double,3> > SMatrixSym3;
 
-		double LogLikelihood(TVector3 &p)const;
-		void LogLikelihoodDeriv(TVector3 &p, double* output)const;
+		double LogLikelihood(const TVector3 &p)const;
+		void LogLikelihoodDeriv(const TVector3 &p, double* output)const;
 
 		Point(){}
 		Point(const SVector3 &pos, const SMatrixSym3 &err){_pos = pos; _err = err;}
@@ -85,7 +85,7 @@ namespace lcfiplus{
 
 		class VarianceFunctor{
 		public:
-			VarianceFunctor(const Helix *hel, TVector3 &p) : _hel(hel), _p(p){}
+			VarianceFunctor(const Helix *hel, const TVector3 &p) : _hel(hel), _p(p){}
 			double operator() (const double *t){
 				return _hel->Variance(_p,*t);
 			}
@@ -96,7 +96,7 @@ namespace lcfiplus{
 
 		class VarianceDerivFunctor{
 		public:
-			VarianceDerivFunctor(const Helix *hel, TVector3 &p) : _hel(hel), _p(p){}
+			VarianceDerivFunctor(const Helix *hel, const TVector3 &p) : _hel(hel), _p(p){}
 			double operator() (const double *t){
 				return _hel->VarianceDeriv(_p,*t);
 			}
@@ -105,14 +105,14 @@ namespace lcfiplus{
 			TVector3 _p;
 		};
 
-		virtual double LogLikelihood(TVector3 &p)const {// likelihood with t-minimization
+		virtual double LogLikelihood(const TVector3 &p)const {// likelihood with t-minimization
 			double tmin; return LogLikelihood(p, tmin);
 		}
-		double LogLikelihood(TVector3 &p, double &tmin)const;// full version
-		void LogLikelihoodDeriv(TVector3 &p, double* output)const;// compute space partial derivatives
-		double Variance(TVector3 &p, double t)const;		// t-fixed version, internally used
-		double VarianceDeriv(TVector3 &p, double t)const;		// t-fixed version, internally used
-		double VarianceDeriv2(TVector3 &p, double t)const;		// t-fixed version, internally used
+		double LogLikelihood(const TVector3 &p, double &tmin)const;// full version
+		void LogLikelihoodDeriv(const TVector3 &p, double* output)const;// compute space partial derivatives
+		double Variance(const TVector3 &p, double t)const;		// t-fixed version, internally used
+		double VarianceDeriv(const TVector3 &p, double t)const;		// t-fixed version, internally used
+		double VarianceDeriv2(const TVector3 &p, double t)const;		// t-fixed version, internally used
 		TVector3 GetPos(double t)const;
 		TVector3 GetPosDerivT(double t)const;
 		void GetPosErr(double t, SVector3 &pos, SMatrixSym3 &err)const;
@@ -145,8 +145,8 @@ namespace lcfiplus{
 		friend class Helix::HelixLineDistance2DerivFunctor;
 
 	public:
-		double LogLikelihood(TVector3 &p)const;
-		void LogLikelihoodDeriv(TVector3 &p, double* output)const;
+		double LogLikelihood(const TVector3 &p)const;
+		void LogLikelihoodDeriv(const TVector3 &p, double* output)const;
 
 		VertexLine(){}
 		VertexLine(const TVector3 &origin, const TVector3 &dir){_origin = origin; _unit = dir.Unit();}

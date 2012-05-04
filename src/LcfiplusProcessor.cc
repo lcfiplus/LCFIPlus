@@ -1,5 +1,5 @@
 #include "LcfiplusProcessor.h"
-#include "EventStore.h"
+#include "lcfiplus.h"
 
 // ----- include for verbosity dependent logging ---------
 #include "marlin/VerbosityLevels.h"
@@ -28,6 +28,9 @@ LCIOStorer * LcfiplusProcessor::_lcio = 0;
 
 LcfiplusProcessor::LcfiplusProcessor() : Processor("LcfiplusProcessor") {
   
+	_inInit = false;
+	_printPeriod = 0;
+
   // modify processor description
 	_description = "Lcfiplus general processor" ;
 
@@ -36,17 +39,19 @@ LcfiplusProcessor::LcfiplusProcessor() : Processor("LcfiplusProcessor") {
 
 	// input collections 
 	registerInputCollection(LCIO::RECONSTRUCTEDPARTICLE, "PFOCollection" , "Particle flow output collection",
-		_pfoCollectionName, std::string("PandoraPFOs"));
+		_pfoCollectionName, std::string(""));
 	registerInputCollection(LCIO::MCPARTICLE, "MCPCollection" , "MC particle collection",
-		_mcpCollectionName, std::string("MCParticlesSkimmed"));
+		_mcpCollectionName, std::string(""));
 	registerInputCollection(LCIO::LCRELATION, "MCPFORelation", "Relation between MC and PFO particles",
-		_mcpfoRelationName, std::string("RecoMCTruthLink"));
-
-	registerProcessorParameter("VertexAutoLoad", "Loading LCIO vertices automatically", _autoVertex, int(1));
-	registerProcessorParameter("JetAutoLoad", "Loading LCIO jets automatically", _autoJet, int(1));
+		_mcpfoRelationName, std::string(""));
 
 	registerProcessorParameter("Algorithms", "LCFIPlus algorithms to run", _algonames, vector<string>());
 	registerProcessorParameter("ReadSubdetectorEnergies", "Read subdetector energies (ILD)", _readSubdetectorEnergies, int(1));
+	registerProcessorParameter("UpdateVertexRPDaughters", "Writing back obtained vertices to input RP collections (which must be writable)",
+		_updateVertexRPDaughters, int(1));
+	registerProcessorParameter("IgnoreLackOfVertexRP", "Keep running even if vertex RP collection is not present",
+			_ignoreLackOfVertexRP, int(0));
+	registerProcessorParameter("PrintEventNumber", "Event number printing period in std output: 0 = no printing", _printPeriod, int(0));
 
 	// ROOT object
 /*	int argc = 0;
@@ -99,6 +104,8 @@ void LcfiplusProcessor::init() {
 		// set globals
 		Globals::Instance()->setBField( marlin::Global::GEAR->getBField().at(gear::Vector3D(0.,0.,0.)).z() );
 
+		// register observer
+		Event::Instance()->RegisterObserver(this);
 
 		// conversion StringParameters -> Parameters
 		_param = new Parameters;
@@ -114,17 +121,30 @@ void LcfiplusProcessor::init() {
 
 		// initialize LCIOStorer
 		if(!_lcio){
-			_lcio = new LCIOStorer(0,0,true,0); // no file
-			if(_useMcp)
-				_lcio->InitCollections(_pfoCollectionName.c_str(), _mcpCollectionName.c_str(), _mcpfoRelationName.c_str());
-			else
-				_lcio->InitCollectionsWithoutMCP(_pfoCollectionName.c_str());
+			_lcio = new LCIOStorer(0,0,true,false,0); // no file
 			_lcio->setReadSubdetectorEnergies(_readSubdetectorEnergies);
+			_lcio->setUpdateVertexRPDaughters(_updateVertexRPDaughters);
+			_lcio->setIgnoreLackOfVertexRP(_ignoreLackOfVertexRP);
 
 			_lcioowner = true;
 		}
-		else
+		else{
 			_lcioowner = false;
+
+			if((_lcio->getReadSubdetectorEnergies() != _readSubdetectorEnergies)
+			 ||(_lcio->getUpdateVertexRPDaughters() != _updateVertexRPDaughters)
+			 ||(_lcio->getIgnoreLackOfVertexRP() != _ignoreLackOfVertexRP)){
+					throw(lcfiplus::Exception("Global parameters do not match to previous processors: specify the same for all LcfiplusProcessors."));
+			}
+		}
+
+		// load basic collection
+		if(_useMcp)
+			_lcio->InitMCPPFOCollections(_pfoCollectionName.c_str(), _mcpCollectionName.c_str(), _mcpfoRelationName.c_str());
+		else
+			_lcio->InitPFOCollections(_pfoCollectionName.c_str());
+
+		_inInit = true;
 
 		// make algorithm classes and pass param to init
 		for(unsigned int i=0;i<_algonames.size();i++){
@@ -144,6 +164,8 @@ void LcfiplusProcessor::init() {
 			SLM << "Algorithm " << _algonames[i] << " successfully initialized." << endl;
 		}
 
+		_inInit = false;
+
 		// printing EventStore collections
 		Event::Instance()->Print();
 
@@ -151,7 +173,7 @@ void LcfiplusProcessor::init() {
 		_nEvt = 0 ;
 
 	}catch(lcfiplus::Exception &e){
-		e.Print();
+		streamlog_out(ERROR) << e.what() << endl;
 		throw(marlin::StopProcessingException(this));
 	}
 }
@@ -163,21 +185,27 @@ void LcfiplusProcessor::processRunHeader( LCRunHeader* run) {
 
 void LcfiplusProcessor::processEvent( LCEvent * evt ) { 
 
-	cout << "processEvent: event # " << _nEvt << endl;
+	if(_printPeriod && _nEvt % _printPeriod == 0)
+		cout << "processEvent: event # " << _nEvt << endl;
 
 	if (_lcio == false) return;
 
 	try{
 
-		// auto register collections
+/*		// auto register collections
 		if(_autoVertex)
 			_lcio->InitVertexCollectionsAuto(evt);
 		if(_autoJet)
 			_lcio->InitJetCollectionsAuto(evt);
-
+*/
 		// set LCEvent
 		if(_lcioowner)
 			_lcio->SetEvent(evt);
+
+		// set deafult mcp/track/netural
+		Event::Instance()->setDefaultTracks(_pfoCollectionName.c_str());
+		Event::Instance()->setDefaultNeutrals(_pfoCollectionName.c_str());
+		Event::Instance()->setDefaultMCParticles(_mcpCollectionName.c_str());
 
 		// process registered algorithms
 		for(unsigned int i=0;i<_algos.size();i++){
@@ -185,11 +213,22 @@ void LcfiplusProcessor::processEvent( LCEvent * evt ) {
 		}
 
 		// convert persistent collections
-		_lcio->AutoConvert();
+//		_lcio->AutoConvert();
+		for(unsigned int i=0;i<_vertexColNamesToWrite.size();i++){
+			bool persist = _vertexColNamesToWriteFlags[i] & EventStore::PERSIST;
+			if (persist)
+				_lcio->WriteVertices(_vertexColNamesToWrite[i].c_str());
+		}
+		for(unsigned int i=0;i<_jetColNamesToWrite.size();i++){
+			bool persist = _jetColNamesToWriteFlags[i] & EventStore::PERSIST;
+			bool writeVertex = _jetColNamesToWriteFlags[i] & EventStore::JET_WRITE_VERTEX;
+			if (persist)
+				_lcio->WriteJets(_jetColNamesToWrite[i].c_str(),0,writeVertex);
+		}
 
 		_nEvt ++ ;
 	}catch(lcfiplus::Exception &e){
-		e.Print();
+		streamlog_out(ERROR) << e.what() << endl;
 		throw(marlin::StopProcessingException(this));
 	}
 }
@@ -214,3 +253,18 @@ void LcfiplusProcessor::end(){
 
 }
 
+void LcfiplusProcessor::RegisterCallback(const char *name, const char *classname, int flags)
+{
+	if(!_inInit)return; // no-op other than init
+
+	if(string("vector<lcfiplus::Vertex*>") == classname){
+		cout << "Registering output LCIO vertex collection: " << name << endl;
+		_vertexColNamesToWrite.push_back(name);
+		_vertexColNamesToWriteFlags.push_back(flags);
+	}
+	else if(string("vector<lcfiplus::Jet*>") == classname){
+		cout << "Registering output LCIO jet collection: " << name << endl;
+		_jetColNamesToWrite.push_back(name);
+		_jetColNamesToWriteFlags.push_back(flags);
+	}
+}

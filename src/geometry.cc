@@ -14,6 +14,32 @@
 
 #include "algo.h"
 
+
+// low level minuit2 headers
+#include "Math/IFunction.h"
+
+#include "Minuit2/FCNAdapter.h"
+#include "Minuit2/FumiliFCNAdapter.h"
+#include "Minuit2/FCNGradAdapter.h"
+#include "Minuit2/FunctionMinimum.h"
+#include "Minuit2/MnMigrad.h"
+#include "Minuit2/MnMinos.h"
+#include "Minuit2/MinosError.h"
+#include "Minuit2/MnHesse.h"
+#include "Minuit2/MinuitParameter.h"
+#include "Minuit2/MnUserFcn.h"
+#include "Minuit2/MnPrint.h"
+#include "Minuit2/FunctionMinimum.h"
+#include "Minuit2/VariableMetricMinimizer.h"
+#include "Minuit2/SimplexMinimizer.h"
+#include "Minuit2/CombinedMinimizer.h"
+#include "Minuit2/ScanMinimizer.h"
+#include "Minuit2/FumiliMinimizer.h"
+#include "Minuit2/MnParameterScan.h"
+#include "Minuit2/MnContours.h"
+
+
+
 namespace lcfiplus{
 
 	static bool verbose = false;
@@ -51,7 +77,7 @@ namespace lcfiplus{
 	// likelihood ///////////////////////////////////////////////////////////////
 
 	// obtain likelihood that this point is at p
-	double Point::LogLikelihood(TVector3 &p)const{
+	double Point::LogLikelihood(const TVector3 &p)const{
 
 		// difference between my and given positions
 		SVector3 ps(p.X(), p.Y(), p.Z());
@@ -76,7 +102,7 @@ namespace lcfiplus{
 		//return TMath::Log10(variance);
 	}
 
-	void Point::LogLikelihoodDeriv(TVector3 &p,double* output)const{
+	void Point::LogLikelihoodDeriv(const TVector3 &p,double* output)const{
 
 		// difference between my and given positions
 		SVector3 ps(p.X(), p.Y(), p.Z());
@@ -94,7 +120,7 @@ namespace lcfiplus{
 		output[2] = -( Dot( Transpose(inverr)*difz, dif ) + Dot( Transpose(inverr)*dif, difz ) );
 	}
 
-	double Helix::Variance(TVector3 &p, double t)const
+	double Helix::Variance(const TVector3 &p, double t)const
 	{
 		SVector3 xyz;
 		SMatrixSym3 errXyz;
@@ -127,7 +153,7 @@ namespace lcfiplus{
 		return variance;
 	}
 
-	double Helix::VarianceDeriv(TVector3 &p, double t)const
+	double Helix::VarianceDeriv(const TVector3 &p, double t)const
 	{
 		SVector3 xyz;
 		SMatrixSym3 errXyz;
@@ -152,7 +178,7 @@ namespace lcfiplus{
 		return dvariance;
 	}
 
-	double Helix::VarianceDeriv2(TVector3 &p, double t)const
+	double Helix::VarianceDeriv2(const TVector3 &p, double t)const
 	{
 		SVector3 xyz;
 		SMatrixSym3 errXyz;
@@ -185,7 +211,7 @@ namespace lcfiplus{
 	}
 
 	// obtain likelihood that this helix passes p
-	double Helix::LogLikelihood(TVector3 &p, double &tmin)const{
+	double Helix::LogLikelihood(const TVector3 &p, double &tmin)const{
 
 //		const double pi = TMath::Pi();
 
@@ -288,11 +314,11 @@ namespace lcfiplus{
 		ROOT::Minuit2::Minuit2Minimizer min(ROOT::Minuit2::kMigrad);
 		//ROOT::Minuit2::Minuit2Minimizer min(ROOT::Minuit2::kSimplex);
 		min.SetFunction(f);
-//		min.SetMaxFunctionCalls(1000);
-		min.SetMaxFunctionCalls(10000);
-		min.SetMaxIterations(100);
-//		min.SetTolerance(1e-5);
-		min.SetTolerance(1e-6);
+
+//		min.SetMaxFunctionCalls(100000);
+//		min.SetMaxIterations(1000);
+		min.SetTolerance(1e-3); // worked, but default may be ok
+
 		min.SetPrintLevel(0);
 		// TODO: primary vertex finder sometimes fails
 		double tllimit = -1. / r;
@@ -300,13 +326,16 @@ namespace lcfiplus{
 
 		// todo: t<0 treatment
 		min.SetLimitedVariable(0,"t",t, 1e-6,tllimit, tulimit);
+//		min.SetVariable(0,"t",t, 1e-7);
+
+//		min.SetLimitedVariable(0,"t",t, 1e-6,tllimit, tulimit);
 
 		min.Minimize();
 
 		tmin = min.X()[0];
 		if(verbose){
 			cout << "Minimizer result: p = ( " << p.x() << ", " << p.y() << ", " << p.z() << "), ";
-			cout << "tmin = " << tmin << ", val = " << vf(&tmin) << endl;
+			cout << scientific << "tmin = " << tmin << ", val = " << vf(&tmin) << fixed << endl;
 		}
 
 		double variance = vf(&tmin);
@@ -328,7 +357,7 @@ namespace lcfiplus{
 
 	// estimate how the NLL changes as p changes (compute partial derivative)
 	// by using the tangent line at the current flight length (t)
-	void Helix::LogLikelihoodDeriv(TVector3 &p, double* output)const{
+	void Helix::LogLikelihoodDeriv(const TVector3 &p, double* output)const{
 
 		/*
 		// difference between my and given positions
@@ -934,9 +963,9 @@ namespace lcfiplus{
 			double lrminusx0 = rminusx0 * line._unit;
 			double delta2 = rminusx0 * rminusx0 - lrminusx0 * lrminusx0;
 
-			cout << "closepoint2d: line: " << close2dline.X() << ", " << close2dline.Y() << ", " << zline;
-			cout << " helix: " << close2d[n].X() << ", " << close2d[n].Y() << ", " << vr.z();
-			cout << " distance: " << sqrt(delta2) << endl;
+			//cout << "closepoint2d: line: " << close2dline.X() << ", " << close2dline.Y() << ", " << zline;
+			//cout << " helix: " << close2d[n].X() << ", " << close2d[n].Y() << ", " << vr.z();
+			//cout << " distance: " << sqrt(delta2) << endl;
 
 			if(delta2 < mindelta2){
 				mindelta2 = delta2;
@@ -945,7 +974,7 @@ namespace lcfiplus{
 		}
 
 		TVector3 pos = GetPos(minthelix);
-		cout << "3D close point selected: " << pos.x() << " " << pos.y() << " " << pos.z() << ", delta = " << sqrt(mindelta2) << endl;
+		//cout << "3D close point selected: " << pos.x() << " " << pos.y() << " " << pos.z() << ", delta = " << sqrt(mindelta2) << endl;
 
 		// 3d close point obtained
 		// fit with delta2 and delta2deriv
@@ -972,9 +1001,9 @@ namespace lcfiplus{
 		ROOT::Minuit2::Minuit2Minimizer min(ROOT::Minuit2::kMigrad);
 		ROOT::Math::Functor f2(f,1);
 		min.SetFunction(f2);
-		min.SetMaxFunctionCalls(10000);
-		min.SetMaxIterations(100);
-		min.SetTolerance(1e-7);
+//		min.SetMaxFunctionCalls(10000);
+//		min.SetMaxIterations(100);
+//		min.SetTolerance(1e-7); // may be worked, but default OK
 		min.SetValidError(true);
 
 		//min.SetVariable(0,"x",initial.x(), 1e-6);
@@ -990,7 +1019,7 @@ namespace lcfiplus{
 		minthelix2 = xx[0];
 		pos = GetPos(minthelix2);
 
-		cout << "3D point minimization result2: " << pos.x() << " " << pos.y() << " " << pos.z() << ", delta = " << sqrt(f(&minthelix2)) << endl;
+		//cout << "3D point minimization result2: " << pos.x() << " " << pos.y() << " " << pos.z() << ", delta = " << sqrt(f(&minthelix2)) << endl;
 
 		if(distance)
 			*distance = sqrt(f(&minthelix2));
@@ -998,12 +1027,12 @@ namespace lcfiplus{
 		return pos;
 	}
 
-	double VertexLine::LogLikelihood(TVector3 &p)const
+	double VertexLine::LogLikelihood(const TVector3 &p)const
 	{
 		return 0;
 	}
 
-	void VertexLine::LogLikelihoodDeriv(TVector3 &p, double *output)const
+	void VertexLine::LogLikelihoodDeriv(const TVector3 &p, double *output)const
 	{
 	
 	}
@@ -1011,31 +1040,38 @@ namespace lcfiplus{
 	// geometry operation ///////////////////////////////////////////////////////
 	double GeometryHandler::PointFit(const vector<PointBase *> &points, const TVector3 &initial, Point * result)
 	{
-#if 1
+
 		// three-dimensional minimization
 		PointFitFunctor pf(points);
-		ROOT::Minuit2::Minuit2Minimizer min(ROOT::Minuit2::kMigrad);
 		ROOT::Math::Functor f(pf,3);
-		min.SetFunction(f);
-		min.SetMaxFunctionCalls(10000);
-		min.SetMaxIterations(100);
-		min.SetTolerance(1e-4);
-		min.SetValidError(true);
 
-		//min.SetVariable(0,"x",initial.x(), 1e-6);
-		//min.SetVariable(1,"y",initial.y(), 1e-6);
-		//min.SetVariable(2,"z",initial.z(), 1e-6);
+		double maxll;
+
+#if 0 // easy user interface: but no way found to obtain error matrix of non-optimal minimization...
+
+		ROOT::Minuit2::Minuit2Minimizer min(ROOT::Minuit2::kMigrad);
+		min.SetFunction(f);
+//		min.SetMaxFunctionCalls(10000);
+//		min.SetMaxIterations(100);
+//		min.SetTolerance(1e-4);
+
+		min.SetValidError(false);
+
+//		min.SetVariable(0,"x",initial.x(), 1e-6);
+//		min.SetVariable(1,"y",initial.y(), 1e-6);
+//		min.SetVariable(2,"z",initial.z(), 1e-6);
 		min.SetVariable(0,"x",initial.x(), 1e-4);
 		min.SetVariable(1,"y",initial.y(), 1e-4);
 		min.SetVariable(2,"z",initial.z(), 1e-4);
+
 		min.SetPrintLevel(0);
 		bool success = min.Minimize();
-		if (!success && verbose) {
-			printf("minuit status: %d\n", min.Status());
+
+		if (!success) {
+			cout << "minuit status: " << min.Status() << ", covmatrix status: " << min.CovMatrixStatus() << endl;	
 		}
 		const double *xx = min.X();
-		double maxll = -pf(xx);
-#endif
+		maxll = -pf(xx);
 
 		/*
 		PointFitFunctor pf(points);
@@ -1048,9 +1084,27 @@ namespace lcfiplus{
 		double maxll = -fmin;
 		*/
 
-//		min.PrintResults();
-		if(verbose){
+		min.PrintResults();
+/*		for(int i=0;i<10 && !success;i++){
 			cout << "Mimimizer status: " << min.Status() << ", Edm = " << min.Edm() << ", # tracks = " << points.size() << ", Tolerance = " << min.Tolerance()  << endl;
+			cout << "Minimum: (" << xx[0] << ", " << xx[1] << ", " << xx[2] << "), l= " << maxll << endl;
+
+			cout << "Minimization failed. retry # " << i+1 << endl;
+
+			min.SetVariable(0,"x",xx[0], 1e-4 * pow(0.5,i+1));
+			min.SetVariable(1,"y",xx[1], 1e-4 * pow(0.5,i+1));
+			min.SetVariable(2,"z",xx[2], 1e-4 * pow(0.5,i+1));
+
+			success = min.Minimize();
+			xx = min.X();
+			maxll = -pf(xx);
+		}
+*/
+		verbose = true;
+
+		if(verbose){
+			cout << "Mimimizer status: " << min.Status() << ", cov matrix status: " << min.CovMatrixStatus() << ", Edm = " << min.Edm();
+			cout << ", # tracks = " << points.size() << ", Tolerance = " << min.Tolerance()  << endl;
 			cout << "Minimum: (" << xx[0] << ", " << xx[1] << ", " << xx[2] << "), l= " << maxll << endl;
 		}
 
@@ -1073,6 +1127,67 @@ namespace lcfiplus{
 			}
 			result->SetPosErr(pos,err);
 		}
+		verbose = false;
+
+		cout << "Second strategy " << endl;
+
+#else // using lower-level minuit2 functions
+
+		ROOT::Minuit2::VariableMetricMinimizer minlow;
+		// parameters
+		ROOT::Minuit2::MnUserParameters param;
+		param.Add("x",initial.x(),1e-4);
+		param.Add("y",initial.y(),1e-4);
+		param.Add("z",initial.z(),1e-4);
+		ROOT::Minuit2::FCNAdapter<ROOT::Math::IMultiGenFunction> func(f, 1. ); // errordef = 1 in chi2 minimization
+
+		int maxfcn = 10000; // max function calls
+		double tol = 0.01; // tolerance
+		ROOT::Minuit2::FunctionMinimum m = minlow.Minimize(func, param, ROOT::Minuit2::MnStrategy(1), maxfcn,tol);
+
+		// obtained parameters
+		const ROOT::Minuit2::MinimumParameters &retparam = m.Parameters();
+		const ROOT::Minuit2::MnAlgebraicVector &retvec = retparam.Vec();
+
+		// errors
+		const ROOT::Minuit2::MinimumError &e = m.Error();
+		ROOT::Minuit2::MnAlgebraicSymMatrix matrix = e.Matrix();
+
+		// status
+		int status = 0;
+		if(m.IsAboveMaxEdm())status = 3;
+		else if(m.HasReachedCallLimit())status = 4;
+		else if(m.HasMadePosDefCovar())status = 1;
+		else if(!m.IsValid())status = 5;
+
+		//if(status>0) cout << "Minuit failed: status: " << status << endl;
+
+		const double *xx2 = retvec.Data();
+		maxll = -pf(xx2);
+
+		//verbose = true;
+		if(verbose){
+			cout << "Minuit result: Minimum: (" << xx2[0] << ", " << xx2[1] << ", " << xx2[2] << "), l= " << maxll << endl;
+		}
+
+		if(result){
+			Point::SVector3 pos(xx2[0],xx2[1],xx2[2]);
+			Point::SMatrixSym3 err;
+			for(int i=0;i<3;i++)for(int j=i;j<3;j++){
+				err(i,j) = matrix(i,j);
+			}
+
+			if (verbose) {
+				cout << scientific;
+				cout << "minuit result - covariant matrix:" << endl;
+				cout << err(0,0) << "  " << err(0,1) << "  " << err(0,2) << endl;
+				cout << err(1,0) << "  " << err(1,1) << "  " << err(1,2) << endl;
+				cout << err(2,0) << "  " << err(2,1) << "  " << err(2,2) << endl;
+				cout << fixed;
+			}
+			result->SetPosErr(pos,err);
+		}
+#endif 
 
 		return maxll;
 	}

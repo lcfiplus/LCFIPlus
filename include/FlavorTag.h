@@ -20,7 +20,7 @@ namespace lcfiplus{
 		e.g. ntuple production, TMVA training, and evaluation.
 
 		@author T. Tanabe, ICEPP, The University of Tokyo
-		@version $Id:$
+		@version $Id$
 	 */
 	class FlavorTag : public Algorithm {
 		public:
@@ -36,6 +36,7 @@ namespace lcfiplus{
 			TTree* _t;
 
 			int _auxiliaryInfo;
+			string _jetcolname;
 
 			ClassDef(FlavorTag,1);
 	};

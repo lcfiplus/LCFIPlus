@@ -427,16 +427,18 @@ bool VertexFinderSuehara::VertexProbLarger(const Vertex *vtx1, const Vertex *vtx
 	return vtx1->getProb() > vtx2->getProb();
 }
 
-void VertexFinderSuehara::GetVertexList(list<const Track *> &tracks, vector<Vertex *> &vtx, double chi2th, double massth, double posth, double chi2orderinglimit)
+void VertexFinderSuehara::GetVertexList(list<const Track *> &tracks, const Vertex *ip, vector<Vertex *> &vtx, vector<Vertex *> &v0vtx, VertexFinderSueharaConfig &cfg)
 {
 	// lists of found vertices
 	list<Vertex *> tr3list;
-	list<Vertex *> tr2distlist;
-	list<Vertex *> tr2problist;
+	list<Vertex *> tr2list;
 
 	list<const Track *>::iterator trkit1, trkit2;
+	list<Vertex *>::iterator vit;
 
 	bool verbose = false;
+
+	list<const Track *> v0tracks;
 
 	// find all vertices
 	
@@ -453,6 +455,10 @@ void VertexFinderSuehara::GetVertexList(list<const Track *> &tracks, vector<Vert
 				cerr << "Vertex producing: " << nv << "/" << ntrmax << endl;
 			}
 
+			// v0tracks rejection
+			if(find(v0tracks.begin(), v0tracks.end(), *trkit1)!=v0tracks.end())break;
+			if(find(v0tracks.begin(), v0tracks.end(), *trkit2)!=v0tracks.end())continue;
+
 			// mass threshold
 			TLorentzVector v1 = **trkit1;
 			TLorentzVector v2 = **trkit2;
@@ -463,7 +469,7 @@ void VertexFinderSuehara::GetVertexList(list<const Track *> &tracks, vector<Vert
 //			if(v1.Vect().Dot(v2.Vect()) < 0.)continue;
 			if(mass > min(v1.E(), v2.E()))continue;
 
-			if(mass > massth)continue;
+			if(mass > cfg.massth)continue;
 
 			// obtain vertex
 			vector<const Track *> vttmp;
@@ -475,20 +481,30 @@ void VertexFinderSuehara::GetVertexList(list<const Track *> &tracks, vector<Vert
 			double chi2 = max(vtx->getChi2Track(*trkit1), vtx->getChi2Track(*trkit2));
 			TVector3 vpos = vtx->getPos();
 
-			// 3 conditions: position, direction, chi2
-			if(vpos.Mag() > posth && vpos.Dot((v1+v2).Vect()) > 0 && chi2 < chi2th){	// trying 3+ vertex
+			if(chi2 < cfg.chi2thV0SelTrack && !VertexSelector().passesCut(vtx, cfg.v0selTrack,ip)){
+				//cout << "V0 found at ( " << vtx->getPos().x() << " " << vtx->getPos().y() << " " << vtx->getPos().z() << ") : 2 tracks removed." << endl;
+				v0tracks.push_back(*trkit1);
+				v0tracks.push_back(*trkit2);
+				v0vtx.push_back(vtx);
+				break;
+			}
+
+			if(!VertexSelector().passesCut(vtx, cfg.v0selVertex,ip)){
+				delete vtx;
+				continue;
+			}
+
+			// direction & chi2 condition
+			if(vpos.Dot((v1+v2).Vect()) > 0 && chi2 < cfg.chi2th){	// trying 3+ vertex
 				if(verbose)
 					cout << "Vertex accepted." << endl;
-				Vertex *vtx2 = associateTracks(vtx, tracks, chi2th, massth);
+				Vertex *vtx2 = associateTracks(vtx, constVector(v0vtx), tracks, cfg);
 				if(vtx2 != vtx){ // 3+ tracks
 					delete vtx;
 					tr3list.push_back(vtx2);
 				}
 				else{ // 2 tracks
-					if(chi2 < chi2orderinglimit)
-						tr2distlist.push_back(vtx);
-					else
-						tr2problist.push_back(vtx);
+					tr2list.push_back(vtx);
 				}
 			}
 			else{// bad vertex
@@ -497,8 +513,45 @@ void VertexFinderSuehara::GetVertexList(list<const Track *> &tracks, vector<Vert
 		}
 	}
 
+	// v0 rejection again
+	for(vit = tr3list.begin(); vit != tr3list.end();){
+		bool deleted = false;
+		for(unsigned int n = 0; n < (*vit)->getTracks().size(); n++){
+			const Track *tr = (*vit)->getTracks()[n];
+			if(find(v0tracks.begin(), v0tracks.end(), tr) != v0tracks.end()){
+				// new vertex with smaller # of tracks
+				vector<const Track *> vttmp = (*vit)->getTracks();
+				vector<const Track *>::iterator itt = find(vttmp.begin(), vttmp.end(), tr);
+				vttmp.erase(itt);
+
+				Vertex *vtx = VertexFitterSimple_V() (vttmp.begin(), vttmp.end(), 0);
+				if(vttmp.size()>2)tr3list.push_back(vtx);
+				else tr2list.push_back(vtx);
+
+				delete *vit;
+				vit = tr3list.erase(vit);
+				deleted = true;
+				//cout << "Vertex in tr3list removed due to v0 rejection." << endl;
+				break;
+			}
+		}
+		if(!deleted)vit++;
+	}
+	for(vit = tr2list.begin(); vit != tr2list.end();){
+		bool deleted = false;
+		for(unsigned int n = 0; n < (*vit)->getTracks().size(); n++){
+			if(find(v0tracks.begin(), v0tracks.end(), (*vit)->getTracks()[n]) != v0tracks.end()){
+				vit = tr2list.erase(vit);
+				deleted = true;
+				cout << "Vertex in tr2distlist removed due to v0 rejection." << endl;
+				break;
+			}
+		}
+		if(!deleted)vit++;
+	}
+
 	if(verbose){
-		cerr << "Vertex produced. 3tr: " << tr3list.size() << ", 2trdist: " << tr2distlist.size() << ", 2trprob: " << tr2problist.size() << endl;
+		cerr << "Vertex produced. 3tr: " << tr3list.size() << ", 2tr: " << tr2list.size() << endl;
 	}
 
 	while(true){
@@ -510,16 +563,10 @@ void VertexFinderSuehara::GetVertexList(list<const Track *> &tracks, vector<Vert
 			curvtx = tr3list.front();
 			tr3list.pop_front();
 		}
-		else if(tr2distlist.size()>0){
-//			tr2distlist.sort(VertexNearer);
-			tr2distlist.sort(VertexProbLarger);
-			curvtx = tr2distlist.front();
-			tr2distlist.pop_front();
-		}
-		else if(tr2problist.size()>0){
-			tr2problist.sort(VertexProbLarger);
-			curvtx = tr2problist.front();
-			tr2problist.pop_front();
+		else if(tr2list.size()>0){
+			tr2list.sort(VertexProbLarger);
+			curvtx = tr2list.front();
+			tr2list.pop_front();
 		}
 		else
 			break; // all vertices gone
@@ -541,7 +588,8 @@ void VertexFinderSuehara::GetVertexList(list<const Track *> &tracks, vector<Vert
 
 		// tr3list
 		if(tr3list.size()>0){
-			for(itv = tr3list.begin();itv != tr3list.end(); itv ++){
+			for(itv = tr3list.begin();itv != tr3list.end();){
+				bool deleted = false;
 				Vertex *v = (*itv);
 				for(unsigned int itr=0;itr<curvtx->getTracks().size();itr++){
 					const Track *tr = curvtx->getTracks()[itr];
@@ -553,53 +601,39 @@ void VertexFinderSuehara::GetVertexList(list<const Track *> &tracks, vector<Vert
 
 						Vertex *vtx = VertexFitterSimple_V() (vttmp.begin(), vttmp.end(), 0);
 						if(vttmp.size()>2)tr3list.push_back(vtx);
-						else if(vtx->getChi2()<1.)tr2distlist.push_back(vtx);
-						else tr2problist.push_back(vtx);
+						else tr2list.push_back(vtx);
 
 						// vertex removed
 						delete v;
 						itv = tr3list.erase(itv);
-						if(tr3list.size()>=1)itv --;
+						deleted = true;
 						break;
 					}
 				}
 				if(tr3list.size()==0)break;
+				if(!deleted)
+					itv ++;
 			}
 		}
 
-
-		// tr2distlist
-		if(tr2distlist.size()>0){
-			for(itv = tr2distlist.begin();itv != tr2distlist.end(); itv ++){
+		// tr2list
+		if(tr2list.size()>0){
+			for(itv = tr2list.begin();itv != tr2list.end();){
+				bool deleted = false;
 				Vertex *v = (*itv);
 				for(unsigned int itr=0;itr<curvtx->getTracks().size();itr++){
 					const Track *tr = curvtx->getTracks()[itr];
 					if(find(v->getTracks().begin(), v->getTracks().end(), tr) != v->getTracks().end()){
 						// vertex removed
 						delete v;
-						itv = tr2distlist.erase(itv);
-						if(tr2distlist.size()>=1)itv --;
+						itv = tr2list.erase(itv);
+						deleted = true;
 						break;
 					}
 				}
-				if(tr2distlist.size()==0)break;
-			}
-		}
-		// tr2problist
-		if(tr2problist.size()>0){
-			for(itv = tr2problist.begin();itv != tr2problist.end(); itv ++){
-				Vertex *v = (*itv);
-				for(unsigned int itr=0;itr<curvtx->getTracks().size();itr++){
-					const Track *tr = curvtx->getTracks()[itr];
-					if(find(v->getTracks().begin(), v->getTracks().end(), tr) != v->getTracks().end()){
-						// vertex removed
-						delete v;
-						itv = tr2problist.erase(itv);
-						if(tr2problist.size()>=1)itv --;
-						break;
-					}
-				}
-				if(tr2problist.size()==0)break;
+				if(tr2list.size()==0)break;
+				if(!deleted)
+					itv ++;
 			}
 		}
 	}
@@ -607,7 +641,7 @@ void VertexFinderSuehara::GetVertexList(list<const Track *> &tracks, vector<Vert
 }
 
 
-Vertex * VertexFinderSuehara::associateTracks(Vertex *vertex, list<const Track *> &tracks, double chi2th, double massth, list<const Track *> *residualTracks)
+Vertex * VertexFinderSuehara::associateTracks(Vertex *vertex, const VertexVec &v0vtx, list<const Track *> &tracks, VertexFinderSueharaConfig &cfg, list<const Track *> *residualTracks)
 {
 	vector<const Track *> vt;
 	TLorentzVector vsum;
@@ -617,6 +651,7 @@ Vertex * VertexFinderSuehara::associateTracks(Vertex *vertex, list<const Track *
 		copy(tracks.begin(), tracks.end(), residualTracks->begin());
 	}
 
+	vector<const Track *> v0tracks = algoEtc::extractTracks(v0vtx);
 
 	for(unsigned int i=0;i<vertex->getTracks().size();i++){
 		vt.push_back(vertex->getTracks()[i]);
@@ -630,10 +665,13 @@ Vertex * VertexFinderSuehara::associateTracks(Vertex *vertex, list<const Track *
 	list<const Track *>::iterator trkit1;
 	do{
 		const Track *tra = 0;
-		double minchi2 = chi2th;
+		double minchi2 = cfg.chi2th;
 		for(trkit1 = tracks.begin(); trkit1 != tracks.end(); trkit1 ++)
 		{
 			if(find(vt.begin(), vt.end(), *trkit1) != vt.end())continue;
+
+			// rejecting v0tracks
+			if(find(v0tracks.begin(), v0tracks.end(), *trkit1) != v0tracks.end())continue;
 
 			TLorentzVector va = **trkit1;
 			double mass = (vsum + va).M();
@@ -645,7 +683,7 @@ Vertex * VertexFinderSuehara::associateTracks(Vertex *vertex, list<const Track *
 			// 110216 do not accept tracks with opposite direction to vertex
 			if(va.Vect().Dot(curvtx->getPos())< 0.)continue;
 
-			if(mass > massth)continue;
+			if(mass > cfg.massth)continue;
 	
 			vt.push_back(*trkit1);
 			Vertex *vtx = VertexFitterSimple_V() (vt.begin(), vt.end(), curvtx,true);
@@ -679,18 +717,17 @@ Vertex * VertexFinderSuehara::associateTracks(Vertex *vertex, list<const Track *
 	return curvtx;
 }
 
-void VertexFinderSuehara::associateIPTracks(vector<Vertex *> &vertices, double minimumdist, int chi2mode, double chi2ratio)
+void VertexFinderSuehara::associateIPTracks(vector<Vertex *> &vertices, Vertex *ip, VertexFinderSueharaConfig &cfg)
 {
-	bool verbose = true;
+	bool verbose = false;
 
-	Vertex *ip = vertices[0];
 	vector<const Track *>::const_iterator it;
 
 	Vertex *vbeam;
 	algoEtc::makeBeamVertex(vbeam);
 
-	for(unsigned int i=1;i<vertices.size();i++){
-		if(vertices[i]->getPos().Mag()<minimumdist)continue;
+	for(unsigned int i=0;i<vertices.size();i++){
+		if(vertices[i]->getPos().Mag()<cfg.minimumdistIP)continue;
 		TLorentzVector v;
 		for(unsigned int j=0;j<vertices[i]->getTracks().size();j++){
 			v += *(vertices[i]->getTracks()[j]);
@@ -698,6 +735,7 @@ void VertexFinderSuehara::associateIPTracks(vector<Vertex *> &vertices, double m
 
 		vector<const Track *> iptracks;
 		for(it = ip->getTracks().begin(); it != ip->getTracks().end();it++){
+
 			TLorentzVector v2 = **it;
 			if((v + v2).M() - v.M() > min(v.E(), v2.E())){iptracks.push_back(*it);continue;}
 			if(v2.Vect().Dot(vertices[i]->getPos())< 0.){iptracks.push_back(*it);continue;}
@@ -710,9 +748,9 @@ void VertexFinderSuehara::associateIPTracks(vector<Vertex *> &vertices, double m
 			double chi2new = vtx->getChi2Track(*it);*/
 
 			VertexFitterSimple_V vf;
-			double chi2new = vf.getChi2(vertices[i], *it, chi2mode);
+			double chi2new = vf.getChi2(vertices[i], *it, 0/*chi2mode*/);
 
-			if(chi2ip > chi2new * chi2ratio){
+			if(chi2ip > chi2new * cfg.chi2ratioIP){
 				// invoke vertex fitter
 				vector<const Track *> tracks = vertices[i]->getTracks();
 				tracks.push_back(*it);
@@ -732,24 +770,25 @@ void VertexFinderSuehara::associateIPTracks(vector<Vertex *> &vertices, double m
 			// tracks removed
 			delete ip;
 			ip = VertexFitterSimple_V()(iptracks.begin(), iptracks.end(), vbeam);
-			vertices[0] = ip;
 		}
 	}
 
 	delete vbeam;
 }
 
-void VertexFinderSuehara::buildUp(TrackVec &tracks, vector<Vertex *> &vtx, double chi2thpri, double chi2thsec, double massth, double posth, double chi2orderinglimit, Vertex *ip)
+void VertexFinderSuehara::buildUp(TrackVec &tracks, vector<Vertex *> &vtx, vector<Vertex *> &v0vtx, double chi2thpri, VertexFinderSueharaConfig &cfg, Vertex *ip)
 {
+
 	// obtain primary vertex
 	Vertex *nip = 0;
 	if(!ip){
 		ip = findPrimaryVertex(tracks, chi2thpri);
-		vtx.push_back(ip);
+//		vtx.push_back(ip);
 	}else{
-		nip = new Vertex(ip->getChi2(), ip->getProb(), ip->getX(), ip->getY(), ip->getZ(), ip->getCov());
-		vtx.push_back(nip);
+		nip = new Vertex(ip->getChi2(), ip->getProb(), ip->getX(), ip->getY(), ip->getZ(), ip->getCov(), true);
+//		vtx.push_back(nip);
 	}
+
 
 	// pickup residuals
 	list<const Track *> residualTracks;
@@ -760,10 +799,11 @@ void VertexFinderSuehara::buildUp(TrackVec &tracks, vector<Vertex *> &vtx, doubl
 			nip->add(tracks[i], ip->getChi2Track(tracks[i]));
 		}
 	}
-	cout << "buildUp: secondary tracks " << residualTracks.size() << "/" << tracks.size() << endl;
+
+	//cout << "buildUp: secondary tracks " << residualTracks.size() << "/" << tracks.size() << endl;
 
 	// secondary vertex
-	GetVertexList(residualTracks, vtx, chi2thsec, massth, posth, chi2orderinglimit);
+	GetVertexList(residualTracks, ip, vtx, v0vtx, cfg);
 /*
 	Vertex *v;
 	do{
@@ -778,41 +818,66 @@ void VertexFinderSuehara::buildUp(TrackVec &tracks, vector<Vertex *> &vtx, doubl
 
 void VertexFinderSuehara::buildUpForJetClustering(TrackVec &tracks, vector<Vertex *> &vtx)
 {
-	double chi2th = 25.0;
-	double massth = 10.0;
+	VertexFinderSueharaConfig cfg;
+	cfg.chi2th = 25.;
 
-	vector<Vertex *> buVertex;
-	buildUp(tracks, buVertex, chi2th, chi2th, massth);
+	vector<Vertex *> v0vtx;
+	buildUp(tracks, vtx, v0vtx, cfg.chi2th, cfg);
 }
 
 vector<Vertex *> VertexFinderSuehara::makeSingleTrackVertices
-	(Jet *jet, TrackVec &tracks, Vertex *ip, double minpos, double maxpos, double maxangle, double max_separation_per_pos)
+	(Jet *jet, TrackVec &tracks, VertexVec &v0vtx, const Vertex *ip, VertexFinderSueharaConfig &cfg)
 {
-	VertexVec &vtcs = jet->getVertices();
+	return makeSingleTrackVertices(jet->getVertices(), tracks, v0vtx, ip, cfg);
+}
+
+vector<Vertex *> VertexFinderSuehara::makeSingleTrackVertices
+	(VertexVec &vtcs, TrackVec &tracks, VertexVec &v0vtx, const Vertex *ip, VertexFinderSueharaConfig &cfg)
+{
 	vector<Vertex *> singlevtcs;
+
+	vector<const Track *> v0tracks = algoEtc::extractTracks(v0vtx);
 
 	for(unsigned int ntr = 0; ntr < tracks.size(); ntr ++){
 		const Track *track = tracks[ntr];
+		if(find(v0tracks.begin(), v0tracks.end(), track) != v0tracks.end())continue;
+		if(track->E() < cfg.minEnergySingle)continue;
+
+		// d0/z0 cut
+		double d0 = track->getD0();
+		double d0err = sqrt(track->getCovMatrix()[tpar::d0d0]);
+		double z0 = track->getZ0();
+		double z0err = sqrt(track->getCovMatrix()[tpar::z0z0]);
+
+		if(fabs(d0/d0err)<cfg.mind0SigSingle && fabs(z0/z0err)<cfg.minz0SigSingle) continue;
+
 		Helix hel(track);
 
 		for(unsigned int nvtcs = 0; nvtcs < vtcs.size(); nvtcs ++){
 			const Vertex *vtx = vtcs[nvtcs];
 
+			// rejecting opposite direction
+			if(vtx->getPos().Dot(track->Vect()) < 0)continue;
+
 			// angular preselection
 			double angle = vtx->getPos().Angle(track->Vect());
-			if(angle > maxangle)continue;
+			if(angle > cfg.maxAngleSingle)continue;
 
 			// calculate closest point
 			VertexLine line(ip->getPos(), vtx->getPos());
 			double linedist = 0;
 			TVector3 pos = hel.ClosePoint(line, &linedist);
-
+	
 			// selection cuts
-			if(pos.Mag() < minpos || pos.Mag() > maxpos)continue; 
-			if(linedist / pos.Mag() > max_separation_per_pos)continue;
+			if(pos.Mag() < cfg.minPosSingle || pos.Mag() > cfg.maxPosSingle)continue; 
+			// rejecting opposite vtx position
+			if(pos.Dot(vtx->getPos()) < 0.) continue;
+
+			if(linedist / pos.Mag() > cfg.maxSeparationPerPosSingle)continue;
 
 			// all selection passed: make single track vertex
-			Vertex *newvtx = new Vertex(0,0,pos.x(), pos.y(), pos.z(), 0);
+			float cov[6] = {0.,0.,0.,0.,0.,0.};
+			Vertex *newvtx = new Vertex(0,1,pos.x(), pos.y(), pos.z(), cov,false);
 			newvtx->add(track);
 
 			singlevtcs.push_back(newvtx);
@@ -820,7 +885,235 @@ vector<Vertex *> VertexFinderSuehara::makeSingleTrackVertices
 		}
 	}
 
-	cout << "makeSingleTrackVertices: " << singlevtcs.size() << " vertices found." << endl;
+	//cout << "makeSingleTrackVertices: " << singlevtcs.size() << " vertices found." << endl;
 	return singlevtcs;
 }
 
+void VertexFinderSuehara::optimizeTwoVertices(Vertex *&v1, Vertex *&v2, int nvr)
+{
+	bool _verbose = false;
+	double chi2sum = 0.;
+
+	vector<const Track *> n1tracks = v1->getTracks();
+	vector<const Track *> n2tracks = v2->getTracks();
+
+	if(n1tracks.size() > 1) chi2sum += v1->getChi2();
+	if(n2tracks.size() > 1) chi2sum += v2->getChi2();
+
+	bool move = true;
+	Vertex *oldv1 = v1, *oldv2 = v2;
+
+	// vertex recombination
+	for(int n=0;n<nvr && move;n++){
+		move = false;
+		for(unsigned int ntr = 0; ntr< v1->getTracks().size(); ntr++){
+			if(n1tracks.size()<=1)break;
+
+			const Track *curt = v1->getTracks()[ntr];
+
+			n2tracks.push_back(curt);
+			Vertex *v2d = VertexFitterSimple_V()(n2tracks.begin(), n2tracks.end());
+
+			if(v2d->getChi2Track(curt) < v1->getChi2Track(curt)){
+				if(v2 != oldv2)
+					delete v2;
+				v2 = v2d;
+				n1tracks.erase(find(n1tracks.begin(), n1tracks.end(), curt));
+				if(v1 != oldv1)
+					delete v1;
+				v1 = VertexFitterSimple_V()(n1tracks.begin(), n1tracks.end());
+				move = true;
+				if (_verbose) cout << "Track " << ntr << " moved from v1 to v2. v1 chi2: " << v1->getChi2Track(curt) << ", v2 chi2: " << v2->getChi2Track(curt) << endl;
+
+				ntr --;
+			}else{
+				n2tracks.pop_back();
+				delete v2d;
+			}
+		}
+		for(unsigned int ntr = 0; ntr< v2->getTracks().size(); ntr++){
+			if(n2tracks.size()<=1)break;
+
+			const Track *curt = v2->getTracks()[ntr];
+	
+			n1tracks.push_back(curt);
+			Vertex *v1d = VertexFitterSimple_V()(n1tracks.begin(), n1tracks.end());
+	
+			if(v1d->getChi2Track(curt) < v2->getChi2Track(curt)){
+				if(v1 != oldv1)
+					delete v1;
+				v1 = v1d;
+				n2tracks.erase(find(n2tracks.begin(), n2tracks.end(), curt));
+				if(v2 != oldv2)
+					delete v2;
+				v2 = VertexFitterSimple_V()(n2tracks.begin(), n2tracks.end());
+				move = true;
+				if (_verbose) cout << "Track " << ntr << " moved from v2 to v1. v1 chi2: " << v1->getChi2Track(curt) << ", v2 chi2: " << v2->getChi2Track(curt) << endl;
+			}else{
+				n1tracks.pop_back();
+				delete v1d;
+			}
+		}
+
+		if (_verbose) {
+			cout << "[VR" << n << "]";
+			cout << "Tracks = " << n1tracks.size() << ", " << n2tracks.size();
+			cout << ", prob = " << v1->getProb() << ", " << v2->getProb();
+			cout << ", chi2 = " << v1->getChi2() << ", " << v2->getChi2() << endl;
+		}
+
+		if(!move)break;
+
+		double chi2sumold = chi2sum;
+
+		chi2sum = 0;
+		if(n1tracks.size() > 1) chi2sum += v1->getChi2();
+		if(n2tracks.size() > 1) chi2sum += v2->getChi2();
+
+		if(chi2sumold < chi2sum){
+			if (_verbose) cout << "Chi2 by current VR is bigger than old one; rollback to old one." << endl;
+			if(v1 != oldv1){
+				delete v1;
+				v1 = oldv1;
+			}if(v2 != oldv2){
+				delete v2;
+				v2 = oldv2;
+			}
+			break;
+		}else{
+			delete oldv1;
+			delete oldv2;
+			oldv1 = v1;
+			oldv2 = v2;
+		}
+	}
+}
+
+
+void VertexFinderSuehara::recombineVertices(vector<Vertex *> &vertices, vector<Vertex *> &singleVertices)
+{
+	bool _verbose = false;
+	if(vertices.size() + singleVertices.size() == 0){
+		if (_verbose) cout << "VertexFinderSuehara::recombineVertices: no vertices & singleVertices found. no-op." << endl;
+		return;
+	}
+	if(vertices.size() + singleVertices.size() == 1){
+		if (_verbose) cout << "VertexFinderSuehara::recombineVertices: just one vertices + singleVertices found. Currently no-op. (should be divided...)" << endl;
+
+		if(vertices.size() == 0)vertices.push_back(singleVertices[0]);
+		return;
+	}
+
+	// firstly prepare combined vertex collection
+	vector<Vertex *> v = vertices;
+	v.insert(v.end(), singleVertices.begin(), singleVertices.end());
+
+	if(v.size() > 2){
+		if (_verbose) cout << "VertexFinderSuehara::recombineVertices: " << v.size() << " vertices + singleVertices found. Trying to combine..." << endl;
+
+		int nvtx = v.size();
+
+		int n1opt;
+		int n2opt;
+		double chi2min = 1e+300;
+		Vertex *v1opt = 0;
+		Vertex *v2opt = 0;
+
+		for(int n1 = 0; n1 < nvtx - 1; n1 ++){
+			for(int n2 = n1 + 1; n2 < nvtx; n2 ++){
+				vector<const Track *> n1tracks = v[n1]->getTracks();
+				vector<const Track *> n2tracks = v[n2]->getTracks();
+				// n1: first reserved vertex; n2: second reserved vertex
+
+				for(int n = 0; n < nvtx; n++){
+					if(n == n1 || n == n2)continue;
+
+					const vector<const Track *> &ntracks = v[n]->getTracks();
+					for(unsigned int ntr = 0;ntr < ntracks.size();ntr++){
+						n1tracks.push_back(ntracks[ntr]);
+						Vertex * n1v = VertexFitterSimple_V()(n1tracks.begin(), n1tracks.end());
+						double n1chi2 = n1v->getChi2Track(ntracks[ntr]);
+						delete n1v;
+
+						n2tracks.push_back(ntracks[ntr]);
+						Vertex * n2v = VertexFitterSimple_V()(n2tracks.begin(), n2tracks.end());
+						double n2chi2 = n2v->getChi2Track(ntracks[ntr]);
+						delete n2v;
+
+						if(n1chi2 < n2chi2){ // select n1chi2
+							n2tracks.pop_back(); // n1tracks remain added
+						}else{
+							n1tracks.pop_back(); // n2tracks remain added
+						}
+					}
+				}
+				// n1tracks / n2tracks now obtained
+				Vertex *v1 = VertexFitterSimple_V()(n1tracks.begin(), n1tracks.end());
+				Vertex *v2 = VertexFitterSimple_V()(n2tracks.begin(), n2tracks.end());
+
+				// optimizeTwoVertices here is removed: no better effect, comparing to do last
+
+				double prob = 1.;
+				if(n1tracks.size() > 1) prob *= v1->getProb();
+				if(n2tracks.size() > 1) prob *= v2->getProb();
+
+				if (_verbose) {
+					cout << "n1 = " << n1 << ", n2 = " << n2 << ", tracks = " << n1tracks.size() << ", " << n2tracks.size();
+					cout << ", prob = " << v1->getProb() << ", " << v2->getProb();
+					cout << ", chi2 = " << v1->getChi2() << ", " << v2->getChi2() << endl;
+				}
+
+				// save current vertices
+				double chi2 = v1->getChi2() + v2->getChi2();
+				if(chi2 < chi2min){
+					chi2min = chi2;
+					n1opt = n1;
+					n2opt = n2;
+					if(v1opt)
+						delete v1opt;
+					if(v2opt)
+						delete v2opt;
+					v1opt = v1;
+					v2opt = v2;
+				}
+				else{
+					delete v1;
+					delete v2;
+				}
+			}
+		}
+
+		for(unsigned int n=0;n<vertices.size();n++){
+			delete vertices[n];
+		}
+		vertices.clear();
+		for(unsigned int n=0;n<singleVertices.size();n++){
+			delete singleVertices[n];
+		}
+		singleVertices.clear();
+
+		optimizeTwoVertices(v1opt,v2opt,3);
+
+		if(v1opt->getPos().Mag() < v2opt->getPos().Mag()){
+			vertices.push_back(v1opt);
+			vertices.push_back(v2opt);
+		}else{
+			vertices.push_back(v2opt);
+			vertices.push_back(v1opt);
+		}
+	}else{ // vertex number = 2
+		optimizeTwoVertices(v[0], v[1],3);
+
+		vertices.clear();
+		singleVertices.clear();
+
+		if(v[0]->getPos().Mag() < v[1]->getPos().Mag()){
+			vertices.push_back(v[0]);
+			vertices.push_back(v[1]);
+		}else{
+			vertices.push_back(v[1]);
+			vertices.push_back(v[0]);
+		}
+	}
+
+}

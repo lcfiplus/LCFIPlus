@@ -2,6 +2,7 @@
 #define EventStore_h 1
 
 #include <map>
+#include <list>
 #include <string>
 #include <iostream>
 #include "TClass.h"
@@ -11,6 +12,18 @@
 using namespace std;
 
 namespace lcfiplus {
+
+	// observer class
+	class EventStoreObserver {
+	public:
+		EventStoreObserver(){}
+		virtual ~EventStoreObserver(){}
+
+		virtual void GetCallback(const char *name, const char *classname){}
+		virtual void RegisterCallback(const char *name, const char *classname, int flags){}
+
+		ClassDef(EventStoreObserver,1)
+	};
 
 	/**
 		A simple named storage for event data.
@@ -24,7 +37,7 @@ namespace lcfiplus {
 		Any classes or vector of classes with ClassDef() can be registered.
 
 		@author T. Suehara, ICEPP, The University of Tokyo
-		@version $Id:$
+		@version $Id$
 	 */
  	class EventStore{
 
@@ -36,15 +49,21 @@ namespace lcfiplus {
 			enum{
 				DO_NOT_DELETE = 0x0001, // do not delete pointed object at ClearObjects(): to be used in reference collections
 				PERSIST = 0x0002, // lcio: to be saved in the output
-				JET_EXTRACT_VERTEX = 0x1000
+				JET_WRITE_VERTEX = 0x1000
 			};
 
+			// Observer registration
+			void RegisterObserver(EventStoreObserver *observer){_observerList.push_back(observer);}
+			void UnregisterObserver(EventStoreObserver *observer){_observerList.remove(observer);}
+
 			// Check collection
-			bool IsExist(const char *name)const;
+			int Count(const char *name)const;
+			bool IsExist(const char *name)const{return Count(name);}
+			bool IsExist(const char *name, const char *classname)const;
 
 			// Object retrieval
-			const char * GetClassName(const char *name)const;
-			void * GetObject(const char *name)const; // CAUTION: no type check
+			const char * GetClassName(const char *name, int idx = 0)const;
+			void * GetObject(const char *name, const char *classname = "")const; // CAUTION: no type check
 			template<typename T> bool Get(const char *name, const vector<const T*> *& buf)const;	// for pointer-vector classes, add const
 			template<typename T> bool Get(const char *name, const vector<T*> *& buf)const;	// non-const pointer vector prohibited: invoke error 
 			template<typename T> bool Get(const char *name, const vector<T> *& buf)const;	// for vector classes
@@ -76,28 +95,26 @@ namespace lcfiplus {
 			};
 
 			// map accessor
-			const map<string, lcfiplus::EventStore::StoredEntry > & GetObjectMap()const{return _objectMap;}
+			const multimap<string, lcfiplus::EventStore::StoredEntry > & GetObjectMap()const{return _objectMap;}
 
 		protected:
 			// reference retrieval: internal use
-			void * const& GetObjectRef(const char *name)const; // CAUTION: no type check
+			void * const& GetObjectRef(const char *name, const char *classname = "")const; // CAUTION: no type check
 			// constructor not public: use Event class
 			EventStore();
 
     private:
-			map<string, lcfiplus::EventStore::StoredEntry > _objectMap;
-			mutable map<string, lcfiplus::EventStore::StoredEntry >::const_iterator _itMap;
+			multimap<string, lcfiplus::EventStore::StoredEntry > _objectMap;
+			mutable multimap<string, lcfiplus::EventStore::StoredEntry >::const_iterator _itMap;
 
+			list<EventStoreObserver *> _observerList;
   };
 
 
 	// template implementations
 	template<typename T> bool EventStore::Get(const char *name, const T*&buf)const{
-		_itMap = _objectMap.find(name);
-		buf = 0;
-		if(_itMap == _objectMap.end() || string(_itMap->second.classname) != TClass::GetClass(typeid(T))->GetName())return false;
-		buf = static_cast<const T*>(GetObject(name));
-		return true;
+		buf = static_cast<const T*>(GetObject(name, TClass::GetClass(typeid(T))->GetName()));
+		return buf;
 	}
 	// vector version
 	template<typename T> bool EventStore::Get(const char *name, const vector<T>* &buf)const{
@@ -106,13 +123,8 @@ namespace lcfiplus {
 		vectclasname += elemclasname;
 		vectclasname += ">";
 
-		_itMap = _objectMap.find(name);
-
-		buf = 0;
-		if(_itMap == _objectMap.end() || _itMap->second.classname != vectclasname)return false;
-		buf = static_cast<const vector<T>*>(GetObject(name));
-
-		return true;
+		buf = static_cast<const vector<T>*>(GetObject(name, vectclasname.c_str()));
+		return buf;
 	}
 
 	// non-const pointer-vector prohibited
@@ -129,13 +141,8 @@ namespace lcfiplus {
 		vectclasname += elemclasname;
 		vectclasname += "*>";
 
-		_itMap = _objectMap.find(name);
-
-		buf = 0;
-		if(_itMap == _objectMap.end() || _itMap->second.classname != vectclasname)return false;
-		buf = static_cast<const vector<const T*>*>(GetObject(name));
-
-		return true;
+		buf = static_cast<const vector<const T*>*>(GetObject(name, vectclasname.c_str()));
+		return buf;
 	}
 
 	template<typename T> bool EventStore::Register(const char *name, T *&buf, int flags){

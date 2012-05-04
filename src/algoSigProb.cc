@@ -7,7 +7,7 @@
 namespace lcfiplus{
 namespace algoSigProb{
 
-float rpars[7] = {
+double rpars[7] = {
   1.19312,
   2.17842e-05,
   0.131316,
@@ -15,7 +15,7 @@ float rpars[7] = {
   0.630934,
   0.00012063,
   0.0165772 };
-float zpars[7] = {
+double zpars[7] = {
   1.28694,
   2.64263e-05,
   0.121609,
@@ -24,16 +24,17 @@ float zpars[7] = {
   0.000161151,
   0.0138247 };
 
-float trackD0Significance(const Track* trk, const Vertex* pri) {
+double trackD0Significance(const Track* trk, const Vertex* pri) {
 	// take primary vertex error before minimization 
 	// because this is what LCFI does
 	trk->setFlightLength(0);
-	float x0 = trk->getX();
-	float y0 = trk->getY();
-	float priErr = ( pri->getCov()[Vertex::xx]*x0*x0 + 2.0*pri->getCov()[Vertex::xy]*x0*y0 + pri->getCov()[Vertex::yy]*y0*y0 ) / (x0*x0+y0*y0);
+	double x0 = trk->getX();
+	double y0 = trk->getY();
+	//double priErr = ( pri->getCov()[Vertex::xx]*x0*x0 + 2.0*pri->getCov()[Vertex::xy]*x0*y0 + pri->getCov()[Vertex::yy]*y0*y0 ) / (x0*x0+y0*y0);
+	double priErr = 0;
 
 	/*
-	printf("pri ntrk = %d\n",(int)pri->getTracks().size());
+	printf("pri ntrk = %d\n",(int)pri->getAllTracks().size());
 	printf("pri: x=%e, y=%e, z=%e\n",
 			pri->getX(),
 			pri->getY(),
@@ -53,23 +54,21 @@ float trackD0Significance(const Track* trk, const Vertex* pri) {
 	TrackPocaXY pocaXY(trk,pri);
 	trk->setFlightLength( pocaXY.getFlightLength() );
 
-	float x = trk->getX();
-	float y = trk->getY();
+	double x = trk->getX();
+	double y = trk->getY();
 
 	//cout << "x:" << x << ",y:" << y << endl;
 
-	//float d0 = trk->par[Track::d0];
-	float d0 = sqrt( pow(x-pri->getX(),2)+pow(y-pri->getY(),2) );
-	float d0err = sqrt( trk->getCovMatrix()[tpar::d0d0] + priErr );
-	float d0sig = d0/d0err;
+	//double d0 = trk->par[Track::d0];
+	double d0 = sqrt( pow(x-pri->getX(),2)+pow(y-pri->getY(),2) );
+	double d0err = sqrt( trk->getCovMatrix()[tpar::d0d0] + priErr );
+	double d0sig = d0/d0err;
 
-	if ( d0 != d0 ) printf("d0 nan\n");
-	float d0cov = trk->getCovMatrix()[tpar::d0d0];
-	if ( d0cov != d0cov ) printf("d0cov nan\n");
-	if ( d0cov < 0 ) printf("d0cov %f\n",d0cov);
+	//if ( d0 != d0 ) printf("d0 nan\n");
+	double d0cov = trk->getCovMatrix()[tpar::d0d0];
+	//if ( d0cov != d0cov ) printf("d0cov nan\n");
+	//if ( d0cov < 0 ) printf("d0cov %f\n",d0cov);
 
-	if ( priErr != priErr ) printf("priErr nan\n");
-	if ( priErr != priErr ) printf("priErr nan\n");
 	if ( d0err != d0err ) printf("d0err nan, d0cov %f, priErr=%f\n", d0cov, priErr);
 	/*
 	if ( d0sig != d0sig ) {
@@ -91,34 +90,38 @@ float trackD0Significance(const Track* trk, const Vertex* pri) {
 }
 
 // z0 significance at the poca taken in the x-y plane
-float trackZ0Significance(const Track* trk, const Vertex* pri) {
+double trackZ0Significance(const Track* trk, const Vertex* pri) {
 	trk->setFlightLength(0);
-	float priErr = pri->getCov()[Vertex::zz];
+	//double priErr = pri->getCov()[Vertex::zz];
+	double priErr = 0;
 
 	// include error from primary vertex
 	TrackPocaXY pocaXY(trk,pri);
 	trk->setFlightLength( pocaXY.getFlightLength() );
 
-	float z = trk->getZ();
+	double z = trk->getZ();
 
-	//float z0 = trk->par[Track::z0];
-	float z0 = fabs( z-pri->getZ() );
-	float z0err = sqrt( trk->getCovMatrix()[tpar::z0z0] + priErr );
-	float z0sig = z0/z0err;
+	//double z0 = trk->par[Track::z0];
+	double z0 = fabs( z-pri->getZ() );
+	double z0err = sqrt( trk->getCovMatrix()[tpar::z0z0] + priErr );
+	double z0sig = z0/z0err;
 
 	return z0sig;
 }
 
-float signedD0Significance(const Track* trk, const Jet* jet, const Vertex* pri, bool updateFlt) {
+double signedD0Significance(const Track* trk, const Jet* jet, const Vertex* pri, bool updateFlt) {
 	TVector3 jet2d( jet->Vect().X(), jet->Vect().Y(), 0);
 	trk->setFlightLength(0);
 
 	// take primary vertex error before minimization because this is what LCFI does
-	float x0 = trk->getX();
-	float y0 = trk->getY();
-	float priErr = ( pri->getCov()[Vertex::xx]*x0*x0
+	double x0 = trk->getX();
+	double y0 = trk->getY();
+	double priErr = 0.;
+	/*
+	double priErr = ( pri->getCov()[Vertex::xx]*x0*x0
 			+ 2.0*pri->getCov()[Vertex::xy]*x0*y0
 			+ pri->getCov()[Vertex::yy]*y0*y0 ) / (x0*x0+y0*y0);
+			*/
 
 	if (updateFlt) {
 		TrackPocaXY pocaXY(trk,pri);
@@ -128,17 +131,21 @@ float signedD0Significance(const Track* trk, const Jet* jet, const Vertex* pri, 
 	// determine sign of significance relative to jet direction
 	TVector3 pca( -trk->getD0()*sin(trk->getPhi()),
 			trk->getD0()*cos(trk->getPhi()), trk->getZ0() );
-	float signd0(1);
+	double signd0(1);
 	if (pca.Dot(jet2d) < 0) signd0 = -1;
 
-	float d0 = sqrt( pow(trk->getX()-pri->getX(),2)+pow(trk->getY()-pri->getY(),2) );
-	float d0errsq = trk->getCovMatrix()[tpar::d0d0] + priErr;
-	float d0sig = sqrt( d0*d0/d0errsq )*signd0;
+	double d0 = sqrt( pow(trk->getX()-pri->getX(),2)+pow(trk->getY()-pri->getY(),2) );
+	double d0errsq = trk->getCovMatrix()[tpar::d0d0] + priErr;
+	double d0sig = sqrt( d0*d0/d0errsq )*signd0;
+
+	if (fabs(d0sig)<1e-6) {
+		cout << "SMALL D0SIG::::: d0=" << d0 << ", d0errsq=" << d0errsq << ", d0sig=" << d0sig << endl;
+	}
 
 	return d0sig;
 }
 
-float signedZ0Significance(const Track* trk, const Jet* jet, const Vertex* pri, bool updateFlt) {
+double signedZ0Significance(const Track* trk, const Jet* jet, const Vertex* pri, bool updateFlt) {
 	TVector3 jetz( 0, 0, jet->Vect().Z() );
 
 	if (updateFlt) {
@@ -149,11 +156,12 @@ float signedZ0Significance(const Track* trk, const Jet* jet, const Vertex* pri, 
 	// determine sign of significance relative to jet direction
 	TVector3 pca( -trk->getD0()*sin(trk->getPhi()),
 			trk->getD0()*cos(trk->getPhi()), trk->getZ0() );
-	float signz0(1);
+	double signz0(1);
 	if (pca.Dot(jetz) < 0) signz0 = -1;
-	float z0 = trk->getZ0() - pri->getZ();
-	float z0errsq = trk->getCovMatrix()[tpar::z0z0] + pri->getCov()[Vertex::zz];
-	float z0sig = sqrt( z0*z0/z0errsq )*signz0;
+	double z0 = trk->getZ0() - pri->getZ();
+	//double z0errsq = trk->getCovMatrix()[tpar::z0z0] + pri->getCov()[Vertex::zz];
+	double z0errsq = trk->getCovMatrix()[tpar::z0z0];
+	double z0sig = sqrt( z0*z0/z0errsq )*signz0;
 	return z0sig;
 }
 
@@ -161,8 +169,8 @@ float signedZ0Significance(const Track* trk, const Jet* jet, const Vertex* pri, 
 /////////////////////////////////////////////////
 // for joint probability calculation
 /////////////////////////////////////////////////
-float prob1D(float sig, float maxsig, float* pars) {
-	float prob = TMath::Erfc(    sig / ( sqrt( double(2) ) * pars[0] ) )
+double prob1D(double sig, double maxsig, double* pars) {
+	double prob = TMath::Erfc(    sig / ( sqrt( double(2) ) * pars[0] ) )
 							-TMath::Erfc( maxsig / ( sqrt( double(2) ) * pars[0] ) );
 	prob += pars[1]*( exp(-pars[2] * sig ) - exp(-pars[2] * maxsig ) );
 	prob += pars[3]*( exp(-pars[4] * sig ) - exp(-pars[4] * maxsig ) );
@@ -170,32 +178,32 @@ float prob1D(float sig, float maxsig, float* pars) {
 	return prob;
 }
 
-float trackProbD0(const Track* trk, const Vertex* pri) {
-	float sig = fabs( trackD0Significance(trk,pri) );
+double trackProbD0(const Track* trk, const Vertex* pri) {
+	double sig = fabs( trackD0Significance(trk,pri) );
 	return prob1D(sig,200,rpars)/prob1D(0,200,rpars);
 }
 
-float trackProbZ0(const Track* trk, const Vertex* pri) {
-	float sig = fabs( trackZ0Significance(trk,pri) );
+double trackProbZ0(const Track* trk, const Vertex* pri) {
+	double sig = fabs( trackZ0Significance(trk,pri) );
 	return prob1D(sig,200,zpars)/prob1D(0,200,zpars);
 }
 
-float jointProbD0(const Jet* jet, const Vertex* pri) {
-	float maxd0sig = 200.;
+double jointProbD0(const Jet* jet, const Vertex* pri) {
+	double maxd0sig = 200.;
 
-	float prod(1);
+	double prod(1);
 	int ntrk(0);
-	float hiprob(0);
+	double hiprob(0);
 
-	TrackVec & tracks = jet->getTracks();
+	TrackVec & tracks = jet->getAllTracks(true);
 	for (TrackVecIte it = tracks.begin(); it != tracks.end(); ++it) {
 		const Track* trk = *it;
 		if (trk->getD0() < 5 && trk->getZ0() < 5
 				&& trk->getVtxHits() >= 5) {
 
-			float sig = fabs( trackD0Significance(trk,pri) );
+			double sig = fabs( trackD0Significance(trk,pri) );
 			if (sig<maxd0sig) {
-				float prob = prob1D(sig,maxd0sig,rpars)/prob1D(0,maxd0sig,rpars);
+				double prob = prob1D(sig,maxd0sig,rpars)/prob1D(0,maxd0sig,rpars);
 				if (prob > hiprob) hiprob = prob;
 				prod *= prob;
 				++ntrk;
@@ -214,8 +222,8 @@ float jointProbD0(const Jet* jet, const Vertex* pri) {
 	prod *= 1./hiprob;
 	--ntrk;
 
-	float jprob(0);
-	float factorial(1);
+	double jprob(0);
+	double factorial(1);
 
 	for (int k=0; k<ntrk; ++k) {
 		if (k>0) factorial *= k;
@@ -227,21 +235,21 @@ float jointProbD0(const Jet* jet, const Vertex* pri) {
 	return jprob;
 }
 
-float jointProbZ0(const Jet* jet, const Vertex* pri) {
-	float maxz0sig = 200.;
+double jointProbZ0(const Jet* jet, const Vertex* pri) {
+	double maxz0sig = 200.;
 
-	float prod(1);
+	double prod(1);
 	int ntrk(0);
-	float hiprob(0);
+	double hiprob(0);
 
-	TrackVec &tracks = jet->getTracks();
+	TrackVec &tracks = jet->getAllTracks(true);
 	for (TrackVecIte it = tracks.begin(); it != tracks.end(); ++it) {
 		const Track* trk = *it;
 		if (trk->getD0() < 5 && trk->getZ0() < 5
 				&& trk->getVtxHits() >= 5) {
-			float sig = fabs( trackZ0Significance(trk,pri) );
+			double sig = fabs( trackZ0Significance(trk,pri) );
 			if (sig < maxz0sig) {
-				float prob = prob1D(sig,maxz0sig,zpars)/prob1D(0,maxz0sig,zpars);
+				double prob = prob1D(sig,maxz0sig,zpars)/prob1D(0,maxz0sig,zpars);
 				if (prob > hiprob) hiprob = prob;
 				prod *= prob;
 				++ntrk;
@@ -260,8 +268,8 @@ float jointProbZ0(const Jet* jet, const Vertex* pri) {
 	prod *= 1./hiprob;
 	--ntrk;
 
-	float jprob(0);
-	float factorial(1);
+	double jprob(0);
+	double factorial(1);
 
 	for (int k=0; k<ntrk; ++k) {
 		if (k>0) factorial *= k;
@@ -275,19 +283,26 @@ float jointProbZ0(const Jet* jet, const Vertex* pri) {
 
 ///////////////////////////////////////////////////
 
-void findMostSignificantTrack(const Jet* jet, const Vertex* pri, float sigVec[6]) {
-	float trk1d0sig(-1e3);
-	float trk2d0sig(-1e3);
+void findMostSignificantTrack(const Jet* jet, const Vertex* pri, double sigVec[6]) {
+	double trk1d0sig(-1e3);
+	double trk2d0sig(-1e3);
 	const Track* trk1(0);
 	const Track* trk2(0);
-	const vector<const Track*>& tracks = jet->getTracks();
+	const vector<const Track*>& tracks = jet->getAllTracks(true);
 
 	for (int i=0; i<6; ++i) {
 		sigVec[i] = 0;
 	}
 
 	if (tracks.size()<2) {
-		printf("Number of tracks fewer than two, skipping significance calculation\n");
+		//printf("Number of tracks fewer than two, skipping significance calculation\n");
+		//printf("Jet (%.2e,%.2e,%.2e,%.2e)\n",jet->E(),jet->Px(),jet->Py(),jet->Pz());
+		sigVec[0] = -100;
+		sigVec[1] = -100;
+		sigVec[2] = -100;
+		sigVec[3] = -100;
+		sigVec[4] = -100;
+		sigVec[5] = -100;
 		return;
 	}
 
@@ -302,7 +317,7 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, float sigVec[6]
 		if (nVTX == nHitCut-1 && mom < 2) continue;
 		if (nVTX >= nHitCut && mom < 1) continue;
 
-		float d0sig = signedD0Significance(trk,jet,pri,true);
+		double d0sig = signedD0Significance(trk,jet,pri,true);
 
 		if (d0sig > trk1d0sig) {
 			trk2d0sig = trk1d0sig;
@@ -316,13 +331,19 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, float sigVec[6]
 	}
 
 	if (trk1 == 0 || trk2 == 0) {
+		sigVec[0] = -100;
+		sigVec[1] = -100;
+		sigVec[2] = -100;
+		sigVec[3] = -100;
+		sigVec[4] = -100;
+		sigVec[5] = -100;
 		return;
 	}
 
-	float trk1z0sig = signedZ0Significance(trk1,jet,pri,false);
-	float trk2z0sig = signedZ0Significance(trk2,jet,pri,false);
-	float trk1pt = trk1->Vect().Pt();
-	float trk2pt = trk2->Vect().Pt();
+	double trk1z0sig = signedZ0Significance(trk1,jet,pri,false);
+	double trk2z0sig = signedZ0Significance(trk2,jet,pri,false);
+	double trk1pt = trk1->Vect().Pt();
+	double trk2pt = trk2->Vect().Pt();
 
 	sigVec[0] = trk1d0sig;
 	sigVec[1] = trk2d0sig;

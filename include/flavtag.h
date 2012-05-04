@@ -74,6 +74,7 @@ namespace lcfiplus {
 			void setEval(bool seteval) { _evaluate = seteval; }
 
 			void addReader(TMVA::Reader* reader, const FlavtagCategory& c);
+			void setParamName(TString s) { _paramName = s; }
 
 		private:
 			FTManager();
@@ -88,6 +89,7 @@ namespace lcfiplus {
 
 			vector<TMVA::Reader*> _readers;
 			vector<FlavtagCategory> _categories;
+			TString _paramName;
 	};
 
 }

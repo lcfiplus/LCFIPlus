@@ -23,6 +23,7 @@
 	<parameter name="PFOCollection" type="string" value="PandoraPFOs" />
 	<parameter name="PrimaryVertexCollectionName" type="string" value="PrimaryVertex" />
 	<parameter name="BuildUpVertexCollectionName" type="string" value="BuildUpVertex" />
+	<parameter name="BuildUpVertex.V0VertexCollectionName" type="string" value="BuildUpVertex_V0" />
 
 	<!-- parameters for primary vertex finder -->
 	<parameter name="PrimaryVertexFinder.TrackMaxD0" type="double" value="20." />
@@ -49,6 +50,7 @@
 	<parameter name="BuildUpVertex.AssocIPTracks" type="int" value="1" />
 	<parameter name="BuildUpVertex.AssocIPTracksMinDist" type="double" value="0." />
 	<parameter name="BuildUpVertex.AssocIPTracksChi2RatioSecToPri" type="double" value="2.0" />
+	<parameter name="BuildUpVertex.UseV0Selection" type="int" value="1" />
 
 </processor>
 

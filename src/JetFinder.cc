@@ -96,7 +96,7 @@ namespace lcfiplus {
     return run(jets);
   }
 
-  vector<Jet*> JetFinder::run(TrackVec &tracks,NeutralVec &neutrals,double *pymin) {
+  vector<Jet*> JetFinder::run(TrackVec &tracks,NeutralVec &neutrals,double *pymin, int ynjetmax) {
     vector<Jet*> jets;
     for (TrackVecIte iter = tracks.begin(); iter != tracks.end(); ++iter) {
       const Track* trk = *iter;
@@ -108,13 +108,13 @@ namespace lcfiplus {
       Jet* j = new Jet(neut);
       jets.push_back(j);
     }
-    return run(jets,pymin);
+    return run(jets,pymin, ynjetmax);
   }
 
-  vector<Jet*> JetFinder::run(TrackVec &tracks, NeutralVec &neutrals, VertexVec &vertices_, double *pymin, bool findmu)
+  vector<Jet*> JetFinder::run(TrackVec &tracks, NeutralVec &neutrals, VertexVec &vertices_, double *pymin, bool findmu, int ynjetmax)
 	{
 		vector<Jet*> prejets = prerun(tracks, neutrals, vertices_, findmu);
-		return run(prejets, pymin);
+		return run(prejets, pymin, ynjetmax);
 	}
 
   vector<Jet*> JetFinder::prerun(TrackVec &tracks, NeutralVec &neutrals, VertexVec &vertices_, bool findmu, int *nVertexJets)
@@ -146,17 +146,19 @@ namespace lcfiplus {
 				double ecaldep = tracks[i]->getCaloEdep()[tpar::ecal];
 				double hcaldep = tracks[i]->getCaloEdep()[tpar::hcal];
 
-				if(mudep>0 && tr->getMcp() != 0)
+				/*
+				if(mudep>0 && tr->getMcp())
 					cout << "Muon selection: " << tr->getMcp()->getPDG() << " " << sigd0 << " " << sigz0 << " " << tr->E() << " " << mudep << " " << ecaldep << " " << hcaldep << endl;
+				 */
 				// muon selection criteria
 //				if(dist > 0.1 && dist < 2.0 && tr->E() > 5. && mudep > 0.05 && ecaldep < 1. && hcaldep > 1.5 && hcaldep < 4.){
 				if((sigd0 > 5. || sigz0 > 5.) && dist < 5. && mudep > 0.05 && ecaldep < 1. && hcaldep > 1.5 && hcaldep < 5.){
 					// treated as a vertex
 					float cov[6] = {0,0,0,0,0,0};
-					Vertex *fakevtx = new Vertex(0,1,tr->Px()/tr->E(), tr->Py()/tr->E(), tr->Pz()/tr->E(), cov);
+					Vertex *fakevtx = new Vertex(0,1,tr->Px()/tr->E(), tr->Py()/tr->E(), tr->Pz()/tr->E(), cov, false);
 					fakevtx->add(tr);
 
-					cout << "A fake vertex created by mu-candidate: " << tr->Px() << " " << tr->Py() << " " << tr->Pz() << " " << tr->E() << endl;
+					//cout << "A fake vertex created by mu-candidate: " << tr->Px() << " " << tr->Py() << " " << tr->Pz() << " " << tr->E() << endl;
 
 					vertices.push_back(fakevtx);
 					usedTracks[i] = true;
@@ -174,24 +176,24 @@ namespace lcfiplus {
 				TVector3 pos = vertices[i]->getPos();
 
 				for(unsigned int j=i+1; j<vertices.size();j++){
+					if(usedVertices[j])continue; // BUGFIX at 120413
+
 					TVector3 pos2 = vertices[j]->getPos();
 
-					if(vertices[j]->getTracks().size() == 1){
-						cout << "Angle (" << j << ", " << i << ") : " << pos.Angle(pos2) << endl;
-					}
+					//if(vertices[j]->getTracks().size() == 1){ cout << "Angle (" << j << ", " << i << ") : " << pos.Angle(pos2) << endl; }
 
 					double angle = pos.Angle(pos2);
 					if(angle < vertexcombineangle || (vertices[j]->getTracks().size() == 1 && angle < vertexcombineanglelepton)){
 						jet->add(vertices[j]);
 						usedVertices[j] = true;
-						cout << "JetFinder: Vertex " << i << " and " << j << " are combined." << endl;
+						//cout << "JetFinder: Vertex " << i << " and " << j << " are combined." << endl;
 					}
 				}
 			}
 		}
 
 		while(jets.size() > (unsigned int)_cfg.nJet){
-			cout << "JetFinder: remained # jets with vertex is " << jets.size() << ", performing further combination..." << endl;
+			//cout << "JetFinder: remained # jets with vertex is " << jets.size() << ", performing further combination..." << endl;
 
 			double minimumangle = 3.15;
 			int minimumi = -1;
@@ -220,7 +222,7 @@ namespace lcfiplus {
 			}
 			delete jets[minimumj];
 			jets.erase(jets.begin() + minimumj);
-			cout << "JetFinder: Jet " << minimumi << " and " << minimumj << " are combined." << endl;
+			//cout << "JetFinder: Jet " << minimumi << " and " << minimumj << " are combined." << endl;
 		}
 
 		if(nVertexJets)
@@ -398,7 +400,7 @@ namespace lcfiplus {
 	}
 
 
-  vector<Jet*> JetFinder::run(vector<Jet*> jets, double *pymin) {
+  vector<Jet*> JetFinder::run(vector<Jet*> jets, double *pymin, int ynjetmax) {
 
     int nPartons = jets.size();
 
@@ -444,8 +446,8 @@ namespace lcfiplus {
 //      assert(imin != -1);
 //      assert(jmin != -1);
 
-			if(pymin)
-				*pymin = Ymin;
+			if(pymin && (ynjetmax >= njet))
+				pymin[njet-1] = Ymin;
 
       // check Ymin against Ycut
       if (_cfg.Ycut > 0 && Ymin > _cfg.Ycut) {
@@ -485,7 +487,7 @@ namespace lcfiplus {
     }
 
     // order jets by largest energy first
-    sort(jets.begin(),jets.end(),Jet::sort);
+    sort(jets.begin(),jets.end(),Jet::sort_by_energy);
 
     /*
 

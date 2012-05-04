@@ -31,7 +31,9 @@ namespace lcfiplus {
   template <class T> struct DeleteVector { bool operator() (T x) const { delete x; return true; } };
 
 	template <class T> vector<const T*> *constVector(vector<T *> *ptr){return reinterpret_cast<vector<const T*> *>(ptr);}
+	template <class T> vector<const T*> &constVector(vector<T *> &ref){return *reinterpret_cast<vector<const T*> *>(&ref);}
 	template <class T> const vector<const T*> *constVector(const vector<T *> *ptr){return reinterpret_cast<const vector<const T*> *>(ptr);}
+	template <class T> const vector<const T*> &constVector(const vector<T *> &ref){return *reinterpret_cast<const vector<const T*> *>(&ref);}
 
   // used for error rescaling of the track parameters
   // in bins of cosTheta and momentum
@@ -128,8 +130,10 @@ namespace lcfiplus {
 				istringstream str((*(const vector<string> *)_map.find(key)->second.second)[0]);
 				str >> ret;
 			}
-			else
+			else{
+				cout << "Parameter type invalid: " << _map.find(key)->second.first->name() << " vs " << typeid(T).name() << endl;
 				throw(Exception("Parameter type invalid."));
+			}
 			return;
 		}
 
@@ -155,8 +159,10 @@ namespace lcfiplus {
 					str >> ret[n];
 				}
 			}
-			else
+			else{
+				cout << "Parameter type invalid: " << _map.find(key)->second.first->name() << " vs " << typeid(T).name() << endl;
 				throw(Exception("Parameter type invalid."));
+			}
 		}
 
 	public:
@@ -236,14 +242,10 @@ namespace lcfiplus {
 
 			// standard collections retrievers
 			// for other collections: use EventStore::Get()
-			//const vector<Track*>& getTracks(const char *trackname = 0) const;
-			const vector<const Track*>& getTracks(const char *trackname = "Tracks") const;
-			//const vector<Neutral*>& getNeutrals(const char *neutralname = 0) const;
-			const vector<const Neutral*>& getNeutrals(const char *neutralname = "Neutrals") const;
-			//const vector<MCParticle*>& getMCParticles(const char *mcpname = 0) const;
-			const vector<const MCParticle*>& getMCParticles(const char *mcpname = "MCParticles") const;
-			//const Vertex* getPrimaryVertex(const char *privtxname = 0) const;
-			const Vertex* getPrimaryVertex(const char *privtxname = "PrimaryVertex") const;
+			const vector<const Track*>& getTracks(const char *trackname = 0) const;
+			const vector<const Neutral*>& getNeutrals(const char *neutralname = 0) const;
+			const vector<const MCParticle*>& getMCParticles(const char *mcpname = 0) const;
+			const Vertex* getPrimaryVertex(const char *privtxname = 0) const;
 			const vector<const Vertex*>& getSecondaryVertices(const char *secvtxname = 0) const;
 			const vector<const Jet*>& getJets(const char *jetname = 0) const;
 
@@ -360,6 +362,7 @@ namespace lcfiplus {
       float getY() const;
       float getZ() const;
 			TVector3 getPos()const {return TVector3(getX(), getY(), getZ());}
+			TVector3 momentumAtVertex( const Vertex* vtx ) const;
 
     private:
       mutable float _flt;
@@ -503,11 +506,23 @@ namespace lcfiplus {
     public:
       enum vtx { xx=0, xy, yy, xz, yz, zz };
 
-      Vertex() : _chi2(0), _prob(0), _x(0), _y(0), _z(0) {}
-			Vertex(const float chi2, const float prob, const float x, const float y, const float z, const float cov[6])
-				: _id(-1), _chi2(chi2), _prob(prob), _x(x), _y(y), _z(z)
+      Vertex() : _chi2(0), _prob(0), _x(0), _y(0), _z(0), _isPrimary(false) {}
+			Vertex(const float chi2, const float prob, const float x, const float y, const float z, const float cov[6], bool isPrimary)
+				: _id(-1), _chi2(chi2), _prob(prob), _x(x), _y(y), _z(z), _isPrimary(isPrimary)
 			{
-				memcpy(_cov, cov, sizeof(_cov));
+				if(cov == 0){
+					memset(_cov,0, sizeof(_cov));
+				}else{
+					memcpy(_cov, cov, sizeof(_cov));
+				}
+			}
+
+			// id is not copied
+			Vertex(const Vertex & from) : _id(-1), _chi2(from._chi2), _prob(from._prob), _x(from._x), _y(from._y), _z(from._z), _isPrimary(from._isPrimary)
+			{
+				memcpy(_cov, from._cov, sizeof(_cov));
+				_tracks = from._tracks;
+				_chi2Tracks = from._chi2Tracks;
 			}
 
       ~Vertex() {};
@@ -525,8 +540,8 @@ namespace lcfiplus {
       const float* getCov() const { return _cov; }
       const vector<const Track*> & getTracks() const { return _tracks; }
 			const map<const lcfiplus::Track *, float> & getTracksChi2Map() const {return _chi2Tracks;}
-			float getChi2Track(const Track *tr){
-				map<const Track*,float>::iterator it = _chi2Tracks.find(tr);
+			float getChi2Track(const Track *tr)const{
+				map<const Track*,float>::const_iterator it = _chi2Tracks.find(tr);
 				if(it != _chi2Tracks.end())return it->second;
 				else return -1;
 			}
@@ -534,6 +549,9 @@ namespace lcfiplus {
 
       float length(const Vertex* primary=0) const;
       float significance(const Vertex* primary) const;
+
+			bool isPrimary()const{return _isPrimary;}
+			void setPrimary(bool isPrimary){_isPrimary = isPrimary;}
 
 			float getPparallel(const TVector3 &axis)const;
 			float getVertexMass(const Vertex *daughter = 0, const TVector3 *paxis = 0, const double dmass = 1.87, double *ppt = 0, double *pp = 0)const;
@@ -545,6 +563,10 @@ namespace lcfiplus {
 			bool passesV0selection(const Vertex* primary=0) const;
 			TLorentzVector getFourMomentum() const;
 
+			void Print()const;
+			static int dist_sort(const Vertex *a, const Vertex *b);
+			bool covIsGood() const;
+
     private:
 			mutable int _id; // necessary for LCIO relation; -1 if not used, mutable for modification in ConvertVertex()
 
@@ -554,6 +576,9 @@ namespace lcfiplus {
       float _y;
       float _z;
       float _cov[6];
+
+			bool _isPrimary;
+
       vector<const lcfiplus::Track*> _tracks;
 			map<const Track*, float> _chi2Tracks;
 
@@ -613,6 +638,7 @@ namespace lcfiplus {
       Jet(const Track* trk);
       Jet(const Neutral* neutral);
 			Jet(const Vertex *vtx) : _id(-1){add(vtx);}
+			Jet(const Jet &from, bool extractVertex = false);
       ~Jet() {};
 
 			void setId(int id)const{_id = id;}
@@ -622,19 +648,35 @@ namespace lcfiplus {
       const vector<const Neutral*>& getNeutrals() const { return _neutrals; }
       const vector<const Vertex*>& getVertices() const { return _vertices; }
 
+			/** returns list of vertices which are useful for flavor tagging. */
+			vector<const Vertex*> getVerticesForFT() const;
+
+			/** returns list of all tracks including those used to form vertices.
+				if withoutV0 is true, skip tracks which are identified as v0 (default: false)
+			 */
+      vector<const Track*> getAllTracks(bool withoutV0=false) const;
+
       // methods
       void add(const Jet& jet);
       void add(const Track *trk){_tracks.push_back(trk); *(TLorentzVector *)this += *(TLorentzVector *)trk;}
       void add(const Neutral *neut){_neutrals.push_back(neut); *(TLorentzVector *)this += *(TLorentzVector *)neut;}
-      void add(const Vertex *vtx){
+      void add(const Vertex *vtx, bool removeTracks = true){
 				_vertices.push_back(vtx);
 				for(unsigned int i=0;i<vtx->getTracks().size();i++){
 					*(TLorentzVector *)this += *(TLorentzVector *)(vtx->getTracks()[i]);
+
+					if(removeTracks){
+						vector<const Track *>::iterator it;
+						if((it = find(_tracks.begin(), _tracks.end(), vtx->getTracks()[i])) != _tracks.end()) {
+							*(TLorentzVector *)this -= *(TLorentzVector *)(*it);
+							_tracks.erase(it);
+						}
+					}
 				}
 			}
       //void recalculate();
 
-      static int sort(const Jet* a, const Jet* b) {
+      static int sort_by_energy(const Jet* a, const Jet* b) {
         return (a->E() > b->E());
       }
 
@@ -653,6 +695,18 @@ namespace lcfiplus {
 			}
 
 			const map<string, Parameters> & params()const{return _params;}
+
+			void recalcFourMomentum()
+			{
+				TLorentzVector v;
+				vector<const Track *> tr = getAllTracks();
+				for(unsigned int i=0;i<tr.size();i++)
+					v += (*tr[i]);
+				for(unsigned int i=0;i<_neutrals.size();i++)
+					v += (*_neutrals[i]);
+
+				*(TLorentzVector *)this = v;
+			}
 
     private:
       vector<const Track*> _tracks;

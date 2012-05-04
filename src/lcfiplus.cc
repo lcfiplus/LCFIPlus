@@ -14,6 +14,9 @@
 #include "math.h"
 
 #include "algo.h"
+#include "geometry.h"
+
+#include "VertexFinderSuehara.h"
 
 namespace lcfiplus {
 
@@ -44,50 +47,62 @@ namespace lcfiplus {
 
 	TrackVec & Event::getTracks(const char *trackname) const
 	{
-		if(!IsExist(trackname))throw(Exception("Event::getTracks(): collection not found."));
-		if(strcmp("vector<lcfiplus::Track*>", GetClassName(trackname)))throw(Exception("Event::getTracks(): type invalid."));
+		if(!trackname) trackname = _defTrackName.c_str();
+		const char *classname = "vector<lcfiplus::Track*>";
 
-		return *(TrackVec*&)GetObjectRef(trackname ? trackname : _defTrackName.c_str());
+//		if(!IsExist(trackname,classname))throw(Exception("Event::getTracks(): collection not found."));
+
+		return *(TrackVec*&)GetObjectRef(trackname, classname);
 	}
 
 	NeutralVec & Event::getNeutrals(const char *neutralname) const
 	{
-		if(!IsExist(neutralname))throw(Exception("Event::getNeutrals(): collection not found."));
-		if(strcmp("vector<lcfiplus::Neutral*>", GetClassName(neutralname)))throw(Exception("Event::getNeutrals(): type invalid."));
+		if(!neutralname) neutralname = _defNeutralName.c_str();
+		const char *classname = "vector<lcfiplus::Neutral*>";
 
-		return *(NeutralVec*&)GetObjectRef(neutralname ? neutralname : _defNeutralName.c_str());
+//		if(!IsExist(neutralname,classname))throw(Exception("Event::getNeutrals(): collection not found."));
+
+		return *(NeutralVec*&)GetObjectRef(neutralname, classname);
 	}
 
 	MCParticleVec & Event::getMCParticles(const char *mcpname) const
 	{
-		if(!IsExist(mcpname))throw(Exception("Event::getMCParticles(): collection not found."));
-		if(strcmp("vector<lcfiplus::MCParticle*>", GetClassName(mcpname)))throw(Exception("Event::getMCParticles(): type invalid."));
+		if(!mcpname) mcpname = _defMcpName.c_str();
+		const char *classname = "vector<lcfiplus::MCParticle*>";
 
-		return *(MCParticleVec*&)GetObjectRef(mcpname ? mcpname : _defMcpName.c_str());
+//		if(!IsExist(mcpname,classname))throw(Exception("Event::getMCParticles(): collection not found."));
+
+		return *(MCParticleVec*&)GetObjectRef(mcpname, classname);
 	}
 
 	const Vertex* Event::getPrimaryVertex(const char *privtxname) const
 	{
-		if(!IsExist(privtxname))throw(Exception("Event::getPrimaryVertex(): collection not found."));
-		if(strcmp("vector<lcfiplus::Vertex*>", GetClassName(privtxname)))throw(Exception("Event::getPrimaryVertex(): type invalid."));
+		if(!privtxname) privtxname = _defPriVtxName.c_str();
+		const char *classname = "vector<lcfiplus::Vertex*>";
 
-		return (*(vector<const lcfiplus::Vertex*>*)GetObject(privtxname ? privtxname : _defPriVtxName.c_str()))[0];
+//		if(!IsExist(privtxname,classname))throw(Exception("Event::getPrimaryVertex(): collection not found."));
+
+		return (*(vector<const lcfiplus::Vertex*>*)GetObject(privtxname,classname))[0];
 	}
 
 	const vector<const Vertex*>& Event::getSecondaryVertices(const char *secvtxname) const
 	{
-		if(!IsExist(secvtxname))throw(Exception("Event::getSecondaryVertices(): collection not found."));
-		if(strcmp("vector<lcfiplus::Vertex*>", GetClassName(secvtxname)))throw(Exception("Event::getSecondaryVertices(): type invalid."));
+		if(!secvtxname) secvtxname = _defSecVtxName.c_str();
+		const char *classname = "vector<lcfiplus::Vertex*>";
 
-		return *(vector<const Vertex*>*&)GetObjectRef(secvtxname ? secvtxname : _defSecVtxName.c_str());
+//		if(!IsExist(secvtxname,classname))throw(Exception("Event::getSecondaryVertices(): collection not found."));
+
+		return *(vector<const Vertex*>*&)GetObjectRef(secvtxname,classname);
 	}
 
 	const vector<const Jet*>& Event::getJets(const char *jetname) const
 	{
-		if(!IsExist(jetname))throw(Exception("Event::getJets(): collection not found."));
-		if(strcmp("vector<lcfiplus::Jet*>", GetClassName(jetname)))throw(Exception("Event::getJets(): type invalid."));
+		if(!jetname) jetname = _defJetName.c_str();
+		const char *classname = "vector<lcfiplus::Jet*>";
 
-		return *(vector<const Jet*>*&)GetObjectRef(jetname ? jetname : _defJetName.c_str());
+//		if(!IsExist(jetname,classname))throw(Exception("Event::getJets(): collection not found."));
+
+		return *(vector<const Jet*>*&)GetObjectRef(jetname,classname);
 	}
 
 
@@ -286,6 +301,16 @@ namespace lcfiplus {
 //   Neutral::Neutral(const NeutralData& data) :
 //     LorentzVector(data.px, data.py, data.pz, data.en), NeutralData(data) {
 //   }
+
+  TVector3 Track::momentumAtVertex( const Vertex* vtx ) const {
+		Helix hel(this);
+		double tmin;
+		hel.LogLikelihood( vtx->getPos(), tmin );
+		TVector3 ret = hel.GetPosDerivT( tmin );
+		ret.SetMag( Vect().Mag() );
+		return ret;
+	}
+
 
   void MCParticle::Init(int id,int pdg, MCParticle *parent, float charge, const TLorentzVector &p, const TVector3 &v)
 	{
@@ -807,10 +832,30 @@ namespace lcfiplus {
     mat(1,2) = _cov[4];
     mat(2,2) = _cov[5];
 
+		/*
+		const float* pcov = primary->getCov();
+		if (primary->covIsGood()) {
+			mat(0,0) += pcov[0];
+			mat(0,1) += pcov[1];
+			mat(1,1) += pcov[2];
+			mat(0,2) += pcov[3];
+			mat(1,2) += pcov[4];
+			mat(2,2) += pcov[5];
+		}
+		*/
+
     double det;
     TMatrixFSym invmat = mat.Invert(&det);
 
-    if (det<0) return -1;
+    if (det<0) {
+			cout << "Vertex::significance: matrix not invertible, using conservative errors" << endl;
+			invmat(0,0) = 1e-2;
+			invmat(1,1) = 1e-2;
+			invmat(2,2) = 1e-2;
+			invmat(0,1) = 0;
+			invmat(0,2) = 0;
+			invmat(1,2) = 0;
+		}
 
     TMatrixF res1(3,1);
     res1.Mult(invmat,dif2);
@@ -822,8 +867,13 @@ namespace lcfiplus {
     printf("res1: %f,%f,%f\n",res1(0,0),res1(1,0),res1(2,0));
     printf("res2: %f\n",res2(0,0));
     */
+		double ret = res2(0,0);
+		if (ret<0) {
+			cout << "Vertex::significance: significance is negative, forcing it to zero" << endl;
+			ret = 0;
+		}
 
-    return sqrt(res2(0,0));
+    return sqrt(ret);
   }
 
 	float Vertex::getPparallel(const TVector3 &axis)const{
@@ -1006,6 +1056,60 @@ bool Vertex::passesV0selection(const Vertex* primary) const {
 	return false;
 }
 
+	void Vertex::Print()const
+	{
+		cout << "Vertex::Print(): vpos = ( " << _x << " " << _y << " " << _z << ") ";
+		cout << ", chi2 = " << _chi2 << ", prob = " << _prob << (_isPrimary ? ", primary " : "" ) << endl;
+		cout << "   cov matrix: ( " << _cov[xx] << " " << _cov[xy] << " " << _cov[xz] << ")" << endl;
+		cout << "               ( " << _cov[xy] << " " << _cov[yy] << " " << _cov[yz] << ")" << endl;
+		cout << "               ( " << _cov[xz] << " " << _cov[yz] << " " << _cov[zz] << ")" << endl;
+
+		for(unsigned int n=0;n<_tracks.size();n++){
+			const Track *tr = _tracks[n];
+			const MCParticle *mcp = tr->getMcp();
+			const MCParticle *pmcp = (mcp ? mcp->getSemiStableParent() : 0);
+			const MCParticle *pmcpb = (mcp ? mcp->getSemiStableBParent() : 0);
+
+			cout << "   [track] E = " << tr->E() << ", p = (" << tr->Px() << " " << tr->Py() << " " << tr->Pz() << "), chi2 = " << getChi2Track(tr) << ", ";
+			cout << "MCP = " << (mcp ? mcp->getPDG() : 0) << ", parent = " << (pmcp ? pmcp->getPDG() : 0) << ", parent B = " << (pmcpb ? pmcpb->getPDG() : 0) << endl;
+			/*
+			const float* tcov = tr->getCovMatrix();
+			cout << "   trk cov: "
+				<< "d0d0= " << tcov[tpar::d0d0] << ", "
+				<< "d0ph= " << tcov[tpar::d0ph] << ", "
+				<< "phph= " << tcov[tpar::phph] << ", "
+				<< "d0om= " << tcov[tpar::d0om] << ", " << endl
+				<< "phom= " << tcov[tpar::phom] << ", "
+				<< "omom= " << tcov[tpar::omom] << ", "
+				<< "d0z0= " << tcov[tpar::d0z0] << ", "
+				<< "z0ph= " << tcov[tpar::z0ph] << ", " << endl
+				<< "z0om= " << tcov[tpar::z0om] << ", "
+				<< "z0z0= " << tcov[tpar::z0z0] << ", "
+				<< "d0td= " << tcov[tpar::d0td] << ", "
+				<< "phtd= " << tcov[tpar::phtd] << ", " << endl
+				<< "omtd= " << tcov[tpar::omtd] << ", "
+				<< "z0td= " << tcov[tpar::z0td] << ", "
+				<< "tdtd= " << tcov[tpar::tdtd] << endl;
+				*/
+		}
+	}
+
+	int Vertex::dist_sort(const Vertex *a, const Vertex *b) {
+		double a1 = a->getX()*a->getX()+a->getY()*a->getY()+a->getZ()*a->getZ();
+		double b1 = b->getX()*b->getX()+b->getY()*b->getY()+b->getZ()*b->getZ();
+		return (a1 < b1);
+	}
+
+	bool Vertex::covIsGood() const {
+		if (_cov[0] != _cov[0]) return false;
+		if (_cov[1] != _cov[1]) return false;
+		if (_cov[2] != _cov[2]) return false;
+		if (_cov[3] != _cov[3]) return false;
+		if (_cov[4] != _cov[4]) return false;
+		if (_cov[5] != _cov[5]) return false;
+		return true;
+	}
+
   Jet::Jet(const Track* trk) : TLorentzVector(*trk), _id(-1) {
     _tracks.push_back(trk);
   }
@@ -1026,7 +1130,27 @@ bool Vertex::passesV0selection(const Vertex* primary) const {
     for (NeutralVecIte iter = jet.getNeutrals().begin(); iter != jet.getNeutrals().end(); ++iter) {
       _neutrals.push_back(*iter);
     }
+    for (VertexVecIte iter = jet.getVertices().begin(); iter != jet.getVertices().end(); ++iter) {
+      _vertices.push_back(*iter);
+    }
   }
+
+
+	Jet::Jet(const Jet &from, bool extractVertex) : TLorentzVector(from), _id(-1)
+	{
+		_tracks = from.getTracks();
+		_neutrals = from.getNeutrals();
+		
+		if(extractVertex){
+			for (VertexVecIte iter = from.getVertices().begin(); iter != from.getVertices().end(); ++iter) {
+				_tracks.insert(_tracks.end(), (*iter)->getTracks().begin(), (*iter)->getTracks().end());
+			}
+		}else{
+			_vertices = from.getVertices();
+		}
+
+		_params = from.params();
+	}
 
 	// calculate boosted sphericity in the jet's CoM frame
 	double Jet::sphericity() const {
@@ -1041,7 +1165,7 @@ bool Vertex::passesV0selection(const Vertex* primary) const {
 		sphMat(1,2) = 0;
 		sphMat(2,2) = 0;
 
-		TrackVec & tracks = getTracks();
+		TrackVec & tracks = getAllTracks();
 		for (TrackVecIte iter = tracks.begin(); iter != tracks.end(); ++iter) {
 			TLorentzVector trkVec(**iter);
 			trkVec.Boost(-jetBoost);
@@ -1057,6 +1181,41 @@ bool Vertex::passesV0selection(const Vertex* primary) const {
 		TVectorD eig;
 		sphMat.EigenVectors(eig);
 		return eig(1)+eig(2);
+	}
+
+	vector<const Track*> Jet::getAllTracks(bool withoutV0) const {
+		vector<const Track*> ret;
+
+		vector<const Track*>::const_iterator iter;
+		for (iter = getTracks().begin(); iter != getTracks().end(); ++iter) {
+			ret.push_back( *iter );
+		}
+
+		vector<const Vertex*>::const_iterator iter2;
+		for (iter2 = getVertices().begin(); iter2 != getVertices().end(); ++iter2) {
+			const Vertex* vtx = *iter2;
+			if (withoutV0 && vtx->passesV0selection(Event::Instance()->getPrimaryVertex())) continue;
+			for (iter = vtx->getTracks().begin(); iter != vtx->getTracks().end(); ++iter) {
+				ret.push_back( *iter );
+			}
+		}
+
+		return ret;
+	}
+
+	vector<const Vertex*> Jet::getVerticesForFT() const {
+
+		vector<const Vertex*> ret;
+		vector<const Vertex*>::const_iterator iter;
+		for (iter = getVertices().begin(); iter != getVertices().end(); ++iter) {
+			const Vertex* vtx = *iter;
+			if (vtx->getTracks().size() > 1)
+				ret.push_back( vtx );
+		}
+
+		sort(ret.begin(),ret.end(),Vertex::dist_sort);
+
+		return ret;
 	}
 
 

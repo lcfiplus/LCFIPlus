@@ -10,6 +10,11 @@ class TTree;
 
 namespace lcfiplus{
 
+	/**
+		Lcfiplus algorithm for computing variables, to be used in multivariate analysis.
+		@author T. Tanabe, ICEPP, The University of Tokyo
+		@version $Id$
+	 */
 	class MakeNtuple : public Algorithm {
 		public:
 			MakeNtuple(){}
