@@ -1,0 +1,48 @@
+<marlin>
+
+<execute>
+	<processor name="MyLcfiplusProcessor"/>
+	<processor name="MyLCIOOutputProcessor"/>
+</execute>
+
+<global>
+	<parameter name="LCIOInputFiles"> input.slcio </parameter>
+	<parameter name="MaxRecordNumber" value="0" />  
+	<parameter name="SkipNEvents" value="0" />  
+	<parameter name="SupressCheck" value="false" />  
+	<parameter name="GearXMLFile"> GearOutput.xml </parameter>  
+	<parameter name="Verbosity" options="DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT">WARNING</parameter> 
+</global>
+
+<processor name="MyLcfiplusProcessor" type="LcfiplusProcessor">
+
+	<parameter name="Algorithms" type="stringVec">
+		PrimaryVertexFinder BuildUpVertex JetClustering FlavorTag ReadMVA
+	</parameter>
+	<parameter name="PFOCollection" type="string" value="PandoraPFOs" />
+
+	<parameter name="FlavorTag.BookName" type="string" value="bdt" />
+
+	<parameter name="FlavorTag.CategoryDefinition1" type="string">nvtx==0</parameter>
+	<parameter name="FlavorTag.CategoryVariables1" type="stringVec">
+		trk1d0sig trk2d0sig trk1z0sig trk2z0sig trk1pt trk2pt jprobr jprobz
+	</parameter>
+
+	<parameter name="FlavorTag.CategoryDefinition2" type="string">nvtx==1</parameter>
+	<parameter name="FlavorTag.CategoryVariables2" type="stringVec">
+		trk1d0sig trk2d0sig trk1z0sig trk2z0sig trk1pt trk2pt jprobr jprobz
+	</parameter>
+
+	<parameter name="FlavorTag.CategoryDefinition3" type="string">nvtx>=2</parameter>
+	<parameter name="FlavorTag.CategoryVariables3" type="stringVec">
+		trk1d0sig trk2d0sig trk1z0sig trk2z0sig trk1pt trk2pt jprobr jprobz
+	</parameter>
+
+</processor>
+
+<processor name="MyLCIOOutputProcessor" type="LCIOOutputProcessor">
+	<parameter name="LCIOOutputFile" type="string"> test-out.slcio </parameter>
+	<parameter name="LCIOWriteMode" type="string" value="WRITE_NEW"/>
+</processor>
+
+</marlin>

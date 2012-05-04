@@ -1,0 +1,28 @@
+<marlin>
+
+<execute>
+	<processor name="MyLcfiplusProcessor"/>
+</execute>
+
+<global>
+	<parameter name="LCIOInputFiles"> input.slcio </parameter>
+	<parameter name="GearXMLFile"> GearOutput.xml </parameter>  
+	<parameter name="MaxRecordNumber" value="0" />  
+	<parameter name="SkipNEvents" value="0" />  
+	<parameter name="SupressCheck" value="false" />  
+	<parameter name="Verbosity" options="DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT">WARNING</parameter> 
+</global>
+
+<processor name="MyLcfiplusProcessor" type="LcfiplusProcessor">
+	<parameter name="Algorithms" type="stringVec">PrimaryVertexFinder BuildUpVertex JetClustering FlavorTag MakeNtuple</parameter>
+	<parameter name="PFOCollection" type="string" value="PandoraPFOs" />
+
+	<parameter name="PrimaryVertexCollectionName" type="string" value="PrimaryVertex" />
+	<parameter name="BuildUpVertexCollectionName" type="string" value="BuildUpVertex" />
+	<parameter name="JetCollectionName" type="string" value="VertexJets" />
+
+	<parameter name="JetClustering.NJetsRequested" type="int" value="2" />
+	<parameter name="MakeNtuple.OutputRootFileName" type="string" value="ntuple.root" />
+</processor>
+
+</marlin>
