@@ -4,6 +4,7 @@
 #define process_h 1
 
 #include "lcfiplus.h"
+#include "VertexFinderSuehara.h"
 
 namespace lcfiplus{
 	struct TrackSelectorConfig;
@@ -33,7 +34,7 @@ namespace lcfiplus{
 	class BuildUpVertex : public Algorithm
 	{
 	public:
-		BuildUpVertex(){}
+		BuildUpVertex() : _vertices(0) {}
 		virtual ~BuildUpVertex(){}
 
 		void init(Parameters *param);
@@ -44,6 +45,7 @@ namespace lcfiplus{
 
 	private:
 		std::vector<Vertex *> * _vertices;	//!
+		std::vector<Vertex *> * _v0vertices;	//!
 
 		// parameters
 		std::string _primvtxcolname;
@@ -54,6 +56,7 @@ namespace lcfiplus{
 		double _massth;
 		double _posth;
 		double _chi2orderinglimit;
+		int _v0sel;
 
 		// association parameters
 		bool _doassoc;
@@ -79,14 +82,47 @@ namespace lcfiplus{
 	private:
 		VertexVec * _vertices; //!
 		map<double, vector<Jet *> * > _jetsmap; //!
+		map<double, vector<Vertex *> * > _jetvtxmap; //!
 		vector<int> _njets;
 		vector<double> _ycut;
 		bool _useMuonID;
 		double _vsMinDist;
 		double _vsMaxDist;
 		double _vsK0MassWidth;
+		bool _outputVertexStoresVertex;
 		string _vcolname;
+		int _maxYth;
 
+	};
+
+	class JetVertexRefiner : public Algorithm
+	{
+	public:
+		JetVertexRefiner(){}
+		virtual ~JetVertexRefiner(){}
+
+		void init(Parameters *param);
+		void process();
+		void end();
+
+		ClassDef(JetVertexRefiner,1);
+
+	private:
+		VertexVec * _invertices; //!
+		VertexVec * _v0vertices; //!
+		vector<Vertex *> * _outvertices; //!
+
+		JetVec * _inputJets;	//!
+		vector<Jet *> * _outputJets; //!
+
+		VertexFinderSuehara::VertexFinderSueharaConfig _cfg;
+		double _oneVtxProbTh;
+		double _maxCharmFlightLengthPerJetEnergy;
+
+		string _jincolname;
+		string _vincolname;
+		string _vv0colname;
+		string _vprimcolname;
 	};
 
 }

@@ -45,6 +45,8 @@ void TrainMVA::init(Parameters *param) {
 	_cutC = param->get("TrainMVA.PreSelectionC",string(""));
 	_cutO = param->get("TrainMVA.PreSelectionO",string(""));
 
+	_skipTrain = param->get("TrainMVA.SkipTrain",int(0));
+
 	_verbose = param->get("TrainMVA.Verbose",true);
 
 	// set output directory for weight files
@@ -118,7 +120,6 @@ void TrainMVA::init(Parameters *param) {
 		cout << "FlavorTag category definition was not found, aborting" << endl;
 		exit(1);
 	}
-
 }
 
 void TrainMVA::process() {
@@ -150,6 +151,10 @@ void TrainMVA::end() {
 	gSystem->MakeDirectory(_outputDirectory);
 
 	for (unsigned int icat=0; icat<_categories.size(); ++icat) {
+		if (_skipTrain>0 && (int)icat < _skipTrain) {
+			cout << "Skipping training for category #" << icat << endl;
+			continue;
+		}
 		const FlavtagCategory& c = _categories[icat];
 
 		// specify output directory

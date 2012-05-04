@@ -14,6 +14,11 @@ class TTree;
 
 namespace lcfiplus{
 
+	/**
+		Lcfiplus algorithm for reading training data from TMVA.
+		@author T. Tanabe, ICEPP, The University of Tokyo
+		@version $Id$
+	 */
 	class ReadMVA : public Algorithm {
 		public:
 			ReadMVA() {}

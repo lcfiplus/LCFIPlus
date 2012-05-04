@@ -3,6 +3,7 @@
 
 #include "EventStore.h"
 #include "TrackSelector.h"
+#include "VertexSelector.h"
 #include "JetFinder.h"
 #include "VertexFitterLCFI.h"
 #include "VertexFinderTearDown.h"
@@ -55,6 +56,7 @@ namespace lcfiplus{
 	}
 
 	void PrimaryVertexFinder::process(){
+		bool verbose = false;
 		Event *event = Event::Instance();
 
 		// clearing old vertices
@@ -63,12 +65,14 @@ namespace lcfiplus{
 		// cut bad tracks
 		TrackVec &tracks = event->getTracks();
 		TrackVec passedTracks = TrackSelector() (tracks, *_secVtxCfg);
-		cout << "PrimaryVertexFinder / track selection: " << passedTracks.size() << "/" << tracks.size() << " accepted." << endl;
+		if (verbose)
+			cout << "PrimaryVertexFinder / track selection: " << passedTracks.size() << "/" << tracks.size() << " accepted." << endl;
 
 		// primary vertex finder
 		Vertex * vtx = findPrimaryVertex(passedTracks,_chi2th);
 		_vertex->push_back(vtx);
-		cout << "PrimaryVertexFinder: " << vtx->getTracks().size() << " tracks associated to the primary vertex." << endl;
+		if (verbose)
+			cout << "PrimaryVertexFinder: " << vtx->getTracks().size() << " tracks associated to the primary vertex." << endl;
 	}
 
 	void PrimaryVertexFinder::end() {
@@ -84,6 +88,13 @@ namespace lcfiplus{
 		Event::Instance()->Register(vcolname.c_str(), _vertices, EventStore::PERSIST);
 
 		_primvtxcolname = param->get("PrimaryVertexCollectionName",string("PrimaryVertex"));
+		Event::Instance()->setDefaultPrimaryVertex(_primvtxcolname.c_str());
+
+		_v0vertices = 0;
+		string v0vcolname = param->get("BuildUpVertex.V0VertexCollectionName",string(""));
+		if(v0vcolname != ""){
+			Event::Instance()->Register(v0vcolname.c_str(), _v0vertices, EventStore::PERSIST);
+		}
 
 		// configuration
 		// track cut
@@ -112,6 +123,7 @@ namespace lcfiplus{
 		_doassoc = param->get("BuildUpVertex.AssocIPTracks", 1);
 		_minimumdist = param->get("BuildUpVertex.AssocIPTracksMinDist", 0.);
 		_chi2ratio = param->get("BuildUpVertex.AssocIPTracksChi2RatioSecToPri", 2.0);
+		_v0sel = param->get("BuildUpVertex.UseV0Selection", 1);
 	}
 
 	void BuildUpVertex::process(){
@@ -126,7 +138,7 @@ namespace lcfiplus{
 		TrackVec &tracks = event->getTracks();
 		TrackVec passedTracks = TrackSelector() (tracks, *_secVtxCfg);
 
-		cout << "BuildUpVertex / track selection: " << passedTracks.size() << "/" << tracks.size() << " accepted." << endl;
+		//cout << "BuildUpVertex / track selection: " << passedTracks.size() << "/" << tracks.size() << " accepted." << endl;
 
 		Vertex *primvtx;
 
@@ -137,10 +149,31 @@ namespace lcfiplus{
 			primvtx = 0;
 		}
 
+		VertexFinderSuehara::VertexFinderSueharaConfig cfg;
+		cfg.chi2th = _chi2thsec;
+		cfg.massth = _massth;
+		cfg.v0selVertex.minpos = _posth;
+		cfg.chi2orderinglimit = _chi2orderinglimit;
+		if(!_v0sel){
+			cfg.v0selTrack.setNoV0Cut();
+			cfg.v0selVertex.setNoV0Cut();
+		}
+		cfg.minimumdistIP = _minimumdist;
+		cfg.chi2ratioIP = _chi2ratio;
+
 		// build up vertexing
-		VertexFinderSuehara::buildUp(passedTracks, *_vertices, _chi2thpri, _chi2thsec, _massth, _posth, _chi2orderinglimit, primvtx);
+		vector<Vertex *> v0tmp;
+		VertexFinderSuehara::buildUp(passedTracks, *_vertices, (_v0vertices ? *_v0vertices : v0tmp), _chi2thpri, cfg, primvtx);
+		// TODO: deletion of v0tmp
+
 		if(_doassoc)
-			VertexFinderSuehara::associateIPTracks(*_vertices,_minimumdist, 0, _chi2ratio);
+			VertexFinderSuehara::associateIPTracks(*_vertices,primvtx, cfg);
+
+		/*
+		for(unsigned int n=0;n<_vertices->size();n++){
+			(*_vertices)[n]->Print();
+		}
+		*/
 	}
 
 	void BuildUpVertex::end(){
@@ -159,6 +192,7 @@ namespace lcfiplus{
 		param->fetchArray("JetClustering.OutputJetCollectionName",jcolnames);
 		param->fetchArray("JetClustering.NJetsRequested",_njets);
 		param->fetchArray("JetClustering.YCut",_ycut);
+		_outputVertexStoresVertex = param->get("JetClustering.OutputJetStoresVertex",int(0));
 
 		// checks
 		if(jcolnames.size() == 0)
@@ -182,9 +216,10 @@ namespace lcfiplus{
 
 		// sort njetsrequested / ycut
 		if(_njets.size() > 1){
-			for(unsigned int n=0;n<_njets.size();n++){
+			for(unsigned int n=0;n<_njets.size();n++)
+			{
 				vector<Jet *> *jets;
-				Event::Instance()->Register(jcolnames[n].c_str(), jets, EventStore::PERSIST | EventStore::JET_EXTRACT_VERTEX);
+				Event::Instance()->Register(jcolnames[n].c_str(), jets, EventStore::PERSIST | (_outputVertexStoresVertex ? EventStore::JET_WRITE_VERTEX : 0));
 				_jetsmap[(double)_njets[n]] = jets;
 			}
 			// sort njets
@@ -193,7 +228,7 @@ namespace lcfiplus{
 		else{
 			for(unsigned int n=0;n<_ycut.size();n++){
 				vector<Jet *> *jets;
-				Event::Instance()->Register(jcolnames[n].c_str(), jets, EventStore::PERSIST | EventStore::JET_EXTRACT_VERTEX);
+				Event::Instance()->Register(jcolnames[n].c_str(), jets, EventStore::PERSIST | (_outputVertexStoresVertex ? EventStore::JET_WRITE_VERTEX : 0));
 				_jetsmap[_ycut[n]] = jets;
 			}
 			// sort njets
@@ -205,6 +240,8 @@ namespace lcfiplus{
 		_vsMinDist = param->get("JetClustering.VertexSelectionMinimumDistance", double(0.3));
 		_vsMaxDist = param->get("JetClustering.VertexSelectionMaximumDistance", double(30.));
 		_vsK0MassWidth = param->get("JetClustering.VertexSelectionK0MassWidth", double(0.02));
+
+		_maxYth = param->get("JetClustering.MaxNumberOfJetsForYThreshold", int(10));
 	}
 
 	void JetClustering::process()
@@ -235,24 +272,21 @@ namespace lcfiplus{
 		jetCfg.Ycut = _ycut[0];
 		JetFinder* jetFinder = new JetFinder(jetCfg);
 
+		double *ymin = new double[_maxYth];
+		memset(ymin, 0, sizeof(double) * _maxYth);
+
 		// select vertices
 		vector<const Vertex *> selectedVertices;
 		vector<const Track *> residualTracks = event->getTracks();
 		if(_vertices){
-			for(VertexVecIte it = _vertices->begin(); it != _vertices->end();it++){
-				const Vertex *v = *it;
-				double mass = 0.;
-				double k0mass = .498;
-				if(v->getTracks().size() == 2)
-					mass = (*(TLorentzVector *)(v->getTracks()[0]) + *(TLorentzVector *)(v->getTracks()[1])).M();
-				if((mass < k0mass - _vsK0MassWidth/2 || mass > k0mass + _vsK0MassWidth/2) && v->getPos().Mag() < _vsMaxDist && v->getPos().Mag() > _vsMinDist){
-					selectedVertices.push_back(v);
-					for(TrackVecIte itt = v->getTracks().begin(); itt != v->getTracks().end(); itt++){
-						vector<const Track *>::iterator itt2 = remove_if(residualTracks.begin(), residualTracks.end(), bind2nd(equal_to<const Track *>(), *itt));
-						residualTracks.erase(itt2, residualTracks.end());
-					}
-				}
-			}
+			VertexSelectorConfig vscfg;
+			vscfg.rejectdist = true;
+			vscfg.minpos = _vsMinDist;
+			vscfg.maxpos = _vsMaxDist;
+			vscfg.rejectk0 = true;
+			vscfg.k0width = _vsK0MassWidth/2;
+
+			selectedVertices = VertexSelector()(*_vertices, vscfg, residualTracks,false);
 		}
 
 		int nVertexJets;
@@ -260,13 +294,13 @@ namespace lcfiplus{
 		if(_njets.size() > 1){
 
 			for(unsigned int n=0;n<_njets.size();n++){
-				cout << "JetFinder: number of jets = " << _njets[n] << endl;
+				//cout << "JetFinder: number of jets = " << _njets[n] << endl;
 
 				jetCfg.nJet = _njets[n];
 				jetFinder->Configure(jetCfg);
 
 				if (nVertexJets > _njets[n]){
-					cout << "JetFinder: number of vertex jets is larger than njet: reprocess from prerun..." << endl;
+					//cout << "JetFinder: number of vertex jets is larger than njet: reprocess from prerun..." << endl;
 
 					// clearing curjets...
 					for(unsigned int j=0;j<curjets.size();j++){
@@ -277,40 +311,96 @@ namespace lcfiplus{
 					curjets = jetFinder->prerun(residualTracks, event->getNeutrals(), selectedVertices, _useMuonID, &nVertexJets);
 				}
 
-				double ymin;
 				vector<Jet *> &jets = *(_jetsmap[_njets[n]]);
-				jets = jetFinder->run(curjets, &ymin);
+				jets = jetFinder->run(curjets, ymin, _maxYth);
 				curjets.clear();
 
 				// copy jets to curjets
 				for(unsigned int j=0;j<jets.size(); j++){
 					curjets.push_back(new Jet(*jets[j]));
 				}
+
+				/*
+				if (_outputVertexStoresVertex) {
+					vector<Vertex*> &jetvtx = *(_jetvtxmap[_njets[n]]);
+					jetvtx.clear();
+					for(unsigned int j=0;j<jets.size(); j++){
+						vector<const Vertex*> v = jets[j]->getVertices();
+						for(unsigned int k=0; k<v.size(); ++k) {
+							jetvtx.push_back( const_cast<Vertex*>(v[k]) );
+							//jetvtx.push_back( new Vertex(*v[k]) );
+						}
+					}
+				}
+				*/
 			}
 		}
 		else{
 
 			for(unsigned int n=0;n<_ycut.size();n++){
-				cout << "JetFinder: YCut = " << _ycut[n] << endl;
+				//cout << "JetFinder: YCut = " << _ycut[n] << endl;
 
 				jetCfg.Ycut = _ycut[n];
 				jetFinder->Configure(jetCfg);
 
-				double ymin;
 				vector<Jet *> &jets = *(_jetsmap[_ycut[n]]);
-				jets = jetFinder->run(curjets, &ymin);
+				jets = jetFinder->run(curjets, ymin, _maxYth);
 				curjets.clear();
 
 				// copy jets to curjets
 				for(unsigned int j=0;j<jets.size(); j++){
 					curjets.push_back(new Jet(*jets[j]));
 				}
+
+				/*
+				if (_outputVertexStoresVertex) {
+					vector<Vertex*> &jetvtx = *(_jetvtxmap[_ycut[n]]);
+					jetvtx.clear();
+					for(unsigned int j=0;j<jets.size(); j++){
+						vector<const Vertex*> v = jets[j]->getVertices();
+						for(unsigned int k=0; k<v.size(); ++k) {
+							jetvtx.push_back( const_cast<Vertex*>(v[k]) );
+							//jetvtx.push_back( new Vertex(*v[k]) );
+						}
+					}
+				}
+				*/
 			}
 		}
 
 		if(_vertices){
-			cout << "JetClustering: _vertices.size() = " << _vertices->size() << endl;
-			cout << "JetClustering: selectedVertices.size() = " << selectedVertices.size() << endl;
+			//cout << "JetClustering: _vertices.size() = " << _vertices->size() << endl;
+			//cout << "JetClustering: selectedVertices.size() = " << selectedVertices.size() << endl;
+		}
+
+		// writing ymins to Jet collection
+
+		// jetclustering to end for ymin array
+		jetCfg.nJet = 1;
+		jetCfg.Ycut = 0;
+		jetFinder->Configure(jetCfg);
+
+		vector<Jet *> jets = jetFinder->run(curjets, ymin, _maxYth);
+		// delete jets
+		for(unsigned int i=0;i<jets.size();i++)
+			delete jets[i];
+		jets.clear();
+
+		Parameters param;
+		for(int i=0;i<_maxYth;i++){
+			param.add(TString::Format("y%d%d",i,i+1), (double)ymin[i]);
+
+			//cout << "y" << i << i+1 << " = " << ymin[i] << endl;
+		}
+
+		map<double, vector<Jet *> * >::iterator itjmap;
+		for(itjmap = _jetsmap.begin(); itjmap != _jetsmap.end(); itjmap ++){
+			vector<Jet *> *pjlist = itjmap->second;
+
+			for(unsigned int i=0;i<pjlist->size();i++){
+				Jet *j = (*pjlist)[i];
+				j->addParam("yth", param);
+			}
 		}
 
 	}
@@ -320,34 +410,147 @@ namespace lcfiplus{
 	}
 
 
-	/*
-	void JetVertexRefiner::init() {
+	
+	void JetVertexRefiner::init(Parameters *param) {
 		Algorithm::init(param);
 
-		string vcolname = param->get("JetVertexRefinerInputJetCollectionName",string("VertexJets"));
-		Event::Instance()->Get(vcolname.c_str(), _inputJets);
-		string jcolname = param->get("JetVertexRefinerOutputJetCollectionName",string("RefinedJets"));
-		Event::Instance()->Register(jcolname.c_str(), _outputJets, EventStore::PERSIST | EventStore::JET_EXTRACT_VERTEX);
+		// collections - jets
+
+		_jincolname = param->get("JetVertexRefiner.InputJetCollectionName",string("VertexJets"));
+		string jcolname = param->get("JetVertexRefiner.OutputJetCollectionName",string("RefinedJets"));
+		Event::Instance()->Register(jcolname.c_str(), _outputJets, EventStore::PERSIST | EventStore::JET_WRITE_VERTEX);
+
+		// collections - vertices
+		_vprimcolname = param->get("JetVertexRefiner.PrimaryVertexCollectionName",string("PrimaryVertex"));
+		_vincolname = param->get("JetVertexRefiner.InputVertexCollectionName",string("BuildUpVertex"));
+		_vv0colname = param->get("JetVertexRefiner.V0VertexCollectionName",string("BuildUpVertex_V0"));
+		string voutcolname = param->get("JetVertexRefiner.OutputVertexCollectionName",string("RefinedVertices"));
+		Event::Instance()->Register(voutcolname.c_str(), _outvertices, EventStore::PERSIST);
+
+		// parameters - single track finder
+		_cfg.minPosSingle = param->get("JetVertexRefiner.MinPosSingle", double(0.3));
+		_cfg.maxPosSingle = param->get("JetVertexRefiner.MaxPosSingle", double(30.));
+		_cfg.minEnergySingle = param->get("JetVertexRefiner.MinEnergySingle", double(1.));
+		_cfg.maxAngleSingle = param->get("JetVertexRefiner.MaxAngleSingle", double(.5));
+		_cfg.maxSeparationPerPosSingle = param->get("JetVertexRefiner.MaxSeparationPerPosSingle", double(.1));
+		_cfg.mind0SigSingle = param->get("JetVertexRefiner.mind0sigSingle", double(5.));
+		_cfg.minz0SigSingle = param->get("JetVertexRefiner.minz0sigSingle", double(5.));
+		_oneVtxProbTh = param->get("JetVertexRefiner.OneVertexProbThreshold", double(0.001));
+		_maxCharmFlightLengthPerJetEnergy = param->get("JetVertexRefiner.MaxCharmFlightLengthPerJetEnergy", double(0.1));
+
+
+		_invertices = 0;
+		_v0vertices = 0;
+		_inputJets = 0;
 	}
 
 	void JetVertexRefiner::process() {
-		// clearing old jets
+		Event *event = Event::Instance();
+
+		if(!_invertices){
+			event->Get(_vincolname.c_str(), _invertices);
+			if(!_invertices)throw(Exception("JetVertexRefiner: input vertex collection is invalid."));
+		}
+		if(!_v0vertices){
+			event->Get(_vv0colname.c_str(), _v0vertices);
+			if(!_v0vertices)throw(Exception("JetVertexRefiner: input V0 vertex collection is invalid."));
+		}
+		if(!_inputJets){
+			event->Get(_jincolname.c_str(), _inputJets);
+			if(!_inputJets)throw(Exception("JetVertexRefiner: input jet collection is invalid."));
+		}
+
+
+/*
+		// clearing old jets : but should be done in EventStore
 		for(unsigned int n=0;n<_outputJets->size();n++)
 			delete (*_outputJets)[n];
 		_outputJets->clear();
+		for(unsigned int n=0;n<_outvertices->size();n++)
+			delete (*_outvertices)[n];
+		_outvertices->clear();
+*/
 
-		Event *event = Event::Instance();
+		// copy jet with extracting vertices
 
-		TrackVec residualTracks = event->getTracks();
-		for(JetVecIte it = _inputJets->begin(); it != _inputJets->end();++it){
-			Jet* jet = *it;
+		// obtain jetvertices
+		const Vertex *ip = event->getPrimaryVertex(_vprimcolname.c_str());
 
-			TrackVec & tracks = jet->getTracks();
-			VertexVec & vertices = jet->getVertices();
-			for (VertexVecIte it2 = vertices.begin(); it2 != vertices.end(); ++it2) {
-			}
+		vector<Vertex *> inVerticesCopy;
+		for(unsigned int n=0;n<_invertices->size(); n++){
+			inVerticesCopy.push_back(new Vertex(*((*_invertices)[n])));
 		}
+
+		vector<vector<Vertex *> > jetVertices;
+		vector<vector<const Track *> > jetResidualTracks;
+		algoEtc::connectVerticesToJets(*_inputJets, inVerticesCopy, jetVertices, jetResidualTracks,ip);
+
+		// invoke singletrackfinder
+		for(unsigned int j=0;j<_inputJets->size();j++){
+			// new jet creation
+			Jet *nj = new Jet(*(*_inputJets)[j], true);
+
+			vector<Vertex *> singleVtcs = VertexFinderSuehara::makeSingleTrackVertices(constVector(jetVertices[j]), jetResidualTracks[j], *_v0vertices, ip, _cfg);
+			VertexFinderSuehara::recombineVertices(jetVertices[j], singleVtcs);
+
+			// final v0 selection
+			VertexSelector()(jetVertices[j], _cfg.v0selVertex);
+
+			// selection on one vertex probability
+			if(jetVertices[j].size() > 1){
+				vector<const Track *> singletracklist = jetVertices[j][0]->getTracks();
+				singletracklist.insert(singletracklist.end(), jetVertices[j][1]->getTracks().begin(), jetVertices[j][1]->getTracks().end());
+
+				Vertex *single = VertexFitterSimple_V()(singletracklist.begin(), singletracklist.end());
+				if(single->getProb() > _oneVtxProbTh){
+					delete jetVertices[j][0];
+					delete jetVertices[j][1];
+					jetVertices[j].clear();
+					jetVertices[j].push_back(single);
+				}else{
+					// caching single vertex probability
+					Parameters para;
+					para.add("SingleVertexProbability", (double)single->getProb());
+					nj->addParam("RefinedVertex", para);
+
+					delete single;
+				}
+			}
+
+			// flight length of charm
+			if(jetVertices[j].size() > 1){
+				double cflt = (jetVertices[j][1]->getPos() - jetVertices[j][0]->getPos()).Mag();
+				if(cflt > _maxCharmFlightLengthPerJetEnergy * (*_inputJets)[j]->E()){
+					// eleminate second vtx
+					delete jetVertices[j][1];
+					jetVertices[j].resize(1);
+				}
+			}
+
+			// TODO: split vertices with low probability single vertex 
+
+			// set vertex to jets
+			if(jetVertices[j].size() > 0){
+				nj->add(jetVertices[j][0]);
+				_outvertices->push_back(jetVertices[j][0]);
+			}
+			if(jetVertices[j].size() > 1){
+				nj->add(jetVertices[j][1]);
+				_outvertices->push_back(jetVertices[j][1]);
+			}
+
+			_outputJets->push_back(nj);
+		}
+
+		//for(unsigned int n=0;n<_outputJets->size();n++){ (*_outputJets)[n]->Print(); }
+
+
 	}
-	*/
+	
+	void JetVertexRefiner::end() {
+		//cout << "ENDO" << endl;
+	}
+
+
 }
 

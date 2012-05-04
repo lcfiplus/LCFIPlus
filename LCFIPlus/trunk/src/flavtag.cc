@@ -22,7 +22,7 @@ namespace lcfiplus {
 	// singleton
 	FTManager FTManager::_theInstance;
 
-	FTManager::FTManager() : _file(0), _tree(0), _ntpName("ntp"), _evaluate(false) {}
+	FTManager::FTManager() : _file(0), _tree(0), _ntpName("ntp"), _evaluate(false), _paramName("lcfiplus") {}
 
 	void FTManager::add(FTAlgo* obj) {
 		_algoList.push_back(obj);
@@ -44,7 +44,7 @@ namespace lcfiplus {
 			snprintf( buf, 1000, "%s/F", algo->getName().c_str() );
 			_tree->Branch( algo->getName().c_str(), algo->getValueAddress(), buf );
 
-			cout << "Setting branch address for variable '" << algo->getName() << "'" << endl;
+			//cout << "Setting branch address for variable '" << algo->getName() << "'" << endl;
 		}
 	}
 
@@ -65,7 +65,7 @@ namespace lcfiplus {
 			snprintf( buf, 1000, "%s/F", algo->getName().c_str() );
 			_tree->Branch( algo->getName().c_str(), algo->getValueAddress(), buf );
 
-			cout << "Setting branch address for variable '" << algo->getName() << "'" << endl;
+			//cout << "Setting branch address for variable '" << algo->getName() << "'" << endl;
 		}
 	}
 
@@ -95,6 +95,7 @@ namespace lcfiplus {
 				algo->process();
 			}
 
+			int category = -1;
 			if (_evaluate) {
 				double btag(-1);
 				double ctag(-1);
@@ -103,8 +104,9 @@ namespace lcfiplus {
 					TTreeFormula form( "form", _categories[i].definition, _tree );
 					//cout << "category " << i << " evaluates to: " << form.EvalInstance() << endl;
 					if ( form.EvalInstance() == 1 ) {
-						btag = _readers[0]->EvaluateMulticlass("bdt")[0];
-						ctag = _readers[0]->EvaluateMulticlass("bdt")[1];
+						btag = _readers[i]->EvaluateMulticlass("bdt")[0];
+						ctag = _readers[i]->EvaluateMulticlass("bdt")[1];
+						category = i;
 						//cout << "jet category is " << i << " [btag=" << btag << ", ctag=" << ctag << "]" << endl;
 					}
 				}
@@ -112,8 +114,9 @@ namespace lcfiplus {
 				Parameters param;
 				param.add( "BTag", btag );
 				param.add( "CTag", ctag );
+				param.add( "Category", (double)category );
 
-				jet->addParam( "FlavorTag", param );
+				jet->addParam( _paramName.Data(), param );
 			}
 
 			if (_file) fillTree();

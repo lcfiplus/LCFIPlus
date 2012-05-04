@@ -6,6 +6,7 @@
 #include <string>
 
 #include "LCIOStorer.h"
+#include "EventStore.h"
 
 using namespace lcio ;
 using namespace marlin ;
@@ -15,10 +16,11 @@ using namespace marlin ;
  * 
  * @author Tomohiko Tanabe, ICEPP, The University of Tokyo
  * @author Taikan Suehara, ICEPP, The University of Tokyo
- * @version $Id: LcfiplusProcessor.h,v 1.1.1.1 2009/06/04 00:16:27 suehara Exp $ 
+ * @version $Id$
  */
 
-class LcfiplusProcessor : public Processor {
+class LcfiplusProcessor : public Processor, public lcfiplus::EventStoreObserver
+{
   
  public:
   
@@ -47,11 +49,16 @@ class LcfiplusProcessor : public Processor {
    */
   virtual void end() ;
   
+
+	virtual void RegisterCallback(const char *name, const char *classname, int flags);
+
  private:
 
 	// lciostorer singleton
 	static lcfiplus::LCIOStorer *_lcio;
 	bool _lcioowner;
+
+	int _useMcp;
 
   /** Input collection name.
    */
@@ -65,14 +72,19 @@ class LcfiplusProcessor : public Processor {
 
   int _nRun ;
   int _nEvt ;
-
-	int _autoVertex;
-	int _autoJet;
-
-	int _useMcp;
+	int _printPeriod;
 
 	int _readSubdetectorEnergies;
+	int _updateVertexRPDaughters;
+	int _ignoreLackOfVertexRP;
 
+	// collections to register
+	std::vector<std::string> _vertexColNamesToWrite;
+	std::vector<std::string> _jetColNamesToWrite;
+	std::vector<int> _vertexColNamesToWriteFlags;
+	std::vector<int> _jetColNamesToWriteFlags;
+
+	bool _inInit;
 } ;
 
 #endif

@@ -50,8 +50,10 @@ lcfiplus::Vertex * lcfiplus::findPrimaryVertex(TrackVec &tracks, double chi2)
 	Vertex *ip;
 	makeBeamVertex(ip);
 
-	//Vertex * ret =  VertexFinderTearDown<vector, VertexFitterSimple>()(tracks, 0, chi2, 0, ip);
-	Vertex * ret =  VertexFinderTearDown<vector>()(tracks, 0, chi2, 0, ip);
+	Vertex * ret =  VertexFinderTearDown<vector, VertexFitterSimple>()(tracks, 0, chi2, 0, ip);
+	//Vertex * ret =  VertexFinderTearDown<vector>()(tracks, 0, chi2, 0, ip);
+	if(ret)
+		ret->setPrimary(true);
 
 	if (ret == 0) return ip; // FIXME: this is safety procedure in case primary vertex is not found; need to confirm this is good behavior
 

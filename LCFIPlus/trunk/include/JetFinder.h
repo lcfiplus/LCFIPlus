@@ -64,12 +64,12 @@ namespace lcfiplus {
       vector<Jet*> run(TrackVec &tracks);
 			/**
 				Perform jet clustering using both charged tracks and neutral particles. */
-      vector<Jet*> run(TrackVec &tracks, NeutralVec &neutrals, double *pymin = 0);
+      vector<Jet*> run(TrackVec &tracks, NeutralVec &neutrals, double *pymin = 0, int ynjetmax = 10);
 			/**
 				Perform jet clustering using charged tracks and neutral particles
 				with the contraint that the given vertices are not merged.
 				*/
-      vector<Jet*> run(TrackVec &tracks, NeutralVec &neutrals, VertexVec &vertices, double *pymin = 0, bool findmu = false);
+      vector<Jet*> run(TrackVec &tracks, NeutralVec &neutrals, VertexVec &vertices, double *pymin = 0, bool findmu = false, int ynjetmax = 10);
 			/**
 				Lepton finder and vertex isolator/combiner, called from run() with vertices
 				*/
@@ -77,7 +77,7 @@ namespace lcfiplus {
 			/**
 				Main function of jet clustering, called from other run() functions.
 				*/
-      vector<Jet*> run(vector<Jet*> input, double *pymin = 0);
+      vector<Jet*> run(vector<Jet*> input, double *pymin = 0, int ynjetmax = 10);
 
     private:
       double (*_Yfunc)(Jet& jet1, Jet& jet2, double Evis2);

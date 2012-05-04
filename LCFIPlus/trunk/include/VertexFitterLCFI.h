@@ -86,7 +86,7 @@ namespace lcfiplus {
 					<< cov[0] << "  " << cov[1] << "  " << cov[2] << "  " << cov[3] << "  " << cov[4] << "  " << cov[5] << fixed << endl;
 				 */
 
-				Vertex *vtx = new Vertex(chi2fit, prob,vtxpos(0), vtxpos(1), vtxpos(2),cov);
+				Vertex *vtx = new Vertex(chi2fit, prob,vtxpos(0), vtxpos(1), vtxpos(2),cov, false);
 				for(unsigned int i=0;i<trackStates.size();i++){
 					vtx->add(trackMap[trackStates[i]], chi2map[trackStates[i]]);
 				}

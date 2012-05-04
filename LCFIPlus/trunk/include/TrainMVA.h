@@ -13,6 +13,11 @@ class TTree;
 
 namespace lcfiplus{
 
+	/**
+		Lcfiplus algorithm for training classifications using TMVA.
+		@author T. Tanabe, ICEPP, The University of Tokyo
+		@version $Id$
+	 */
 	class TrainMVA : public Algorithm {
 		public:
 			TrainMVA(){}
@@ -41,6 +46,7 @@ namespace lcfiplus{
 			TMVA::Types::EMVA _tmvaBookType;
 			TString _tmvaBookName;
 			TString _tmvaBookOptions;
+			int _skipTrain;
 
 			vector<FlavtagCategory> _categories;
 

@@ -25,15 +25,21 @@
 #pragma link C++ class lcfiplus::LCIOStorer;
 #pragma link C++ class lcfiplus::TreeStorer;
 #pragma link C++ class lcfiplus::EventStore;
+#pragma link C++ class lcfiplus::EventStoreObserver;
  
 #pragma link C++ class lcfiplus::Algorithm;
 #pragma link C++ class lcfiplus::BuildUpVertex;
 #pragma link C++ class lcfiplus::JetClustering;
+#pragma link C++ class lcfiplus::JetVertexRefiner;
 #pragma link C++ class lcfiplus::PrimaryVertexFinder;
 #pragma link C++ class lcfiplus::FlavorTag;
 #pragma link C++ class lcfiplus::MakeNtuple;
 #pragma link C++ class lcfiplus::TrainMVA;
 #pragma link C++ class lcfiplus::ReadMVA;
+
+#pragma link C++ class lcfiplus::ZHHAlgo;
+#pragma link C++ class lcfiplus::TestAlgo;
+#pragma link C++ class lcfiplus::TestAlgoV0;
 
 #endif
 

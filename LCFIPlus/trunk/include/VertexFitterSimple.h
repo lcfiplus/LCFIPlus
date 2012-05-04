@@ -59,7 +59,7 @@ namespace lcfiplus {
 						vresult.Print();
 					}
 
-					Vertex *vtx = new Vertex(chi2, TMath::Prob(chi2, ntracks*2-3), vresult.x(), vresult.y(), vresult.z(), cov);
+					Vertex *vtx = new Vertex(chi2, TMath::Prob(chi2, ntracks*2-3), vresult.x(), vresult.y(), vresult.z(), cov, false);
 					for(Iterator it = tracksBegin; it != tracksEnd; it++,ntracks++){
 						Helix hel(*it);
 						double ll = hel.LogLikelihood(vresult); // need to incorporate vertex error??
@@ -103,7 +103,7 @@ namespace lcfiplus {
 					vresult.Print();
 				}
 
-				Vertex *vtx = new Vertex(chi2, TMath::Prob(chi2, ntracks*2-3), vresult.x(), vresult.y(), vresult.z(), cov);
+				Vertex *vtx = new Vertex(chi2, (ntracks > 1 ? TMath::Prob(chi2, ntracks*2-3) : 1), vresult.x(), vresult.y(), vresult.z(), cov, false);
 				for(Iterator it = tracksBegin; it != tracksEnd;it++, ntracks++){
 					Helix hel(*it);
 					double ll = hel.LogLikelihood(vresult); // need to incorporate vertex error??

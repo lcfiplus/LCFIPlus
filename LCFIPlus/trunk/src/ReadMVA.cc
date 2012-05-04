@@ -31,6 +31,8 @@ using namespace lcfiplus::algoEtc;
 
 void ReadMVA::init(Parameters *param) {
 	Algorithm::init(param);
+	
+	_verbose = false;
 
 	// get FTManager for variable registration
 	FTManager &mgr = FTManager::getInstance();
@@ -40,6 +42,7 @@ void ReadMVA::init(Parameters *param) {
 	_outputDirectory = param->get("FlavorTag.WeightsDirectory",TString("lcfiweights"));
 	_outputPrefix = param->get("FlavorTag.WeightsPrefix",TString("zpole_v00"));
 	_tmvaBookName = param->get("FlavorTag.BookName",TString("bdt"));
+	mgr.setParamName( param->get("FlavorTag.PIDAlgo",TString("lcfiplus")) );
 
 	// process categories & variables
 	for (int i=1; ; ++i) {
@@ -67,10 +70,12 @@ void ReadMVA::init(Parameters *param) {
 		specTag << "FlavorTag.CategorySpectators" << i;
 		param->fetchArray( specTag.str().c_str(), c.spec );
 
-		cout << "FlavorTag category: " << c.definition << endl;
-		cout << "FlavorTag preselection: " << c.preselection << endl;
-		for (unsigned int i=0; i<c.vars.size(); ++i)
-			cout << "FlavorTag variable: " << c.vars[i] << endl;
+		if (_verbose) {
+			cout << "FlavorTag category: " << c.definition << endl;
+			cout << "FlavorTag preselection: " << c.preselection << endl;
+			for (unsigned int i=0; i<c.vars.size(); ++i)
+				cout << "FlavorTag variable: " << c.vars[i] << endl;
+		}
 
 		_categories.push_back(c);
 	}
@@ -79,14 +84,13 @@ void ReadMVA::init(Parameters *param) {
 		cout << "FlavorTag category definition was not found, aborting" << endl;
 		exit(1);
 	}
-
 	for (unsigned int icat=0; icat<_categories.size(); ++icat) {
 		const FlavtagCategory& c = _categories[icat];
 
 		// specify output directory
 		TString prefix = _outputPrefix+(ULong_t)icat;
 
-		TMVA::Reader* reader = new TMVA::Reader( "Color:!Silent" );
+		TMVA::Reader* reader = new TMVA::Reader( "Color:Silent" );
 
 		// add variables
 		for (unsigned int iv=0; iv<c.vars.size(); ++iv) {
@@ -107,8 +111,6 @@ void ReadMVA::init(Parameters *param) {
 		wfile += _tmvaBookName;
 		wfile += ".weights.xml";
 
-		std::cout << "Opening weight file: " << wfile << endl;
-
 		reader->BookMVA(_tmvaBookName, wfile);
 
 		_readers.push_back(reader);
@@ -116,6 +118,7 @@ void ReadMVA::init(Parameters *param) {
 		mgr.addReader( reader, c );
 
 		mgr.openTree();
+
 	}
 }
 

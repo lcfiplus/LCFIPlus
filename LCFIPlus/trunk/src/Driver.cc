@@ -6,11 +6,13 @@
 #include "LCIOStorer.h"
 #include "VertexFitterLCFI.h"
 #include "VertexFinderTearDown.h"
+#include "VertexFinderSuehara.h"
 #include "VertexFinderPerfect.h"
 #include "algoSigProb.h"
 #include "algoEtc.h"
 #include "Driver.h"
 #include "geometry.h"
+#include "VertexSelector.h"
 
 #include "TROOT.h"
 #include "TInterpreter.h"
@@ -622,7 +624,8 @@ void testSuehara(const char *inputlist, const char *output)
 
 	LCIOStorer ls(inputlist);
 	ls.InitCollections("PandoraPFOs","MCParticlesSkimmed","RecoMCTruthLink","Tracks","Neutrals","MCParticles");
-	ls.InitVertexCollection("BuildUpVertex", "BuildUpVertex");
+	ls.InitVertexCollection("BuildUpVertex2", "BuildUpVertex2");
+	ls.InitJetCollection("Durham_2Jets", "Durham_2Jets");
 
 	cout << "LCIO initialization successful." << endl;
 
@@ -630,29 +633,43 @@ void testSuehara(const char *inputlist, const char *output)
 	event->Print();
 
 	TFile f(output,"RECREATE");
-//	TNtuple *nt = new TNtuple("nt","nt","trackcategory:invertex:allsectracks:categorysectracks:d0:d0err:z0:z0err:e:pdg:mcvpos");
-	TNtuple *nt = new TNtuple("nt","nt","trackcategory:categorysectracks:d0:d0err:z0:z0err:e:pdg:mcvpos:truecombi:linedistance:angle:trackpos:vtxpos:vtxtracks:vtxbtracks:vtxctracks");
-//					nt->Fill(category, categorysectracks, d0,d0e,z0,z0e,e, mcp->getPDG(),mcvpos, truecombi, distance, angle, pos.Mag(), vtcs[nvtcs]->getPos());
+	TNtuple *nt = new TNtuple("nt","nt","nev:nb:bidx:id:category:nvtx:btr:ctr:btrvtx:ctrvtx:d0:d0err:z0:z0err:e:pdg");
 
 	struct {
+		float nev;
+		float nb;
+		float bidx;
+		float id;
 		float trackcategory;
-		float categorysectracks;
+		float nvtx;
+		float btracks;
+		float ctracks;
+		float vtxbtracks;
+		float vtxctracks;
 		float d0;
 		float d0err;
 		float z0;
 		float z0err;
 		float e;
 		float pdg;
-		float mcvpos;
-		float truecombi;
-		float linedistance;
-		float angle;
-		float trackpos;
-		float vtxpos;
-		float vtxtracks;
-		float vtxbtracks;
-		float vtxctracks;
 	}data;
+
+	TNtuple *ntJet = new TNtuple("ntJet","ntJet","nev:nj:btr:ctr:otr:nvtx:chi21o:chi22o:chi23o:chi24o:chi21:chi22");
+	struct {
+		float nev;
+		float nj;
+		float btracks;
+		float ctracks;
+		float otracks;
+		float nvtxorig;
+		float chi2orig[4];
+		float chi2[2];
+	}jetdata;
+
+	int nev = 0;
+	int nbsum = 0, ncsum = 0;
+
+	try{
 
 	while(ls.Next()){
 		MCParticleVec& mcps = event->getMCParticles();
@@ -674,14 +691,81 @@ void testSuehara(const char *inputlist, const char *output)
 		if(hcount < 2)continue;
 */
 		TrackVec &tracks = event->getTracks();
-		VertexVec &vtcs = event->getSecondaryVertices("BuildUpVertex");
+		VertexVec &vtcs_ = event->getSecondaryVertices("BuildUpVertex2");
+		const Vertex *ip = vtcs_[0];
+
+		VertexSelectorConfig vscfg;
+		vscfg.minpos = 0.3;
+		vscfg.maxpos = 30.;
+		vscfg.rejectk0 = true;
+		vscfg.k0width = .01;
+//		vscfg.minpos = 0.3;
+//		vscfg.maxpos = 10000.;
+//		vscfg.rejectk0 = false;
+
+		vector<const Track *> residualTracks = tracks;
+		VertexVec &vtcs__ = VertexSelector()(vtcs_, vscfg, residualTracks,false);
+		vector<const Vertex *> vtcs;
+		for(unsigned int v=0;v<vtcs__.size();v++){
+			vtcs.push_back(new Vertex(*vtcs__[v]));
+		}
+
+		cout << "Vertex selector: " << vtcs.size() << "/" << vtcs_.size() << " selected." << endl;
+
+		JetVec &jets = event->getJets("Durham_2Jets");
 		MCParticleVec bs = event->mcGetSemiStableBs();
 		MCParticleVec cs = event->mcGetSemiStableCs();
+		nbsum += bs.size();
+		ncsum += cs.size();
 
 		cout << "We have " << bs.size() << " bs & " << cs.size() << " cs." << endl;
 		cout << "# vertices = " << vtcs.size() << endl;
 		for(unsigned int n=0;n<vtcs.size();n++){
-			cout << "RecoVertices at (" << vtcs[n]->getX() << ", " << vtcs[n]->getY() << ", " << vtcs[n]->getZ() << "), # tracks = " << vtcs[n]->getTracks().size() << endl;
+			cout << "RecoVertices at (" << vtcs[n]->getX() << ", " << vtcs[n]->getY() << ", " << vtcs[n]->getZ() << "), # tracks = " << vtcs[n]->getTracks().size();
+			for(unsigned int t=0;t<vtcs[n]->getTracks().size();t++){
+				const MCParticle *mcp = vtcs[n]->getTracks()[t]->getMcp()->getSemiStableParent();
+				cout << " " << (mcp ? mcp->getPDG() : 0);
+			}
+			cout << endl;
+		}
+
+		// Jet-vertex pairing
+		unsigned int nj = jets.size();
+		vector<vector<Vertex *> > jetVertex;
+		jetVertex.resize(nj);
+
+		for(unsigned int v=0;v<vtcs.size();v++){
+			const Vertex *curv = vtcs[v];
+			const Track *curt = curv->getTracks()[0];
+			for(unsigned int j=0;j<nj;j++){
+				const Jet *curj = jets[j];
+
+				if(find(curj->getTracks().begin(), curj->getTracks().end(), curt) != curj->getTracks().end()){
+					jetVertex[j].push_back(const_cast<Vertex *>(curv));
+					cout << "Jet-vertex pairing: vertex " << v << " assigned to jet " << j << endl;
+					break;
+				}
+			}
+		}
+
+		vector<int> btracksjet, ctracksjet, otracksjet;
+		btracksjet.resize(nj);
+		ctracksjet.resize(nj);
+		otracksjet.resize(nj);
+		for(unsigned int j=0;j<nj;j++){
+			const Jet *jet = jets[j];
+
+			for(unsigned int t=0;t<jet->getTracks().size();t++){
+				const Track *tr = jet->getTracks()[t];
+				const MCParticle *mcp = tr->getMcp();
+
+				if(mcp && mcp->getSemiStableCParent())
+					ctracksjet[j] ++;
+				else if(mcp && mcp->getSemiStableBParent())
+					btracksjet[j] ++;
+				else
+					otracksjet[j] ++;
+			}
 		}
 
 		// perfect vertices
@@ -708,88 +792,157 @@ void testSuehara(const char *inputlist, const char *output)
 				bctracks[npar] ++;
 		}
 
-		// fill ntuple
-		for(unsigned int n=0;n<tracks.size();n++){
-			const MCParticle *mcp = tracks[n]->getMcp();
+		// counting vertices / redidual tracks
 
-			data.trackcategory = 0;
-			if(mcp->getSemiStableCParent()) data.trackcategory = 2;
-			else if(mcp->getSemiStableBParent()) data.trackcategory = 1;
-			else if(mcp->getSemiStableParent()) data.trackcategory = 3;
+		vector<int> nvtcs, vbtracks, vbctracks;
+		nvtcs.resize(bs.size());
+		vbtracks.resize(bs.size());
+		vbctracks.resize(bs.size());
+		for(unsigned int n=0;n<vtcs.size();n++){
+			vector<int> npars;
+			npars.resize(bs.size());
 
-			bool invertex = false;
-			for(unsigned int nvtcs = 1; nvtcs < vtcs.size(); nvtcs ++){
-				const Vertex *vtx = vtcs[nvtcs];
+			for(unsigned int ntr=0;ntr<vtcs[n]->getTracks().size();ntr++){
+				const Track *tr = vtcs[n]->getTracks()[ntr];
+				const MCParticle *mcp = tr->getMcp();
 
-				if(find(vtx->getTracks().begin(), vtx->getTracks().end(), tracks[n]) != vtx->getTracks().end())
-					invertex = true;
+				int npar = event->mcFindParent(bs, mcp);
+				if(npar < 0){cout << "Non-b track found in vtx." << endl; continue;}
+
+				npars[npar] ++;
+				vbtracks[npar] ++;
+				if(mcp->getSemiStableCParent())
+					vbctracks[npar] ++;
 			}
 
-			int nb = event->mcFindParent(bs, mcp);
-
-/*
-			if(!invertex && nb >= 0){
-				TVector3 ip(0,0,0);
-				VertexLine line(ip, bs[nb]->getEndVertex());
-				Helix hel(tracks[n]);
-
-				hel.ClosePoint(line);
-				cout << "MCVertex: " << mcp->getVertex().X() << ", " << mcp->getVertex().Y() << ", " << mcp->getVertex().Z() << endl;
+			int nparmax =0, nparmaxidx = -1;
+			for(unsigned int np = 0;np < bs.size(); np++){
+				if(npars[np] > nparmax){
+					nparmax = npars[np];
+					nparmaxidx = np;
+				}
 			}
-*/
-			int allsectracks = 0;
-			data.categorysectracks = 0;
 
-			if(nb >= 0){
-				allsectracks = btracks[nb];
-				if(data.trackcategory == 2)data.categorysectracks = bctracks[nb];
-				else data.categorysectracks = btracks[nb] - bctracks[nb];
-			}
-			data.d0 = tracks[n]->getD0();
-			data.d0err = sqrt(tracks[n]->getCovMatrix()[tpar::d0d0]);
-			data.z0 = tracks[n]->getZ0();
-			data.z0err = sqrt(tracks[n]->getCovMatrix()[tpar::z0z0]);
-			data.e = tracks[n]->E();
-			data.mcvpos = mcp->getVertex().Mag();
-			data.pdg = mcp->getPDG();
+			if(nparmaxidx>=0)
+				nvtcs[nparmaxidx] ++;
+		}
 
-//			nt->Fill(category, invertex, allsectracks, categorysectracks, d0,d0e,z0,z0e,e, mcp->getPDG(),mcvpos);
-			if(!invertex){
-				for(unsigned int nvtcs = 1; nvtcs < vtcs.size(); nvtcs ++){
+		cout << "Residual tracks: " << residualTracks.size() << "/" << tracks.size() << endl;
 
-					// obtain vertex tracks
-					data.vtxtracks = vtcs[nvtcs]->getTracks().size();
-					data.vtxbtracks = 0;
-					data.vtxctracks = 0;
-					data.truecombi = 0;
-					for(unsigned int ntr = 0; ntr < data.vtxtracks; ntr ++)
-					{
-						const Track *tr = vtcs[nvtcs]->getTracks()[ntr];
+		vector<vector<const Track *> > jetResidualTracks;
+		jetResidualTracks.resize(nj);
 
-						if(tr->getMcp()->getSemiStableCParent())data.vtxctracks ++;
-						else if(tr->getMcp()->getSemiStableBParent())data.vtxbtracks ++;
+		for(unsigned int t=0;t<residualTracks.size();t++){
+			const Track *curt = residualTracks[t];
+			for(unsigned int j=0;j<nj;j++){
+				const Jet *curj = jets[j];
 
-						if(tr->getMcp()->isParent(bs[nb]))data.truecombi++;
-					}
-
-					VertexLine line(vtcs[0]->getPos(), vtcs[nvtcs]->getPos());
-					Helix hel(tracks[n]);
-
-					double linedist = 0;
-					TVector3 pos = hel.ClosePoint(line, &linedist);
-					data.linedistance = linedist;
-
-					data.angle = vtcs[nvtcs]->getPos().Angle(tracks[n]->Vect());
-
-					data.trackpos = pos.Mag();
-					data.vtxpos = vtcs[nvtcs]->getPos().Mag();
-
-					nt->Fill((float *)&data);
+				if(find(curj->getTracks().begin(), curj->getTracks().end(), curt) != curj->getTracks().end()){
+					jetResidualTracks[j].push_back(curt);
+//					cout << "Jet-track pairing: track " << t << " assigned to jet " << j << endl;
+					break;
 				}
 			}
 		}
+
+		// single track finder
+		vector<Vertex *> recvtx = VertexFinderSuehara::makeSingleTrackVertices(vtcs, residualTracks, ip, 0.3, 30., 0.5, 0.1, 5., 5.);
+		cout << "Single Track Vertices for whole event: " << recvtx.size() << " found." << endl;
+
+		for(unsigned int j=0;j<nj;j++){
+			vector<Vertex *> recvj = VertexFinderSuehara::makeSingleTrackVertices(constVector(jetVertex[j]), jetResidualTracks[j], ip, 0.3, 30., 0.5, 0.1, 5., 5.);
+			jetdata.nvtxorig = jetVertex[j].size() + recvj.size();
+			
+			unsigned int v=0;
+			for(v=0;v<jetdata.nvtxorig;v++){
+				if(v == jetVertex[j].size())break;
+				jetdata.chi2orig[v] = jetVertex[j][v]->getChi2();
+			}
+			for(;v<jetdata.nvtxorig;v++){
+				jetdata.chi2orig[v] = 0.; //single-track vertex
+			}
+
+//			VertexFinderSuehara::recombineVertices(jetVertex[j], recvj,true); // precise mode
+			VertexFinderSuehara::recombineVertices(jetVertex[j], recvj,false); // rough mode
+
+			cout << "recombineVertices end" << endl;
+
+			for(v=0;v<jetVertex[j].size();v++){
+				TVector3 vpos = jetVertex[j][v]->getPos();
+				cout << "Vertex #" << v << ": pos ( " << vpos.x() << ", " << vpos.y() << ", " << vpos.z() << "), ";
+				for(unsigned int t=0;t<jetVertex[j][v]->getTracks().size();t++){
+					const Track *tr = jetVertex[j][v]->getTracks()[t];
+					const MCParticle *mcp = tr->getMcp()->getSemiStableParent();
+					cout << (mcp ? mcp->getPDG() : 0) << " ";
+				}
+				cout << endl;
+			}
+
+
+			if(jetVertex[j].size() > 0)
+				jetdata.chi2[0] = jetVertex[j][0]->getChi2();
+			else
+				jetdata.chi2[0] = -1;
+
+			if(jetVertex[j].size() > 1)
+				jetdata.chi2[1] = jetVertex[j][1]->getChi2();
+			else
+				jetdata.chi2[1] = -1;
+
+			jetdata.nev = nev;
+			jetdata.nj = j;
+			jetdata.btracks = btracksjet[nj];
+			jetdata.ctracks = ctracksjet[nj];
+			jetdata.otracks = otracksjet[nj];
+
+			ntJet->Fill((float *)&jetdata);
+		}
+
+		cout << "jetLoop end" << endl;
+
+
+		// fill ntuple
+		for(unsigned int n=0;n<recvtx.size();n++){
+			const Track *tr = recvtx[n]->getTracks()[0]; // single track vertices
+			const MCParticle *mcp = tr->getMcp();
+
+			data.nev = nev;
+			data.trackcategory = 0;
+			if(mcp->getSemiStableCParent()) data.trackcategory = 2;
+			else if(mcp->getSemiStableBParent()) data.trackcategory = 1;
+			else if(mcp->getSemiStableParent()) data.trackcategory = mcp->getSemiStableParent()->getPDG();
+
+			int nb = event->mcFindParent(bs, mcp);
+
+			data.nb = bs.size();
+			data.bidx = nb;
+			data.id = tr->getId();
+			if(nb>=0){
+				data.nvtx = nvtcs[nb];
+				data.btracks = btracks[nb] - bctracks[nb];
+				data.ctracks = bctracks[nb];
+				data.vtxbtracks = vbtracks[nb] - vbctracks[nb];
+				data.vtxctracks = vbctracks[nb];
+			}
+
+			data.d0 = tr->getD0();
+			data.d0err = sqrt(tr->getCovMatrix()[tpar::d0d0]);
+			data.z0 = tr->getZ0();
+			data.z0err = sqrt(tr->getCovMatrix()[tpar::z0z0]);
+			data.e = tr->E();
+			data.pdg = mcp->getPDG();
+
+			nt->Fill((float *)&data);
+		}
+		cout << "end" << endl;
+		nev ++;
+	}
+	}catch(Exception &e){
+		e.Print();
 	}
 	f.Write();
+	cout << "Nb total: " << nbsum << endl;
+	cout << "Nc total: " << ncsum << endl;
 }
 
 #include "TrackSelector.h"
