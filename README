@@ -9,3 +9,4 @@ https://confluence.slac.stanford.edu/display/ilc/LCFIPlus
 	- jet vertex refiner algorithm added
 	- improved v0 rejection
 	- new flavor tagging variables + various bug fixes
+	- updated steering files
