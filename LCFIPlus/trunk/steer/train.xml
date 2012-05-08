@@ -15,9 +15,9 @@
 
 <processor name="MyLcfiplusProcessor" type="LcfiplusProcessor">
 	<parameter name="Algorithms" type="stringVec">TrainMVA</parameter>
+	
 	<parameter name="PFOCollection" type="string" value="PandoraPFOs" />
-	<parameter name="FlavorTag.JetCollectionName" type="string" value="RefinedJets" />
-
+	
 	<parameter name="FlavorTag.WeightsDirectory" type="string" value="lcfiweights" />
 	<parameter name="FlavorTag.WeightsPrefix" type="string" value="zpole_v00" />
 	<parameter name="FlavorTag.BookName" type="string" value="bdt" />
