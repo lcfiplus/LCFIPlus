@@ -1,0 +1,86 @@
+<marlin>
+
+	<execute>
+		<processor name="FlavorTag"/>
+		<processor name="MyLCIOOutputProcessor"/>
+	</execute>
+	
+	<global>
+		<parameter name="LCIOInputFiles"> input.slcio </parameter>
+		<parameter name="MaxRecordNumber" value="0" />  
+		<parameter name="SkipNEvents" value="0" />  
+		<parameter name="SupressCheck" value="false" />  
+		<parameter name="GearXMLFile"> GearOutput.xml </parameter>  
+		<parameter name="Verbosity" options="DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT">WARNING</parameter> 
+	</global>
+	
+	<processor name="FlavorTag" type="LcfiplusProcessor">
+		
+		<parameter name="Algorithms" type="stringVec">
+			FlavorTag ReadMVA
+		</parameter>
+		
+		<!-- general parameters -->
+		<parameter name="PFOCollection" type="string" value="PandoraPFOs" /> <!-- input PFO collection -->
+		<parameter name="UseMCP" type="int" value="0" /> <!-- MC info not used -->
+		<parameter name="MCPCollection" type="string" value="" /> <!-- not used -->
+		<parameter name="MCPFORelation" type="string" value="" /> <!-- not used -->
+		<parameter name="ReadSubdetectorEnergies" type="int" value="1"/> <!-- true for ILD -->
+		<parameter name="UpdateVertexRPDaughters" type="int" value="0"/> <!-- false for non-updative PandoraPFOs -->
+		
+		<!-- FlavorTag parameters -->
+		<parameter name="PrimaryVertexCollectionName" type="string" value="PrimaryVertex" />
+		<parameter name="FlavorTag.JetCollectionName" type="string" value="RefinedJets" />
+		<parameter name="MakeNtuple.AuxiliaryInfo" type="int" value="-1" />
+		
+		<parameter name="FlavorTag.WeightsDirectory" type="string" value="lcfiweights" />
+		<parameter name="FlavorTag.WeightsPrefix" type="string" value="zpole_v00" />
+		<parameter name="FlavorTag.BookName" type="string" value="bdt" />
+		<parameter name="FlavorTag.PIDAlgo" type="string" value="lcfiplus" />
+		
+		<parameter name="FlavorTag.CategoryDefinition1" type="string">nvtx==0</parameter>
+		<parameter name="FlavorTag.CategoryVariables1" type="stringVec">
+			trk1d0sig trk2d0sig trk1z0sig trk2z0sig trk1pt_jete trk2pt_jete jprobr jprobz
+		</parameter>
+		<parameter name="FlavorTag.CategorySpectators1" type="stringVec">
+			aux nvtx
+		</parameter>
+		
+		<parameter name="FlavorTag.CategoryDefinition2" type="string">nvtx==1&&nvtxall==1</parameter>
+		<parameter name="FlavorTag.CategoryVariables2" type="stringVec">
+			trk1d0sig trk2d0sig trk1z0sig trk2z0sig trk1pt_jete trk2pt_jete jprobr jprobz
+			vtxlen1_jete vtxsig1_jete vtxdirang1_jete vtxmom1_jete vtxmass1 vtxmult1 vtxmasspc vtxprob
+		</parameter>
+		<parameter name="FlavorTag.CategorySpectators2" type="stringVec">
+			aux nvtx
+		</parameter>
+		
+		<parameter name="FlavorTag.CategoryDefinition3" type="string">nvtx==1&&nvtxall==2</parameter>
+		<parameter name="FlavorTag.CategoryVariables3" type="stringVec">
+			trk1d0sig trk2d0sig trk1z0sig trk2z0sig trk1pt_jete trk2pt_jete jprobr jprobz
+			vtxlen1_jete vtxsig1_jete vtxdirang1_jete vtxmom1_jete vtxmass1 vtxmult1 vtxmasspc vtxprob
+			1vtxprob 2ndflt vtxmassall
+		</parameter>
+		<parameter name="FlavorTag.CategorySpectators3" type="stringVec">
+			aux nvtx
+		</parameter>
+		
+		<parameter name="FlavorTag.CategoryDefinition4" type="string">nvtx>=2</parameter>
+		<parameter name="FlavorTag.CategoryVariables4" type="stringVec">
+			trk1d0sig trk2d0sig trk1z0sig trk2z0sig trk1pt_jete trk2pt_jete jprobr jprobz
+			vtxlen1_jete vtxsig1_jete vtxdirang1_jete vtxmom1_jete vtxmass1 vtxmult1 vtxmasspc vtxprob
+			vtxlen2_jete vtxsig2_jete vtxdirang2_jete vtxmom2_jete vtxmass2 vtxmult2
+			vtxlen12_jete vtxsig12_jete vtxdirang12_jete vtxmom_jete vtxmass vtxmult
+		</parameter>
+		<parameter name="FlavorTag.CategorySpectators4" type="stringVec">
+			aux nvtx
+		</parameter>
+		
+	</processor>
+	
+	<processor name="MyLCIOOutputProcessor" type="LCIOOutputProcessor">
+		<parameter name="LCIOOutputFile" type="string"> flavortag.slcio </parameter>
+		<parameter name="LCIOWriteMode" type="string" value="WRITE_NEW"/>
+	</processor>
+
+</marlin>
