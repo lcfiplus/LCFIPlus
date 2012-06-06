@@ -1,5 +1,6 @@
 #include "EventStore.h"
 #include "JetFinder.h"
+#include "algoEtc.h"
 
 #include <assert.h>
 
@@ -19,7 +20,7 @@ using namespace std;
 namespace lcfiplus {
 
   /* Jet resolution functions */
-  double JetFinder::funcDurham(Jet& jet1, Jet& jet2, double Evis2){
+  double JetFinder::funcDurham(Jet& jet1, Jet& jet2, double Evis2, JetConfig &cfg){
     /*
        D(I,J) = 2.*MIN(PL(4,I)*PL(4,I),PL(4,J)*PL(4,J))*MAX(0.,(1.-
        (PL(1,I)*PL(1,J)+PL(2,I)*PL(2,J)+PL(3,I)*PL(3,J))/
@@ -34,16 +35,40 @@ namespace lcfiplus {
     return val/Evis2;
   }
 
-  double JetFinder::funcDurhamVertex(Jet& jet1, Jet& jet2, double Evis2){
+  double JetFinder::funcDurhamVertex(Jet& jet1, Jet& jet2, double Evis2, JetConfig &cfg){
 		// do not combine vertex-oriented jets
-		if(jet1.getVertices().size() > 0 && jet2.getVertices().size() > 0)
-			return 1e+300;
+		double add = 0.;
+		if(jet1.getVertices().size() > 0 && jet2.getVertices().size() > 0){
+			bool lepton1 = true;
+			bool lepton2 = true;
 
-		return funcDurham(jet1, jet2, Evis2);
+			for(unsigned int n=0;n<jet1.getVertices().size();n++){
+				if(jet1.getVertices()[n]->getTracks().size()>=2){
+					lepton1 = false;
+					break;
+				}
+			}
+			for(unsigned int n=0;n<jet2.getVertices().size();n++){
+				if(jet2.getVertices()[n]->getTracks().size()>=2){
+					lepton2 = false;
+					break;
+				}
+			}
+
+			if(lepton1 && lepton2){
+				add = cfg.YaddLL;
+			}else if(lepton1 || lepton2){
+				add = cfg.YaddVL;
+			}else{
+				add = cfg.YaddVV;
+			}
+		}
+
+		return funcDurham(jet1, jet2, Evis2,cfg) + add;
   }
 
 
-  double JetFinder::funcDurhamCheat(Jet& jet1, Jet& jet2, double Evis2){
+  double JetFinder::funcDurhamCheat(Jet& jet1, Jet& jet2, double Evis2, JetConfig &cfg){
     double e1 = jet1.E();
     double e2 = jet2.E();
     TVector3 mom1 = jet1.Vect();
@@ -52,7 +77,7 @@ namespace lcfiplus {
     return val/Evis2;
   }
 
-  double JetFinder::funcJade(Jet& jet1, Jet& jet2, double Evis2){
+  double JetFinder::funcJade(Jet& jet1, Jet& jet2, double Evis2, JetConfig &cfg){
     /*
        JADE(I,J) = 2.*PL(4,I)*PL(4,J)*MAX(0.,(1.-
        (PL(1,I)*PL(1,J)+PL(2,I)*PL(2,J)+PL(3,I)*PL(3,J))/
@@ -67,7 +92,7 @@ namespace lcfiplus {
     return val/Evis2;
   }
 
-  double JetFinder::funcJadeE(Jet& jet1, Jet& jet2, double Evis2){
+  double JetFinder::funcJadeE(Jet& jet1, Jet& jet2, double Evis2, JetConfig &cfg){
     /*
        E(I,J) = MAX(0.,(PL(4,I)+PL(4,J))**2-(PL(1,I)+PL(1,J))**2-
        (PL(2,I)+PL(2,J))**2-(PL(3,I)+PL(3,J))**2)
@@ -139,20 +164,9 @@ namespace lcfiplus {
 			// lepton tag
 			for(unsigned int i=0;i<tracks.size();i++){
 				const Track *tr = tracks[i];
-				double dist = sqrt(tr->getD0() *tr->getD0() + tr->getZ0() * tr->getZ0());
-				double sigd0 = fabs(tr->getD0()) / sqrt(tr->getCovMatrix()[tpar::d0d0]);
-				double sigz0 = fabs(tr->getZ0()) / sqrt(tr->getCovMatrix()[tpar::z0z0]);
-				double mudep = tracks[i]->getCaloEdep()[tpar::yoke];
-				double ecaldep = tracks[i]->getCaloEdep()[tpar::ecal];
-				double hcaldep = tracks[i]->getCaloEdep()[tpar::hcal];
 
-				/*
-				if(mudep>0 && tr->getMcp())
-					cout << "Muon selection: " << tr->getMcp()->getPDG() << " " << sigd0 << " " << sigz0 << " " << tr->E() << " " << mudep << " " << ecaldep << " " << hcaldep << endl;
-				 */
-				// muon selection criteria
-//				if(dist > 0.1 && dist < 2.0 && tr->E() > 5. && mudep > 0.05 && ecaldep < 1. && hcaldep > 1.5 && hcaldep < 4.){
-				if((sigd0 > 5. || sigz0 > 5.) && dist < 5. && mudep > 0.05 && ecaldep < 1. && hcaldep > 1.5 && hcaldep < 5.){
+					// track, d0sigth, z0sigth, posmax, mudepmin, edepmin, edepmax, hdepmin hdepmax
+				if(algoEtc::SimpleSecMuonFinder(tr, 5., 5., 5., 0.05, 0., 1., 1.5, 5.)){
 					// treated as a vertex
 					float cov[6] = {0,0,0,0,0,0};
 					Vertex *fakevtx = new Vertex(0,1,tr->Px()/tr->E(), tr->Py()/tr->E(), tr->Pz()/tr->E(), cov, false);
@@ -353,7 +367,7 @@ namespace lcfiplus {
 			double ymin = yth;
 			int jymin = -1;
 			for(unsigned int j=0;j<jets.size();j++){
-				double y = (*_Yfunc)(*jets[j], Jet(tracks[i]), evis2);
+				double y = (*_Yfunc)(*jets[j], Jet(tracks[i]), evis2, _cfg);
 				if(y < ymin){
 					ymin = y;
 					jymin = j;
@@ -368,7 +382,7 @@ namespace lcfiplus {
 			double ymin = yth;
 			int jymin = -1;
 			for(unsigned int j=0;j<jets.size();j++){
-				double y = (*_Yfunc)(jets[j], Jet(neutrals[i]), evis2);
+				double y = (*_Yfunc)(jets[j], Jet(neutrals[i]), evis2, _cfg);
 				if(y < ymin){
 					ymin = y;
 					jymin = j;
@@ -418,7 +432,7 @@ namespace lcfiplus {
 
     for (int i1=0; i1<njet; ++i1) {
       for (int i2=i1+1; i2<njet; ++i2) {
-        double val = (*_Yfunc)(*jets[i1],*jets[i2],Evis2);
+        double val = (*_Yfunc)(*jets[i1],*jets[i2],Evis2,_cfg);
         matY[i1][i2] = val;
       }
     }
@@ -476,7 +490,7 @@ namespace lcfiplus {
         if (ii != imin) {
           int i = min(ii,imin);
           int j = max(ii,imin);
-          matY[i][j] = (*_Yfunc)(*jets[i],*jets[j],Evis2);
+          matY[i][j] = (*_Yfunc)(*jets[i],*jets[j],Evis2,_cfg);
         }
         if (ii != jmin) {
           int i = min(ii,jmin);

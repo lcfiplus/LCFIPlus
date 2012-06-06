@@ -108,6 +108,7 @@ namespace lcfiplus{
 		vector<Track *> *pTracks;
 		vector<Neutral *> *pNeutrals;
 		vector<MCParticle *> *pMCPs;
+		vector<MCColorSinglet *> *pMCCSs;
 
 		// pfo collection
 		if(!event->IsExist(pfoColName)){
@@ -120,6 +121,9 @@ namespace lcfiplus{
 		if(!event->IsExist(mcColName)){
 			event->Register<MCParticle>(mcColName,pMCPs);
 			_importMCPCols[mcColName] = pMCPs;
+
+			event->Register<MCColorSinglet>(mcColName, pMCCSs);
+			_importMCCSCols[mcColName] = pMCCSs;
 		}
 		
 		// mcpfo relation
@@ -149,6 +153,7 @@ namespace lcfiplus{
 	
 	void LCIOStorer::InitVertexCollection(const char *lcioName, const char *flavtagName, bool readnow)
 	{
+	  cout << lcioName << " loading " << endl;
 		vector<lcfiplus::Vertex *> *vtxcol = 0;
 		Event::Instance()->Register<Vertex>(flavtagName,vtxcol);
 		
@@ -164,12 +169,10 @@ namespace lcfiplus{
 		Event::Instance()->Register<Jet>(flavtagName,jetcol);
 		
 		_importJetCols[ lcioName ] = constVector(jetcol);
-
 		if(readvtx){
 			string name = (vtxname ? vtxname : (string)lcioName + "_vtx");
 			InitVertexCollection(name.c_str(), name.c_str(), readnow);
 		}
-
 		if(_event && readnow)
 			ReadJets(lcioName, constVector(jetcol));
 	}
@@ -346,7 +349,15 @@ namespace lcfiplus{
 				// convert into MCParticle
 				lcfiplus::MCParticle *mcpNew = new MCParticle(id, mcp->getPDG(), parent, mcp->getCharge(),
 						TLorentzVector(TVector3(mcp->getMomentum()),mcp->getEnergy()), TVector3(v));
-				
+
+				// add daughters to other MCPs
+				if(mcp->getParents().size()>1){
+					for(unsigned int i=1; i<mcp->getParents().size();i++){
+						map<lcio::MCParticle*,lcfiplus::MCParticle *>::iterator iter = _mcpLCIORel2.find(mcp->getParents()[i]);
+						iter->second->addDaughter(mcpNew);
+					}
+				}
+
 				// add to MCP list
 				itMcpCol->second->push_back(mcpNew);
 				
@@ -354,6 +365,7 @@ namespace lcfiplus{
 				_mcpLCIORel[mcpNew] = mcp;
 				_mcpLCIORel2[mcp] = mcpNew;
 			}
+			SetColorSinglets(*(itMcpCol->second), *(_importMCCSCols[itMcpCol->first])); 
 		}
 	
 		// convert PFO ////////////////////////////////////////////////////////////////////////////////
@@ -559,7 +571,14 @@ namespace lcfiplus{
 						}
 					}
 				}
+
 			}
+
+			// clear navigators
+			for(unsigned int inav=0; inav < navs.size(); inav ++){
+				delete navs[inav];
+			}
+
 		} // PFO end
 
 		// vertex
@@ -733,6 +752,7 @@ namespace lcfiplus{
 				lcficol->push_back(const_cast<lcfiplus::Jet*>(_jetLCIORel2[lciojet]));
 			}
 		}
+		if(nav)delete nav;
 
 	}
 
@@ -1025,6 +1045,142 @@ void LCIOStorer::WriteAllPIDs(lcio::LCCollection *lciocol, lcio::ReconstructedPa
 	if(parammap.size())
 		cout << parammap.size() << " PID parameter sets written to jet." << endl;
 		//*/
+}
+
+void LCIOStorer::SetColorSinglets(vector<MCParticle *> &mcps, vector<MCColorSinglet *> &mccs)
+{
+	int cspdg[] = {22, 23, 24, 25, 91, 92, 93, 94};
+	int cspdg2[] = {22, 91, 92, 93, 94}; // color singlet candidates which should check parents
+
+	vector<MCParticle *> initialquarks;
+
+	// looking for color singlets
+	for(unsigned int n=0;n<mcps.size();n++){
+		MCParticle *mcp = mcps[n];
+
+		// ignore isolated particles
+		if(mcp->getParent() == 0 && mcp->getDaughters().size() == 0)continue;
+
+		int apdg = abs(mcp->getPDG());
+
+		if(apdg <= 6 && ! mcp->getParent() && mcp->getDaughters().size() > 0)
+			initialquarks.push_back(mcp);
+
+		if(find(cspdg, cspdg + 8, apdg) != cspdg + 8){
+			// looking for preregistered parents
+			bool parent = false;
+			if(find(cspdg2, cspdg2 + 5, apdg) != cspdg2 + 5){
+				for(unsigned int ncs = 0; ncs < mccs.size(); ncs ++){
+					MCColorSinglet *pcs = mccs[ncs];
+					if(mcp->isParent(pcs->_mcp)){parent = true; break;}
+				}
+
+			}
+
+			if(!parent){
+				// check daughters
+				if(mcp->getDaughters().size() > 1){
+					bool qdau = false;
+					// at least 2 daughters for color singlet
+					for(unsigned int ndau = 0; ndau < mcp->getDaughters().size();ndau++){
+						int dpdg = abs(mcp->getDaughters()[ndau]->getPDG());
+						if(dpdg <= 6 || dpdg == 21){ // quark daughters
+							qdau = true;
+							break;
+						}
+					}
+					if(qdau){
+						// all selections clear; add to mccs
+						MCColorSinglet *newcs = new MCColorSinglet;
+						newcs->_mcp = mcp;
+						mccs.push_back(newcs);
+					}
+				}
+			}
+
+		}
+	}
+
+	// make contents of MCColorSinglet
+	for(unsigned int n=0;n<mccs.size();n++){
+		// obtain initial quarks
+		MCColorSinglet *cs = mccs[n];
+		const MCParticle *mcp = cs->_mcp;
+		int apdg = abs(mcp->getPDG());
+
+		// initials
+		if(apdg > 90){ // intermediate particle
+			// looking for initial particles to associate
+			for(unsigned int q=0;q<initialquarks.size();q++){
+				if(initialquarks[q]->getDaughters()[0] == mcp){
+					cs->_initials.push_back(initialquarks[q]);
+				}
+			}
+		}
+		else{
+			for(unsigned int q=0;q<mcp->getDaughters().size(); q++){
+				if(abs(mcp->getDaughters()[q]->getPDG()) < 100)
+					cs->_initials.push_back(mcp->getDaughters()[q]);
+			}
+		}
+	}
+	vector<const MCParticle *> finalcs;
+	for(unsigned int n=0;n<mcps.size();n++){
+		MCParticle *mcp = mcps[n];
+		int apdg = abs(mcp->getPDG());
+
+		// finalcolorsinglets & realparticles
+		if(apdg > 90 && apdg<100 && mcp->getDaughters().size() > 0 && abs(mcp->getDaughters()[0]->getPDG()) > 100){
+			MCColorSinglet *cs = const_cast<MCColorSinglet *>(mcp->getColorSinglet(constVector(&mccs)));
+			if(cs){
+				cs->_finalcolorsinglets.push_back(mcp);
+				for(unsigned int i=0;i<mcp->getDaughters().size();i++){
+					cs->_realparticles.push_back(mcp->getDaughters()[i]);
+				}
+				finalcs.push_back(mcp);
+			}
+		}
+		// qqgluons
+		if(apdg == 21 && mcp->getDaughters().size() > 1 && abs(mcp->getDaughters()[0]->getPDG())<=6){
+			MCColorSinglet *cs = const_cast<MCColorSinglet *>(mcp->getColorSinglet(constVector(&mccs)));
+			if(cs)cs->_qqgluons.push_back(mcp);
+		}
+	}
+	for(unsigned int n=0;n<mcps.size();n++){
+		MCParticle *mcp = mcps[n];
+		if(mcp->getDaughters().size()>0 && find(finalcs.begin(), finalcs.end(), mcp->getDaughters()[0]) != finalcs.end()){
+			MCColorSinglet *cs = const_cast<MCColorSinglet *>(mcp->getColorSinglet(constVector(&mccs)));
+			if(cs)cs->_finalstrings.push_back(mcp);
+		}
+	}
+	if(0){
+		for(unsigned int n=0;n<mccs.size();n++){
+			MCColorSinglet *cs = mccs[n];
+			const MCParticle *mcp = cs->_mcp;
+
+			cout << "Color singlet found: pdg = " << mcp->getPDG() << ", E = " << mcp->E() << endl;
+			cout << "# initial quarks = " << cs->_initials.size() << ", pdg = ";
+			for(unsigned int q=0;q<cs->_initials.size();q++)
+				cout << cs->_initials[q]->getPDG() << " ";
+			cout << endl;
+			cout << "# qqgluons = " << cs->_qqgluons.size() << ", pdg = ";
+			for(unsigned int q=0;q<cs->_qqgluons.size();q++)
+				cout << cs->_qqgluons[q]->getDaughters()[0]->getPDG() << " ";
+			cout << endl;
+			cout << "# finalstrings = " << cs->_finalstrings.size() << ", pdg = ";
+			for(unsigned int q=0;q<cs->_finalstrings.size();q++)
+				cout << cs->_finalstrings[q]->getPDG() << " ";
+			cout << endl;
+			cout << "# finalcolorsinglets = " << cs->_finalcolorsinglets.size() << ", pdg = ";
+			for(unsigned int q=0;q<cs->_finalcolorsinglets.size();q++)
+				cout << cs->_finalcolorsinglets[q]->getPDG() << " ";
+			cout << endl;
+			cout << "# realparticles = " << cs->_realparticles.size() << ", pdg = ";
+			for(unsigned int q=0;q<cs->_realparticles.size();q++)
+				cout << cs->_realparticles[q]->getPDG() << " ";
+			cout << endl;
+		}
+	}
 }
 
 void LCIOStorer::GetCallback(const char *name, const char *classname)

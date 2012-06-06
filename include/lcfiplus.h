@@ -52,6 +52,7 @@ namespace lcfiplus {
   class Track;
   class Neutral;
   class MCParticle;
+	class MCColorSinglet;
 	class Vertex;
 	class Jet;
 
@@ -59,6 +60,7 @@ namespace lcfiplus {
 	typedef const vector<const Track *> TrackVec;
 	typedef const vector<const Neutral *> NeutralVec;
 	typedef const vector<const MCParticle *> MCParticleVec;
+	typedef const vector<const MCColorSinglet *> MCColorSingletVec;
 	typedef const vector<const Vertex *> VertexVec;
 	typedef const vector<const Jet *> JetVec;
 
@@ -66,6 +68,7 @@ namespace lcfiplus {
 	typedef vector<const Track *>::const_iterator TrackVecIte;
 	typedef vector<const Neutral *>::const_iterator NeutralVecIte;
 	typedef vector<const MCParticle *>::const_iterator MCParticleVecIte;
+	typedef vector<const MCColorSinglet *>::const_iterator MCColorSingletVecIte;
 	typedef vector<const Vertex *>::const_iterator VertexVecIte;
 	typedef vector<const Jet *>::const_iterator JetVecIte;
 
@@ -131,7 +134,7 @@ namespace lcfiplus {
 				str >> ret;
 			}
 			else{
-				cout << "Parameter type invalid: " << _map.find(key)->second.first->name() << " vs " << typeid(T).name() << endl;
+				cout << "Parameter type invalid: key = " << key << ", type = " << _map.find(key)->second.first->name() << " vs " << typeid(T).name() << endl;
 				throw(Exception("Parameter type invalid."));
 			}
 			return;
@@ -160,7 +163,7 @@ namespace lcfiplus {
 				}
 			}
 			else{
-				cout << "Parameter type invalid: " << _map.find(key)->second.first->name() << " vs " << typeid(T).name() << endl;
+				cout << "Parameter type invalid: key = " << key << ", type = " << _map.find(key)->second.first->name() << " vs " << typeid(T).name() << endl;
 				throw(Exception("Parameter type invalid."));
 			}
 		}
@@ -245,6 +248,7 @@ namespace lcfiplus {
 			const vector<const Track*>& getTracks(const char *trackname = 0) const;
 			const vector<const Neutral*>& getNeutrals(const char *neutralname = 0) const;
 			const vector<const MCParticle*>& getMCParticles(const char *mcpname = 0) const;
+			const vector<const MCColorSinglet*>& getMCColorSinglets(const char *mcpname = 0) const;
 			const Vertex* getPrimaryVertex(const char *privtxname = 0) const;
 			const vector<const Vertex*>& getSecondaryVertices(const char *secvtxname = 0) const;
 			const vector<const Jet*>& getJets(const char *jetname = 0) const;
@@ -457,6 +461,8 @@ namespace lcfiplus {
       int getFlavor() const;
       const MCParticle* getColorString()const;
 
+			const MCColorSinglet * getColorSinglet(const vector<const MCColorSinglet *> *pcs)const;
+
       bool isStableTrack() const;
 			bool isStable() const;
       bool isSemiStableB() const;
@@ -499,6 +505,21 @@ namespace lcfiplus {
 
 		ClassDef(lcfiplus::MCParticle, 2);
   };
+
+	class MCColorSinglet {
+	public:
+		const MCParticle * getMcp()const{return _mcp;}
+
+		const MCParticle * _mcp;
+
+		vector<const lcfiplus::MCParticle *> _initials;
+		vector<const lcfiplus::MCParticle *> _finalstrings;
+		vector<const lcfiplus::MCParticle *> _qqgluons;
+		vector<const lcfiplus::MCParticle *> _finalcolorsinglets;
+		vector<const lcfiplus::MCParticle *> _realparticles;
+
+		ClassDefNV(lcfiplus::MCColorSinglet, 1);
+	};
 
   class Vertex {
     friend class LcfiInterface;

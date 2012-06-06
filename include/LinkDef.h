@@ -12,6 +12,9 @@
 #pragma link C++ class lcfiplus::MCParticle+;
 #pragma link C++ class std::vector<const lcfiplus::MCParticle*>+;
 #pragma link C++ class std::vector<lcfiplus::MCParticle*>+;
+#pragma link C++ class lcfiplus::MCColorSinglet+;
+#pragma link C++ class std::vector<const lcfiplus::MCColorSinglet*>+;
+#pragma link C++ class std::vector<lcfiplus::MCColorSinglet*>+;
 #pragma link C++ class lcfiplus::Vertex+;
 #pragma link C++ class std::vector<const lcfiplus::Vertex*>+;
 #pragma link C++ class std::vector<lcfiplus::Vertex*>+;

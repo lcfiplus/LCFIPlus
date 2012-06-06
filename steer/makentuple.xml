@@ -37,6 +37,9 @@
 	<parameter name="JetClustering.VertexSelectionMinimumDistance" type="double" value="0.3" /> <!-- in mm -->
 	<parameter name="JetClustering.VertexSelectionMaximumDistance" type="double" value="30." /> <!-- in mm -->
 	<parameter name="JetClustering.VertexSelectionK0MassWidth" type="double" value="0.02" /> <!-- in GeV -->
+	<parameter name="JetClustering.YAddedForJetVertexVertex" type="double" value="100"/> <!-- add penalty for combining vertices -->
+	<parameter name="JetClustering.YAddedForJetLeptonVertex" type="double" value="100"/> <!-- add penalty for combining lepton and vertex -->
+	<parameter name="JetClustering.YAddedForJetLeptonLepton" type="double" value="100"/> <!-- add penalty for combining leptons -->
 	
 	<!-- vertex refiner parameters -->
 	<parameter name="JetVertexRefiner.InputJetCollectionName" type="string" value="VertexJets" />
@@ -71,6 +74,8 @@
 	<parameter name="PrimaryVertexCollectionName" type="string" value="PrimaryVertex" />
 	<parameter name="FlavorTag.JetCollectionName" type="string" value="RefinedJets" />
 	<parameter name="MakeNtuple.AuxiliaryInfo" type="int" value="-1" />
+	<parameter name="FlavorTag.D0ProbFileName" type="string" value="data/vtxprob/d0prob_zpole.root"/>
+	<parameter name="FlavorTag.Z0ProbFileName" type="string" value="data/vtxprob/z0prob_zpole.root"/>
 	
 	<parameter name="MakeNtuple.OutputRootFileName" type="string" value="ntuple.root" />
 </processor>

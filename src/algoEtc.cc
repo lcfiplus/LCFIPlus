@@ -107,24 +107,39 @@ void connectVerticesToJets(const JetVec &jets, const vector<Vertex *> &vtcs, vec
 					jetResidualTracks[j].erase(itt);
 			}
 		}
+	}
 
-		for(unsigned int v=0;v<vtcs.size();v++){
-			Vertex *curv = vtcs[v];
-			const Track *curt = curv->getTracks()[0];
+	for(unsigned int v=0;v<vtcs.size();v++){
+		Vertex *curv = vtcs[v];
+		if(curv->getTracks().size() == 0)throw(Exception("connectVerticesToJets: vertex-jet association failed! No tracks found in a vertex."));
 
-			if(find(jetResidualTracks[j].begin(), jetResidualTracks[j].end(), curt) != jetResidualTracks[j].end()){
-				jetVertices[j].push_back(curv);
-				//cout << "Jet-vertex pairing: vertex " << v << " assigned to jet " << j << endl;
+		// selecting associating jets with energy fraction
+		vector<double> efrac;
+		efrac.resize(nj);
 
-				for(unsigned int t=0;t<curv->getTracks().size(); t++){
-					curt = curv->getTracks()[t];
-					vector<const Track *>::iterator itt = find(jetResidualTracks[j].begin(), jetResidualTracks[j].end(), curt);
-					if(itt != jetResidualTracks[j].end()){
-						jetResidualTracks[j].erase(itt);
-					}
+		for(unsigned int vt=0;vt<curv->getTracks().size();vt++){
+			const Track *curt = curv->getTracks()[vt];
+			for(unsigned int j2=0;j2<nj;j2++){
+				vector<const Track *>::iterator itt = find(jetResidualTracks[j2].begin(), jetResidualTracks[j2].end(), curt);
+				if(itt != jetResidualTracks[j2].end()){
+					jetResidualTracks[j2].erase(itt);
+					efrac[j2] += curt->E();
+					break;
 				}
 			}
 		}
+		double maxefrac = 0.;
+		int j = -1;
+		for(unsigned int j2=0;j2<nj;j2++){
+			if(efrac[j2] > maxefrac){maxefrac = efrac[j2]; j = j2;}
+		}
+		if(j == -1)throw(Exception("connectVerticesToJets: vertex-jet association failed!"));
+
+		// from here: curv is determined to belong to jet j
+		//cout << "Jet-vertex pairing: vertex " << v << " assigned to jet " << j << endl;
+
+		jetVertices[j].push_back(curv);
+
 	}
 }
 
@@ -298,6 +313,41 @@ double calcThrust( vector<TVector3>& list, TVector3 &taxis ) {
 	return dThrust[0];
 }
 
+	bool SimpleSecMuonFinder(const Track *tr, double d0sigth, double z0sigth, double maxpos, double mudepmin,
+		double ecaldepmin, double ecaldepmax, double hcaldepmin, double hcaldepmax, double maxclusterpertrackenergy){
+
+		double dist = sqrt(tr->getD0() *tr->getD0() + tr->getZ0() * tr->getZ0());
+		double sigd0 = fabs(tr->getD0()) / sqrt(tr->getCovMatrix()[tpar::d0d0]);
+		double sigz0 = fabs(tr->getZ0()) / sqrt(tr->getCovMatrix()[tpar::z0z0]);
+		double mudep = tr->getCaloEdep()[tpar::yoke];
+		double ecaldep = tr->getCaloEdep()[tpar::ecal];
+		double hcaldep = tr->getCaloEdep()[tpar::hcal];
+/*
+		if(tr->getMcp() && (fabs(tr->getMcp()->getPDG()) == 13 || mudep > 0 || (tr->E() > 5 && (ecaldep + hcaldep < tr->E() / 2.)))){
+		  TVector3 dirvec = tr->Vect().Unit();
+			cout << "Simple Sec Muon Finder: MCP = " << tr->getMcp()->getPDG() << " E = " << tr->E() << " sigd0 = " << sigd0 << " sigz0 = " << sigz0;
+			cout << " mudep = " << mudep << " dist = " << dist << " cosq = " << dirvec.z() << " ecaldep/sinq = " << ecaldep / dirvec.Pt() << " ecaldep/cosq = " << ecaldep / dirvec.z() << " hcaldep = " << hcaldep << endl;
+		}
+*/
+		return (sigd0 > d0sigth || sigz0 > z0sigth) && dist < maxpos && mudep > mudepmin
+					&& ecaldep > ecaldepmin && ecaldep < ecaldepmax && hcaldep > hcaldepmin && hcaldep < hcaldepmax && (ecaldep + hcaldep)/tr->E() < maxclusterpertrackenergy;
+	}
+
+	bool SimpleSecElectronFinder(const Track *tr, double d0sigth, double z0sigth, double maxpos, double emin,
+		double minfracecal, double minecalpertrackenergy, double maxecalpertrackenergy){
+
+		double dist = sqrt(tr->getD0() *tr->getD0() + tr->getZ0() * tr->getZ0());
+		double sigd0 = fabs(tr->getD0()) / sqrt(tr->getCovMatrix()[tpar::d0d0]);
+		double sigz0 = fabs(tr->getZ0()) / sqrt(tr->getCovMatrix()[tpar::z0z0]);
+		double ecaldep = tr->getCaloEdep()[tpar::ecal];
+		double hcaldep = tr->getCaloEdep()[tpar::hcal];
+		double fracecal = ecaldep / (ecaldep + hcaldep);
+		double ecalpertrackenergy = ecaldep / tr->E();
+
+		return (sigd0 > d0sigth || sigz0 > z0sigth) && dist < maxpos && tr->E() > emin
+					&& fracecal > minfracecal && ecalpertrackenergy > minecalpertrackenergy && ecalpertrackenergy < maxecalpertrackenergy;
+
+	}
 
 
 }}

@@ -28,6 +28,7 @@ namespace lcfiplus{
 			// in both func the obtained LCEvent is used for following operations
 			bool Next(bool autovertex = false, bool autojet = false); // file mode: move to the next event
 			void SetEvent(lcio::LCEvent *event); // non-file mode
+			void SetColorSinglets(vector<MCParticle *> &mcps, vector<MCColorSinglet *> &mccs);
 
 			// LCIO -> lcfiplus
 			// register basic collections to EventStore
@@ -83,6 +84,7 @@ namespace lcfiplus{
 
 			// collections to import
 			map<string, vector<lcfiplus::MCParticle *> *> _importMCPCols;
+			map<string, vector<lcfiplus::MCColorSinglet *> *> _importMCCSCols;
 			map<string, pair<vector<lcfiplus::Track *> *, vector<lcfiplus::Neutral *> *> >_importPFOCols;
 			map<string, pair<string,string> > _importMCPFOLinkCols; // Link, <MC, PFO>
 			map<string, vector<const lcfiplus::Vertex *> *> _importVertexCols;

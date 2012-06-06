@@ -145,6 +145,26 @@ double signedD0Significance(const Track* trk, const Jet* jet, const Vertex* pri,
 	return d0sig;
 }
 
+double signedD0(const Track* trk, const Jet* jet, const Vertex* pri, bool updateFlt) {
+	TVector3 jet2d( jet->Vect().X(), jet->Vect().Y(), 0);
+	trk->setFlightLength(0);
+
+	if (updateFlt) {
+		TrackPocaXY pocaXY(trk,pri);
+		trk->setFlightLength( pocaXY.getFlightLength() );
+	}
+
+	// determine sign of significance relative to jet direction
+	TVector3 pca( -trk->getD0()*sin(trk->getPhi()),
+			trk->getD0()*cos(trk->getPhi()), trk->getZ0() );
+	double signd0(1);
+	if (pca.Dot(jet2d) < 0) signd0 = -1;
+
+	double d0 = sqrt( pow(trk->getX()-pri->getX(),2)+pow(trk->getY()-pri->getY(),2) );
+
+	return signd0 * d0;
+}
+
 double signedZ0Significance(const Track* trk, const Jet* jet, const Vertex* pri, bool updateFlt) {
 	TVector3 jetz( 0, 0, jet->Vect().Z() );
 
@@ -165,6 +185,22 @@ double signedZ0Significance(const Track* trk, const Jet* jet, const Vertex* pri,
 	return z0sig;
 }
 
+double signedZ0(const Track* trk, const Jet* jet, const Vertex* pri, bool updateFlt) {
+	TVector3 jetz( 0, 0, jet->Vect().Z() );
+
+	if (updateFlt) {
+		TrackPocaXY pocaXY(trk,pri);
+		trk->setFlightLength( pocaXY.getFlightLength() );
+	}
+
+	// determine sign of significance relative to jet direction
+	TVector3 pca( -trk->getD0()*sin(trk->getPhi()),
+			trk->getD0()*cos(trk->getPhi()), trk->getZ0() );
+	double signz0(1);
+	if (pca.Dot(jetz) < 0) signz0 = -1;
+	double z0 = trk->getZ0() - pri->getZ();
+	return signz0 * z0;
+}
 
 /////////////////////////////////////////////////
 // for joint probability calculation
@@ -188,7 +224,7 @@ double trackProbZ0(const Track* trk, const Vertex* pri) {
 	return prob1D(sig,200,zpars)/prob1D(0,200,zpars);
 }
 
-double jointProbD0(const Jet* jet, const Vertex* pri) {
+double jointProbD0(const Jet* jet, const Vertex* pri, double maxd0sigcut) {
 	double maxd0sig = 200.;
 
 	double prod(1);
@@ -202,6 +238,7 @@ double jointProbD0(const Jet* jet, const Vertex* pri) {
 				&& trk->getVtxHits() >= 5) {
 
 			double sig = fabs( trackD0Significance(trk,pri) );
+			if (sig>maxd0sigcut)continue;
 			if (sig<maxd0sig) {
 				double prob = prob1D(sig,maxd0sig,rpars)/prob1D(0,maxd0sig,rpars);
 				if (prob > hiprob) hiprob = prob;
@@ -235,7 +272,7 @@ double jointProbD0(const Jet* jet, const Vertex* pri) {
 	return jprob;
 }
 
-double jointProbZ0(const Jet* jet, const Vertex* pri) {
+double jointProbZ0(const Jet* jet, const Vertex* pri, double maxz0sigcut) {
 	double maxz0sig = 200.;
 
 	double prod(1);
@@ -248,6 +285,7 @@ double jointProbZ0(const Jet* jet, const Vertex* pri) {
 		if (trk->getD0() < 5 && trk->getZ0() < 5
 				&& trk->getVtxHits() >= 5) {
 			double sig = fabs( trackZ0Significance(trk,pri) );
+			if (sig>maxz0sigcut)continue;
 			if (sig < maxz0sig) {
 				double prob = prob1D(sig,maxz0sig,zpars)/prob1D(0,maxz0sig,zpars);
 				if (prob > hiprob) hiprob = prob;
@@ -290,32 +328,18 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, double sigVec[6
 	const Track* trk2(0);
 	const vector<const Track*>& tracks = jet->getAllTracks(true);
 
-	for (int i=0; i<6; ++i) {
-		sigVec[i] = 0;
-	}
-
-	if (tracks.size()<2) {
-		//printf("Number of tracks fewer than two, skipping significance calculation\n");
-		//printf("Jet (%.2e,%.2e,%.2e,%.2e)\n",jet->E(),jet->Px(),jet->Py(),jet->Pz());
-		sigVec[0] = -100;
-		sigVec[1] = -100;
-		sigVec[2] = -100;
-		sigVec[3] = -100;
-		sigVec[4] = -100;
-		sigVec[5] = -100;
-		return;
-	}
-
 	for (TrackVecIte iter = tracks.begin(); iter != tracks.end(); ++iter) {
 		const Track* trk = *iter;
 
 		int nHitCut = 5;
 		int nVTX = trk->getVtxHits();
-		//printf("nVTX: %d\n",nVTX);
-		if (nVTX < nHitCut-1) continue;
+		int nFTD = trk->getFtdHits();
+		int nhits = nVTX+nFTD;
+
+		if (nhits < nHitCut-1) continue;
 		double mom = trk->Vect().Mag();
-		if (nVTX == nHitCut-1 && mom < 2) continue;
-		if (nVTX >= nHitCut && mom < 1) continue;
+		if (nhits == nHitCut-1 && mom < 2) continue;
+		if (nhits >= nHitCut && mom < 1) continue;
 
 		double d0sig = signedD0Significance(trk,jet,pri,true);
 
@@ -330,27 +354,29 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, double sigVec[6
 		}
 	}
 
-	if (trk1 == 0 || trk2 == 0) {
-		sigVec[0] = -100;
-		sigVec[1] = -100;
-		sigVec[2] = -100;
-		sigVec[3] = -100;
-		sigVec[4] = -100;
-		sigVec[5] = -100;
-		return;
+	if (trk1) {
+		double trk1z0sig = signedZ0Significance(trk1,jet,pri,false);
+		double trk1pt = trk1->Vect().Pt();
+		sigVec[0] = trk1d0sig;
+		sigVec[2] = trk1z0sig;
+		sigVec[4] = trk1pt;
+	} else {
+		sigVec[0] = 0;
+		sigVec[2] = 0;
+		sigVec[4] = 0;
 	}
 
-	double trk1z0sig = signedZ0Significance(trk1,jet,pri,false);
-	double trk2z0sig = signedZ0Significance(trk2,jet,pri,false);
-	double trk1pt = trk1->Vect().Pt();
-	double trk2pt = trk2->Vect().Pt();
-
-	sigVec[0] = trk1d0sig;
-	sigVec[1] = trk2d0sig;
-	sigVec[2] = trk1z0sig;
-	sigVec[3] = trk2z0sig;
-	sigVec[4] = trk1pt;
-	sigVec[5] = trk2pt;
+	if (trk2) {
+		double trk2z0sig = signedZ0Significance(trk2,jet,pri,false);
+		double trk2pt = trk2->Vect().Pt();
+		sigVec[1] = trk2d0sig;
+		sigVec[3] = trk2z0sig;
+		sigVec[5] = trk2pt;
+	} else {
+		sigVec[1] = 0;
+		sigVec[3] = 0;
+		sigVec[5] = 0;
+	}
 }
 
 }}

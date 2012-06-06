@@ -10,6 +10,8 @@ class TTree;
 
 namespace lcfiplus{
 
+	class FtIPProbHolder;
+
 	/**
 		Controls the event data and registers and holds algorithms for
 		the computation of flavor tagging variables.
@@ -37,6 +39,9 @@ namespace lcfiplus{
 
 			int _auxiliaryInfo;
 			string _jetcolname;
+			string _primvtxcolname;
+
+			FtIPProbHolder *_holder; //!
 
 			ClassDef(FlavorTag,1);
 	};
