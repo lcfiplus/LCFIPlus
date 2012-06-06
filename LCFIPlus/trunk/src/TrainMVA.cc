@@ -41,9 +41,9 @@ void TrainMVA::init(Parameters *param) {
 	_treeNameC = param->get("TrainMVA.TreeNameC",string("ntp"));
 	_treeNameO = param->get("TrainMVA.TreeNameO",string("ntp"));
 
-	_cutB = param->get("TrainMVA.PreSelectionB",string(""));
-	_cutC = param->get("TrainMVA.PreSelectionC",string(""));
-	_cutO = param->get("TrainMVA.PreSelectionO",string(""));
+	//_cutB = param->get("TrainMVA.PreSelectionB",string(""));
+	//_cutC = param->get("TrainMVA.PreSelectionC",string(""));
+	//_cutO = param->get("TrainMVA.PreSelectionO",string(""));
 
 	_skipTrain = param->get("TrainMVA.SkipTrain",int(0));
 
@@ -166,11 +166,12 @@ void TrainMVA::end() {
 		TMVA::gConfig().GetIONames().fWeightFileDir = _outputDirectory;
 		TMVA::Factory* factory = new TMVA::Factory(prefix,outputFile,
 			"!V:!Silent:Color:!DrawProgressBar:Transformations=I;D;P;G,D:AnalysisType=multiclass" );
+			//"!V:!Silent:Color:DrawProgressBar:Transformations=I;D;P;G,D:AnalysisType=multiclass" );
 
 		// define signal and background trees
-		factory->AddTree( treeB, TString("jetB"), 1., TCut(c.definition) );
-		factory->AddTree( treeC, TString("jetC"), 1., TCut(c.definition) );
-		factory->AddTree( treeO, TString("jetO"), 1., TCut(c.definition) );
+		factory->AddTree( treeB, TString("jetB"), 1., TCut(c.definition)+TCut(c.preselection) );
+		factory->AddTree( treeC, TString("jetC"), 1., TCut(c.definition)+TCut(c.preselection) );
+		factory->AddTree( treeO, TString("jetO"), 1., TCut(c.definition)+TCut(c.preselection) );
 
 		// add variables
 		for (unsigned int iv=0; iv<c.vars.size(); ++iv) {

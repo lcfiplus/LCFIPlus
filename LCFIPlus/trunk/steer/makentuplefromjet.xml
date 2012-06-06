@@ -27,7 +27,9 @@
 		<parameter name="PrimaryVertexCollectionName" type="string" value="PrimaryVertex" />
 		<parameter name="FlavorTag.JetCollectionName" type="string" value="RefinedJets" />
 		<parameter name="MakeNtuple.AuxiliaryInfo" type="int" value="-1" />
-		
+		<parameter name="FlavorTag.D0ProbFileName" type="string" value="data/vtxprob/d0prob_zpole.root"/>
+		<parameter name="FlavorTag.Z0ProbFileName" type="string" value="data/vtxprob/z0prob_zpole.root"/>
+	
 		<parameter name="MakeNtuple.OutputRootFileName" type="string" value="ntuple.root" />
 	</processor>
 

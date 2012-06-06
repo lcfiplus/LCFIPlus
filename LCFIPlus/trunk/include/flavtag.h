@@ -32,7 +32,7 @@ namespace lcfiplus {
 		public:
 			FTAlgo(string name) : _name(name) {}
 			virtual ~FTAlgo() {}
-			void setEvent(const Event* event);
+			void setEvent(const Event* event, const Vertex *privtx);
 			void setJet(const Jet* jet);
 			float getValue();
 			const string& getName() const { return _name; }
@@ -40,6 +40,7 @@ namespace lcfiplus {
 
 		protected:
 			const Event* _event;
+			const Vertex* _privtx;
 			const Jet* _jet;
 			float _result;
 			string _name;
@@ -68,7 +69,7 @@ namespace lcfiplus {
 			void openTree();
 			void openFile(const char* filename);
 			void closeFile();
-			void process(const Event* event, JetVec & jets);
+			void process(const Event* event, const Vertex *privtx, JetVec & jets);
 
 			float* getVarAddress(const string& varname);
 			void setEval(bool seteval) { _evaluate = seteval; }

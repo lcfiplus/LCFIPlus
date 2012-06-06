@@ -3,6 +3,9 @@
 #include "TFile.h"
 #include "TNtuple.h"
 #include "TNtupleD.h"
+#include "TSystem.h"
+#include "TPad.h"
+#include "TStyle.h"
 
 #include "lcfiplus.h"
 #include "process.h"
@@ -249,14 +252,24 @@ const Jet * JetMCMatch(JetVec &jets, const MCParticle *mcp, vector<const Track *
 		Algorithm::init(param);
 
 		string filename = param->get("FileName",string("test.root"));
-		_jetname = param->get("JetCollectionName6",string("RefinedJets_6"));
+		_jetname8 = param->get("JetCollectionName8",string("RefinedJets_8"));
+		_jetname7 = param->get("JetCollectionName7",string("RefinedJets_7"));
+		_jetname  = param->get("JetCollectionName6",string("RefinedJets_6"));
+		_jetname5 = param->get("JetCollectionName5",string("RefinedJets_5"));
 		_jetname4 = param->get("JetCollectionName4",string("RefinedJets_4"));
+
+		_jetnamenv8 = param->get("JetCollectionNameNV8",string("RefinedNJets_8"));
+		_jetnamenv7 = param->get("JetCollectionNameNV7",string("RefinedNJets_7"));
+		_jetnamenv6 = param->get("JetCollectionNameNV6",string("RefinedNJets_6"));
+		_jetnamenv5 = param->get("JetCollectionNameNV5",string("RefinedNJets_5"));
+		_jetnamenv4 = param->get("JetCollectionNameNV4",string("RefinedNJets_4"));
 
 		_file = new TFile(filename.c_str(),"RECREATE");
 		_tree = new TTree("tree","tree");
 
 		// mc info
 		_tree->Branch("mchdecaypdg",&_d.mchdecaypdg,"mchdecaypdg[2]/I");
+		_tree->Branch("mchbb",&_d.mchbb,"mchbb/I");
 		_tree->Branch("mcnb",&_d.mcnb,"mcnb/I");
 
 		// non-jet variables
@@ -264,6 +277,14 @@ const Jet * JetMCMatch(JetVec &jets, const MCParticle *mcp, vector<const Track *
 
 		_tree->Branch("thrust",&_d.thrust,"thrust/D");
 		_tree->Branch("thaxis",&_d.thaxis,"thaxis[3]/D");
+		_tree->Branch("ntr", &_d.ntr, "ntr/I");
+		_tree->Branch("npfo", &_d.npfo, "ntr/I");
+
+		// combined variables for compatibility
+		_tree->Branch("mass",&_d.mass,"mass[15]/D");
+		_tree->Branch("ntrjetmin",&_d.ntrjetmin,"ntrjetmin/D");
+		_tree->Branch("pmiss",&_d.pmiss,"pmiss[3]/D");
+		_tree->Branch("emiss",&_d.emiss,"emiss/D");
 
 		// 6-jet variables
 		_tree->Branch("bcat",&_d.bcat,"bcat[6]/D");
@@ -274,42 +295,165 @@ const Jet * JetMCMatch(JetVec &jets, const MCParticle *mcp, vector<const Track *
 		_tree->Branch("pyjet",&_d.pyjet,"pyjet[6]/D");
 		_tree->Branch("pzjet",&_d.pzjet,"pzjet[6]/D");
 		_tree->Branch("ntrjet",&_d.ntrjet,"ntrjet[6]/D");
-
-		// combined variables for compatibility
-		_tree->Branch("mass",&_d.mass,"mass[15]/D");
-		_tree->Branch("ntrjetmin",&_d.ntrjetmin,"ntrjetmin/D");
-		_tree->Branch("pmiss",&_d.pmiss,"pmiss[3]/D");
-		_tree->Branch("emiss",&_d.emiss,"emiss/D");
+		_tree->Branch("twovtxprobjet",&_d.twovtxprobjet,"twovtxprobjet[6]/D");
+		_tree->Branch("vtxangle",&_d.vtxangle,"vtxangle[6]/D");
 
 		// 4-jet variables
-		_tree->Branch("bcat4",&_d.bcat4,"bcat4[6]/D");
-		_tree->Branch("btag4",&_d.btag4,"btag4[6]/D");
-		_tree->Branch("ctag4",&_d.ctag4,"ctag4[6]/D");
-		_tree->Branch("ejet4",&_d.ejet4,"ejet4[6]/D");
-		_tree->Branch("pxjet4",&_d.pxjet4,"pxjet4[6]/D");
-		_tree->Branch("pyjet4",&_d.pyjet4,"pyjet4[6]/D");
-		_tree->Branch("pzjet4",&_d.pzjet4,"pzjet4[6]/D");
-		_tree->Branch("ntrjet4",&_d.ntrjet4,"ntrjet4[6]/D");
+		_tree->Branch("bcat4",&_d.bcat4,"bcat4[4]/D");
+		_tree->Branch("btag4",&_d.btag4,"btag4[4]/D");
+		_tree->Branch("ctag4",&_d.ctag4,"ctag4[4]/D");
+		_tree->Branch("ejet4",&_d.ejet4,"ejet4[4]/D");
+		_tree->Branch("pxjet4",&_d.pxjet4,"pxjet4[4]/D");
+		_tree->Branch("pyjet4",&_d.pyjet4,"pyjet4[4]/D");
+		_tree->Branch("pzjet4",&_d.pzjet4,"pzjet4[4]/D");
+		_tree->Branch("ntrjet4",&_d.ntrjet4,"ntrjet4[4]/D");
+		_tree->Branch("twovtxprobjet4",&_d.twovtxprobjet4,"twovtxprobjet4[4]/D");
+		_tree->Branch("vtxangle4",&_d.vtxangle4,"vtxangle4[4]/D");
+
+		_tree->Branch("bcat5",&_d.bcat5,"bcat5[5]/D");
+		_tree->Branch("btag5",&_d.btag5,"btag5[5]/D");
+		_tree->Branch("ctag5",&_d.ctag5,"ctag5[5]/D");
+		_tree->Branch("ejet5",&_d.ejet5,"ejet5[5]/D");
+		_tree->Branch("pxjet5",&_d.pxjet5,"pxjet5[5]/D");
+		_tree->Branch("pyjet5",&_d.pyjet5,"pyjet5[5]/D");
+		_tree->Branch("pzjet5",&_d.pzjet5,"pzjet5[5]/D");
+		_tree->Branch("ntrjet5",&_d.ntrjet5,"ntrjet5[5]/D");
+		_tree->Branch("twovtxprobjet5",&_d.twovtxprobjet5,"twovtxprobjet5[5]/D");
+		_tree->Branch("vtxangle5",&_d.vtxangle5,"vtxangle5[5]/D");
+
+		_tree->Branch("bcat7",&_d.bcat7,"bcat7[7]/D");
+		_tree->Branch("btag7",&_d.btag7,"btag7[7]/D");
+		_tree->Branch("ctag7",&_d.ctag7,"ctag7[7]/D");
+		_tree->Branch("ejet7",&_d.ejet7,"ejet7[7]/D");
+		_tree->Branch("pxjet7",&_d.pxjet7,"pxjet7[7]/D");
+		_tree->Branch("pyjet7",&_d.pyjet7,"pyjet7[7]/D");
+		_tree->Branch("pzjet7",&_d.pzjet7,"pzjet7[7]/D");
+		_tree->Branch("ntrjet7",&_d.ntrjet7,"ntrjet7[7]/D");
+		_tree->Branch("twovtxprobjet7",&_d.twovtxprobjet7,"twovtxprobjet7[7]/D");
+		_tree->Branch("vtxangle7",&_d.vtxangle7,"vtxangle7[7]/D");
+
+		_tree->Branch("bcat8",&_d.bcat8,"bcat8[8]/D");
+		_tree->Branch("btag8",&_d.btag8,"btag8[8]/D");
+		_tree->Branch("ctag8",&_d.ctag8,"ctag8[8]/D");
+		_tree->Branch("ejet8",&_d.ejet8,"ejet8[8]/D");
+		_tree->Branch("pxjet8",&_d.pxjet8,"pxjet8[8]/D");
+		_tree->Branch("pyjet8",&_d.pyjet8,"pyjet8[8]/D");
+		_tree->Branch("pzjet8",&_d.pzjet8,"pzjet8[8]/D");
+		_tree->Branch("ntrjet8",&_d.ntrjet8,"ntrjet8[8]/D");
+		_tree->Branch("twovtxprobjet8",&_d.twovtxprobjet8,"twovtxprobjet8[8]/D");
+		_tree->Branch("vtxangle8",&_d.vtxangle8,"vtxangle8[8]/D");
+
+		// jet clustering with no vertex
+		_tree->Branch("bcatnv4",&_d.bcatnv4,"bcatnv4[4]/D");
+		_tree->Branch("btagnv4",&_d.btagnv4,"btagnv4[4]/D");
+		_tree->Branch("ctagnv4",&_d.ctagnv4,"ctagnv4[4]/D");
+		_tree->Branch("ejetnv4",&_d.ejetnv4,"ejetnv4[4]/D");
+		_tree->Branch("pxjetnv4",&_d.pxjetnv4,"pxjetnv4[4]/D");
+		_tree->Branch("pyjetnv4",&_d.pyjetnv4,"pyjetnv4[4]/D");
+		_tree->Branch("pzjetnv4",&_d.pzjetnv4,"pzjetnv4[4]/D");
+		_tree->Branch("ntrjetnv4",&_d.ntrjetnv4,"ntrjetnv4[4]/D");
+		_tree->Branch("twovtxprobjetnv4",&_d.twovtxprobjetnv4,"twovtxprobjetnv4[4]/D");
+		_tree->Branch("vtxanglenv4",&_d.vtxanglenv4,"vtxanglenv4[4]/D");
+
+		_tree->Branch("bcatnv5",&_d.bcatnv5,"bcatnv5[5]/D");
+		_tree->Branch("btagnv5",&_d.btagnv5,"btagnv5[5]/D");
+		_tree->Branch("ctagnv5",&_d.ctagnv5,"ctagnv5[5]/D");
+		_tree->Branch("ejetnv5",&_d.ejetnv5,"ejetnv5[5]/D");
+		_tree->Branch("pxjetnv5",&_d.pxjetnv5,"pxjetnv5[5]/D");
+		_tree->Branch("pyjetnv5",&_d.pyjetnv5,"pyjetnv5[5]/D");
+		_tree->Branch("pzjetnv5",&_d.pzjetnv5,"pzjetnv5[5]/D");
+		_tree->Branch("ntrjetnv5",&_d.ntrjetnv5,"ntrjetnv5[5]/D");
+		_tree->Branch("twovtxprobjetnv5",&_d.twovtxprobjetnv5,"twovtxprobjetnv5[5]/D");
+		_tree->Branch("vtxanglenv5",&_d.vtxanglenv5,"vtxanglenv5[5]/D");
+
+		_tree->Branch("bcatnv6",&_d.bcatnv6,"bcatnv6[6]/D");
+		_tree->Branch("btagnv6",&_d.btagnv6,"btagnv6[6]/D");
+		_tree->Branch("ctagnv6",&_d.ctagnv6,"ctagnv6[6]/D");
+		_tree->Branch("ejetnv6",&_d.ejetnv6,"ejetnv6[6]/D");
+		_tree->Branch("pxjetnv6",&_d.pxjetnv6,"pxjetnv6[6]/D");
+		_tree->Branch("pyjetnv6",&_d.pyjetnv6,"pyjetnv6[6]/D");
+		_tree->Branch("pzjetnv6",&_d.pzjetnv6,"pzjetnv6[6]/D");
+		_tree->Branch("ntrjetnv6",&_d.ntrjetnv6,"ntrjetnv6[6]/D");
+		_tree->Branch("twovtxprobjetnv6",&_d.twovtxprobjetnv6,"twovtxprobjetnv6[6]/D");
+		_tree->Branch("vtxanglenv6",&_d.vtxanglenv6,"vtxanglenv6[6]/D");
+
+		_tree->Branch("bcatnv7",&_d.bcatnv7,"bcatnv7[7]/D");
+		_tree->Branch("btagnv7",&_d.btagnv7,"btagnv7[7]/D");
+		_tree->Branch("ctagnv7",&_d.ctagnv7,"ctagnv7[7]/D");
+		_tree->Branch("ejetnv7",&_d.ejetnv7,"ejetnv7[7]/D");
+		_tree->Branch("pxjetnv7",&_d.pxjetnv7,"pxjetnv7[7]/D");
+		_tree->Branch("pyjetnv7",&_d.pyjetnv7,"pyjetnv7[7]/D");
+		_tree->Branch("pzjetnv7",&_d.pzjetnv7,"pzjetnv7[7]/D");
+		_tree->Branch("ntrjetnv7",&_d.ntrjetnv7,"ntrjetnv7[7]/D");
+		_tree->Branch("twovtxprobjetnv7",&_d.twovtxprobjetnv7,"twovtxprobjetnv7[7]/D");
+		_tree->Branch("vtxanglenv7",&_d.vtxanglenv7,"vtxanglenv7[7]/D");
+
+		_tree->Branch("bcatnv8",&_d.bcatnv8,"bcatnv8[8]/D");
+		_tree->Branch("btagnv8",&_d.btagnv8,"btagnv8[8]/D");
+		_tree->Branch("ctagnv8",&_d.ctagnv8,"ctagnv8[8]/D");
+		_tree->Branch("ejetnv8",&_d.ejetnv8,"ejetnv8[8]/D");
+		_tree->Branch("pxjetnv8",&_d.pxjetnv8,"pxjetnv8[8]/D");
+		_tree->Branch("pyjetnv8",&_d.pyjetnv8,"pyjetnv8[8]/D");
+		_tree->Branch("pzjetnv8",&_d.pzjetnv8,"pzjetnv8[8]/D");
+		_tree->Branch("ntrjetnv8",&_d.ntrjetnv8,"ntrjetnv8[8]/D");
+		_tree->Branch("twovtxprobjetnv8",&_d.twovtxprobjetnv8,"twovtxprobjetnv8[8]/D");
+		_tree->Branch("vtxanglenv8",&_d.vtxanglenv8,"vtxanglenv8[8]/D");
 
 		_jets = 0;
 		_jets4 = 0;
+		_jets5 = 0;
+		_jets7 = 0;
+		_jets8 = 0;
+
+		_jetsnv4 = 0;
+		_jetsnv5 = 0;
+		_jetsnv6 = 0;
+		_jetsnv7 = 0;
+		_jetsnv8 = 0;
 	}
 
 
 
 	void ZHHAlgo::process(){
-		if(!_jets){
-			Event::Instance()->Get(_jetname.c_str(), _jets);
-		}
 		if(!_jets4){
 			Event::Instance()->Get(_jetname4.c_str(), _jets4);
 		}
+		if(!_jets5){
+			Event::Instance()->Get(_jetname5.c_str(), _jets5);
+		}
+		if(!_jets){
+			Event::Instance()->Get(_jetname.c_str(), _jets);
+		}
+		if(!_jets7){
+			Event::Instance()->Get(_jetname7.c_str(), _jets7);
+		}
+		if(!_jets8){
+			Event::Instance()->Get(_jetname8.c_str(), _jets8);
+		}
+		if(!_jetsnv4){
+			Event::Instance()->Get(_jetnamenv4.c_str(), _jetsnv4);
+		}
+		if(!_jetsnv5){
+			Event::Instance()->Get(_jetnamenv5.c_str(), _jetsnv5);
+		}
+		if(!_jetsnv6){
+			Event::Instance()->Get(_jetnamenv6.c_str(), _jetsnv6);
+		}
+		if(!_jetsnv7){
+			Event::Instance()->Get(_jetnamenv7.c_str(), _jetsnv7);
+		}
+		if(!_jetsnv8){
+			Event::Instance()->Get(_jetnamenv8.c_str(), _jetsnv8);
+		}
+
+		const Vertex * privtx = Event::Instance()->getPrimaryVertex();
 
 		// check higgs decay & nbs
 		const MCParticleVec & mcps = Event::Instance()->getMCParticles();
 
 		_d.mcnb = 0;
 		_d.mchdecaypdg[0] = _d.mchdecaypdg[1] = 0;
+		_d.mchbb = 0;
 
 		int hcount = 0;
 		for(unsigned int i=0;i<mcps.size();i++){
@@ -329,7 +473,14 @@ const Jet * JetMCMatch(JetVec &jets, const MCParticle *mcp, vector<const Track *
 					cout << "Too many higgs found!, ignore decay" << endl;
 					break;
 				}
-				_d.mchdecaypdg[hcount++] = abs(mcps[i]->getDaughters()[0]->getPDG());
+				int apdg = abs(mcps[i]->getDaughters()[0]->getPDG());
+				_d.mchdecaypdg[hcount++] = apdg;
+				if(apdg == 4)_d.mchbb ++;
+			}
+			if(mcps[i]->getPDG() == 5 && parpdg == 21 && mcps[i]->getParent()->getDaughters().size() == 2){
+				TVector3 v1 = mcps[i]->getParent()->getDaughters()[0]->Vect();
+				TVector3 v2 = mcps[i]->getParent()->getDaughters()[1]->Vect();
+				cout << "g->bb angle: " << v1.Angle(v2) << endl;
 			}
 		}
 
@@ -351,6 +502,9 @@ const Jet * JetMCMatch(JetVec &jets, const MCParticle *mcp, vector<const Track *
 		_d.thaxis[1] = taxis.y();
 		_d.thaxis[2] = taxis.z();
 
+		_d.ntr = tracks.size();
+		_d.npfo = tracks.size() + neutrals.size();
+
 		// sorting btag
 		vector<const Jet *> jets;
 		jets = *_jets;
@@ -365,7 +519,7 @@ const Jet * JetMCMatch(JetVec &jets, const MCParticle *mcp, vector<const Track *
 			j->recalcFourMomentum();
 
 			_d.btag[nj] = j->getParam("lcfiplus")->get<double>("BTag");
-			_d.bcat[nj] = j->getParam("lcfiplus")->get<int>("Category");
+			_d.bcat[nj] = j->getParam("lcfiplus")->get<double>("Category");
 			_d.ctag[nj] = j->getParam("lcfiplus")->get<double>("CTag");
 			_d.ejet[nj] = j->E();
 			_d.pxjet[nj] = j->Px();
@@ -377,6 +531,22 @@ const Jet * JetMCMatch(JetVec &jets, const MCParticle *mcp, vector<const Track *
 			unsigned int ntr = j->getAllTracks().size();
 			_d.ntrjet[nj] = ntr;
 			if(_d.ntrjetmin > ntr)_d.ntrjetmin = ntr;
+
+			unsigned int nv = j->getVertices().size();
+			_d.twovtxprobjet[nj] = 1.;
+			_d.vtxangle[nj] = 0.;
+			if(nv == 2){
+				// two vtx prob
+				_d.twovtxprobjet[nj] *= j->getVertices()[0]->getProb();
+				_d.twovtxprobjet[nj] *= j->getVertices()[1]->getProb();
+
+				// vertex angle
+				TVector3 pripos = privtx->getPos();
+				TVector3 pos1 = j->getVertices()[0]->getPos() - pripos;
+				TVector3 pos2 = j->getVertices()[1]->getPos() - pripos;
+
+				_d.vtxangle[nj] = pos1.Angle(pos2);
+			}
 
 			// ycut values
 			if(nj == 0){
@@ -412,7 +582,7 @@ const Jet * JetMCMatch(JetVec &jets, const MCParticle *mcp, vector<const Track *
 			j->recalcFourMomentum();
 
 			_d.btag4[nj] = j->getParam("lcfiplus")->get<double>("BTag");
-			_d.bcat4[nj] = j->getParam("lcfiplus")->get<int>("Category");
+			_d.bcat4[nj] = j->getParam("lcfiplus")->get<double>("Category");
 			_d.ctag4[nj] = j->getParam("lcfiplus")->get<double>("CTag");
 			_d.ejet4[nj] = j->E();
 			_d.pxjet4[nj] = j->Px();
@@ -422,6 +592,307 @@ const Jet * JetMCMatch(JetVec &jets, const MCParticle *mcp, vector<const Track *
 			unsigned int ntr = j->getAllTracks().size();
 			_d.ntrjet4[nj] = ntr;
 
+			unsigned int nv = j->getVertices().size();
+			_d.twovtxprobjet4[nj] = 1.;
+			_d.vtxangle4[nj] = 0.;
+			if(nv == 2){
+				// two vtx prob
+				_d.twovtxprobjet4[nj] *= j->getVertices()[0]->getProb();
+				_d.twovtxprobjet4[nj] *= j->getVertices()[1]->getProb();
+
+				// vertex angle
+				TVector3 pripos = privtx->getPos();
+				TVector3 pos1 = j->getVertices()[0]->getPos() - pripos;
+				TVector3 pos2 = j->getVertices()[1]->getPos() - pripos;
+
+				_d.vtxangle4[nj] = pos1.Angle(pos2);
+			}
+		}
+
+		// sorting btag for
+		vector<const Jet *> jets5;
+		jets5 = *_jets5;
+		sort(jets5.begin(), jets5.end(), sortBtag);
+
+		for(unsigned int nj = 0; nj < 5; nj ++){
+			Jet *j = const_cast<Jet *>(jets5[nj]); // TODO: bad boy...
+			j->recalcFourMomentum();
+
+			_d.btag5[nj] = j->getParam("lcfiplus")->get<double>("BTag");
+			_d.bcat5[nj] = j->getParam("lcfiplus")->get<double>("Category");
+			_d.ctag5[nj] = j->getParam("lcfiplus")->get<double>("CTag");
+			_d.ejet5[nj] = j->E();
+			_d.pxjet5[nj] = j->Px();
+			_d.pyjet5[nj] = j->Py();
+			_d.pzjet5[nj] = j->Pz();
+
+			unsigned int ntr = j->getAllTracks().size();
+			_d.ntrjet5[nj] = ntr;
+
+			unsigned int nv = j->getVertices().size();
+			_d.twovtxprobjet5[nj] = 1.;
+			_d.vtxangle5[nj] = 0.;
+			if(nv == 2){
+				// two vtx prob
+				_d.twovtxprobjet5[nj] *= j->getVertices()[0]->getProb();
+				_d.twovtxprobjet5[nj] *= j->getVertices()[1]->getProb();
+
+				// vertex angle
+				TVector3 pripos = privtx->getPos();
+				TVector3 pos1 = j->getVertices()[0]->getPos() - pripos;
+				TVector3 pos2 = j->getVertices()[1]->getPos() - pripos;
+
+				_d.vtxangle5[nj] = pos1.Angle(pos2);
+			}
+		}
+
+		// sorting btag for
+		vector<const Jet *> jets7;
+		jets7 = *_jets7;
+		sort(jets7.begin(), jets7.end(), sortBtag);
+
+		for(unsigned int nj = 0; nj < 7; nj ++){
+			Jet *j = const_cast<Jet *>(jets7[nj]); // TODO: bad boy...
+			j->recalcFourMomentum();
+
+			_d.btag7[nj] = j->getParam("lcfiplus")->get<double>("BTag");
+			_d.bcat7[nj] = j->getParam("lcfiplus")->get<double>("Category");
+			_d.ctag7[nj] = j->getParam("lcfiplus")->get<double>("CTag");
+			_d.ejet7[nj] = j->E();
+			_d.pxjet7[nj] = j->Px();
+			_d.pyjet7[nj] = j->Py();
+			_d.pzjet7[nj] = j->Pz();
+
+			unsigned int ntr = j->getAllTracks().size();
+			_d.ntrjet7[nj] = ntr;
+
+			unsigned int nv = j->getVertices().size();
+			_d.twovtxprobjet7[nj] = 1.;
+			_d.vtxangle7[nj] = 0.;
+			if(nv == 2){
+				// two vtx prob
+				_d.twovtxprobjet7[nj] *= j->getVertices()[0]->getProb();
+				_d.twovtxprobjet7[nj] *= j->getVertices()[1]->getProb();
+
+				// vertex angle
+				TVector3 pripos = privtx->getPos();
+				TVector3 pos1 = j->getVertices()[0]->getPos() - pripos;
+				TVector3 pos2 = j->getVertices()[1]->getPos() - pripos;
+
+				_d.vtxangle7[nj] = pos1.Angle(pos2);
+			}
+		}
+
+		// sorting btag for
+		vector<const Jet *> jets8;
+		jets8 = *_jets8;
+		sort(jets8.begin(), jets8.end(), sortBtag);
+
+		for(unsigned int nj = 0; nj < 8; nj ++){
+			Jet *j = const_cast<Jet *>(jets8[nj]); // TODO: bad boy...
+			j->recalcFourMomentum();
+
+			_d.btag8[nj] = j->getParam("lcfiplus")->get<double>("BTag");
+			_d.bcat8[nj] = j->getParam("lcfiplus")->get<double>("Category");
+			_d.ctag8[nj] = j->getParam("lcfiplus")->get<double>("CTag");
+			_d.ejet8[nj] = j->E();
+			_d.pxjet8[nj] = j->Px();
+			_d.pyjet8[nj] = j->Py();
+			_d.pzjet8[nj] = j->Pz();
+
+			unsigned int ntr = j->getAllTracks().size();
+			_d.ntrjet8[nj] = ntr;
+
+			unsigned int nv = j->getVertices().size();
+			_d.twovtxprobjet8[nj] = 1.;
+			_d.vtxangle8[nj] = 0.;
+			if(nv == 2){
+				// two vtx prob
+				_d.twovtxprobjet8[nj] *= j->getVertices()[0]->getProb();
+				_d.twovtxprobjet8[nj] *= j->getVertices()[1]->getProb();
+
+				// vertex angle
+				TVector3 pripos = privtx->getPos();
+				TVector3 pos1 = j->getVertices()[0]->getPos() - pripos;
+				TVector3 pos2 = j->getVertices()[1]->getPos() - pripos;
+
+				_d.vtxangle8[nj] = pos1.Angle(pos2);
+			}
+		}
+
+		vector<const Jet *> jetsnv4;
+		jetsnv4 = *_jetsnv4;
+		sort(jetsnv4.begin(), jetsnv4.end(), sortBtag);
+		for(unsigned int nj = 0; nj < 4; nj ++){
+			Jet *j = const_cast<Jet *>(jetsnv4[nj]); // TODO: bad boy...
+			j->recalcFourMomentum();
+
+			_d.btagnv4[nj] = j->getParam("lcfiplus")->get<double>("BTag");
+			_d.bcatnv4[nj] = j->getParam("lcfiplus")->get<double>("Category");
+			_d.ctagnv4[nj] = j->getParam("lcfiplus")->get<double>("CTag");
+			_d.ejetnv4[nj] = j->E();
+			_d.pxjetnv4[nj] = j->Px();
+			_d.pyjetnv4[nj] = j->Py();
+			_d.pzjetnv4[nj] = j->Pz();
+
+			unsigned int ntr = j->getAllTracks().size();
+			_d.ntrjetnv4[nj] = ntr;
+
+			unsigned int nv = j->getVertices().size();
+			_d.twovtxprobjetnv4[nj] = 1.;
+			_d.vtxanglenv4[nj] = 0.;
+			if(nv == 2){
+				// two vtx prob
+				_d.twovtxprobjetnv4[nj] *= j->getVertices()[0]->getProb();
+				_d.twovtxprobjetnv4[nj] *= j->getVertices()[1]->getProb();
+
+				// vertex angle
+				TVector3 pripos = privtx->getPos();
+				TVector3 pos1 = j->getVertices()[0]->getPos() - pripos;
+				TVector3 pos2 = j->getVertices()[1]->getPos() - pripos;
+
+				_d.vtxanglenv4[nj] = pos1.Angle(pos2);
+			}
+		}
+
+		vector<const Jet *> jetsnv5;
+		jetsnv5 = *_jetsnv5;
+		sort(jetsnv5.begin(), jetsnv5.end(), sortBtag);
+		for(unsigned int nj = 0; nj < 5; nj ++){
+			Jet *j = const_cast<Jet *>(jetsnv5[nj]); // TODO: bad boy...
+			j->recalcFourMomentum();
+
+			_d.btagnv5[nj] = j->getParam("lcfiplus")->get<double>("BTag");
+			_d.bcatnv5[nj] = j->getParam("lcfiplus")->get<double>("Category");
+			_d.ctagnv5[nj] = j->getParam("lcfiplus")->get<double>("CTag");
+			_d.ejetnv5[nj] = j->E();
+			_d.pxjetnv5[nj] = j->Px();
+			_d.pyjetnv5[nj] = j->Py();
+			_d.pzjetnv5[nj] = j->Pz();
+
+			unsigned int ntr = j->getAllTracks().size();
+			_d.ntrjetnv5[nj] = ntr;
+
+			unsigned int nv = j->getVertices().size();
+			_d.twovtxprobjetnv5[nj] = 1.;
+			_d.vtxanglenv5[nj] = 0.;
+			if(nv == 2){
+				// two vtx prob
+				_d.twovtxprobjetnv5[nj] *= j->getVertices()[0]->getProb();
+				_d.twovtxprobjetnv5[nj] *= j->getVertices()[1]->getProb();
+
+				// vertex angle
+				TVector3 pripos = privtx->getPos();
+				TVector3 pos1 = j->getVertices()[0]->getPos() - pripos;
+				TVector3 pos2 = j->getVertices()[1]->getPos() - pripos;
+
+				_d.vtxanglenv5[nj] = pos1.Angle(pos2);
+			}
+		}
+
+		vector<const Jet *> jetsnv6;
+		jetsnv6 = *_jetsnv6;
+		sort(jetsnv6.begin(), jetsnv6.end(), sortBtag);
+		for(unsigned int nj = 0; nj < 6; nj ++){
+			Jet *j = const_cast<Jet *>(jetsnv6[nj]); // TODO: bad boy...
+			j->recalcFourMomentum();
+
+			_d.btagnv6[nj] = j->getParam("lcfiplus")->get<double>("BTag");
+			_d.bcatnv6[nj] = j->getParam("lcfiplus")->get<double>("Category");
+			_d.ctagnv6[nj] = j->getParam("lcfiplus")->get<double>("CTag");
+			_d.ejetnv6[nj] = j->E();
+			_d.pxjetnv6[nj] = j->Px();
+			_d.pyjetnv6[nj] = j->Py();
+			_d.pzjetnv6[nj] = j->Pz();
+
+			unsigned int ntr = j->getAllTracks().size();
+			_d.ntrjetnv6[nj] = ntr;
+
+			unsigned int nv = j->getVertices().size();
+			_d.twovtxprobjetnv6[nj] = 1.;
+			_d.vtxanglenv6[nj] = 0.;
+			if(nv == 2){
+				// two vtx prob
+				_d.twovtxprobjetnv6[nj] *= j->getVertices()[0]->getProb();
+				_d.twovtxprobjetnv6[nj] *= j->getVertices()[1]->getProb();
+
+				// vertex angle
+				TVector3 pripos = privtx->getPos();
+				TVector3 pos1 = j->getVertices()[0]->getPos() - pripos;
+				TVector3 pos2 = j->getVertices()[1]->getPos() - pripos;
+
+				_d.vtxanglenv6[nj] = pos1.Angle(pos2);
+			}
+		}
+
+		vector<const Jet *> jetsnv7;
+		jetsnv7 = *_jetsnv7;
+		sort(jetsnv7.begin(), jetsnv7.end(), sortBtag);
+		for(unsigned int nj = 0; nj < 7; nj ++){
+			Jet *j = const_cast<Jet *>(jetsnv7[nj]); // TODO: bad boy...
+			j->recalcFourMomentum();
+
+			_d.btagnv7[nj] = j->getParam("lcfiplus")->get<double>("BTag");
+			_d.bcatnv7[nj] = j->getParam("lcfiplus")->get<double>("Category");
+			_d.ctagnv7[nj] = j->getParam("lcfiplus")->get<double>("CTag");
+			_d.ejetnv7[nj] = j->E();
+			_d.pxjetnv7[nj] = j->Px();
+			_d.pyjetnv7[nj] = j->Py();
+			_d.pzjetnv7[nj] = j->Pz();
+
+			unsigned int ntr = j->getAllTracks().size();
+			_d.ntrjetnv7[nj] = ntr;
+
+			unsigned int nv = j->getVertices().size();
+			_d.twovtxprobjetnv7[nj] = 1.;
+			_d.vtxanglenv7[nj] = 0.;
+			if(nv == 2){
+				// two vtx prob
+				_d.twovtxprobjetnv7[nj] *= j->getVertices()[0]->getProb();
+				_d.twovtxprobjetnv7[nj] *= j->getVertices()[1]->getProb();
+
+				// vertex angle
+				TVector3 pripos = privtx->getPos();
+				TVector3 pos1 = j->getVertices()[0]->getPos() - pripos;
+				TVector3 pos2 = j->getVertices()[1]->getPos() - pripos;
+
+				_d.vtxanglenv7[nj] = pos1.Angle(pos2);
+			}
+		}
+
+		vector<const Jet *> jetsnv8;
+		jetsnv8 = *_jetsnv8;
+		sort(jetsnv8.begin(), jetsnv8.end(), sortBtag);
+		for(unsigned int nj = 0; nj < 8; nj ++){
+			Jet *j = const_cast<Jet *>(jetsnv8[nj]); // TODO: bad boy...
+			j->recalcFourMomentum();
+
+			_d.btagnv8[nj] = j->getParam("lcfiplus")->get<double>("BTag");
+			_d.bcatnv8[nj] = j->getParam("lcfiplus")->get<double>("Category");
+			_d.ctagnv8[nj] = j->getParam("lcfiplus")->get<double>("CTag");
+			_d.ejetnv8[nj] = j->E();
+			_d.pxjetnv8[nj] = j->Px();
+			_d.pyjetnv8[nj] = j->Py();
+			_d.pzjetnv8[nj] = j->Pz();
+
+			unsigned int ntr = j->getAllTracks().size();
+			_d.ntrjetnv8[nj] = ntr;
+
+			unsigned int nv = j->getVertices().size();
+			_d.twovtxprobjetnv8[nj] = 1.;
+			_d.vtxanglenv8[nj] = 0.;
+			if(nv == 2){
+				// two vtx prob
+				_d.twovtxprobjetnv8[nj] *= j->getVertices()[0]->getProb();
+				_d.twovtxprobjetnv8[nj] *= j->getVertices()[1]->getProb();
+
+				// vertex angle
+				TVector3 pripos = privtx->getPos();
+				TVector3 pos1 = j->getVertices()[0]->getPos() - pripos;
+				TVector3 pos2 = j->getVertices()[1]->getPos() - pripos;
+
+				_d.vtxanglenv8[nj] = pos1.Angle(pos2);
+			}
 		}
 
 		_tree->Fill();
@@ -432,6 +903,101 @@ const Jet * JetMCMatch(JetVec &jets, const MCParticle *mcp, vector<const Track *
 		_file->Write();
 		_file->Close();
 	}
+
+	void TestAlgo::init(Parameters *param){
+		Algorithm::init(param);
+
+		string filename = param->get("FileName",string("test.root"));
+		_jetname = param->get("JetCollectionName",string("Durham_2Jets"));
+		string primvtxcolname = param->get("PrimaryVertexCollectionName",string("PrimaryVertex"));
+		Event::Instance()->setDefaultPrimaryVertex(primvtxcolname.c_str());
+
+		_file = new TFile(filename.c_str(),"RECREATE");
+		_nt = new TNtupleD("nt","nt","nev:pdg:d0:d0sig:z0:z0sig:e:pt:pz:chi2:sd0:sz0:ecaldep:hcaldep");
+
+		_jets = 0;
+		_nev = 0;
+	}
+
+	void TestAlgo::process(){
+		if(!_jets){
+			Event::Instance()->Get(_jetname.c_str(), _jets);
+		}
+		const Vertex * privtx = Event::Instance()->getPrimaryVertex();
+
+		for(unsigned int nj = 0; nj < _jets->size(); nj++){
+			const Jet *j = (*_jets)[nj];
+			TrackVec tracks = j->getAllTracks(true);
+			for(unsigned int n=0;n<tracks.size();n++){
+				const Track *tr = tracks[n];
+
+				double sd0 = signedD0(tr, j, privtx, true);
+				//double sd0sig = signedD0Significance(tr, j, privtx, true);
+				double sz0 = signedZ0(tr, j, privtx, true);
+				//double sz0sig = signedZ0Significance(tr, j, privtx, true);
+
+				const MCParticle *mcp = tracks[n]->getMcp();
+				_nt->Fill(_nev, mcp ? mcp->getPDG() : 0, fabs(tr->getD0()), fabs(tr->getD0() / sqrt(tr->getCovMatrix()[tpar::d0d0])),
+					fabs(tr->getZ0()), fabs(tr->getZ0() / sqrt(tr->getCovMatrix()[tpar::z0z0])),
+					  tr->E(), tr->Pt(), tr->Pz(), tr->getChi2(), sd0, sz0, tr->getCaloEdep()[tpar::ecal], tr->getCaloEdep()[tpar::hcal]);
+			}
+		}
+
+		_nev ++;
+	}
+
+	void TestAlgo::end() {
+		_file->Write();
+		_file->Close();
+	}
+
+#if 0
+
+	void TestAlgo::init(Parameters *param){
+		Algorithm::init(param);
+
+		gStyle->SetPalette(1);
+		_h = new TH2D("h","h",200,-2,2,200,-2,2);
+		_he = new TH2D("he","he",200,-2,2,200,-2,2);
+	}
+
+	void TestAlgo::process(){
+		// check bbbbbb (reject H->WW etc.)
+		const MCParticleVec & mcps = Event::Instance()->getMCParticles();
+		const MCColorSingletVec & mccss = Event::Instance()->getMCColorSinglets();
+		cout << "# mccs = " << mccss.size() << endl;
+		if(mccss.size() != 3) return;
+
+		int nq[3];
+		for(unsigned int i=0;i<3;i++){nq[i] = mccss[i]->_initials.size();}
+		cout << "# qs = " << nq[0] << " " << nq[1] << " " << nq[2] << endl;
+		if(nq[0]!=2 ||nq[1]!=2 ||nq[2]!=2)return;
+
+		for(unsigned int i=0;i<mcps.size();i++){
+			const MCColorSinglet *mccs = mcps[i]->getColorSinglet(&mccss);
+			const MCParticle *p1 = mccs->_initials[0];
+			const MCParticle *p2 = mccs->_initials[1];
+
+			TVector3 normal = p1->Vect().Cross(p2->Vect()).Unit();
+			double ndp = (normal.Dot(mcps[i]->Vect().Unit()));
+			TVector3 pplane = mcps[i]->Vect().Unit() - (normal * ndp);
+			double nxp1 = p1->Vect().Unit().Dot(pplane);
+			double nxp2 = p2->Vect().Unit().Dot(pplane);
+			double nxp12 = fabs(p1->Vect().Unit().Dot(p2->Vect().Unit()));
+			double nxp = (nxp1 - nxp2) / (1 - nxp12);
+
+			_h->Fill(nxp, ndp);
+			cout << nxp << " " << ndp << endl;
+		}
+	}
+
+	void TestAlgo::end()
+	{
+		_h->Draw("colz");
+		gPad->Update();
+		gSystem->ProcessEvents();
+	}
+
 
 	void TestAlgo::init(Parameters *param){
 		Algorithm::init(param);
@@ -609,7 +1175,6 @@ const Jet * JetMCMatch(JetVec &jets, const MCParticle *mcp, vector<const Track *
 		}
 	}
 
-#if 0
 	void TestAlgo::init(Parameters *param){
 		Algorithm::init(param);
 
@@ -751,12 +1316,12 @@ const Jet * JetMCMatch(JetVec &jets, const MCParticle *mcp, vector<const Track *
 		_ntJet2->Fill(0, jets.size(), blist.size(), 0, nvtxjet, 0, 0, 0., nbjet, fracgoodtrack);
 	}
 
-#endif
 
 	void TestAlgo::end() {
 		_file->Write();
 		_file->Close();
 	}
+#endif
 
 }
 

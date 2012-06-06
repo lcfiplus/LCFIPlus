@@ -75,6 +75,16 @@ namespace lcfiplus {
 		return *(MCParticleVec*&)GetObjectRef(mcpname, classname);
 	}
 
+	MCColorSingletVec & Event::getMCColorSinglets(const char *mcpname) const
+	{
+		if(!mcpname) mcpname = _defMcpName.c_str();
+		const char *classname = "vector<lcfiplus::MCColorSinglet*>";
+
+//		if(!IsExist(mcpname,classname))throw(Exception("Event::getMCParticles(): collection not found."));
+
+		return *(MCColorSingletVec*&)GetObjectRef(mcpname, classname);
+	}
+
 	const Vertex* Event::getPrimaryVertex(const char *privtxname) const
 	{
 		if(!privtxname) privtxname = _defPriVtxName.c_str();
@@ -345,6 +355,18 @@ namespace lcfiplus {
     if (parent == 0) return parent;
     return parent->getColorString();
   }
+
+	const MCColorSinglet * MCParticle::getColorSinglet(const vector<const MCColorSinglet *> *pcs)const
+	{
+		for(unsigned int n=0;n<pcs->size(); n++){
+			const MCParticle *mcp = (*pcs)[n]->getMcp();
+			if(mcp == this)return (*pcs)[n];
+		}
+		if(getParent() ==0) return 0;
+
+		// recursive
+		return getParent()->getColorSinglet(pcs);
+	}
 
   // checks if the MCParticle underwent semileptonic decay.
   // only checks the immediate daughters.

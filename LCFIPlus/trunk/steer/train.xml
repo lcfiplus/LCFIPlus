@@ -23,6 +23,7 @@
 	<parameter name="FlavorTag.BookName" type="string" value="bdt" />
 
 	<parameter name="FlavorTag.CategoryDefinition1" type="string">nvtx==0</parameter>
+	<parameter name="FlavorTag.CategoryPreselection1" type="string">trk1d0sig!=0</parameter>
 	<parameter name="FlavorTag.CategoryVariables1" type="stringVec">
 		trk1d0sig trk2d0sig trk1z0sig trk2z0sig trk1pt_jete trk2pt_jete jprobr jprobz
 	</parameter>
@@ -31,6 +32,7 @@
 	</parameter>
 
 	<parameter name="FlavorTag.CategoryDefinition2" type="string">nvtx==1&&nvtxall==1</parameter>
+	<parameter name="FlavorTag.CategoryPreselection2" type="string">trk1d0sig!=0</parameter>
 	<parameter name="FlavorTag.CategoryVariables2" type="stringVec">
 		trk1d0sig trk2d0sig trk1z0sig trk2z0sig trk1pt_jete trk2pt_jete jprobr jprobz
 		vtxlen1_jete vtxsig1_jete vtxdirang1_jete vtxmom1_jete vtxmass1 vtxmult1 vtxmasspc vtxprob
@@ -40,21 +42,24 @@
 	</parameter>
 
 	<parameter name="FlavorTag.CategoryDefinition3" type="string">nvtx==1&&nvtxall==2</parameter>
+	<parameter name="FlavorTag.CategoryPreselection3" type="string">trk1d0sig!=0</parameter>
 	<parameter name="FlavorTag.CategoryVariables3" type="stringVec">
 		trk1d0sig trk2d0sig trk1z0sig trk2z0sig trk1pt_jete trk2pt_jete jprobr jprobz
 		vtxlen1_jete vtxsig1_jete vtxdirang1_jete vtxmom1_jete vtxmass1 vtxmult1 vtxmasspc vtxprob
-		1vtxprob 2ndflt vtxmassall
+		1vtxprob vtxlen12all_jete vtxmassall
 	</parameter>
 	<parameter name="FlavorTag.CategorySpectators3" type="stringVec">
 		aux nvtx
 	</parameter>
 	
 	<parameter name="FlavorTag.CategoryDefinition4" type="string">nvtx>=2</parameter>
+	<parameter name="FlavorTag.CategoryPreselection4" type="string">trk1d0sig!=0</parameter>
 	<parameter name="FlavorTag.CategoryVariables4" type="stringVec">
 		trk1d0sig trk2d0sig trk1z0sig trk2z0sig trk1pt_jete trk2pt_jete jprobr jprobz
 		vtxlen1_jete vtxsig1_jete vtxdirang1_jete vtxmom1_jete vtxmass1 vtxmult1 vtxmasspc vtxprob
 		vtxlen2_jete vtxsig2_jete vtxdirang2_jete vtxmom2_jete vtxmass2 vtxmult2
 		vtxlen12_jete vtxsig12_jete vtxdirang12_jete vtxmom_jete vtxmass vtxmult
+		1vtxprob
 	</parameter>
 	<parameter name="FlavorTag.CategorySpectators4" type="stringVec">
 		aux nvtx

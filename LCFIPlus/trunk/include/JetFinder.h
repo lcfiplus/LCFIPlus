@@ -23,7 +23,10 @@ namespace lcfiplus {
     float coreThreshold;
     float distCut;
     int nIteration;
-    JetConfig() : nJet(0),Ycut(1),coneR(0),epsCut(0), coreThreshold(0),distCut(0),nIteration(5) {}
+		float YaddVV;
+		float YaddVL;
+		float YaddLL;
+    JetConfig() : nJet(0),Ycut(1),coneR(0),epsCut(0), coreThreshold(0),distCut(0),nIteration(5),YaddVV(100), YaddVL(100), YaddLL(100) {}
   };
 
 	/**
@@ -43,11 +46,11 @@ namespace lcfiplus {
 		*/
   class JetFinder {
     public:
-      static double funcDurham(Jet& jet1, Jet& jet2, double Evis2);
-      static double funcJade(Jet& jet1, Jet& jet2, double Evis2);
-      static double funcJadeE(Jet& jet1, Jet& jet2, double Evis2);
-      static double funcDurhamCheat(Jet& jet1, Jet& jet2, double Evis2);
-      static double funcDurhamVertex(Jet& jet1, Jet& jet2, double Evis2);
+      static double funcDurham(Jet& jet1, Jet& jet2, double Evis2, JetConfig &cfg);
+      static double funcJade(Jet& jet1, Jet& jet2, double Evis2, JetConfig &cfg);
+      static double funcJadeE(Jet& jet1, Jet& jet2, double Evis2, JetConfig &cfg);
+      static double funcDurhamCheat(Jet& jet1, Jet& jet2, double Evis2, JetConfig &cfg);
+      static double funcDurhamVertex(Jet& jet1, Jet& jet2, double Evis2, JetConfig &cfg);
 
 			/** Constructor.
 				@param[in] cfg specify the algorithm and the parameters
@@ -80,7 +83,7 @@ namespace lcfiplus {
       vector<Jet*> run(vector<Jet*> input, double *pymin = 0, int ynjetmax = 10);
 
     private:
-      double (*_Yfunc)(Jet& jet1, Jet& jet2, double Evis2);
+      double (*_Yfunc)(Jet& jet1, Jet& jet2, double Evis2, JetConfig &cfg);
       JetConfig _cfg;
   };
 

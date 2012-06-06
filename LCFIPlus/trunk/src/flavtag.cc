@@ -11,8 +11,9 @@ namespace lcfiplus {
 		return _result;
 	}
 
-	void FTAlgo::setEvent(const Event* event) {
+	void FTAlgo::setEvent(const Event* event, const Vertex *privtx) {
 		_event = event;
+		_privtx = privtx;
 	}
 
 	void FTAlgo::setJet(const Jet* jet) {
@@ -80,10 +81,10 @@ namespace lcfiplus {
 		}
 	}
 
-	void FTManager::process(const Event* event, JetVec & jets) {
+	void FTManager::process(const Event* event, const Vertex *privtx, JetVec & jets) {
 		for ( vector<FTAlgo*>::iterator iter = _algoList.begin(); iter != _algoList.end(); ++iter ) {
 			FTAlgo* algo = *iter;
-			algo->setEvent(event);
+			algo->setEvent(event, privtx);
 			algo->processEvent();
 		}
 
@@ -103,10 +104,17 @@ namespace lcfiplus {
 				for (int i=0; i<ncat; ++i) {
 					TTreeFormula form( "form", _categories[i].definition, _tree );
 					//cout << "category " << i << " evaluates to: " << form.EvalInstance() << endl;
+					TTreeFormula presel( "presel", _categories[i].preselection, _tree );
+
 					if ( form.EvalInstance() == 1 ) {
-						btag = _readers[i]->EvaluateMulticlass("bdt")[0];
-						ctag = _readers[i]->EvaluateMulticlass("bdt")[1];
 						category = i;
+						if ( presel.EvalInstance() == 1 ) {
+							btag = _readers[i]->EvaluateMulticlass("bdt")[0];
+							ctag = _readers[i]->EvaluateMulticlass("bdt")[1];
+						} else {
+							btag = 0;
+							ctag = 0;
+						}
 						//cout << "jet category is " << i << " [btag=" << btag << ", ctag=" << ctag << "]" << endl;
 					}
 				}

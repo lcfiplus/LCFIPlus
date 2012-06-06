@@ -236,6 +236,10 @@ namespace lcfiplus{
 		}
 
 		_useMuonID = param->get("JetClustering.UseMuonID", int(1));
+		_yaddVV = param->get("JetClustering.YAddedForJetVertexVertex", double(100.));
+		_yaddVL = param->get("JetClustering.YAddedForJetVertexLepton", double(100.));
+		_yaddLL = param->get("JetClustering.YAddedForJetLeptonLepton", double(100.));
+		_useMuonID = param->get("JetClustering.UseMuonID", int(1));
 
 		_vsMinDist = param->get("JetClustering.VertexSelectionMinimumDistance", double(0.3));
 		_vsMaxDist = param->get("JetClustering.VertexSelectionMaximumDistance", double(30.));
@@ -270,6 +274,9 @@ namespace lcfiplus{
 		JetConfig jetCfg;
 		jetCfg.nJet = _njets[0];
 		jetCfg.Ycut = _ycut[0];
+		jetCfg.YaddVV = _yaddVV;
+		jetCfg.YaddVL = _yaddVL;
+		jetCfg.YaddLL = _yaddLL;
 		JetFinder* jetFinder = new JetFinder(jetCfg);
 
 		double *ymin = new double[_maxYth];

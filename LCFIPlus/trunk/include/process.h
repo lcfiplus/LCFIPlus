@@ -93,6 +93,9 @@ namespace lcfiplus{
 		string _vcolname;
 		int _maxYth;
 
+		double _yaddVV;
+		double _yaddVL;
+		double _yaddLL;
 	};
 
 	class JetVertexRefiner : public Algorithm
