@@ -1,0 +1,19 @@
+Some documentation is available at
+https://confluence.slac.stanford.edu/display/ilc/LCFIPlus
+
+----------
+| v00-05 |
+----------
+- vertex-assisted jet clustering now adjustable with vertex pairing penalties
+- flavor tagging input variables added
+- can apply preselections to samples used in training
+
+----------
+| v00-04 |
+----------
+- lcfiplus processor should work with multiple instances
+- single track pseudo-vertex added
+- jet vertex refiner algorithm added
+- improved v0 rejection
+- new flavor tagging variables + various bug fixes
+- updated steering files
