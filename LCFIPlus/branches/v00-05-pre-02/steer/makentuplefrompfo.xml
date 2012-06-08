@@ -1,0 +1,127 @@
+<marlin>
+
+<execute>
+	<processor name="VertexFinder"/>
+	<processor name="JetClustering"/>
+	<processor name="MakeNtuple"/>
+</execute>
+
+<global>
+	<parameter name="LCIOInputFiles"> input.slcio </parameter>
+	<parameter name="GearXMLFile"> GearOutput.xml </parameter>  
+	<parameter name="MaxRecordNumber" value="0" />  
+	<parameter name="SkipNEvents" value="0" />  
+	<parameter name="SupressCheck" value="false" />  
+	<parameter name="Verbosity" options="DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT">WARNING</parameter> 
+</global>
+
+<processor name="VertexFinder" type="LcfiplusProcessor">
+	
+	<!-- run primary and secondary vertex finders -->
+	<parameter name="Algorithms" type="stringVec"> PrimaryVertexFinder BuildUpVertex </parameter>
+	<parameter name="ReadSubdetectorEnergies" type="int" value="1"/> <!-- true for ILD -->
+	<parameter name="UpdateVertexRPDaughters" type="int" value="0"/> <!-- false for non-updative PandoraPFOs -->
+	<parameter name="PrintEventNumber" type="int" value="0"/> <!-- 0 for not printing event number, n for printing every n events -->
+	
+	<!-- specify input collection names -->
+	<parameter name="PFOCollection" type="string" value="PandoraPFOs" />
+	<parameter name="PrimaryVertexCollectionName" type="string" value="PrimaryVertex" />
+	<parameter name="BuildUpVertexCollectionName" type="string" value="BuildUpVertex" />
+	<parameter name="BuildUpVertex.V0VertexCollectionName" type="string" value="BuildUpVertex_V0" />
+	
+	<!-- parameters for primary vertex finder -->
+	<parameter name="PrimaryVertexFinder.TrackMaxD0" type="double" value="20." />
+	<parameter name="PrimaryVertexFinder.TrackMaxZ0" type="double" value="20." />
+	<parameter name="PrimaryVertexFinder.TrackMaxInnermostHitRadius" type="double" value="20." />
+	<parameter name="PrimaryVertexFinder.TrackMinVtxFtdHits" type="int" value="5" />
+	<parameter name="PrimaryVertexFinder.Chi2Threshold" type="double" value="25." />
+	
+	<!-- parameters for secondary vertex finder -->
+	<parameter name="BuildUpVertex.TrackMaxD0" type="double" value="10." />
+	<parameter name="BuildUpVertex.TrackMaxZ0" type="double" value="20." />
+	<parameter name="BuildUpVertex.TrackMinPt" type="double" value="0.1" />
+	<parameter name="BuildUpVertex.TrackMaxD0Err" type="double" value="0.1" />
+	<parameter name="BuildUpVertex.TrackMaxZ0Err" type="double" value="0.1" />
+	<parameter name="BuildUpVertex.TrackMinTpcHits" type="int" value="20" />
+	<parameter name="BuildUpVertex.TrackMinFtdHits" type="int" value="3" />
+	<parameter name="BuildUpVertex.TrackMinVxdHits" type="int" value="3" />
+	<parameter name="BuildUpVertex.TrackMinVxdFtdHits" type="int" value="0" />
+	<parameter name="BuildUpVertex.PrimaryChi2Threshold" type="double" value="25." />
+	<parameter name="BuildUpVertex.SecondaryChi2Threshold" type="double" value="9." />
+	<parameter name="BuildUpVertex.MassThreshold" type="double" value="10." />
+	<parameter name="BuildUpVertex.MinDistFromIP" type="double" value="0.3" />
+	<parameter name="BuildUpVertex.MaxChi2ForDistOrder" type="double" value="1.0" />
+	<parameter name="BuildUpVertex.AssocIPTracks" type="int" value="1" />
+	<parameter name="BuildUpVertex.AssocIPTracksMinDist" type="double" value="0." />
+	<parameter name="BuildUpVertex.AssocIPTracksChi2RatioSecToPri" type="double" value="2.0" />
+	<parameter name="BuildUpVertex.UseV0Selection" type="int" value="1" />
+	
+</processor>
+
+<processor name="JetClustering" type="LcfiplusProcessor">
+	
+	<!-- run primary and secondary vertex finders -->
+	<parameter name="Algorithms" type="stringVec"> JetClustering JetVertexRefiner</parameter>
+	
+	<!-- general parameters -->
+	<parameter name="PFOCollection" type="string" value="PandoraPFOs" /> <!-- input PFO collection -->
+	<parameter name="UseMCP" type="int" value="0" /> <!-- MC info not used -->
+	<parameter name="MCPCollection" type="string" value="" /> <!-- not used -->
+	<parameter name="MCPFORelation" type="string" value="" /> <!-- not used -->
+	<parameter name="ReadSubdetectorEnergies" type="int" value="1"/> <!-- true for ILD -->
+	<parameter name="UpdateVertexRPDaughters" type="int" value="0"/> <!-- false for non-updative PandoraPFOs -->
+	
+	<!-- jet clustering parameters -->
+	<parameter name="JetClustering.InputVertexCollectionName" type="string" value="BuildUpVertex" /> <!-- vertex collections to be used in JC -->
+	<parameter name="JetClustering.OutputJetCollectionName" type="stringVec" value="VertexJets" /> <!-- output collection name, may be multiple -->
+	<parameter name="JetClustering.NJetsRequested" type="intVec" value="2" /> <!-- Multiple NJets can be specified -->
+	
+	<parameter name="JetClustering.YCut" type="doubleVec" value="0." /> <!-- specify 0 if not used -->
+	<parameter name="JetClustering.UseMuonID" type="int" value="1" /> <!-- jet-muon ID for jet clustering -->
+	<parameter name="JetClustering.VertexSelectionMinimumDistance" type="double" value="0.3" /> <!-- in mm -->
+	<parameter name="JetClustering.VertexSelectionMaximumDistance" type="double" value="30." /> <!-- in mm -->
+	<parameter name="JetClustering.VertexSelectionK0MassWidth" type="double" value="0.02" /> <!-- in GeV -->
+	<parameter name="JetClustering.YAddedForJetVertexVertex" type="double" value="100"/> <!-- add penalty for combining vertices -->
+	<parameter name="JetClustering.YAddedForJetLeptonVertex" type="double" value="100"/> <!-- add penalty for combining lepton and vertex -->
+	<parameter name="JetClustering.YAddedForJetLeptonLepton" type="double" value="100"/> <!-- add penalty for combining leptons -->
+	
+	<!-- vertex refiner parameters -->
+	<parameter name="JetVertexRefiner.InputJetCollectionName" type="string" value="VertexJets" />
+	<parameter name="JetVertexRefiner.OutputJetCollectionName" type="string" value="RefinedJets" />
+	<parameter name="JetVertexRefiner.PrimaryVertexCollectionName" type="string" value="PrimaryVertex" />
+	<parameter name="JetVertexRefiner.InputVertexCollectionName" type="string" value="BuildUpVertex" />
+	<parameter name="JetVertexRefiner.V0VertexCollectionName" type="string" value="BuildUpVertex_V0" />
+	<parameter name="JetVertexRefiner.OutputVertexCollectionName" type="string" value="RefinedVertex" />
+	
+	<parameter name="JetVertexRefiner.MinPosSingle" type="double" value="0.3" />
+	<parameter name="JetVertexRefiner.MaxPosSingle" type="double" value="30." />
+	<parameter name="JetVertexRefiner.MinEnergySingle" type="double" value="1." />
+	<parameter name="JetVertexRefiner.MaxAngleSingle" type="double" value="0.5" />
+	<parameter name="JetVertexRefiner.MaxSeparationPerPosSingle" type="double" value="0.1" />
+	<parameter name="JetVertexRefiner.mind0sigSingle" type="double" value="5." />
+	<parameter name="JetVertexRefiner.minz0sigSingle" type="double" value="5." />
+	<parameter name="JetVertexRefiner.OneVertexProbThreshold" type="double" value="0.001" />
+	<parameter name="JetVertexRefiner.MaxCharmFlightLengthPerJetEnergy" type="double" value="0.1" />
+</processor>
+
+<processor name="MakeNtuple" type="LcfiplusProcessor">
+	<parameter name="Algorithms" type="stringVec">FlavorTag MakeNtuple</parameter>
+	
+	<!-- general parameters -->
+	<parameter name="PFOCollection" type="string" value="PandoraPFOs" /> <!-- input PFO collection -->
+	<parameter name="UseMCP" type="int" value="0" /> <!-- MC info not used -->
+	<parameter name="MCPCollection" type="string" value="" /> <!-- not used -->
+	<parameter name="MCPFORelation" type="string" value="" /> <!-- not used -->
+	<parameter name="ReadSubdetectorEnergies" type="int" value="1"/> <!-- true for ILD -->
+	<parameter name="UpdateVertexRPDaughters" type="int" value="0"/> <!-- false for non-updative PandoraPFOs -->
+	
+	<parameter name="PrimaryVertexCollectionName" type="string" value="PrimaryVertex" />
+	<parameter name="FlavorTag.JetCollectionName" type="string" value="RefinedJets" />
+	<parameter name="MakeNtuple.AuxiliaryInfo" type="int" value="-1" />
+	<parameter name="FlavorTag.D0ProbFileName" type="string" value="data/vtxprob/d0prob_zpole.root"/>
+	<parameter name="FlavorTag.Z0ProbFileName" type="string" value="data/vtxprob/z0prob_zpole.root"/>
+	
+	<parameter name="MakeNtuple.OutputRootFileName" type="string" value="ntuple.root" />
+</processor>
+
+</marlin>
