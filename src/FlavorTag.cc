@@ -716,10 +716,12 @@ namespace lcfiplus {
 		public: 
 			FtIPProbHolder(const char *d0probfile, const char *z0probfile)
 			{
+				TDirectory *dir = gDirectory;
 				_fd0 = TFile::Open(d0probfile);
 				if(!_fd0)throw(Exception("FlavorTag: D0 probability file open error!"));
 				_fz0 = TFile::Open(z0probfile);
 				if(!_fz0)throw(Exception("FlavorTag: Z0 probability file open error!"));
+				dir->cd();
 
 				_hd0[0] = dynamic_cast<TH1F *>(_fd0->Get("hb"));
 				_hd0[1] = dynamic_cast<TH1F *>(_fd0->Get("hc"));
