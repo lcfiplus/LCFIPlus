@@ -799,7 +799,11 @@ namespace lcfiplus{
 		double difmin = 1e+300;
 
 		const double zth = 3000.;
+		const int maxloop(200);
 		for(int i=0;;i>=0?i++:i--){
+			if (i>maxloop) i=-1;
+			if (i<-maxloop) break;
+
 			z[0] = zleast[0] + i * zperiod[0];
 
 			if(fabs(z[0])>zth){
@@ -809,6 +813,9 @@ namespace lcfiplus{
 			}
 
 			for(int j=0;;j>=0?j++:j--){
+				if (j>maxloop) j=-1;
+				if (j<-maxloop) break;
+
 				z[1] = zleast[1] + j * zperiod[1];
 				if(fabs(z[1])>zth){
 					if(j<0)break;
@@ -837,6 +844,8 @@ namespace lcfiplus{
 			difmin = 1e+300;
 
 			for(int i=0;;i>=0?i++:i--){
+				if (i>maxloop) i=-1;
+				if (i<-maxloop) break;
 				z[0] = zleast[0] + i * zperiod[0];
 
 				if(fabs(z[0])>zth){
@@ -846,6 +855,8 @@ namespace lcfiplus{
 				}
 
 				for(int j=0;;j>=0?j++:j--){
+					if (j>maxloop) j=-1;
+					if (j<-maxloop) break;
 					z[1] = zleast[1] + j * zperiod[1];
 					if(fabs(z[1])>zth){
 						if(j<0)break;
