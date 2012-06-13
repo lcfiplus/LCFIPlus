@@ -1062,7 +1062,7 @@ namespace lcfiplus {
 	void FlavorTag::process() {
 
 		Event *event = Event::Instance();
-		if (event->getTracks().size() == 0) return;
+		//if (event->getTracks().size() == 0) return;
 
 		const Vertex *privtx = event->getPrimaryVertex(_primvtxcolname.c_str());
 
