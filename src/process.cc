@@ -53,6 +53,8 @@ namespace lcfiplus{
 		_secVtxCfg->minVtxPlusFtdHits = param->get("PrimaryVertexFinder.TrackMinVtxFtdHits", 5);
 
 		_chi2th = param->get("PrimaryVertexFinder.Chi2Threshold", 25.);
+
+		_useBeamConstraint = param->get("PrimaryVertexFinder.UseBeamConstraint", 1);
 	}
 
 	void PrimaryVertexFinder::process(){
@@ -69,7 +71,8 @@ namespace lcfiplus{
 			cout << "PrimaryVertexFinder / track selection: " << passedTracks.size() << "/" << tracks.size() << " accepted." << endl;
 
 		// primary vertex finder
-		Vertex * vtx = findPrimaryVertex(passedTracks,_chi2th);
+		// Vertex * vtx = findPrimaryVertex(passedTracks,_chi2th);
+		Vertex * vtx = findPrimaryVertex(passedTracks,_chi2th,_useBeamConstraint);
 		_vertex->push_back(vtx);
 		if (verbose)
 			cout << "PrimaryVertexFinder: " << vtx->getTracks().size() << " tracks associated to the primary vertex." << endl;

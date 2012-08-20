@@ -20,6 +20,18 @@ namespace lcfiplus {
 		_jet = jet;
 	}
 
+  void FTAlgo::setNHitsJointProbD0(int value) {
+    _nhitsJointProbD0 = value;
+  }
+
+  void FTAlgo::setNHitsJointProbZ0(int value) {
+    _nhitsJointProbZ0 = value;
+  }
+
+  void FTAlgo::setNHitsMostSignificantTrack(int value) {
+    _nhitsMostSignificantTrack = value;
+  }
+
 	// singleton
 	FTManager FTManager::_theInstance;
 
@@ -81,7 +93,7 @@ namespace lcfiplus {
 		}
 	}
 
-	void FTManager::process(const Event* event, const Vertex *privtx, JetVec & jets) {
+  void FTManager::process(const Event* event, const Vertex *privtx, int nhitsJointProbD0, int nhitsJointProbZ0, int nhitsMostSignificantTrack, JetVec & jets) {
 		for ( vector<FTAlgo*>::iterator iter = _algoList.begin(); iter != _algoList.end(); ++iter ) {
 			FTAlgo* algo = *iter;
 			algo->setEvent(event, privtx);
@@ -93,6 +105,9 @@ namespace lcfiplus {
 			for ( vector<FTAlgo*>::iterator iter2 = _algoList.begin(); iter2 != _algoList.end(); ++iter2 ) {
 				FTAlgo* algo = *iter2;
 				algo->setJet(jet);
+				algo->setNHitsJointProbD0(nhitsJointProbD0);
+				algo->setNHitsJointProbZ0(nhitsJointProbZ0);
+				algo->setNHitsMostSignificantTrack(nhitsMostSignificantTrack);
 				algo->process();
 			}
 

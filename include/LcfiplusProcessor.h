@@ -74,6 +74,11 @@ class LcfiplusProcessor : public Processor, public lcfiplus::EventStoreObserver
   int _nEvt ;
 	int _printPeriod;
 
+	float _magneticField;
+	float _beamSizeX;
+	float _beamSizeY;
+	float _beamSizeZ;
+
 	int _readSubdetectorEnergies;
 	int _updateVertexRPDaughters;
 	int _ignoreLackOfVertexRP;

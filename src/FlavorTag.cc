@@ -523,7 +523,7 @@ namespace lcfiplus {
 			FtTrk1D0Sig() : FTAlgo("trk1d0sig") {}
 			void process() {
 				double sigVec[6];
-				findMostSignificantTrack(_jet,_privtx,sigVec);
+				findMostSignificantTrack(_jet,_privtx,_nhitsMostSignificantTrack,sigVec);
 				_result = sigVec[0];
 			}
 	};
@@ -533,7 +533,7 @@ namespace lcfiplus {
 			FtTrk2D0Sig() : FTAlgo("trk2d0sig") {}
 			void process() {
 				double sigVec[6];
-				findMostSignificantTrack(_jet,_privtx,sigVec);
+				findMostSignificantTrack(_jet,_privtx,_nhitsMostSignificantTrack,sigVec);
 				_result = sigVec[1];
 			}
 	};
@@ -543,7 +543,7 @@ namespace lcfiplus {
 			FtTrk1Z0Sig() : FTAlgo("trk1z0sig") {}
 			void process() {
 				double sigVec[6];
-				findMostSignificantTrack(_jet,_privtx,sigVec);
+				findMostSignificantTrack(_jet,_privtx,_nhitsMostSignificantTrack,sigVec);
 				_result = sigVec[2];
 			}
 	};
@@ -553,7 +553,7 @@ namespace lcfiplus {
 			FtTrk2Z0Sig() : FTAlgo("trk2z0sig") {}
 			void process() {
 				double sigVec[6];
-				findMostSignificantTrack(_jet,_privtx,sigVec);
+				findMostSignificantTrack(_jet,_privtx,_nhitsMostSignificantTrack,sigVec);
 				_result = sigVec[3];
 			}
 	};
@@ -563,7 +563,7 @@ namespace lcfiplus {
 			FtTrk1Pt() : FTAlgo("trk1pt") {}
 			void process() {
 				double sigVec[6];
-				findMostSignificantTrack(_jet,_privtx,sigVec);
+				findMostSignificantTrack(_jet,_privtx,_nhitsMostSignificantTrack,sigVec);
 				_result = sigVec[4];
 			}
 	};
@@ -573,7 +573,7 @@ namespace lcfiplus {
 			FtTrk2Pt() : FTAlgo("trk2pt") {}
 			void process() {
 				double sigVec[6];
-				findMostSignificantTrack(_jet,_privtx,sigVec);
+				findMostSignificantTrack(_jet,_privtx,_nhitsMostSignificantTrack,sigVec);
 				_result = sigVec[5];
 			}
 	};
@@ -583,7 +583,7 @@ namespace lcfiplus {
 			FtTrk1PtByJetE() : FTAlgo("trk1pt_jete") {}
 			void process() {
 				double sigVec[6];
-				findMostSignificantTrack(_jet,_privtx,sigVec);
+				findMostSignificantTrack(_jet,_privtx,_nhitsMostSignificantTrack,sigVec);
 				_result = sigVec[4] / _jet->Energy();
 			}
 	};
@@ -593,7 +593,7 @@ namespace lcfiplus {
 			FtTrk2PtByJetE() : FTAlgo("trk2pt_jete") {}
 			void process() {
 				double sigVec[6];
-				findMostSignificantTrack(_jet,_privtx,sigVec);
+				findMostSignificantTrack(_jet,_privtx,_nhitsMostSignificantTrack,sigVec);
 				_result = sigVec[5] / _jet->Energy();
 			}
 	};
@@ -602,7 +602,7 @@ namespace lcfiplus {
 		public:
 			FtJProbR() : FTAlgo("jprobr") {}
 			void process() {
-				_result = jointProbD0(_jet,_privtx);
+			  _result = jointProbD0(_jet,_privtx,_nhitsJointProbD0);
 			}
 	};
 
@@ -610,7 +610,7 @@ namespace lcfiplus {
 		public:
 			FtJProbZ() : FTAlgo("jprobz") {}
 			void process() {
-				_result = jointProbZ0(_jet,_privtx);
+			  _result = jointProbZ0(_jet,_privtx,_nhitsJointProbZ0);
 			}
 	};
 
@@ -618,7 +618,7 @@ namespace lcfiplus {
 		public:
 			FtJProbR5Sigma() : FTAlgo("jprobr5sigma") {}
 			void process() {
-				_result = jointProbD0(_jet,_privtx,5.);
+			  _result = jointProbD0(_jet,_privtx,_nhitsJointProbD0,5.);
 			}
 	};
 
@@ -626,7 +626,7 @@ namespace lcfiplus {
 		public:
 			FtJProbZ5Sigma() : FTAlgo("jprobz5sigma") {}
 			void process() {
-				_result = jointProbZ0(_jet,_privtx,5.);
+			  _result = jointProbZ0(_jet,_privtx,_nhitsJointProbZ0,5.);
 			}
 	};
 
@@ -979,6 +979,10 @@ namespace lcfiplus {
 
 		_holder = new FtIPProbHolder(d0probfilename.c_str(), z0probfilename.c_str());
 
+		_nhitsJointProbD0 = param->get("FlavourTag.NVTXhitsJointProbD0", int(4));
+		_nhitsJointProbZ0 = param->get("FlavourTag.NVTXhitsJointProbZ0", int(4));
+		_nhitsMostSignificantTrack = param->get("FlavourTag.NhitsMostSignificantTrack", int(4));
+
 		//string outputFilename = param->get("TrainNtupleFile",string("lcfiplus.root"));
 		//_nJet = (int)param->get("TrainNJet",float(2));
 
@@ -1076,7 +1080,7 @@ namespace lcfiplus {
 		JetVec& jets = *jetsPtr;
 
 		FTManager &mgr = FTManager::getInstance();
-		mgr.process(event, privtx, jets);
+		mgr.process(event, privtx, _nhitsJointProbD0, _nhitsJointProbZ0, _nhitsMostSignificantTrack, jets);
 	}
 
 	void FlavorTag::end() {

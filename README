@@ -1,6 +1,16 @@
 Some documentation is available at
 https://confluence.slac.stanford.edu/display/ilc/LCFIPlus
 
+-------------
+| v00-05-01 |
+-------------
+- Improved steering options thanks to P.Roloff
+  1) The magnetic field can be specified (default behavior is to read from GEAR).
+	2) The beam constraint in the primary vertex fit can be switched off.
+	3) The beam size can be adjusted.
+	4) The cuts on the number of hits to calculate jointProbD0 and jointProbZ0,
+	and to find the most significant track can now be adjusted.
+
 ----------
 | v00-05 |
 ----------
