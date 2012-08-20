@@ -1,0 +1,83 @@
+<marlin>
+
+<execute>
+	<processor name="MyLcfiplusProcessor"/>
+</execute>
+
+<global>
+	<parameter name="LCIOInputFiles"> </parameter>
+	<parameter name="MaxRecordNumber" value="0" />  
+	<parameter name="SkipNEvents" value="0" />  
+	<parameter name="SupressCheck" value="false" />  
+	<parameter name="GearXMLFile"> GearOutput.xml </parameter>  
+	<parameter name="Verbosity" options="DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT">WARNING</parameter> 
+</global>
+
+<processor name="MyLcfiplusProcessor" type="LcfiplusProcessor">
+	<parameter name="Algorithms" type="stringVec">TrainMVA</parameter>
+	
+	<parameter name="PFOCollection" type="string" value="PandoraPFOs" />
+	
+	<parameter name="FlavorTag.WeightsDirectory" type="string" value="lcfiweights" />
+	<parameter name="FlavorTag.WeightsPrefix" type="string" value="zpole_v00" />
+	<parameter name="FlavorTag.BookName" type="string" value="bdt" />
+
+	<parameter name="FlavorTag.CategoryDefinition1" type="string">nvtx==0</parameter>
+	<parameter name="FlavorTag.CategoryPreselection1" type="string">trk1d0sig!=0</parameter>
+	<parameter name="FlavorTag.CategoryVariables1" type="stringVec">
+		trk1d0sig trk2d0sig trk1z0sig trk2z0sig trk1pt_jete trk2pt_jete jprobr jprobz
+	</parameter>
+	<parameter name="FlavorTag.CategorySpectators1" type="stringVec">
+		aux nvtx
+	</parameter>
+
+	<parameter name="FlavorTag.CategoryDefinition2" type="string">nvtx==1&&nvtxall==1</parameter>
+	<parameter name="FlavorTag.CategoryPreselection2" type="string">trk1d0sig!=0</parameter>
+	<parameter name="FlavorTag.CategoryVariables2" type="stringVec">
+		trk1d0sig trk2d0sig trk1z0sig trk2z0sig trk1pt_jete trk2pt_jete jprobr jprobz
+		vtxlen1_jete vtxsig1_jete vtxdirang1_jete vtxmom1_jete vtxmass1 vtxmult1 vtxmasspc vtxprob
+	</parameter>
+	<parameter name="FlavorTag.CategorySpectators2" type="stringVec">
+		aux nvtx
+	</parameter>
+
+	<parameter name="FlavorTag.CategoryDefinition3" type="string">nvtx==1&&nvtxall==2</parameter>
+	<parameter name="FlavorTag.CategoryPreselection3" type="string">trk1d0sig!=0</parameter>
+	<parameter name="FlavorTag.CategoryVariables3" type="stringVec">
+		trk1d0sig trk2d0sig trk1z0sig trk2z0sig trk1pt_jete trk2pt_jete jprobr jprobz
+		vtxlen1_jete vtxsig1_jete vtxdirang1_jete vtxmom1_jete vtxmass1 vtxmult1 vtxmasspc vtxprob
+		1vtxprob vtxlen12all_jete vtxmassall
+	</parameter>
+	<parameter name="FlavorTag.CategorySpectators3" type="stringVec">
+		aux nvtx
+	</parameter>
+	
+	<parameter name="FlavorTag.CategoryDefinition4" type="string">nvtx>=2</parameter>
+	<parameter name="FlavorTag.CategoryPreselection4" type="string">trk1d0sig!=0</parameter>
+	<parameter name="FlavorTag.CategoryVariables4" type="stringVec">
+		trk1d0sig trk2d0sig trk1z0sig trk2z0sig trk1pt_jete trk2pt_jete jprobr jprobz
+		vtxlen1_jete vtxsig1_jete vtxdirang1_jete vtxmom1_jete vtxmass1 vtxmult1 vtxmasspc vtxprob
+		vtxlen2_jete vtxsig2_jete vtxdirang2_jete vtxmom2_jete vtxmass2 vtxmult2
+		vtxlen12_jete vtxsig12_jete vtxdirang12_jete vtxmom_jete vtxmass vtxmult
+		1vtxprob
+	</parameter>
+	<parameter name="FlavorTag.CategorySpectators4" type="stringVec">
+		aux nvtx
+	</parameter>
+
+	<parameter name="TrainMVA.Verbose" type="bool" value="true" />
+	<parameter name="TrainMVA.BookType" type="string" value="BDT" />
+	<parameter name="TrainMVA.BookOptions" type="string">
+	!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.10:UseBaggedGrad:GradBaggingFraction=0.50:nCuts=20:NNodesMax=8
+	</parameter>
+
+	<parameter name="TrainMVA.InputRootFileB" type="string" value="bb-91.2GeV.root" />
+	<parameter name="TrainMVA.InputRootFileC" type="string" value="cc-91.2GeV.root" />
+	<parameter name="TrainMVA.InputRootFileO" type="string" value="qq-91.2GeV.root" />
+	<parameter name="TrainMVA.TreeNameB" type="string" value="ntp" />
+	<parameter name="TrainMVA.TreeNameC" type="string" value="ntp" />
+	<parameter name="TrainMVA.TreeNameO" type="string" value="ntp" />
+
+</processor>
+
+</marlin>
