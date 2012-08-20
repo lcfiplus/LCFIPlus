@@ -224,7 +224,7 @@ double trackProbZ0(const Track* trk, const Vertex* pri) {
 	return prob1D(sig,200,zpars)/prob1D(0,200,zpars);
 }
 
-double jointProbD0(const Jet* jet, const Vertex* pri, double maxd0sigcut) {
+double jointProbD0(const Jet* jet, const Vertex* pri, int minhitcut, double maxd0sigcut) {
 	double maxd0sig = 200.;
 
 	double prod(1);
@@ -235,7 +235,9 @@ double jointProbD0(const Jet* jet, const Vertex* pri, double maxd0sigcut) {
 	for (TrackVecIte it = tracks.begin(); it != tracks.end(); ++it) {
 		const Track* trk = *it;
 		if (trk->getD0() < 5 && trk->getZ0() < 5
-				&& trk->getVtxHits() >= 5) {
+		    //				&& trk->getVtxHits() >= 5) {
+		    // && trk->getVtxHits() >= 4) {
+		    && trk->getVtxHits() >= minhitcut) {
 
 			double sig = fabs( trackD0Significance(trk,pri) );
 			if (sig>maxd0sigcut)continue;
@@ -272,7 +274,7 @@ double jointProbD0(const Jet* jet, const Vertex* pri, double maxd0sigcut) {
 	return jprob;
 }
 
-double jointProbZ0(const Jet* jet, const Vertex* pri, double maxz0sigcut) {
+double jointProbZ0(const Jet* jet, const Vertex* pri, int minhitcut, double maxz0sigcut) {
 	double maxz0sig = 200.;
 
 	double prod(1);
@@ -283,7 +285,9 @@ double jointProbZ0(const Jet* jet, const Vertex* pri, double maxz0sigcut) {
 	for (TrackVecIte it = tracks.begin(); it != tracks.end(); ++it) {
 		const Track* trk = *it;
 		if (trk->getD0() < 5 && trk->getZ0() < 5
-				&& trk->getVtxHits() >= 5) {
+		    //				&& trk->getVtxHits() >= 5) {
+		    // && trk->getVtxHits() >= 4) {
+		    && trk->getVtxHits() >= minhitcut) {
 			double sig = fabs( trackZ0Significance(trk,pri) );
 			if (sig>maxz0sigcut)continue;
 			if (sig < maxz0sig) {
@@ -321,7 +325,7 @@ double jointProbZ0(const Jet* jet, const Vertex* pri, double maxz0sigcut) {
 
 ///////////////////////////////////////////////////
 
-void findMostSignificantTrack(const Jet* jet, const Vertex* pri, double sigVec[6]) {
+void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, double sigVec[6]) {
 	double trk1d0sig(-1e3);
 	double trk2d0sig(-1e3);
 	const Track* trk1(0);
@@ -331,7 +335,9 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, double sigVec[6
 	for (TrackVecIte iter = tracks.begin(); iter != tracks.end(); ++iter) {
 		const Track* trk = *iter;
 
-		int nHitCut = 5;
+		// int nHitCut = 5;
+		// int nHitCut = 4;
+		int nHitCut = minhitcut;
 		int nVTX = trk->getVtxHits();
 		int nFTD = trk->getFtdHits();
 		int nhits = nVTX+nFTD;

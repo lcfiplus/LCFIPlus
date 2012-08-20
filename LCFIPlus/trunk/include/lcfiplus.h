@@ -91,10 +91,19 @@ namespace lcfiplus {
 			static Globals* Instance();
 			void setBField(double bField) {_bField=bField;}
 			double getBField()const{return _bField;}
+			void setBeamSizeX(double beamSizeX) {_beamSizeX = beamSizeX;}
+			double getBeamSizeX()const{return _beamSizeX;}
+			void setBeamSizeY(double beamSizeY) {_beamSizeY = beamSizeY;}
+			double getBeamSizeY()const{return _beamSizeY;}
+			void setBeamSizeZ(double beamSizeZ) {_beamSizeZ = beamSizeZ;}
+			double getBeamSizeZ()const{return _beamSizeZ;}
 
 		private:
 			// value of b field to be read from GEAR
 			double _bField;
+			double _beamSizeX;
+			double _beamSizeY;
+			double _beamSizeZ;
 			static Globals * _theInstance;
 
 			Globals();

@@ -24,7 +24,8 @@ namespace lcfiplus {
 	vector<lcfiplus::Vertex*> * findTearDownVertices(const Event& evt, const Jet& jet);
 
 	// Primary Vertex finder with TearDown method
-	lcfiplus::Vertex * findPrimaryVertex(TrackVec &tracks, double chi2 = 9.0);
+	// lcfiplus::Vertex * findPrimaryVertex(TrackVec &tracks, double chi2 = 9.0);
+	lcfiplus::Vertex * findPrimaryVertex(TrackVec &tracks, double chi2 = 9.0, int useBeamConstraint = 1);
 //	lcfiplus::Vertex * findPrimaryVertex(const vector<Track *> &tracks, const vector<Track *> &beamTracks, double chi2 = 9.0);
 
 	// implementation of TearDown method

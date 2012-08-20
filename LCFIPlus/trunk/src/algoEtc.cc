@@ -13,10 +13,13 @@ void makeBeamTracks(Track *&t1, Track *&t2)
 {
    // beam crossing = 14 mrad
     float beamtd = tan( 0.5*(3.1415926 - 14e-3) );
-    float beamsizeX = 639e-6; // 639 nm converted to mm
+    // float beamsizeX = 639e-6; // 639 nm converted to mm
     //float beamsizeY = 5.7e-6; // 5.7 nm converted to mm
     // size(d)/size(z) = tan(7e-3) -> size(z) = size(d)/tan(7e-3)
-    float beamsizeZ = beamsizeX / tan(0.5 * 14e-3);
+    // float beamsizeZ = beamsizeX / tan(0.5 * 14e-3);
+
+    float beamsizeX = Globals::Instance()->getBeamSizeX();
+    float beamsizeZ = Globals::Instance()->getBeamSizeZ();
 
     float d0rand(0), z0rand(0);
 
@@ -73,9 +76,15 @@ void makeBeamTracks(Track *&t1, Track *&t2)
 
 void makeBeamVertex(Vertex *&vtx)
 {
+  /*
 	float beamsizeX = 639e-6; // 639 nm converted to mm
 	float beamsizeY = 5.7e-6; // 5.7 nm converted to mm
 	float beamsizeZ = beamsizeX / tan(0.5 * 14e-3);
+  */
+
+	float beamsizeX = Globals::Instance()->getBeamSizeX();
+	float beamsizeY = Globals::Instance()->getBeamSizeY();
+	float beamsizeZ = Globals::Instance()->getBeamSizeZ();
 
 	float cov[6];
 	cov[Vertex::xx] = pow(beamsizeX,2);

@@ -43,6 +43,10 @@ namespace lcfiplus{
 
 			FtIPProbHolder *_holder; //!
 
+			int _nhitsJointProbD0;
+			int _nhitsJointProbZ0;
+			int _nhitsMostSignificantTrack;
+
 			ClassDef(FlavorTag,1);
 	};
 

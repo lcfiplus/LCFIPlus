@@ -27,6 +27,8 @@ namespace lcfiplus{
 		// parameters
 		double _chi2th;
 
+		int _useBeamConstraint;
+
 		// track cut parameters
 		TrackSelectorConfig *_secVtxCfg; //!
 	};

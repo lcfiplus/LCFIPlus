@@ -34,6 +34,9 @@ namespace lcfiplus {
 			virtual ~FTAlgo() {}
 			void setEvent(const Event* event, const Vertex *privtx);
 			void setJet(const Jet* jet);
+			void setNHitsJointProbD0(int value);
+			void setNHitsJointProbZ0(int value);
+			void setNHitsMostSignificantTrack(int value);
 			float getValue();
 			const string& getName() const { return _name; }
 			float* getValueAddress() { return &_result; }
@@ -42,6 +45,9 @@ namespace lcfiplus {
 			const Event* _event;
 			const Vertex* _privtx;
 			const Jet* _jet;
+			int _nhitsJointProbD0;
+			int _nhitsJointProbZ0;
+			int _nhitsMostSignificantTrack;
 			float _result;
 			string _name;
 
@@ -69,7 +75,7 @@ namespace lcfiplus {
 			void openTree();
 			void openFile(const char* filename);
 			void closeFile();
-			void process(const Event* event, const Vertex *privtx, JetVec & jets);
+			void process(const Event* event, const Vertex *privtx, int nhitsJointProbD0, int nhitsJointProbZ0, int nhitsMostSignificantTrack, JetVec & jets);
 
 			float* getVarAddress(const string& varname);
 			void setEval(bool seteval) { _evaluate = seteval; }
