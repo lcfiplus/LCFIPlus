@@ -67,10 +67,12 @@ namespace lcfiplus{
 			static bool energy_sort_pfo(lcio::ReconstructedParticle *a, lcio::ReconstructedParticle *b);
 
 			void setReadSubdetectorEnergies(bool flag) { _readSubdetectorEnergies = flag; }
+			void setTrackHitOrdering(int flag) { _trackHitOrdering = flag; }
 			void setUpdateVertexRPDaughters(bool flag) { _updateVertexRPDaughters = flag; }
 			void setIgnoreLackOfVertexRP(bool flag) { _ignoreLackOfVertexRP = flag; }
 
 			bool getReadSubdetectorEnergies()const { return _readSubdetectorEnergies; }
+			int getTrackHitOrdering()const { return _trackHitOrdering; }
 			bool getUpdateVertexRPDaughters()const { return _updateVertexRPDaughters; }
 			bool getIgnoreLackOfVertexRP()const { return _ignoreLackOfVertexRP; }
 
@@ -110,6 +112,7 @@ namespace lcfiplus{
 			string _savePrefix;
 
 			bool _readSubdetectorEnergies;
+			int _trackHitOrdering;
 			bool _updateVertexRPDaughters;
 			bool _ignoreLackOfVertexRP;
 

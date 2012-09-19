@@ -80,6 +80,7 @@ class LcfiplusProcessor : public Processor, public lcfiplus::EventStoreObserver
 	float _beamSizeZ;
 
 	int _readSubdetectorEnergies;
+	int _trackHitOrdering;
 	int _updateVertexRPDaughters;
 	int _ignoreLackOfVertexRP;
 

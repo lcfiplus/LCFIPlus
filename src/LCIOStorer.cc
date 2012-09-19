@@ -506,9 +506,17 @@ namespace lcfiplus{
 					track->setNdf(trk->getNdf());
 
 					// store detector hit numbers
-					float nhits[lcfiplus::tpar::hitN];
-					for (int i=0; i<lcfiplus::tpar::hitN; ++i) {
-						nhits[i] = trk->getSubdetectorHitNumbers()[i];
+					int nhits[lcfiplus::tpar::hitN];
+					if ( _trackHitOrdering == 1 ) {
+						// DBD format
+						for (int i=0; i<lcfiplus::tpar::hitN; ++i) {
+							nhits[i] = (int)trk->getSubdetectorHitNumbers()[2*i];
+						}
+					} else {
+						// LOI format
+						for (int i=0; i<lcfiplus::tpar::hitN; ++i) {
+							nhits[i] = trk->getSubdetectorHitNumbers()[i];
+						}
 					}
 					track->setTrackHits(nhits);
 					track->setRadiusOfInnermostHit(trk->getRadiusOfInnermostHit());
