@@ -354,7 +354,7 @@ namespace lcfiplus {
       int getTpcHits() const { return _nhits[tpar::TPC]; }
       int getSetHits() const { return _nhits[tpar::SET]; }
       int getEtdHits() const { return _nhits[tpar::ETD]; }
-			void setTrackHits(float * hits){memcpy(_nhits, hits, sizeof(_nhits));}
+			void setTrackHits(int* hits){memcpy(_nhits, hits, sizeof(_nhits));}
 
       const float* getCaloEdep() const { return _calo; }
 			void setCaloEdep(float *calo) { memcpy(_calo, calo, sizeof(_calo));}

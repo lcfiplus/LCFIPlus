@@ -47,6 +47,7 @@ LcfiplusProcessor::LcfiplusProcessor() : Processor("LcfiplusProcessor") {
 
 	registerProcessorParameter("Algorithms", "LCFIPlus algorithms to run", _algonames, vector<string>());
 	registerProcessorParameter("ReadSubdetectorEnergies", "Read subdetector energies (ILD)", _readSubdetectorEnergies, int(1));
+	registerProcessorParameter("TrackHitOrdering", "Track hit ordering: 0=ILD-LOI (default), 1=ILD-DBD", _trackHitOrdering, int(0));
 	registerProcessorParameter("UpdateVertexRPDaughters", "Writing back obtained vertices to input RP collections (which must be writable)",
 		_updateVertexRPDaughters, int(1));
 	registerProcessorParameter("IgnoreLackOfVertexRP", "Keep running even if vertex RP collection is not present",
@@ -135,6 +136,7 @@ void LcfiplusProcessor::init() {
 		if(!_lcio){
 			_lcio = new LCIOStorer(0,0,true,false,0); // no file
 			_lcio->setReadSubdetectorEnergies(_readSubdetectorEnergies);
+			_lcio->setTrackHitOrdering(_trackHitOrdering);
 			_lcio->setUpdateVertexRPDaughters(_updateVertexRPDaughters);
 			_lcio->setIgnoreLackOfVertexRP(_ignoreLackOfVertexRP);
 
@@ -144,6 +146,7 @@ void LcfiplusProcessor::init() {
 			_lcioowner = false;
 
 			if((_lcio->getReadSubdetectorEnergies() != _readSubdetectorEnergies)
+			 ||(_lcio->getTrackHitOrdering() != _trackHitOrdering)
 			 ||(_lcio->getUpdateVertexRPDaughters() != _updateVertexRPDaughters)
 			 ||(_lcio->getIgnoreLackOfVertexRP() != _ignoreLackOfVertexRP)){
 					throw(lcfiplus::Exception("Global parameters do not match to previous processors: specify the same for all LcfiplusProcessors."));
