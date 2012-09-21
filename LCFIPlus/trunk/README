@@ -2,6 +2,12 @@ Some documentation is available at
 https://confluence.slac.stanford.edu/display/ilc/LCFIPlus
 
 -------------
+| v00-05-02 |
+-------------
+- Fixed type conversion error in track hits
+- Added option to choose track hit ordering
+
+-------------
 | v00-05-01 |
 -------------
 - Improved steering options thanks to P.Roloff
