@@ -1,0 +1,42 @@
+Usage of steering files for LCFIPlus
+
+-- history
+2012/5/7   T.Suehara initial description
+2012/5/15  T.Suehara bugfix in steering file
+-- history end
+
+-- algorithms
+(1) PrimaryVertexFinder  Reconstructing primary vertex by tear-down method
+(2) BuildUpVertex        Reconstructing secondary vertices by build-up method
+(3) JetClustering        Reconstructing jets with vertex information
+(4) JetVertexRefiner     Single track vertex finder + vertex combiner
+(5) FlavorTag            Deriving variables to be used in flavor tag MVA
+(6) MakeNtuple           Making root files with FlavorTag variables for training
+(7) TrainMVA             Training MVA with root files
+(8) ReadMVA              Obtaining flavor tag results with training weight files
+-- algorithms end
+
+-- sample steering files
+(a) vertex.xml            (1-2), for DST production
+(b) jetclustering.xml     (3-4), for non-flavor-tag applications
+(c) vertexjet.xml         (1-4), vertex finder + jet clustering
+(d) makentuple.xml        (3-6), making training sample from DST
+(e) makentuplefrompfo.xml (1-6), vertex finder + (d)
+(f) makentuplefromjet.xml (5-6), for tuning MVA variables from samples after (b)/(c)
+(g) train.xml             (7), for training using result of (d-f)
+(h) flavortag.xml         (3-5,8), for flavor tagging from DST
+(i) flavortagfrompfo.xml  (1-5,8), vertex finder + (h)
+-- sample steering files end
+
+-- easy usage
+*** obtaining flavor tag outputs with existing training files
+ Just run (h)flavortag.xml with replacing input/output files and training files
+ (for samples before vertex finding, run (i) instead)
+
+*** obtaining flavor tag outputs with original training files
+ (A) Run (d)makentuple.xml on training samples to use .root files (b-sample/c-sample/q-sample)
+     (for samples before vertex finding, run (e) instead)
+ (B) Run (g)train.xml with the .root files created in (A)
+ (C) Run (h)flavortag.xml with the weight files created in (B)
+     (for samples before vertex finding, run (i) instead)
+-- easy usage end
