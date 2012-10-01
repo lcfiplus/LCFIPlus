@@ -26,6 +26,8 @@
 	<parameter name="MCPFORelation" type="string" value="" /> <!-- not used -->
 	<parameter name="ReadSubdetectorEnergies" type="int" value="1"/> <!-- true for ILD -->
 	<parameter name="UpdateVertexRPDaughters" type="int" value="0"/> <!-- false for non-updative PandoraPFOs -->
+	<parameter name="TrackHitOrdering" type="int" value="1"/> <!-- Track hit ordering: 0=ILD-LOI,SID-DBD, 1=ILD-DBD -->
+	<parameter name="PrintEventNumber" type="int" value="0"/> <!-- 0 for not printing event number, n for printing every n events -->
 	
 	<!-- jet clustering parameters -->
 	<parameter name="JetClustering.InputVertexCollectionName" type="string" value="BuildUpVertex" /> <!-- vertex collections to be used in JC -->
