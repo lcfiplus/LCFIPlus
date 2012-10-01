@@ -17,6 +17,7 @@
 
 #include "UTIL/LCRelationNavigator.h"
 #include "UTIL/PIDHandler.h"
+#include "UTIL/ILDConf.h"
 
 // lcfiplus includes
 #include "LCIOStorer.h"
@@ -507,17 +508,24 @@ namespace lcfiplus{
 
 					// store detector hit numbers
 					int nhits[lcfiplus::tpar::hitN];
-					if ( _trackHitOrdering == 1 ) {
-						// DBD format
-						for (int i=0; i<lcfiplus::tpar::hitN; ++i) {
-							nhits[i] = (int)trk->getSubdetectorHitNumbers()[2*i];
-						}
-					} else {
-						// LOI format
+					if ( _trackHitOrdering == 0 ) {
+						// ILD-LOI format, FTD and SIT switched w.r.t. ILD-DBD format
+						// used also by SiD-DBD
 						for (int i=0; i<lcfiplus::tpar::hitN; ++i) {
 							nhits[i] = trk->getSubdetectorHitNumbers()[i];
 						}
+					} else {
+						// ILD DBD format
+						const vector<int>& vec = trk->getSubdetectorHitNumbers();
+						int offset = 2; // 2=fit, 1=patrec
+						nhits[tpar::VTX] = vec[2 * lcio::ILDDetID::VXD -offset];
+						nhits[tpar::SIT] = vec[2 * lcio::ILDDetID::SIT -offset];
+						nhits[tpar::FTD] = vec[2 * lcio::ILDDetID::FTD -offset];
+						nhits[tpar::TPC] = vec[2 * lcio::ILDDetID::TPC -offset];
+						nhits[tpar::SET] = vec[2 * lcio::ILDDetID::SET -offset];
+						nhits[tpar::ETD] = vec[2 * lcio::ILDDetID::ETD -offset];
 					}
+
 					track->setTrackHits(nhits);
 					track->setRadiusOfInnermostHit(trk->getRadiusOfInnermostHit());
 					//printf("rimh = %f\n",trkData.rimh);
