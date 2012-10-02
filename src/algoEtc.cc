@@ -142,7 +142,13 @@ void connectVerticesToJets(const JetVec &jets, const vector<Vertex *> &vtcs, vec
 		for(unsigned int j2=0;j2<nj;j2++){
 			if(efrac[j2] > maxefrac){maxefrac = efrac[j2]; j = j2;}
 		}
-		if(j == -1)throw(Exception("connectVerticesToJets: vertex-jet association failed!"));
+
+		// fix to cope with dropped tracks e.g. in the context of running kt algorithm prior to LCFIPlus
+		//if(j == -1)throw(Exception("connectVerticesToJets: vertex-jet association failed!"));
+		if(j == -1) {
+			cout << "connectVerticesToJets: vertex-jet association failed, vertex dropped" << endl;
+			continue;
+		}
 
 		// from here: curv is determined to belong to jet j
 		//cout << "Jet-vertex pairing: vertex " << v << " assigned to jet " << j << endl;
