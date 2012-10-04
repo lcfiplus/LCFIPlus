@@ -34,7 +34,7 @@
 		<parameter name="PrimaryVertexFinder.TrackMaxD0" type="double" value="20." />
 		<parameter name="PrimaryVertexFinder.TrackMaxZ0" type="double" value="20." />
 		<parameter name="PrimaryVertexFinder.TrackMaxInnermostHitRadius" type="double" value="20." />
-		<parameter name="PrimaryVertexFinder.TrackMinVtxFtdHits" type="int" value="5" />
+		<parameter name="PrimaryVertexFinder.TrackMinVtxFtdHits" type="int" value="1" />
 		<parameter name="PrimaryVertexFinder.Chi2Threshold" type="double" value="25." />
 		
 		<!-- parameters for secondary vertex finder -->
@@ -43,10 +43,7 @@
 		<parameter name="BuildUpVertex.TrackMinPt" type="double" value="0.1" />
 		<parameter name="BuildUpVertex.TrackMaxD0Err" type="double" value="0.1" />
 		<parameter name="BuildUpVertex.TrackMaxZ0Err" type="double" value="0.1" />
-		<parameter name="BuildUpVertex.TrackMinTpcHits" type="int" value="20" />
-		<parameter name="BuildUpVertex.TrackMinFtdHits" type="int" value="3" />
-		<parameter name="BuildUpVertex.TrackMinVxdHits" type="int" value="3" />
-		<parameter name="BuildUpVertex.TrackMinVxdFtdHits" type="int" value="0" />
+		<parameter name="BuildUpVertex.TrackMinVtxFtdHits" type="int" value="1" />
 		<parameter name="BuildUpVertex.PrimaryChi2Threshold" type="double" value="25." />
 		<parameter name="BuildUpVertex.SecondaryChi2Threshold" type="double" value="9." />
 		<parameter name="BuildUpVertex.MassThreshold" type="double" value="10." />
