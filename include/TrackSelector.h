@@ -31,8 +31,9 @@ namespace lcfiplus {
 		double maxInnermostHitRadius;
 		// cuts which are combined using the OR scheme, then AND'd with the AND schemes above
 		int minTpcHits;
+		double minTpcHitsMinPt;
 		int minFtdHits;
-		int minVtxHitsWithoutTpcFtd;
+		int minVtxHits;
 		int minVtxPlusFtdHits;
 
 		TrackSelectorConfig(){
@@ -51,9 +52,10 @@ namespace lcfiplus {
 			minPt = 0.;
 			maxInnermostHitRadius = 1e+300;
 
-			minTpcHits = 0;
-			minFtdHits = 0;
-			minVtxHitsWithoutTpcFtd = 0;
+			minTpcHits = 999999;
+			minTpcHitsMinPt = 999999;
+			minFtdHits = 999999;
+			minVtxHits = 999999;
 			minVtxPlusFtdHits = 0;
 		}
 	};
@@ -92,10 +94,10 @@ namespace lcfiplus {
 			if (trk->getRadiusOfInnermostHit() > cfg.maxInnermostHitRadius) return false;
 
 			// OR cuts
-			if (trk->getTpcHits() >= cfg.minTpcHits) return true;
 			if (trk->getFtdHits() >= cfg.minFtdHits) return true;
-			if (trk->getVtxHits() >= cfg.minVtxHitsWithoutTpcFtd) return true;
+			if (trk->getVtxHits() >= cfg.minVtxHits) return true;
 			if (trk->getVtxHits() + trk->getFtdHits() >= cfg.minVtxPlusFtdHits) return true;
+			if (trk->getTpcHits() >= cfg.minTpcHits && trk->Pt() > cfg.minTpcHitsMinPt) return true;
 
 			return false;
 		}

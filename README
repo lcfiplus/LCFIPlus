@@ -5,9 +5,11 @@ https://confluence.slac.stanford.edu/display/ilc/LCFIPlus
 | v00-05-02 |
 -------------
 - Fixed type conversion error in track hits
+- Fixed MC vertex information
 - Added option to choose track hit ordering
-- Vertex-jet reassociation no longer throws exception to cope with
-  cases of dropped tracks when running kt algorithm before LCFIPlus
+- Modifications to track selection criteria involving subdetector hits
+- Vertex-jet reassociation no longer throws exception to cope with cases
+  where tracks are dropped such as when running kt algorithm before LCFIPlus
 
 -------------
 | v00-05-01 |

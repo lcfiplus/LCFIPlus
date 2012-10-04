@@ -499,7 +499,7 @@ namespace lcfiplus {
 		// OR
 		secVtxCfg.minTpcHits = 20;
 		secVtxCfg.minFtdHits = 3;
-		secVtxCfg.minVtxHitsWithoutTpcFtd = 3;
+		secVtxCfg.minVtxHits = 3;
 		secVtxCfg.minVtxPlusFtdHits = 0;
 
 		/////////////////////////////////////////////////////////////////////////////////
