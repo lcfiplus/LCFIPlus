@@ -49,8 +49,11 @@ namespace lcfiplus{
 
 		_secVtxCfg->maxD0 = param->get("PrimaryVertexFinder.TrackMaxD0", 20.);
 		_secVtxCfg->maxZ0 = param->get("PrimaryVertexFinder.TrackMaxZ0", 20.);
-		_secVtxCfg->maxInnermostHitRadius = param->get("PrimaryVertexFinder.TrackMaxInnermostHitRadius",20.);
-		_secVtxCfg->minVtxPlusFtdHits = param->get("PrimaryVertexFinder.TrackMinVtxFtdHits", 5);
+		_secVtxCfg->minVtxPlusFtdHits = param->get("PrimaryVertexFinder.TrackMinVtxFtdHits", 1);
+		_secVtxCfg->minTpcHits = param->get("PrimaryVertexFinder.TrackMinTpcHits", 999999);
+		_secVtxCfg->minTpcHitsMinPt = param->get("PrimaryVertexFinder.TrackMinTpcHitsMinPt", 999999);
+		_secVtxCfg->minFtdHits = param->get("PrimaryVertexFinder.TrackMinFtdHits", 999999);
+		_secVtxCfg->minVtxHits = param->get("PrimaryVertexFinder.TrackMinVxdHits", 999999);
 
 		_chi2th = param->get("PrimaryVertexFinder.Chi2Threshold", 25.);
 
@@ -111,10 +114,11 @@ namespace lcfiplus{
 		_secVtxCfg->maxD0Err = param->get("BuildUpVertex.TrackMaxD0Err", .1);
 		_secVtxCfg->maxZ0Err = param->get("BuildUpVertex.TrackMaxZ0Err", .1);
 
-		_secVtxCfg->minTpcHits = param->get("BuildUpVertex.TrackMinTpcHits", 20);
-		_secVtxCfg->minFtdHits = param->get("BuildUpVertex.TrackMinFtdHits", 3);
-		_secVtxCfg->minVtxHitsWithoutTpcFtd = param->get("BuildUpVertex.TrackMinVxdHits", 3);
-		_secVtxCfg->minVtxPlusFtdHits = param->get("BuildUpVertex.TrackMinVxdFtdHits", 0);
+		_secVtxCfg->minTpcHits = param->get("BuildUpVertex.TrackMinTpcHits", 999999);
+		_secVtxCfg->minTpcHitsMinPt = param->get("BuildUpVertex.TrackMinTpcHitsMinPt", 999999);
+		_secVtxCfg->minFtdHits = param->get("BuildUpVertex.TrackMinFtdHits", 999999);
+		_secVtxCfg->minVtxHits = param->get("BuildUpVertex.TrackMinVxdHits", 999999);
+		_secVtxCfg->minVtxPlusFtdHits = param->get("BuildUpVertex.TrackMinVxdFtdHits", 1);
 
 		// buildup parameters
 		_chi2thpri = param->get("BuildUpVertex.PrimaryChi2Threshold", 25.);

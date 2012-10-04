@@ -342,7 +342,7 @@ namespace lcfiplus{
 				// fix against weird 1e-308 numbers
 				const double* vtmp = mcp->getVertex();
 				double v[3] = { 0., 0., 0.};
-				if(vtmp){memcpy(v, vtmp, sizeof(vtmp));}
+				if(vtmp){memcpy(v, vtmp, sizeof(v));}
 				//printf("%d [%e,%e,%e]\n",mcp->getPDG(),v[0],v[1],v[2]);
 				if (v[0]*v[0]+v[1]*v[1]+v[2]*v[2] < 1e-100) {
 					v[0] = 0; v[1] = 0; v[2] = 0;

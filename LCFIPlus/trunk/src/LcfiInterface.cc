@@ -259,7 +259,7 @@ namespace lcfiplus {
     if (trk->getFtdHits() >= cfg.minFtdHits) {
       return true;
     }
-    if (trk->getVtxHits() >= cfg.minVtxHitsWithoutTpcFtd) {
+    if (trk->getVtxHits() >= cfg.minVtxHits) {
       return true;
     }
 //    if (trk->getVtxHits() + trk->getFtdHits() >= cfg.minVtxPlusFtdHits) {
