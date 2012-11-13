@@ -4,8 +4,12 @@
 #include "VertexFinderPerfect.h"
 
 namespace lcfiplus {
-	void VertexFinderPerfect::findPerfectVertices(TrackVec &tracks, MCParticleVec &mcp, vector<MCVertex *> &selvtx, int minimumRecoTracks, double minimumDistance)
+	void VertexFinderPerfect::findPerfectVertices(TrackVec &tracks, MCParticleVec &mcp, vector<MCVertex *> &selvtx, int minimumRecoTracks, double minimumDistance, bool print)
 	{
+		for(unsigned int n=0;n<selvtx.size();n++)
+			delete selvtx[n];
+
+		selvtx.clear();
 
 		vector<MCVertex *> vtx;
 
@@ -28,13 +32,19 @@ namespace lcfiplus {
 				newvtx->setPos(v);
 				newvtx->add(mcp[n]);
 
+				const MCParticle *parent = mcp[n]->getSemiStableParent();
+				if(parent)newvtx->setParent(parent);
+
 				vtx.push_back(newvtx);
 			}
 			else{
 				vtx[nvtx]->add(mcp[n]);
+
+				const MCParticle *parent = mcp[n]->getSemiStableParent();
+				if(parent && (!vtx[nvtx]->getParent() || vtx[nvtx]->getParent()->isParent(parent)))
+					vtx[nvtx]->setParent(parent);
 			}
 		}
-
 		// mcp scan end
 
 		// associate reco particle
@@ -55,20 +65,24 @@ namespace lcfiplus {
 		for(unsigned int nvtx = 0; nvtx < vtx.size(); nvtx ++){
 			if(vtx[nvtx]->getRecoTracks().size() >= (unsigned int)minimumRecoTracks){
 				selvtx.push_back(vtx[nvtx]);
-			}
+			}else
+				delete vtx[nvtx];
 		}
 
 		// print status
-		for(unsigned int nvtx = 0; nvtx < selvtx.size(); nvtx ++){
-			cout << "MCVertex found at ( " << selvtx[nvtx]->getPos().x() << ", " << selvtx[nvtx]->getPos().y() << ", " << selvtx[nvtx]->getPos().z()
+		if(print){
+			for(unsigned int nvtx = 0; nvtx < selvtx.size(); nvtx ++){
+				cout << "MCVertex found at ( " << selvtx[nvtx]->getPos().x() << ", " << selvtx[nvtx]->getPos().y() << ", " << selvtx[nvtx]->getPos().z()
 					<< "), # tracks = " << selvtx[nvtx]->getRecoTracks().size() << " ";
-			if(nvtx>0){
-				for(unsigned int t=0;t<selvtx[nvtx]->getRecoTracks().size();t++){
-					const MCParticle *mcp = selvtx[nvtx]->getRecoTracks()[t]->getMcp()->getSemiStableParent();
-					cout << (mcp ? mcp->getPDG() : 0) << " ";
+				if(nvtx>0){
+					for(unsigned int t=0;t<selvtx[nvtx]->getRecoTracks().size();t++){
+						const MCParticle *mcp = selvtx[nvtx]->getRecoTracks()[t]->getMcp();
+						const MCParticle *mcp2 = (mcp ? mcp->getSemiStableParent() : 0);
+						cout << (mcp2 ? mcp2->getPDG() : 0) << " ";
+					}
 				}
+				cout << endl;
 			}
-			cout << endl;
 		}
 
 	}

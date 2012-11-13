@@ -9,11 +9,11 @@ namespace lcfiplus{
 namespace algoEtc{
 int min(int a, int b){return a > b ? b : a;}
 
-void makeBeamTracks(Track *&t1, Track *&t2)
+void makeBeamTracks(Track *&t1, Track *&t2, bool smear)
 {
    // beam crossing = 14 mrad
     float beamtd = tan( 0.5*(3.1415926 - 14e-3) );
-    // float beamsizeX = 639e-6; // 639 nm converted to mm
+    //float beamsizeX = 639e-6; // 639 nm converted to mm
     //float beamsizeY = 5.7e-6; // 5.7 nm converted to mm
     // size(d)/size(z) = tan(7e-3) -> size(z) = size(d)/tan(7e-3)
     // float beamsizeZ = beamsizeX / tan(0.5 * 14e-3);
@@ -23,10 +23,10 @@ void makeBeamTracks(Track *&t1, Track *&t2)
 
     float d0rand(0), z0rand(0);
 
-    //d0rand = (_rand.Rndm()*2-1)*beamsizeX;
-    //z0rand = (_rand.Rndm()*2-1)*beamsizeZ;
-    d0rand = gRandom->Gaus(0,beamsizeX);
-    z0rand = gRandom->Gaus(0,beamsizeZ);
+		if (smear) {
+			d0rand = gRandom->Gaus(0,beamsizeX);
+			z0rand = gRandom->Gaus(0,beamsizeZ);
+		}
 
 		t1 = new Track;
 		t2 = new Track;
@@ -51,10 +51,12 @@ void makeBeamTracks(Track *&t1, Track *&t2)
     cov[tpar::tdtd] = 1;
 		t1->setCovMatrix(cov);
 
-    //d0rand = (_rand.Rndm()*2-1)*beamsizeX;
-    //z0rand = (_rand.Rndm()*2-1)*beamsizeZ;
-    d0rand = gRandom->Gaus(0,beamsizeX);
-    z0rand = gRandom->Gaus(0,beamsizeZ);
+		d0rand = 0;
+		z0rand = 0;
+		if (smear) {
+			d0rand = gRandom->Gaus(0,beamsizeX);
+			z0rand = gRandom->Gaus(0,beamsizeZ);
+		}
 
 		t2->setId(1000002);
 
@@ -74,7 +76,7 @@ void makeBeamTracks(Track *&t1, Track *&t2)
 		t2->setCovMatrix(cov);
 }
 
-void makeBeamVertex(Vertex *&vtx)
+void makeBeamVertex(Vertex *&vtx, bool smear)
 {
   /*
 	float beamsizeX = 639e-6; // 639 nm converted to mm
@@ -94,7 +96,10 @@ void makeBeamVertex(Vertex *&vtx)
 	cov[Vertex::yz] = 0;
 	cov[Vertex::zz] = pow(beamsizeZ,2);
 
-	vtx = new Vertex(0,1,gRandom->Gaus(0, beamsizeX), gRandom->Gaus(0,beamsizeY), gRandom->Gaus(0,beamsizeZ),cov, true);
+	if (smear)
+		vtx = new Vertex(0,1,gRandom->Gaus(0, beamsizeX), gRandom->Gaus(0,beamsizeY), gRandom->Gaus(0,beamsizeZ),cov, true);
+	else
+		vtx = new Vertex(0,1,0.,0.,0.,cov, true);
 }
 
 void connectVerticesToJets(const JetVec &jets, const vector<Vertex *> &vtcs, vector<vector<Vertex *> > &jetVertices, vector<vector<const Track *> > &jetResidualTracks, const Vertex *ip){

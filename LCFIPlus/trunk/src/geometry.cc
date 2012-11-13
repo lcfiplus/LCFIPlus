@@ -1038,15 +1038,197 @@ namespace lcfiplus{
 		return pos;
 	}
 
-	double VertexLine::LogLikelihood(const TVector3 &p)const
+	double VertexLine::Variance(const TVector3 &p, double t)const
 	{
-		return 0;
+		if(!_ip || !_vertex)return 0; // need error
+		
+		// obtain position and error
+		TVector3 pos = _origin + t * _unit;
+
+		double dist = (_vertex->getPos() - _ip->getPos()).Mag();
+		double corr = (t+dist)/dist;
+
+		TVector3 dif = pos - p;
+		SVector3 difs(dif.x(), dif.y(), dif.z());
+		SMatrixSym3 err;
+		const float *covIP = _ip->getCov();
+		const float *covSec = _vertex->getCov();
+/*
+		err(0,0) = (covSec[Vertex::xx] - covIP[Vertex::xx]) * corr + covIP[Vertex::xx];
+		err(0,1) = (covSec[Vertex::xy] - covIP[Vertex::xy]) * corr + covIP[Vertex::xy];
+		err(0,2) = (covSec[Vertex::xz] - covIP[Vertex::xz]) * corr + covIP[Vertex::xz];
+		err(1,1) = (covSec[Vertex::yy] - covIP[Vertex::yy]) * corr + covIP[Vertex::yy];
+		err(1,2) = (covSec[Vertex::yz] - covIP[Vertex::yz]) * corr + covIP[Vertex::yz];
+		err(2,2) = (covSec[Vertex::zz] - covIP[Vertex::zz]) * corr + covIP[Vertex::zz];
+*/
+		err(0,0) = covSec[Vertex::xx] * corr + covIP[Vertex::xx];
+		err(0,1) = covSec[Vertex::xy] * corr + covIP[Vertex::xy];
+		err(0,2) = covSec[Vertex::xz] * corr + covIP[Vertex::xz];
+		err(1,1) = covSec[Vertex::yy] * corr + covIP[Vertex::yy];
+		err(1,2) = covSec[Vertex::yz] * corr + covIP[Vertex::yz];
+		err(2,2) = covSec[Vertex::zz] * corr + covIP[Vertex::zz];
+
+		bool success = err.Invert();
+		if (success == false) fprintf(stderr,"error: matrix inversion failed!\n");
+		double variance = ROOT::Math::Similarity(difs,err);
+		if (variance < 0) {
+			fprintf(stderr,"vertexline variance is negative: %f\n",variance);
+			fprintf(stderr,"ref-point=(%f,%f,%f)\n",p.X(),p.Y(),p.Z());
+			fprintf(stderr,"pos=(%f,%f,%f) at t=%f\n",pos.x(), pos.y(), pos.z(),t);
+			fprintf(stderr,"err=\n");
+			fprintf(stderr,"[ %f, %f, %f ] \n",err(0,0),err(0,1),err(0,2));
+			fprintf(stderr,"[ %f, %f, %f ] \n",err(1,0),err(1,1),err(1,2));
+			fprintf(stderr,"[ %f, %f, %f ] \n",err(2,0),err(2,1),err(2,2));
+			return 1e10;
+		}
+
+		return variance;
+	}
+
+	double VertexLine::LogLikelihood(const TVector3 &p, double &tmin)const
+	{
+		if(!_ip || !_vertex)return 0; // need error for loglikelihood
+
+		// determine minimum
+		double dist = (_vertex->getPos() - _ip->getPos()).Mag();
+
+		// one-dimensional minimization
+		VarianceFunctor vf(*this,p);
+		ROOT::Math::Functor f(vf,1);
+//		ROOT::Math::GSLMinimizer1D minimizer;
+//		minimizer.SetFunction(f, t, t-(t2-t1)/2, t+(t2-t1)/2);
+//		bool b = minimizer.Minimize(100, 1e-12,1e-7);
+		ROOT::Minuit2::Minuit2Minimizer min(ROOT::Minuit2::kMigrad);
+		//ROOT::Minuit2::Minuit2Minimizer min(ROOT::Minuit2::kSimplex);
+		min.SetFunction(f);
+
+//		min.SetMaxFunctionCalls(100000);
+//		min.SetMaxIterations(1000);
+		min.SetTolerance(1e-3); // worked, but default may be ok
+
+		min.SetPrintLevel(0);
+
+		double tllimit = 1-dist;
+		double tulimit = 10000;
+
+		double t = 0.;
+		// todo: t<0 treatment
+		min.SetLimitedVariable(0,"t",t, 1e-6,tllimit, tulimit);
+//		min.SetVariable(0,"t",t, 1e-7);
+
+		min.Minimize();
+
+		tmin = min.X()[0];
+		if(verbose){
+			cout << "Minimizer result: p = ( " << p.x() << ", " << p.y() << ", " << p.z() << "), ";
+			cout << scientific << "tmin = " << tmin << ", val = " << vf(&tmin) << fixed << endl;
+		}
+
+		double variance = vf(&tmin);
+
+//		cout << "Minimizer result: " << b << ", p = ( " << p.x() << ", " << p.y() << ", " << p.z() << "), ";
+//		cout << "tmin = " << minimizer.XMinimum() << ", val = " << minimizer.FValMinimum() << endl;
+
+//		return -Variance(p, minimizer.XMinimum());
+
+		if (variance < 0) {
+			fprintf(stderr,"error: variance is negative. var=%f, p=(%f,%f,%f), t=%f)\n",variance,p[0],p[1],p[2],tmin);
+			return -1e10;
+		}
+		return -variance;
 	}
 
 	void VertexLine::LogLikelihoodDeriv(const TVector3 &p, double *output)const
 	{
 	
 	}
+
+	double Helix::LongitudinalDeviation(const Vertex *primary, const Vertex *secondary)
+	{
+		GeometryHandler *geo = GeometryHandler::Instance();
+
+		vector<PointBase *> points;
+		VertexLine line(primary, secondary);
+
+		points.push_back(this);
+		points.push_back(&line);
+
+		double dist;
+		TVector3 initial = ClosePoint(line, &dist);
+
+		Point result;
+		double variance = geo->PointFit(points, initial, &result);
+
+		double ret = (secondary->getPos() - result.GetPos()).Mag();
+
+		TVector3 pos = result.GetPos();
+		if(verbose)
+		  cout << "Helix::LongitudinalDeviation: variance = " << variance << ", pos = " << pos.x() << " " << pos.y() << " " << pos.z() << ", dist = " << ret << endl;
+
+		return ret;
+	}
+
+#if 0
+	double Helix::LongitudinalDeviation(const TVector3 &vtxPoint, const Vertex *primary)const
+	{
+		// first, normal loglikelihood to minimize t
+		double t = 0.;
+		double v;
+
+		// obtain error for vertex direction
+		TVector3 vtxdir = (vtxPoint - primary->getPos()).Unit();
+		VertexLine line(vtxPoint, vtxdir);
+		double dist;
+		TVector3 closepoint = ClosePoint(line,&dist);
+//		cout << "Helix::LongitudinalDeviation: closepoint = " << closepoint.x() << " " << closepoint.y() << " " << closepoint.z() << ", d = " << dist << endl;
+		v = LogLikelihood(closepoint,t);
+		TVector3 xyzT = GetPos(t);
+/	xyzT -= vtxPoint;
+
+		return fabs(xyzT.Dot(vtxdir));
+	}
+
+	double Helix::LongitudinalDeviation(const TVector3 &vtxPoint, const Vertex *primary)const
+	{
+		// first, normal loglikelihood to minimize t
+		double t = 0.;
+		double v;
+
+		SVector3 xyz;
+		SMatrixSym3 errXyz;
+
+		// vtxpoint
+//		v = LogLikelihood(vtxPoint,t);
+//		GetPosErr(t, xyz, errXyz);
+//		cout << "Helix::LongitudinalDeviation: 3d variance at vtxpoint = " << v << ", pos = " << xyz(0) << " " << xyz(1) << " " << xyz(2) << endl;
+
+		// obtain error for vertex direction
+		TVector3 vtxdir = (vtxPoint - primary->getPos()).Unit();
+		VertexLine line(vtxPoint, vtxdir);
+		double dist;
+		TVector3 closepoint = ClosePoint(line,&dist);
+//		cout << "Helix::LongitudinalDeviation: closepoint = " << closepoint.x() << " " << closepoint.y() << " " << closepoint.z() << ", d = " << dist << endl;
+		v = LogLikelihood(closepoint,t);
+		GetPosErr(t, xyz, errXyz);
+//		cout << "Helix::LongitudinalDeviation: 3d variance at closepoint = " << v << ", pos = " << xyz(0) << " " << xyz(1) << " " << xyz(2) << endl;
+
+		TVector3 xyzT(xyz(0), xyz(1), xyz(2));
+		xyzT -= vtxPoint;
+
+		vtxdir.SetMag(xyzT.Dot(vtxdir));
+
+		if(verbose)
+		  cout << "Helix::LongitudinalDeviation: t = " << t << ", devmag = " << xyzT.Mag() << ", lmag " << vtxdir.Mag() << ", angle = " << xyzT.Angle(vtxdir) << endl;
+
+		SVector3 dif(vtxdir.x(), vtxdir.y(), vtxdir.z());
+
+		bool success = errXyz.Invert();
+		if (success == false) fprintf(stderr,"error: matrix inversion failed!\n");
+		double variance = ROOT::Math::Similarity(dif,errXyz);
+
+		return variance;
+	}
+#endif
 
 	// geometry operation ///////////////////////////////////////////////////////
 	double GeometryHandler::PointFit(const vector<PointBase *> &points, const TVector3 &initial, Point * result)

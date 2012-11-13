@@ -951,6 +951,55 @@ const Jet * JetMCMatch(JetVec &jets, const MCParticle *mcp, vector<const Track *
 		_file->Close();
 	}
 
+	void FlavtagReader::init(Parameters *param){
+		Algorithm::init(param);
+
+		string filename = param->get("FileName",string("test.root"));
+		_jetname = param->get("JetCollectionName",string("Durham_2Jets"));
+		string primvtxcolname = param->get("PrimaryVertexCollectionName",string("PrimaryVertex"));
+		Event::Instance()->setDefaultPrimaryVertex(primvtxcolname.c_str());
+
+		_file = new TFile(filename.c_str(),"RECREATE");
+		_nt = new TNtupleD("nt","nt","nev:nj:e:px:py:pz:btag:ctag:otag:bbtag:bctag:cctag");
+		_ntev = new TNtupleD("ntev","ntev","nev:btag1:btag2:btag3:btag4:btag5:btag6:ctag1:ctag2:ctag3:ctag4:ctag5:ctag6");
+
+		_jets = 0;
+		_nev = 0;
+	}
+
+	void FlavtagReader::process(){
+		if(!_jets){
+			Event::Instance()->Get(_jetname.c_str(), _jets);
+		}
+		const Vertex * privtx = Event::Instance()->getPrimaryVertex();
+
+		vector<double> btags, ctags;
+
+		for(unsigned int nj = 0; nj < _jets->size(); nj++){
+			const Jet *j = (*_jets)[nj];
+
+			const Parameters *para = j->getParam("lcfiplus");
+			_nt->Fill(_nev, nj, j->E(), j->Px(), j->Py(), j->Pz(),
+				  para->get<double>("BTag"), para->get<double>("CTag"), para->get<double>("OTag"),  para->get<double>("BBTag"),  para->get<double>("CCTag"),  para->get<double>("BCTag"));
+			btags.push_back(para->get<double>("BTag"));
+			ctags.push_back(para->get<double>("CTag"));
+
+			cout << "nvtx = " << para->get<double>("nvtx") << ", nvtxall = " << para->get<double>("nvtxall") << endl;
+		}
+	       
+		std::sort(btags.begin(), btags.end());
+		std::sort(ctags.begin(), ctags.end());
+		if(_jets->size() >= 6)
+		  _ntev->Fill(_nev,  btags[0],  btags[1],  btags[2],  btags[3],  btags[4],  btags[5],  ctags[0],  ctags[1],  ctags[2],  ctags[3],  ctags[4],  ctags[5]);
+
+		_nev ++;
+	}
+
+	void FlavtagReader::end() {
+		_file->Write();
+		_file->Close();
+	}
+
 #if 0
 
 	void TestAlgo::init(Parameters *param){

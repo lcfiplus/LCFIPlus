@@ -12,7 +12,7 @@ using namespace std;
 namespace lcfiplus {
 
 	namespace VertexFinderPerfect{
-		void findPerfectVertices(TrackVec &tracks, MCParticleVec &mcp, vector<MCVertex *> &selvtx, int minimumRecoTracks, double minimumDistance = 0.1);
+		void findPerfectVertices(TrackVec &tracks, MCParticleVec &mcp, vector<MCVertex *> &selvtx, int minimumRecoTracks, double minimumDistance = 0.1, bool print = false);
 	}
 }
 

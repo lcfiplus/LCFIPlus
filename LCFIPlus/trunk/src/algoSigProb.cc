@@ -24,6 +24,25 @@ double zpars[7] = {
   0.000161151,
   0.0138247 };
 
+  bool trackSelectionForFlavorTag(const Track* trk, int nHitCut) {
+
+	int nVTX = trk->getVtxHits();
+	int nFTD = trk->getFtdHits();
+	int nhits = nVTX+nFTD;
+
+	//cout << "nVTXhits = " << nVTX << ", nFTDhits = " << nFTD << ", p = " << trk->Vect().Mag() << endl;
+
+	if (nhits < nHitCut-1) return false;
+
+	double mom = trk->Vect().Mag();
+	if (nhits == nHitCut-1 && mom < 2) return false;
+	if (nhits >= nHitCut && mom < 1) return false;
+
+	return true;
+}
+
+//////////////////////////////////////////////////////////
+
 double trackD0Significance(const Track* trk, const Vertex* pri) {
 	// take primary vertex error before minimization 
 	// because this is what LCFI does
@@ -224,30 +243,25 @@ double trackProbZ0(const Track* trk, const Vertex* pri) {
 	return prob1D(sig,200,zpars)/prob1D(0,200,zpars);
 }
 
-double jointProbD0(const Jet* jet, const Vertex* pri, int minhitcut, double maxd0sigcut) {
+  double jointProbD0(const Jet* jet, const Vertex* pri, int minhitcut, double maxd0sigcut, bool useVertexTracks) {
 	double maxd0sig = 200.;
 
 	double prod(1);
 	int ntrk(0);
 	double hiprob(0);
 
-	TrackVec & tracks = jet->getAllTracks(true);
+	TrackVec tracks = (useVertexTracks ? jet->getAllTracks(true) : jet->getTracks());
 	for (TrackVecIte it = tracks.begin(); it != tracks.end(); ++it) {
 		const Track* trk = *it;
-		if (trk->getD0() < 5 && trk->getZ0() < 5
-		    //				&& trk->getVtxHits() >= 5) {
-		    // && trk->getVtxHits() >= 4) {
-		    && trk->getVtxHits() >= minhitcut) {
+		if (trackSelectionForFlavorTag(trk,minhitcut) == false) continue;
 
-			double sig = fabs( trackD0Significance(trk,pri) );
-			if (sig>maxd0sigcut)continue;
-			if (sig<maxd0sig) {
-				double prob = prob1D(sig,maxd0sig,rpars)/prob1D(0,maxd0sig,rpars);
-				if (prob > hiprob) hiprob = prob;
-				prod *= prob;
-				++ntrk;
-			}
-		}
+		double sig = fabs( trackD0Significance(trk,pri) );
+		if (sig>maxd0sigcut)continue;
+		if (sig>maxd0sig)continue;
+		double prob = prob1D(sig,maxd0sig,rpars)/prob1D(0,maxd0sig,rpars);
+		if (prob > hiprob) hiprob = prob;
+		prod *= prob;
+		++ntrk;
 	}
 
 	if (ntrk == 0) {
@@ -274,29 +288,24 @@ double jointProbD0(const Jet* jet, const Vertex* pri, int minhitcut, double maxd
 	return jprob;
 }
 
-double jointProbZ0(const Jet* jet, const Vertex* pri, int minhitcut, double maxz0sigcut) {
+  double jointProbZ0(const Jet* jet, const Vertex* pri, int minhitcut, double maxz0sigcut, bool useVertexTracks) {
 	double maxz0sig = 200.;
 
 	double prod(1);
 	int ntrk(0);
 	double hiprob(0);
 
-	TrackVec &tracks = jet->getAllTracks(true);
+	TrackVec tracks = (useVertexTracks ? jet->getAllTracks(true) : jet->getTracks());
 	for (TrackVecIte it = tracks.begin(); it != tracks.end(); ++it) {
 		const Track* trk = *it;
-		if (trk->getD0() < 5 && trk->getZ0() < 5
-		    //				&& trk->getVtxHits() >= 5) {
-		    // && trk->getVtxHits() >= 4) {
-		    && trk->getVtxHits() >= minhitcut) {
-			double sig = fabs( trackZ0Significance(trk,pri) );
-			if (sig>maxz0sigcut)continue;
-			if (sig < maxz0sig) {
-				double prob = prob1D(sig,maxz0sig,zpars)/prob1D(0,maxz0sig,zpars);
-				if (prob > hiprob) hiprob = prob;
-				prod *= prob;
-				++ntrk;
-			}
-		}
+		if (trackSelectionForFlavorTag(trk, minhitcut) == false) continue;
+		double sig = fabs( trackZ0Significance(trk,pri) );
+		if (sig>maxz0sigcut)continue;
+		if (sig>maxz0sig)continue;
+		double prob = prob1D(sig,maxz0sig,zpars)/prob1D(0,maxz0sig,zpars);
+		if (prob > hiprob) hiprob = prob;
+		prod *= prob;
+		++ntrk;
 	}
 
 	if (ntrk == 0) {
@@ -334,18 +343,7 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
 
 	for (TrackVecIte iter = tracks.begin(); iter != tracks.end(); ++iter) {
 		const Track* trk = *iter;
-
-		// int nHitCut = 5;
-		// int nHitCut = 4;
-		int nHitCut = minhitcut;
-		int nVTX = trk->getVtxHits();
-		int nFTD = trk->getFtdHits();
-		int nhits = nVTX+nFTD;
-
-		if (nhits < nHitCut-1) continue;
-		double mom = trk->Vect().Mag();
-		if (nhits == nHitCut-1 && mom < 2) continue;
-		if (nhits >= nHitCut && mom < 1) continue;
+		if (trackSelectionForFlavorTag(trk, minhitcut), minhitcut == false) continue;
 
 		double d0sig = signedD0Significance(trk,jet,pri,true);
 

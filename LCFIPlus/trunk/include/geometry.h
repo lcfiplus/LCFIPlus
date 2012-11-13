@@ -120,6 +120,8 @@ namespace lcfiplus{
 		void GetPosErrDeriv(double t, SVector3 &pos, SMatrixSym3 &err)const;
 		void GetPosErrDeriv2(double t, SVector3 &pos, SMatrixSym3 &err)const;
 
+		double LongitudinalDeviation(const Vertex *ip, const Vertex *sec);
+
 		Helix(){}
 		Helix(const SVector5 &hel, const SMatrixSym5 &err, int charge){_hel = hel, _err = err;_charge = charge;}
 		Helix(const Track *trk);
@@ -140,16 +142,35 @@ namespace lcfiplus{
 
 	class VertexLine : public PointBase // line with error for IP-vertex line
 	{
+		typedef ROOT::Math::SVector<double, 3> SVector3;
+		typedef ROOT::Math::SMatrix<double, 3,3,ROOT::Math::MatRepSym<double,3> > SMatrixSym3; // used for xyz error
+
 		friend TVector3 Helix::ClosePoint(const VertexLine &line, double *distance)const;
 		friend class Helix::HelixLineDistance2Functor;
 		friend class Helix::HelixLineDistance2DerivFunctor;
 
+		class VarianceFunctor{
+		public:
+			VarianceFunctor(const VertexLine &line, const TVector3 &p) : _line(line), _p(p){}
+			double operator() (const double *t){
+				return _line.Variance(_p,*t);
+			}
+		private:
+			const VertexLine &_line;
+			TVector3 _p;
+		};
+
 	public:
-		double LogLikelihood(const TVector3 &p)const;
+		virtual double LogLikelihood(const TVector3 &p)const {// likelihood with t-minimization
+			double tmin; return LogLikelihood(p, tmin);
+		}
+		double LogLikelihood(const TVector3 &p, double &tmin)const;
 		void LogLikelihoodDeriv(const TVector3 &p, double* output)const;
+		double Variance(const TVector3 &p, double t)const;		// t-fixed version, internally used
 
 		VertexLine(){}
-		VertexLine(const TVector3 &origin, const TVector3 &dir){_origin = origin; _unit = dir.Unit();}
+		VertexLine(const Vertex *ip, const Vertex *secvtx){_ip = ip; _vertex = secvtx; _origin = _vertex->getPos(); _unit = (_origin - _ip->getPos()).Unit();}
+		VertexLine(const TVector3 &origin, const TVector3 &dir){_origin = origin; _unit = dir.Unit();_ip = 0; _vertex = 0;}
 		~VertexLine(){}
 
 		void Set(const TVector3 &origin, const TVector3 &dir){_origin = origin; _unit = dir.Unit();}
@@ -158,10 +179,10 @@ namespace lcfiplus{
 		// (x,y,z) = origin + t * unit
 		TVector3 _origin;
 		TVector3 _unit;
-/*
-		Vertex *_ip;
-		Vertex *_vertex;
 
+		const Vertex *_ip;
+		const Vertex *_vertex;
+/*
 		double _dispersionNear;
 		double _dispersionFar;
 */
