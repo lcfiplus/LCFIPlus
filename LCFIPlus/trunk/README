@@ -1,6 +1,17 @@
 Some documentation is available at
 https://confluence.slac.stanford.edu/display/ilc/LCFIPlus
 
+--------------
+| v00-06-00a |
+--------------
+***** Development release: please use at your own risk *****
+- 6-category training (b,c,o,bb,bc,cc) implemented
+- Extracting all variables used for the flavor tagging now available
+- Added MC-related input variables (MCnb, MCnc etc.)
+  in flavor tagging to be used for training
+  (available only if MCParticle collection is supplied)
+- Added more input variables for flavor tagging
+
 -------------
 | v00-05-02 |
 -------------
