@@ -113,9 +113,10 @@ namespace lcfiplus {
 
 			int category = -1;
 			if (_evaluate) {
-				double btag(-1);
-				double ctag(-1);
+				double tags[10];
 				int ncat = _categories.size();
+				int ncls = _readers[0]->EvaluateMulticlass("bdt").size();
+
 				for (int i=0; i<ncat; ++i) {
 					TTreeFormula form( "form", _categories[i].definition, _tree );
 					//cout << "category " << i << " evaluates to: " << form.EvalInstance() << endl;
@@ -124,22 +125,35 @@ namespace lcfiplus {
 					if ( form.EvalInstance() == 1 ) {
 						category = i;
 						if ( presel.EvalInstance() == 1 ) {
-							btag = _readers[i]->EvaluateMulticlass("bdt")[0];
-							ctag = _readers[i]->EvaluateMulticlass("bdt")[1];
+							for(int nc = 0; nc < ncls; nc++)
+								tags[nc] = _readers[i]->EvaluateMulticlass("bdt")[nc];
 						} else {
-							btag = 0;
-							ctag = 0;
+							memset(tags, 0, sizeof(tags));
 						}
 						//cout << "jet category is " << i << " [btag=" << btag << ", ctag=" << ctag << "]" << endl;
 					}
 				}
 
 				Parameters param;
-				param.add( "BTag", btag );
-				param.add( "CTag", ctag );
+				param.add( "BTag", tags[0] );
+				param.add( "CTag", tags[1] );
+				param.add( "OTag", tags[2] );
+				if(ncls > 3)param.add("BBTag", tags[3]);
+				if(ncls > 4)param.add("CCTag", tags[4]);
+				if(ncls > 5)param.add("BCTag", tags[5]);
+
 				param.add( "Category", (double)category );
 
+				// adding all variables
+				if(_exportAllVars){
+					for ( vector<FTAlgo*>::iterator iter2 = _algoList.begin(); iter2 != _algoList.end(); ++iter2 ) {
+						FTAlgo* algo = *iter2;
+						TTreeFormula form("form", algo->getName().c_str(),_tree);
+						param.add(algo->getName().c_str(), form.EvalInstance());
+					}
+				}
 				jet->addParam( _paramName.Data(), param );
+
 			}
 
 			if (_file) fillTree();

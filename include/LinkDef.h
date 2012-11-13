@@ -42,6 +42,7 @@
 
 #pragma link C++ class lcfiplus::ZHHAlgo;
 #pragma link C++ class lcfiplus::TestAlgo;
+#pragma link C++ class lcfiplus::FlavtagReader;
 #pragma link C++ class lcfiplus::TestAlgoV0;
 
 #endif

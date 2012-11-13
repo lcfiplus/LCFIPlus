@@ -20,8 +20,8 @@ extern void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minh
 extern double prob1D(double sig, double maxsig, double* pars);
 extern double trackProbD0(const Track* trk, const Vertex* pri);
 extern double trackProbZ0(const Track* trk, const Vertex* pri);
-extern double jointProbD0(const Jet* jet, const Vertex* pri, int minhitcut, double maxd0sigcut = 1e+300);
-extern double jointProbZ0(const Jet* jet, const Vertex* pri, int minhitcut, double maxz0sigcut = 1e+300);
+ extern double jointProbD0(const Jet* jet, const Vertex* pri, int minhitcut, double maxd0sigcut = 1e+300, bool useVertexTracks = true);
+ extern double jointProbZ0(const Jet* jet, const Vertex* pri, int minhitcut, double maxz0sigcut = 1e+300, bool useVertexTracks = true);
 
 }}
 

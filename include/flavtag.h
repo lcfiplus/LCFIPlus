@@ -78,7 +78,7 @@ namespace lcfiplus {
 			void process(const Event* event, const Vertex *privtx, int nhitsJointProbD0, int nhitsJointProbZ0, int nhitsMostSignificantTrack, JetVec & jets);
 
 			float* getVarAddress(const string& varname);
-			void setEval(bool seteval) { _evaluate = seteval; }
+			void setEval(bool seteval, bool exportAllVars) { _evaluate = seteval; _exportAllVars = exportAllVars;}
 
 			void addReader(TMVA::Reader* reader, const FlavtagCategory& c);
 			void setParamName(TString s) { _paramName = s; }
@@ -93,6 +93,7 @@ namespace lcfiplus {
 			string _ntpName;
 
 			bool _evaluate;
+			bool _exportAllVars;
 
 			vector<TMVA::Reader*> _readers;
 			vector<FlavtagCategory> _categories;

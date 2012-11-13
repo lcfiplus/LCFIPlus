@@ -35,8 +35,9 @@ void ReadMVA::init(Parameters *param) {
 	_verbose = false;
 
 	// get FTManager for variable registration
+	int exportAllVars = param->get("FlavorTag.ExportAllVariables",0);
 	FTManager &mgr = FTManager::getInstance();
-	mgr.setEval(true);
+	mgr.setEval(true, exportAllVars);
 
 	// read output directory & file names
 	_outputDirectory = param->get("FlavorTag.WeightsDirectory",TString("lcfiweights"));

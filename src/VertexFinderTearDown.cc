@@ -45,20 +45,13 @@ vector<lcfiplus::Vertex*> * lcfiplus::findTearDownVertices(const Event& evt, con
 	return pvertices;
 }
 
-lcfiplus::Vertex * lcfiplus::findPrimaryVertex(TrackVec &tracks, double chi2, int useBeamConstraint)
+lcfiplus::Vertex * lcfiplus::findPrimaryVertex(TrackVec &tracks, double chi2, bool beamspotConstraint, bool smearBeamspot)
 {
-	Vertex *ip;
-	makeBeamVertex(ip);
+	Vertex *ip(0);
+	if (beamspotConstraint)
+		makeBeamVertex(ip,smearBeamspot);
 
-	Vertex *ret;
-
-	if (useBeamConstraint == 1) {
-	  ret =  VertexFinderTearDown<vector, VertexFitterSimple>()(tracks, 0, chi2, 0, ip);
-	} else {
-	  ret =  VertexFinderTearDown<vector, VertexFitterSimple>()(tracks, 0, chi2, 0, 0);
-	}
-
-	// Vertex * ret =  VertexFinderTearDown<vector, VertexFitterSimple>()(tracks, 0, chi2, 0, ip);
+	Vertex * ret =  VertexFinderTearDown<vector, VertexFitterSimple>()(tracks, 0, chi2, 0, ip);
 	//Vertex * ret =  VertexFinderTearDown<vector>()(tracks, 0, chi2, 0, ip);
 	if(ret)
 		ret->setPrimary(true);

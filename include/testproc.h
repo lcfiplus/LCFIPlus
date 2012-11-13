@@ -231,6 +231,48 @@ namespace lcfiplus{
 
 	};
 
+	class FlavtagReader : public Algorithm
+	{
+	public:
+		FlavtagReader(){}
+		virtual ~FlavtagReader(){}
+
+		void init(Parameters *param);
+		void process();
+		void end();
+
+		ClassDef(FlavtagReader,1);
+
+	private:
+		TNtupleD *_nt;
+		TNtupleD *_ntev;
+		int _nev;
+
+		TNtuple *_ntJet2;
+		TNtuple *_nbJet;
+		TFile *_file;
+
+		string _v0vtxname;
+		string _privtxname;
+		string _jetname;
+		bool _bbhh;
+
+		VertexVec * _vertices; //!
+		VertexVec * _v0vertices; //!
+		JetVec * _jets; //!
+
+		// for old version
+
+		string _vtxname;
+		int _vtxsel;
+		int _refine;
+		TNtupleD *_ntJet;
+
+		TH2D *_h;
+		TH2D *_he;
+
+	};
+
 	class TestAlgoV0 : public Algorithm {
 	public:
 		TestAlgoV0(){}

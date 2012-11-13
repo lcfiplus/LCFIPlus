@@ -30,24 +30,36 @@ using namespace lcfiplus;
 using namespace lcfiplus::algoSigProb;
 using namespace lcfiplus::algoEtc;
 
+void TrainMVA::readInputFileInfo( Parameters* param, TString name ) {
+	TString tokenFile = "TrainMVA.InputRootFile";
+	TString tokenTree = "TrainMVA.TreeName";
+	TString tokenPresel = "TrainMVA.Preselection";
+	TString file = param->get( tokenFile+name, string("") );
+
+	if (file != "") {
+		TString tree = param->get( tokenTree+name, string("") );
+		TString presel = param->get( tokenPresel+name, string("") );
+		_inputFileInfo.push_back( InputFileInfo( name, file, tree, presel ) );
+
+		if (_verbose) {
+			std::cout << "TrainMVA sample name=" << name << ", tree=" << tree << ", presel=" << presel << std::endl;
+		}
+	}
+}
+
 void TrainMVA::init(Parameters *param) {
 	Algorithm::init(param);
 
-	_inputFileB = param->get("TrainMVA.InputRootFileB",string("lcfiplusB.root"));
-	_inputFileC = param->get("TrainMVA.InputRootFileC",string("lcfiplusC.root"));
-	_inputFileO = param->get("TrainMVA.InputRootFileO",string("lcfiplusO.root"));
+	_verbose = param->get("TrainMVA.Verbose",true);
 
-	_treeNameB = param->get("TrainMVA.TreeNameB",string("ntp"));
-	_treeNameC = param->get("TrainMVA.TreeNameC",string("ntp"));
-	_treeNameO = param->get("TrainMVA.TreeNameO",string("ntp"));
-
-	//_cutB = param->get("TrainMVA.PreSelectionB",string(""));
-	//_cutC = param->get("TrainMVA.PreSelectionC",string(""));
-	//_cutO = param->get("TrainMVA.PreSelectionO",string(""));
+	readInputFileInfo( param, "B" );
+	readInputFileInfo( param, "C" );
+	readInputFileInfo( param, "O" );
+	readInputFileInfo( param, "BB" );
+	readInputFileInfo( param, "CC" );
+	readInputFileInfo( param, "BC" );
 
 	_skipTrain = param->get("TrainMVA.SkipTrain",int(0));
-
-	_verbose = param->get("TrainMVA.Verbose",true);
 
 	// set output directory for weight files
 	_outputDirectory = param->get("FlavorTag.WeightsDirectory",TString("lcfiweights"));
@@ -96,7 +108,7 @@ void TrainMVA::init(Parameters *param) {
 
 		stringstream psTag;
 		psTag << "FlavorTag.CategoryPreselection" << i;
-		c.preselection = param->get(psTag.str().c_str(),string(""));
+		c.preselection = param->get(psTag.str().c_str(),string("1"));
 
 		// assumes comma separated values
 		stringstream varTag;
@@ -130,23 +142,15 @@ void TrainMVA::end() {
 
 	cout << "TrainMVA::end" << endl;
 
-	TFile* fileB = new TFile(_inputFileB);
-	if (!fileB->IsOpen()) throw Exception( "could not open file" );
+	for (vector<InputFileInfo>::iterator iter = _inputFileInfo.begin();
+			iter != _inputFileInfo.end(); ++iter) {
+		iter->file = new TFile(iter->fileName);
+		if (iter->file->IsOpen() == false) throw Exception( "could not open file" );
 
-	TTree* treeB = (TTree*)fileB->Get(_treeNameB);
-	if (treeB == 0) throw Exception( "could not find tree" );
+		iter->tree = (TTree*) iter->file->Get(iter->treeName);
+		if (iter->tree == 0) throw Exception( "could not find tree" );
+	}
 
-	TFile* fileC = new TFile(_inputFileC);
-	if (!fileC->IsOpen()) throw Exception( "could not open file" );
-
-	TTree* treeC = (TTree*)fileC->Get(_treeNameC);
-	if (treeC == 0) throw Exception( "could not find tree" );
-
-	TFile* fileO = new TFile(_inputFileO);
-	if (!fileO->IsOpen()) throw Exception( "could not open file" );
-
-	TTree* treeO = (TTree*)fileO->Get(_treeNameO);
-	if (treeO == 0) throw Exception( "could not find tree" );
 
 	gSystem->MakeDirectory(_outputDirectory);
 
@@ -169,9 +173,13 @@ void TrainMVA::end() {
 			//"!V:!Silent:Color:DrawProgressBar:Transformations=I;D;P;G,D:AnalysisType=multiclass" );
 
 		// define signal and background trees
-		factory->AddTree( treeB, TString("jetB"), 1., TCut(c.definition)+TCut(c.preselection) );
-		factory->AddTree( treeC, TString("jetC"), 1., TCut(c.definition)+TCut(c.preselection) );
-		factory->AddTree( treeO, TString("jetO"), 1., TCut(c.definition)+TCut(c.preselection) );
+
+		for (vector<InputFileInfo>::iterator iter = _inputFileInfo.begin();
+				iter != _inputFileInfo.end(); ++iter) {
+			factory->AddTree(
+					iter->tree, TString("jet")+iter->name, 1.,
+					TCut(iter->presel)+TCut(c.definition)+TCut(c.preselection) );
+		}
 
 		// add variables
 		for (unsigned int iv=0; iv<c.vars.size(); ++iv) {
