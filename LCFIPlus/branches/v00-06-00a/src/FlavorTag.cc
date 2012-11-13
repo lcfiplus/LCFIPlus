@@ -1,0 +1,1578 @@
+#include "FlavorTag.h"
+
+#include <assert.h>
+#include "EventStore.h"
+#include "LcfiInterface.h"
+#include "JetFinder.h"
+#include "TreeStorer.h"
+#include "VertexFitterLCFI.h"
+#include "VertexFinderTearDown.h"
+#include "VertexFinderPerfect.h"
+#include "algoSigProb.h"
+#include "algoEtc.h"
+#include "TrackSelector.h"
+
+#include "TROOT.h"
+#include "TInterpreter.h"
+#include "TFile.h"
+#include "TTree.h"
+#include "TLorentzVector.h"
+#include "TCut.h"
+#include <string>
+#include "TRandom3.h"
+#include "flavtag.h"
+#include "geometry.h"
+
+#include "TH1F.h"
+
+#include <sstream>
+
+using namespace lcfiplus;
+using namespace lcfiplus::algoSigProb;
+using namespace lcfiplus::algoEtc;
+
+namespace lcfiplus {
+
+	class FtAuxiliary : public FTAlgo {
+		private:
+			int _aux;
+		public:
+			FtAuxiliary(const char *auxname, int auxval) : FTAlgo(auxname), _aux(auxval) {}
+			void process() {
+				_result = _aux;
+			}
+	};
+
+	class FtNtrkWithoutV0 : public FTAlgo {
+		public:
+			FtNtrkWithoutV0() : FTAlgo("ntrkwithoutv0") {}
+			void process() {
+				_result = _jet->getAllTracks(true).size();
+			}
+	};
+
+	class FtNtrk : public FTAlgo {
+		public:
+			FtNtrk() : FTAlgo("ntrk") {}
+			void process() {
+				_result = _jet->getAllTracks().size();
+			}
+	};
+
+	class FtNvtxAll : public FTAlgo {
+		public:
+			FtNvtxAll() : FTAlgo("nvtxall") {}
+			void process() {
+				_result = _jet->getVertices().size();
+			}
+	};
+
+	class FtVtxMassAll : public FTAlgo {
+		public:
+			FtVtxMassAll() : FTAlgo("vtxmassall") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVertices().size()>0) {
+					TLorentzVector vtxp4;
+					const VertexVec & vtxList = _jet->getVertices();
+					for (unsigned int j=0; j<vtxList.size(); ++j) {
+						vtxp4 += vtxList[j]->getFourMomentum();
+					}
+					_result = vtxp4.M();
+				}
+			}
+	};
+
+	class FtVtxLen12All : public FTAlgo {
+		public:
+			FtVtxLen12All() : FTAlgo("vtxlen12all") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVertices().size()>1) {
+					_result = (_jet->getVertices()[1]->getPos() - _jet->getVertices()[0]->getPos()).Mag();
+				}
+			}
+	};
+
+	class FtVtxLen12AllByJetE : public FTAlgo {
+		public:
+			FtVtxLen12AllByJetE() : FTAlgo("vtxlen12all_jete") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVertices().size()>1) {
+					_result = (_jet->getVertices()[1]->getPos() - _jet->getVertices()[0]->getPos()).Mag() / _jet->Energy();
+				}
+			}
+	};
+
+	class Ft1VtxProb : public FTAlgo {
+		public:
+			Ft1VtxProb() : FTAlgo("1vtxprob") {}
+			void process() {
+				_result = 0;
+				const VertexVec & vtcs = _jet->getVertices();
+
+				if (_jet->getVertices().size() == 1){
+					_result = _jet->getVertices()[0]->getProb();
+				}
+				else if (_jet->getVertices().size()>=2) {
+					if(_jet->params().count("RefinedVertex") > 0){
+						_result = _jet->params().find("RefinedVertex")->second.get<double>("SingleVertexProbability");
+					}else{
+
+						vector<const Track *> tracks;
+						for(unsigned int v=0;v<vtcs.size();v++){
+							tracks.insert(tracks.end(), vtcs[v]->getTracks().begin(), vtcs[v]->getTracks().end());
+						}
+						// run vertex fitter
+						Vertex *single = VertexFitterSimple_V()(tracks.begin(), tracks.end());
+						_result = single->getProb();
+						delete single;
+					}
+				}
+			}
+	};
+
+	class FtNvtx : public FTAlgo {
+		public:
+			FtNvtx() : FTAlgo("nvtx") {}
+			void process() {
+				_result = _jet->getVerticesForFT().size();
+			}
+	};
+
+	class FtJetE : public FTAlgo {
+		public:
+			FtJetE() : FTAlgo("jete") {}
+			void process() {
+				_result = _jet->Energy();
+			}
+	};
+
+	class FtVtxLen1 : public FTAlgo {
+		public:
+			FtVtxLen1() : FTAlgo("vtxlen1") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>0)
+					_result = _jet->getVerticesForFT()[0]->length( _privtx );
+			}
+	};
+
+	class FtVtxLen2 : public FTAlgo {
+		public:
+			FtVtxLen2() : FTAlgo("vtxlen2") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>1) {
+					_result = _jet->getVerticesForFT()[1]->length( _privtx );
+				}
+			}
+	};
+
+	class FtVtxLen12 : public FTAlgo {
+		public:
+			FtVtxLen12() : FTAlgo("vtxlen12") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>1)
+					_result = _jet->getVerticesForFT()[1]->length( _jet->getVerticesForFT()[0] );
+			}
+	};
+
+	class FtVtxLen1ByJetE : public FTAlgo {
+		public:
+			FtVtxLen1ByJetE() : FTAlgo("vtxlen1_jete") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>0)
+					_result = _jet->getVerticesForFT()[0]->length( _privtx ) / _jet->Energy();
+			}
+	};
+
+	class FtVtxLen2ByJetE : public FTAlgo {
+		public:
+			FtVtxLen2ByJetE() : FTAlgo("vtxlen2_jete") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>1)
+					_result = _jet->getVerticesForFT()[1]->length( _privtx ) / _jet->Energy();
+			}
+	};
+
+	class FtVtxLen12ByJetE : public FTAlgo {
+		public:
+			FtVtxLen12ByJetE() : FTAlgo("vtxlen12_jete") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>1)
+					_result = _jet->getVerticesForFT()[1]->length( _jet->getVerticesForFT()[0] ) / _jet->Energy();
+			}
+	};
+
+	class FtVtxSig1 : public FTAlgo {
+		public:
+			FtVtxSig1() : FTAlgo("vtxsig1") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>0)
+					_result = _jet->getVerticesForFT()[0]->significance( _privtx );
+			}
+	};
+
+	class FtVtxSig2 : public FTAlgo {
+		public:
+			FtVtxSig2() : FTAlgo("vtxsig2") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>1)
+					_result = _jet->getVerticesForFT()[1]->significance( _privtx );
+			}
+	};
+
+	class FtVtxSig12 : public FTAlgo {
+		public:
+			FtVtxSig12() : FTAlgo("vtxsig12") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>1)
+					_result = _jet->getVerticesForFT()[1]->significance( _jet->getVerticesForFT()[0] );
+			}
+	};
+
+	class FtVtxSig1ByJetE : public FTAlgo {
+		public:
+			FtVtxSig1ByJetE() : FTAlgo("vtxsig1_jete") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>0)
+					_result = _jet->getVerticesForFT()[0]->significance( _privtx ) / _jet->Energy();
+			}
+	};
+
+	class FtVtxSig2ByJetE : public FTAlgo {
+		public:
+			FtVtxSig2ByJetE() : FTAlgo("vtxsig2_jete") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>1)
+					_result = _jet->getVerticesForFT()[1]->significance( _privtx ) / _jet->Energy();
+			}
+	};
+
+	class FtVtxSig12ByJetE : public FTAlgo {
+		public:
+			FtVtxSig12ByJetE() : FTAlgo("vtxsig12_jete") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>1)
+					_result = _jet->getVerticesForFT()[1]->significance( _jet->getVerticesForFT()[0] ) / _jet->Energy();
+			}
+	};
+
+	class FtVtxDirAng1 : public FTAlgo {
+		public:
+			FtVtxDirAng1() : FTAlgo("vtxdirang1") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>0) {
+					_result = _jet->getVerticesForFT()[0]->dirdot( _privtx );
+					_result = acos(_result);
+				}
+			}
+	};
+
+	class FtVtxDirAng2 : public FTAlgo {
+		public:
+			FtVtxDirAng2() : FTAlgo("vtxdirang2") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>1) {
+					_result = _jet->getVerticesForFT()[1]->dirdot( _privtx );
+					_result = acos(_result);
+				}
+			}
+	};
+
+	class FtVtxDirAng12 : public FTAlgo {
+		public:
+			FtVtxDirAng12() : FTAlgo("vtxdirang12") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>1) {
+					_result = _jet->getVerticesForFT()[1]->dirdot( _jet->getVerticesForFT()[0] );
+					_result = acos(_result);
+				}
+			}
+	};
+
+	class FtVtxDirAng1TimesJetE : public FTAlgo {
+		public:
+			FtVtxDirAng1TimesJetE() : FTAlgo("vtxdirang1_jete") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>0) {
+					_result = _jet->getVerticesForFT()[0]->dirdot( _privtx );
+					_result = acos(_result)*_jet->Energy();
+				}
+			}
+	};
+
+	class FtVtxDirAng2TimesJetE : public FTAlgo {
+		public:
+			FtVtxDirAng2TimesJetE() : FTAlgo("vtxdirang2_jete") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>1) {
+					_result = _jet->getVerticesForFT()[1]->dirdot( _privtx );
+					_result = acos(_result)*_jet->Energy();
+				}
+			}
+	};
+
+	class FtVtxDirAng12TimesJetE : public FTAlgo {
+		public:
+			FtVtxDirAng12TimesJetE() : FTAlgo("vtxdirang12_jete") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>1) {
+					_result = _jet->getVerticesForFT()[1]->dirdot( _jet->getVerticesForFT()[0] );
+					_result = acos(_result)*_jet->Energy();
+				}
+			}
+	};
+
+	class FtVtxMom : public FTAlgo {
+		public:
+			FtVtxMom() : FTAlgo("vtxmom") {}
+			void process() {
+				_result = 0;
+				TLorentzVector vtxp4;
+				const vector<const Vertex*>& vtxList = _jet->getVerticesForFT();
+				for (unsigned int j=0; j<vtxList.size(); ++j) {
+					vtxp4 += vtxList[j]->getFourMomentum();
+				}
+				_result = vtxp4.Vect().Mag();
+			}
+	};
+
+	class FtVtxMom1 : public FTAlgo {
+		public:
+			FtVtxMom1() : FTAlgo("vtxmom1") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>0)
+					_result = _jet->getVerticesForFT()[0]->getFourMomentum().Vect().Mag();
+			}
+	};
+
+	class FtVtxMom2 : public FTAlgo {
+		public:
+			FtVtxMom2() : FTAlgo("vtxmom2") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>1)
+					_result = _jet->getVerticesForFT()[1]->getFourMomentum().Vect().Mag();
+			}
+	};
+
+	class FtVtxMomByJetE : public FTAlgo {
+		public:
+			FtVtxMomByJetE() : FTAlgo("vtxmom_jete") {}
+			void process() {
+				_result = 0;
+				TLorentzVector vtxp4;
+				const vector<const Vertex*>& vtxList = _jet->getVerticesForFT();
+				for (unsigned int j=0; j<vtxList.size(); ++j) {
+					vtxp4 += vtxList[j]->getFourMomentum();
+				}
+				_result = vtxp4.Vect().Mag() / _jet->Energy();
+			}
+	};
+
+	class FtVtxMom1ByJetE : public FTAlgo {
+		public:
+			FtVtxMom1ByJetE() : FTAlgo("vtxmom1_jete") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>0)
+					_result = _jet->getVerticesForFT()[0]->getFourMomentum().Vect().Mag() / _jet->Energy();
+			}
+	};
+
+	class FtVtxMom2ByJetE : public FTAlgo {
+		public:
+			FtVtxMom2ByJetE() : FTAlgo("vtxmom2_jete") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>1)
+					_result = _jet->getVerticesForFT()[1]->getFourMomentum().Vect().Mag() / _jet->Energy();
+			}
+	};
+
+	class FtVtxMassPtCorr : public FTAlgo {
+		public:
+			FtVtxMassPtCorr() : FTAlgo("vtxmasspc") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>0) {
+					TLorentzVector vtxp4;
+					const vector<const Vertex*>& vtxList = _jet->getVerticesForFT();
+					for (unsigned int j=0; j<vtxList.size(); ++j) {
+						vtxp4 += vtxList[j]->getFourMomentum();
+					}
+
+					LcfiInterface interface(_event,_privtx);
+					double pt = interface.vertexMassPtCorrection(_jet->getVerticesForFT()[0],_privtx,vtxp4.Vect(),2);
+					double vm = vtxp4.M();
+					_result = sqrt( vm*vm+pt*pt ) + pt;
+				}
+			}
+	};
+
+	class FtVtxProb : public FTAlgo {
+		public:
+			FtVtxProb() : FTAlgo("vtxprob") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>0) {
+					double oneMinusProb = 1.;
+					VertexVec & vtxList = _jet->getVerticesForFT();
+					for (unsigned int j=0; j<vtxList.size(); ++j) {
+						TrackVec & vtxTracks = vtxList[j]->getTracks();
+						int ndf = 2*vtxTracks.size()-3;
+						double prob = TMath::Prob(vtxList[j]->getChi2(),ndf);
+						oneMinusProb *= (1-prob);
+					}
+					_result = 1-oneMinusProb;
+				}
+			}
+	};
+
+	class FtVtxMass : public FTAlgo {
+		public:
+			FtVtxMass() : FTAlgo("vtxmass") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>0) {
+					TLorentzVector vtxp4;
+					VertexVec & vtxList = _jet->getVerticesForFT();
+					for (unsigned int j=0; j<vtxList.size(); ++j) {
+						vtxp4 += vtxList[j]->getFourMomentum();
+					}
+					_result = vtxp4.M();
+				}
+			}
+	};
+
+	class FtVtxMass1 : public FTAlgo {
+		public:
+			FtVtxMass1() : FTAlgo("vtxmass1") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>0)
+					_result = _jet->getVerticesForFT()[0]->getFourMomentum().M();
+			}
+	};
+
+	class FtVtxMass2 : public FTAlgo {
+		public:
+			FtVtxMass2() : FTAlgo("vtxmass2") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>1)
+					_result = _jet->getVerticesForFT()[1]->getFourMomentum().M();
+			}
+	};
+
+	class FtVtxMult : public FTAlgo {
+		public:
+			FtVtxMult() : FTAlgo("vtxmult") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>0) {
+					VertexVec & vtxList = _jet->getVerticesForFT();
+					VertexVec::const_iterator iter ;
+					for (iter = vtxList.begin(); iter != vtxList.end(); ++iter) {
+						_result += (*iter)->getTracks().size();
+					}
+				}
+			}
+	};
+
+	class FtVtxMult1 : public FTAlgo {
+		public:
+			FtVtxMult1() : FTAlgo("vtxmult1") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>0)
+					_result = _jet->getVerticesForFT()[0]->getTracks().size();
+			}
+	};
+
+	class FtVtxMult2 : public FTAlgo {
+		public:
+			FtVtxMult2() : FTAlgo("vtxmult2") {}
+			void process() {
+				_result = 0;
+				if (_jet->getVerticesForFT().size()>1)
+					_result = _jet->getVerticesForFT()[1]->getTracks().size();
+			}
+	};
+
+	class FtTrk1D0Sig : public FTAlgo {
+		public:
+			FtTrk1D0Sig() : FTAlgo("trk1d0sig") {}
+			void process() {
+				double sigVec[6];
+				findMostSignificantTrack(_jet,_privtx,_nhitsMostSignificantTrack,sigVec);
+				_result = sigVec[0];
+			}
+	};
+
+	class FtTrk2D0Sig : public FTAlgo {
+		public:
+			FtTrk2D0Sig() : FTAlgo("trk2d0sig") {}
+			void process() {
+				double sigVec[6];
+				findMostSignificantTrack(_jet,_privtx,_nhitsMostSignificantTrack,sigVec);
+				_result = sigVec[1];
+			}
+	};
+
+	class FtTrk1Z0Sig : public FTAlgo {
+		public:
+			FtTrk1Z0Sig() : FTAlgo("trk1z0sig") {}
+			void process() {
+				double sigVec[6];
+				findMostSignificantTrack(_jet,_privtx,_nhitsMostSignificantTrack,sigVec);
+				_result = sigVec[2];
+			}
+	};
+
+	class FtTrk2Z0Sig : public FTAlgo {
+		public:
+			FtTrk2Z0Sig() : FTAlgo("trk2z0sig") {}
+			void process() {
+				double sigVec[6];
+				findMostSignificantTrack(_jet,_privtx,_nhitsMostSignificantTrack,sigVec);
+				_result = sigVec[3];
+			}
+	};
+
+	class FtTrk1Pt : public FTAlgo {
+		public:
+			FtTrk1Pt() : FTAlgo("trk1pt") {}
+			void process() {
+				double sigVec[6];
+				findMostSignificantTrack(_jet,_privtx,_nhitsMostSignificantTrack,sigVec);
+				_result = sigVec[4];
+			}
+	};
+
+	class FtTrk2Pt : public FTAlgo {
+		public:
+			FtTrk2Pt() : FTAlgo("trk2pt") {}
+			void process() {
+				double sigVec[6];
+				findMostSignificantTrack(_jet,_privtx,_nhitsMostSignificantTrack,sigVec);
+				_result = sigVec[5];
+			}
+	};
+	
+	class FtTrk1PtByJetE : public FTAlgo {
+		public:
+			FtTrk1PtByJetE() : FTAlgo("trk1pt_jete") {}
+			void process() {
+				double sigVec[6];
+				findMostSignificantTrack(_jet,_privtx,_nhitsMostSignificantTrack,sigVec);
+				_result = sigVec[4] / _jet->Energy();
+			}
+	};
+
+	class FtTrk2PtByJetE : public FTAlgo {
+		public:
+			FtTrk2PtByJetE() : FTAlgo("trk2pt_jete") {}
+			void process() {
+				double sigVec[6];
+				findMostSignificantTrack(_jet,_privtx,_nhitsMostSignificantTrack,sigVec);
+				_result = sigVec[5] / _jet->Energy();
+			}
+	};
+	
+	class FtJProbR : public FTAlgo {
+		public:
+			FtJProbR() : FTAlgo("jprobr") {}
+			void process() {
+			  _result = jointProbD0(_jet,_privtx,_nhitsJointProbD0);
+			}
+	};
+
+	class FtJProbZ : public FTAlgo {
+		public:
+			FtJProbZ() : FTAlgo("jprobz") {}
+			void process() {
+			  _result = jointProbZ0(_jet,_privtx,_nhitsJointProbZ0);
+			}
+	};
+
+	class FtJProbR5Sigma : public FTAlgo {
+		public:
+			FtJProbR5Sigma(bool usevt) : FTAlgo(usevt ? "jprobr5sigma" : "jprobr5sigmanv"), _useVertexTracks(usevt) {}
+			void process() {
+			  _result = jointProbD0(_jet,_privtx,_nhitsJointProbD0,5., _useVertexTracks);
+			}
+		private:
+			bool _useVertexTracks;
+	};
+
+	class FtJProbZ5Sigma : public FTAlgo {
+		public:
+			FtJProbZ5Sigma(bool usevt) : FTAlgo(usevt ? "jprobz5sigma" : "jprobz5sigmanv"), _useVertexTracks(usevt) {}
+			void process() {
+			  _result = jointProbZ0(_jet,_privtx,_nhitsJointProbZ0,5., _useVertexTracks);
+			}
+			bool _useVertexTracks;
+	};
+
+	class FtSphericity : public FTAlgo {
+		public:
+			FtSphericity() : FTAlgo("sphericity") {}
+			void process() {
+				_result = _jet->sphericity();
+			}
+	};
+
+	class FtTrkMass : public FTAlgo {
+		public:
+			FtTrkMass() : FTAlgo("trkmass"){}
+			void process() {
+				vector<const Track *> tracks = _jet->getAllTracks(true);
+
+				TrackSelectorConfig trsel;
+				trsel.minD0Sig = 5.;
+				trsel.minZ0Sig = 5.;
+				trsel.maxD0 = 2.;
+				trsel.maxZ0 = 3.;
+				vector<const Track *> usedTracks = TrackSelector()(tracks, trsel);
+
+				if(usedTracks.size() < 2)_result = 0.;
+				else{
+					TLorentzVector v;
+					for(unsigned int n=0;n<usedTracks.size(); n++){
+						v += *(TLorentzVector *)(usedTracks[n]);
+					}
+					_result = v.M();
+/*					cout << "Track mass = " << v.M() << endl;
+					for(unsigned int n=0;n<usedTracks.size(); n++){
+						const MCParticle *mcp = usedTracks[n]->getMcp();
+						if(!mcp)continue;
+						int ppdg = (mcp->getParent() ? mcp->getParent()->getPDG() : 0);
+						int cpdg = (mcp->getSemiStableCParent() ? mcp->getSemiStableCParent()->getPDG() : 0);
+						int bpdg = (mcp->getSemiStableBParent() ? mcp->getSemiStableBParent()->getPDG() : 0);
+						TLorentzVector v2 = v;
+						v2 -= *(TLorentzVector *)(usedTracks[n]);
+						cout << "  M = " << v2.M() << " without track " << n << " pdg = " << mcp->getPDG() << ", ppdg = " << ppdg;
+						cout << ", cpdg = " << cpdg << ", bpdg = " << bpdg << ", e = " << usedTracks[n]->E() << endl;
+					}
+*/
+				}
+			}
+	};
+
+	class FtTrkMass2 : public FTAlgo {
+		public:
+			FtTrkMass2() : FTAlgo("trkmass2"){}
+			void process() {
+				vector<const Track *> tracks = _jet->getAllTracks(true);
+
+				TrackSelectorConfig trsel;
+				trsel.minD0Sig = 5.;
+				trsel.minZ0Sig = 5.;
+				trsel.minD0Z0Sig = 7.;
+				trsel.maxD0 = 2.;
+				trsel.maxZ0 = 3.;
+				vector<const Track *> usedTracks = TrackSelector()(tracks, trsel);
+
+				if(usedTracks.size() < 2)_result = 0.;
+				else{
+					TLorentzVector v;
+					for(unsigned int n=0;n<usedTracks.size(); n++){
+						v += *(TLorentzVector *)(usedTracks[n]);
+					}
+
+					// mass selection
+					bool modify;
+					do{
+						modify = false;
+						TLorentzVector v2;
+						for(unsigned int n=0;n<usedTracks.size(); n++){
+							v2 = v;
+							v2 -= *(TLorentzVector *)(usedTracks[n]);
+
+							if(v.M() - v2.M() > usedTracks[n]->E()){
+								//cout << "TrkMass2: track removed by mass selection: mass = " << v.M() << ", mass2 = " << v2.M() << ", e = " << usedTracks[n]->E() << endl;
+								usedTracks.erase(usedTracks.begin() + n);
+								v = v2;
+								modify = true;
+								break;
+							}
+						}
+					}while(modify == true);
+
+					_result = v.M();
+				}
+			}
+	};
+
+	class FtNSecTracks : public FTAlgo {
+		public:
+			FtNSecTracks(bool usevt) : FTAlgo(usevt ? "nsectracks" : "nsectracksnv"), _useVertexTracks(usevt){}
+			void process() {
+				vector<const Track *> tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
+
+				TrackSelectorConfig trsel;
+				trsel.minD0Sig = 5.;
+				trsel.minZ0Sig = 5.;
+				trsel.maxD0 = 2.;
+				trsel.maxZ0 = 3.;
+				vector<const Track *> usedTracks = TrackSelector()(tracks, trsel);
+
+				_result = usedTracks.size();
+			}
+		private:
+			bool _useVertexTracks;
+	};
+
+	class FtVtxLongitudinalDeviation : public FTAlgo {
+		public:
+			FtVtxLongitudinalDeviation() : FTAlgo("vtxldev"){}
+			void process() {
+				_result = 0;
+				if (_jet->getVertices().size()==1){
+					const Vertex *vtx = _jet->getVertices()[0];
+
+					//cout << "LongitudinalDeviation: vpos " << vtx->getX() << " " << vtx->getY() << " " << vtx->getZ() << endl;
+
+					double devall = 0;
+					double devmax = 0;
+					for(unsigned int i=0;i<vtx->getTracks().size();i++){
+						const Track *tr = vtx->getTracks()[i];
+
+						const MCParticle *mcp = tr->getMcp();
+						int cpdg = 0, bpdg = 0;
+						if(mcp){
+							cpdg = (mcp->getSemiStableCParent() ? mcp->getSemiStableCParent()->getPDG() : 0);
+							bpdg = (mcp->getSemiStableBParent() ? mcp->getSemiStableBParent()->getPDG() : 0);
+						}
+
+						Helix hel(tr);
+						double dev = hel.LongitudinalDeviation(_privtx,vtx);
+						//cout << "LongitudinalDeviation: track " << i << ", cpdg " << cpdg << ", bpdg " << bpdg << ", dev " << dev << endl;
+						devall += dev;
+
+						if(devmax < dev)devmax = dev;
+					}
+
+					_result = devmax;
+					//cout << "LongitudinalDeviation: devall " << devall << ", devmax " << devmax << endl;
+				}
+			}
+	};
+
+	class FtNMuon : public FTAlgo {
+		public:
+			FtNMuon(bool usevt) : FTAlgo(usevt ? "nmuonall" : "nmuon") , _useVertexTracks(usevt){}
+			void process(){
+				TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
+				_result = 0;
+				for(unsigned int n=0; n<tracks.size();n++){
+					if(algoEtc::SimpleSecMuonFinder(tracks[n], 5., 5., 5., -0.1, 0.2, 0.8, 1.5, 4., 0.5)
+					|| algoEtc::SimpleSecMuonFinder(tracks[n], 5., 5., 5., 0.05, 0., 10., 0., 10., 10.))
+						_result += 1;
+				}
+			}
+		private:
+			bool _useVertexTracks;
+	};
+
+	class FtNElectron : public FTAlgo {
+		public:
+			FtNElectron(bool usevt) : FTAlgo(usevt ? "nelectronall" : "nelectron") , _useVertexTracks(usevt){}
+			void process(){
+				TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
+				_result = 0;
+				for(unsigned int n=0; n<tracks.size();n++){
+					if(algoEtc::SimpleSecElectronFinder(tracks[n], 5., 5., 5., 5., 0.98, 0.9, 1.15))
+						_result += 1;
+				}
+			}
+		private:
+			bool _useVertexTracks;
+	};
+
+	class FtMCNMuon : public FTAlgo {
+		public:
+			FtMCNMuon() : FTAlgo("MCnmuon"){}
+			void process(){
+				TrackVec &tracks = _jet->getTracks(); // do not use vertexed tracks
+//				TrackVec tracks = _jet->getAllTracks(true);
+				_result = 0;
+				for(unsigned int n=0; n<tracks.size();n++){
+					if(tracks[n]->getMcp() && abs(tracks[n]->getMcp()->getPDG())==13)
+						_result += 1;
+				}
+			}
+	};
+
+	class FtMCNElectron : public FTAlgo {
+		public:
+			FtMCNElectron() : FTAlgo("MCnelectron"){}
+			void process(){
+				TrackVec &tracks = _jet->getTracks(); // do not use vertexed tracks
+//				TrackVec tracks = _jet->getAllTracks(true);
+				_result = 0;
+				for(unsigned int n=0; n<tracks.size();n++){
+					if(tracks[n]->getMcp() && abs(tracks[n]->getMcp()->getPDG())==11)
+						_result += 1;
+				}
+			}
+	};
+
+	class FtMCNB : public FTAlgo {
+		public:
+			FtMCNB() : FTAlgo("MCnb"){}
+
+		private:
+			vector<MCVertex *> _mcvs;
+
+		public:
+			void processEvent(){
+				// run perfect vertex finder - every event
+				if(_event->IsExist(_event->getDefaultMCParticles()))
+					VertexFinderPerfect::findPerfectVertices(_event->getTracks(), _event->getMCParticles(), _mcvs, 1, 0.1);
+			}
+
+			void process(){
+				TrackVec tracks = _jet->getAllTracks(false);
+
+				map<const MCParticle *, vector<const Track *> > mclist;
+
+				for(unsigned int n=0;n<tracks.size();n++){
+					const MCParticle *mcp = tracks[n]->getMcp();
+					if(!mcp)continue;
+					const MCParticle *mcpb = mcp->getSemiStableBParent();
+					if(!mcpb)continue;
+
+					if(mclist.find(mcpb) == mclist.end()){
+						vector<const Track *> trlist;
+						trlist.push_back(tracks[n]);
+						mclist[mcpb] = trlist;
+					}
+					else{
+						mclist[mcpb].push_back(tracks[n]);
+					}
+				}
+				_result = mclist.size();
+
+				if(_result){
+					map<const MCParticle *, vector<const Track *> >::iterator it;
+					for(it = mclist.begin(); it != mclist.end(); it++){
+						double ejet = 0.;
+//						TVector3 ev = it->first->getEndVertex();
+
+//						cout << "mce = " << it->first->E() << ", pdg = " << it->first->getPDG();
+//						cout << ", vpos = (" << ev.x() << " " << ev.y() << " " << ev.z() << ") ";
+//						cout << "reco tracks = ";
+						for(unsigned int ntr=0;ntr<it->second.size();ntr++)
+							ejet += it->second[ntr]->E();
+/*
+							const MCParticle *mcp = it->second[ntr]->getMcp();
+							const MCParticle *mcp = it->second[ntr]->getMcp();
+							cout << "(" << mcp->getPDG() << " " << mcp->E() << ") ";
+							if(find(_jet->getTracks().begin(), _jet->getTracks().end(), it->second[ntr]) == _jet->getTracks().end())cout << "v ";
+						}
+						cout << endl;*/
+						double emc = 0.;
+						unsigned int nmc = 0;
+						// looking for MCVertex
+						for(unsigned int n = 0; n< _mcvs.size();n++){
+							if(_mcvs[n]->getDaughters().size() == 0){cout << "MCVertex has no daughters!!" << endl; continue;}
+							const MCParticle *mcp = _mcvs[n]->getDaughters()[0];
+							if(mcp->isParent(it->first)){
+								nmc += _mcvs[n]->getRecoTracks().size();
+								for(unsigned int n2 = 0; n2 < _mcvs[n]->getRecoTracks().size();n2++){
+									emc += _mcvs[n]->getRecoTracks()[n2]->E();
+								}
+								
+
+//							  cout << "MCVertex found at (" << mcvs[n]->getPos().x() << " " << mcvs[n]->getPos().y() << " " << mcvs[n]->getPos().z();
+//							  cout << "). # tracks = " << mcvs[n]->getRecoTracks().size() << endl;
+							}
+						}
+//						cout << "ejet = " << ejet << ", njet = " << it->second.size() << ", emc = " << emc << ", nmc = " << nmc << endl;
+//						if(it->second.size() * 2 < nmc || ejet * 2 < emc){
+						if(ejet * 2 < emc){
+							// not accepted
+							_result --;
+						}
+					}
+//					cout << "nvtx = " << _jet->getVerticesForFT().size() << ", nvtxall = " << _jet->getVertices().size() << endl;
+				}
+			}
+	};
+
+	class FtMCNC : public FTAlgo {
+		public:
+			FtMCNC() : FTAlgo("MCnc"){}
+
+		private:
+			vector<MCVertex *> _mcvs;
+
+		public:
+			void processEvent(){
+				// run perfect vertex finder - every event
+				if(_event->IsExist(_event->getDefaultMCParticles()))
+					VertexFinderPerfect::findPerfectVertices(_event->getTracks(), _event->getMCParticles(), _mcvs, 1, 0.1);
+			}
+
+			void process(){
+				TrackVec tracks = _jet->getAllTracks(false);
+
+				map<const MCParticle *, vector<const Track *> > mclist;
+
+				for(unsigned int n=0;n<tracks.size();n++){
+					const MCParticle *mcp = tracks[n]->getMcp();
+					if(!mcp)continue;
+					const MCParticle *mcpc = mcp->getSemiStableCParent();
+					if(!mcpc)continue;
+
+					// exclude c from b
+					const MCParticle *mcpbq = mcp->getSemiStableBParent();
+					if(mcpbq)continue;
+
+					if(mclist.find(mcpc) == mclist.end()){
+						vector<const Track *> trlist;
+						trlist.push_back(tracks[n]);
+						mclist[mcpc] = trlist;
+					}
+					else{
+						mclist[mcpc].push_back(tracks[n]);
+					}
+				}
+				_result = mclist.size();
+
+				if(_result){
+
+					map<const MCParticle *, vector<const Track *> >::iterator it;
+
+					for(it = mclist.begin(); it != mclist.end(); it++){
+						double ejet = 0.;
+//						TVector3 ev = it->first->getEndVertex();
+
+//						cout << "mce = " << it->first->E() << ", pdg = " << it->first->getPDG();
+//						cout << ", vpos = (" << ev.x() << " " << ev.y() << " " << ev.z() << ") ";
+//						cout << "reco tracks = ";
+						for(unsigned int ntr=0;ntr<it->second.size();ntr++)
+							ejet += it->second[ntr]->E();
+/*
+							const MCParticle *mcp = it->second[ntr]->getMcp();
+							const MCParticle *mcp = it->second[ntr]->getMcp();
+							cout << "(" << mcp->getPDG() << " " << mcp->E() << ") ";
+							if(find(_jet->getTracks().begin(), _jet->getTracks().end(), it->second[ntr]) == _jet->getTracks().end())cout << "v ";
+						}
+						cout << endl;*/
+						double emc = 0.;
+						unsigned int nmc = 0;
+						// looking for MCVertex
+						for(unsigned int n = 0; n< _mcvs.size();n++){
+							if(_mcvs[n]->getDaughters().size() == 0){cout << "MCVertex has no daughters!!" << endl; continue;}
+							const MCParticle *mcp = _mcvs[n]->getDaughters()[0];
+							if(mcp->isParent(it->first)){
+								nmc += _mcvs[n]->getRecoTracks().size();
+								for(unsigned int n2 = 0; n2 < _mcvs[n]->getRecoTracks().size();n2++){
+									emc += _mcvs[n]->getRecoTracks()[n2]->E();
+								}
+								
+
+//							  cout << "MCVertex found at (" << _mcvs[n]->getPos().x() << " " << _mcvs[n]->getPos().y() << " " << _mcvs[n]->getPos().z();
+//							  cout << "). # tracks = " << _mcvs[n]->getRecoTracks().size() << endl;
+							}
+						}
+//						cout << "ejet = " << ejet << ", njet = " << it->second.size() << ", emc = " << emc << ", nmc = " << nmc << endl;
+//						if(it->second.size() * 2 < nmc || ejet * 2 < emc){
+						if(ejet * 2 < emc){
+							// not accepted
+							_result --;
+						}
+
+					}
+
+//					cout << "nvtx = " << _jet->getVerticesForFT().size() << ", nvtxall = " << _jet->getVertices().size() << endl;
+				}
+			}
+	};
+
+	// historgram holder for d0/z0 probability
+	class FtD0bProb;
+	class FtD0cProb;
+	class FtD0qProb;
+	class FtD0bProbSigned;
+	class FtD0cProbSigned;
+	class FtD0qProbSigned;
+	class FtD0bProbIP;
+	class FtD0cProbIP;
+	class FtZ0bProb;
+	class FtZ0cProb;
+	class FtZ0qProb;
+	class FtZ0bProbIP;
+	class FtZ0cProbIP;
+
+	class FtIPProbHolder {
+		friend class FtD0bProb;
+		friend class FtD0cProb;
+		friend class FtD0qProb;
+		friend class FtD0bProbSigned;
+		friend class FtD0cProbSigned;
+		friend class FtD0qProbSigned;
+		friend class FtD0bProbIP;
+		friend class FtD0cProbIP;
+		friend class FtZ0bProb;
+		friend class FtZ0cProb;
+		friend class FtZ0qProb;
+		friend class FtZ0bProbIP;
+		friend class FtZ0cProbIP;
+
+		public: 
+			FtIPProbHolder(const char *d0probfile, const char *z0probfile)
+			{
+				TDirectory *dir = gDirectory;
+				_fd0 = TFile::Open(d0probfile);
+				if(!_fd0)throw(Exception("FlavorTag: D0 probability file open error!"));
+				_fz0 = TFile::Open(z0probfile);
+				if(!_fz0)throw(Exception("FlavorTag: Z0 probability file open error!"));
+				dir->cd();
+
+				_hd0[0] = dynamic_cast<TH1F *>(_fd0->Get("hb"));
+				_hd0[1] = dynamic_cast<TH1F *>(_fd0->Get("hc"));
+				_hd0[2] = dynamic_cast<TH1F *>(_fd0->Get("hq"));
+
+				if(!(_hd0[0] && _hd0[1] && _hd0[2]))throw(Exception("FlavorTag: D0 probability histogram open error!"));
+
+				_hd0p[0] = dynamic_cast<TH1F *>(_fd0->Get("hbp"));
+				_hd0p[1] = dynamic_cast<TH1F *>(_fd0->Get("hcp"));
+				_hd0p[2] = dynamic_cast<TH1F *>(_fd0->Get("hqp"));
+
+				if(!(_hd0p[0] && _hd0p[1] && _hd0p[2]))throw(Exception("FlavorTag: D0 probability positive histogram open error!"));
+
+				_hd0n[0] = dynamic_cast<TH1F *>(_fd0->Get("hbn"));
+				_hd0n[1] = dynamic_cast<TH1F *>(_fd0->Get("hcn"));
+				_hd0n[2] = dynamic_cast<TH1F *>(_fd0->Get("hqn"));
+
+				if(!(_hd0n[0] && _hd0n[1] && _hd0n[2]))throw(Exception("FlavorTag: D0 probability negative histogram open error!"));
+
+				_hd0ip[0] = dynamic_cast<TH1F *>(_fd0->Get("hbip"));
+				_hd0ip[1] = dynamic_cast<TH1F *>(_fd0->Get("hcip"));
+				_hd0ip[2] = dynamic_cast<TH1F *>(_fd0->Get("hqip"));
+
+				double norm;
+				norm = _hd0ip[2]->Integral(_hd0ip[2]->FindBin(-0.5), _hd0ip[2]->FindBin(0.5));
+				_normd0ip[0] = _hd0ip[0]->Integral(_hd0ip[0]->FindBin(-0.5), _hd0ip[0]->FindBin(0.5)) / norm;
+				_normd0ip[1] = _hd0ip[1]->Integral(_hd0ip[1]->FindBin(-0.5), _hd0ip[1]->FindBin(0.5)) / norm;
+
+				cout << "normd0ip[0] = " << _normd0ip[0] << " normd0ip[1] = " << _normd0ip[1] << endl;
+
+				if(!(_hd0ip[0] && _hd0ip[1] && _hd0ip[2]))throw(Exception("FlavorTag: D0 probability near-IP histogram open error!"));
+
+				_hz0[0] = dynamic_cast<TH1F *>(_fz0->Get("hb"));
+				_hz0[1] = dynamic_cast<TH1F *>(_fz0->Get("hc"));
+				_hz0[2] = dynamic_cast<TH1F *>(_fz0->Get("hq"));
+
+				if(!(_hz0[0] && _hz0[1] && _hz0[2]))throw(Exception("FlavorTag: D0 probability histogram open error!"));
+
+				_hz0ip[0] = dynamic_cast<TH1F *>(_fz0->Get("hbip"));
+				_hz0ip[1] = dynamic_cast<TH1F *>(_fz0->Get("hcip"));
+				_hz0ip[2] = dynamic_cast<TH1F *>(_fz0->Get("hqip"));
+
+				norm = _hz0ip[2]->Integral(_hz0ip[2]->FindBin(-0.5), _hz0ip[2]->FindBin(0.5));
+				_normz0ip[0] = _hz0ip[0]->Integral(_hz0ip[0]->FindBin(-0.5), _hz0ip[0]->FindBin(0.5)) / norm;
+				_normz0ip[1] = _hz0ip[1]->Integral(_hz0ip[1]->FindBin(-0.5), _hz0ip[1]->FindBin(0.5)) / norm;
+
+				cout << "normz0ip[0] = " << _normz0ip[0] << " normz0ip[1] = " << _normz0ip[1] << endl;
+
+				if(!(_hz0ip[0] && _hz0ip[1] && _hz0ip[2]))throw(Exception("FlavorTag: Z0 probability near-IP histogram open error!"));
+
+			}
+
+			~FtIPProbHolder(){
+				if(_fd0)_fd0->Close();
+				if(_fz0)_fz0->Close();
+			}
+
+		private:
+			TFile *_fd0;
+			TFile *_fz0;
+			TH1F *_hd0[3];
+			TH1F *_hd0p[3]; // signed-positive
+			TH1F *_hd0n[3]; // signed-negative
+			TH1F *_hd0ip[3];
+			TH1F *_hz0[3];
+			TH1F *_hz0ip[3];
+
+			// normalization factors
+			double _normd0ip[2];
+			double _normz0ip[2];
+	};
+
+	class FtD0bProb : public FTAlgo {
+		public:
+			FtD0bProb(FtIPProbHolder *holder) : FTAlgo("d0bprob") {_holder = holder;}
+			void process() {
+				double prob = 1.;
+				TrackVec tracks = _jet->getAllTracks(true);
+				for(unsigned int n=0;n<tracks.size();n++){
+					double d0sig = trackD0Significance(tracks[n], _privtx);
+					if( d0sig > 5){
+						double ld0 = log10(fabs(tracks[n]->getD0()));
+
+						prob *= _holder->_hd0[0]->GetBinContent(_holder->_hd0[0]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
+					}
+				}
+
+				_result = prob;
+			}
+		private:
+			FtIPProbHolder *_holder;
+	};
+
+	class FtD0cProb : public FTAlgo {
+		public:
+			FtD0cProb(FtIPProbHolder *holder) : FTAlgo("d0cprob") {_holder = holder;}
+			void process() {
+				double prob = 1.;
+				TrackVec tracks = _jet->getAllTracks(true);
+				for(unsigned int n=0;n<tracks.size();n++){
+					double d0sig = trackD0Significance(tracks[n], _privtx);
+					if( d0sig > 5){
+						double ld0 = log10(fabs(tracks[n]->getD0()));
+
+						prob *= _holder->_hd0[1]->GetBinContent(_holder->_hd0[1]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
+					}
+				}
+
+				_result = prob;
+			}
+		private:
+			FtIPProbHolder *_holder;
+	};
+
+	class FtD0qProb : public FTAlgo {
+		public:
+			FtD0qProb(FtIPProbHolder *holder) : FTAlgo("d0qprob") {_holder = holder;}
+			void process() {
+				double prob = 1.;
+				TrackVec tracks = _jet->getAllTracks(true);
+				for(unsigned int n=0;n<tracks.size();n++){
+					double d0sig = trackD0Significance(tracks[n], _privtx);
+					if( d0sig > 5){
+						double ld0 = log10(fabs(tracks[n]->getD0()));
+
+						prob *= _holder->_hd0[2]->GetBinContent(_holder->_hd0[2]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
+
+//						cout << "d0 = " << tracks[n]->getD0() << ", pq = " <<  _holder->_hd0[2]->GetBinContent(_holder->_hd0[2]->FindBin(ld0)) * 3. << endl;
+					}
+				}
+
+//				cout << "prob = " << prob << endl;
+				_result = prob;
+			}
+		private:
+			FtIPProbHolder *_holder;
+	};
+
+	class FtD0bProbSigned : public FTAlgo {
+		public:
+			FtD0bProbSigned(FtIPProbHolder *holder, bool usevtxtracks = true) : FTAlgo(usevtxtracks ? "d0bprobsigned" : "d0bprobsignednv")
+				{_holder = holder;_useVertexTracks = usevtxtracks;}
+			void process() {
+				double prob = 1.;
+				TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
+				for(unsigned int n=0;n<tracks.size();n++){
+					double d0sig = trackD0Significance(tracks[n], _privtx);
+					if( d0sig > 5){
+						double sd0 = signedD0(tracks[n], _jet, _privtx, true);
+						if(sd0>0){
+							double ld0 = log10(sd0);
+							prob *= _holder->_hd0p[0]->GetBinContent(_holder->_hd0p[0]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
+						}else{
+							double ld0 = log10(-sd0);
+							prob *= _holder->_hd0n[0]->GetBinContent(_holder->_hd0n[0]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
+						}
+					}
+				}
+
+				_result = prob;
+			}
+		private:
+			FtIPProbHolder *_holder;
+			bool _useVertexTracks;
+	};
+
+	class FtD0cProbSigned : public FTAlgo {
+		public:
+			FtD0cProbSigned(FtIPProbHolder *holder, bool usevtxtracks = true) : FTAlgo(usevtxtracks ? "d0cprobsigned" : "d0cprobsignednv")
+				{_holder = holder;_useVertexTracks = usevtxtracks;}
+			void process() {
+				double prob = 1.;
+				TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
+				for(unsigned int n=0;n<tracks.size();n++){
+					double d0sig = trackD0Significance(tracks[n], _privtx);
+					if( d0sig > 5){
+						double sd0 = signedD0(tracks[n], _jet, _privtx, true);
+						if(sd0>0){
+							double ld0 = log10(sd0);
+							prob *= _holder->_hd0p[1]->GetBinContent(_holder->_hd0p[1]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
+						}else{
+							double ld0 = log10(-sd0);
+							prob *= _holder->_hd0n[1]->GetBinContent(_holder->_hd0n[1]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
+						}
+					}
+				}
+
+				_result = prob;
+			}
+		private:
+			FtIPProbHolder *_holder;
+			bool _useVertexTracks;
+	};
+
+	class FtD0qProbSigned : public FTAlgo {
+		public:
+			FtD0qProbSigned(FtIPProbHolder *holder, bool usevtxtracks = true) : FTAlgo(usevtxtracks ? "d0qprobsigned" : "d0qprobsignednv")
+				{_holder = holder;_useVertexTracks = usevtxtracks;}
+			void process() {
+				double prob = 1.;
+				TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
+				for(unsigned int n=0;n<tracks.size();n++){
+					double d0sig = trackD0Significance(tracks[n], _privtx);
+					if( d0sig > 5){
+						double sd0 = signedD0(tracks[n], _jet, _privtx, true);
+						if(sd0>0){
+							double ld0 = log10(sd0);
+							prob *= _holder->_hd0p[2]->GetBinContent(_holder->_hd0p[2]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
+						}else{
+							double ld0 = log10(-sd0);
+							prob *= _holder->_hd0n[2]->GetBinContent(_holder->_hd0n[2]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
+						}
+					}
+				}
+
+				_result = prob;
+			}
+		private:
+			FtIPProbHolder *_holder;
+			bool _useVertexTracks;
+	};
+
+	class FtD0bProbIP : public FTAlgo {
+		public:
+			FtD0bProbIP(FtIPProbHolder *holder) : FTAlgo("d0nonbprobip") {_holder = holder;}
+			void process() {
+				double prob = 1.;
+				TrackVec tracks = _jet->getAllTracks(true);
+				for(unsigned int n=0;n<tracks.size();n++){
+					double sd0sig = signedD0Significance(tracks[n], _jet, _privtx, true);
+					if( fabs(sd0sig) < 5){
+						double sbin = _holder->_hd0ip[0]->GetBinContent(_holder->_hd0ip[0]->FindBin(sd0sig));
+						double qbin = _holder->_hd0ip[2]->GetBinContent(_holder->_hd0ip[2]->FindBin(sd0sig)); 
+//						cout << sd0sig << " " << sbin << " " << qbin << " " << qbin/sbin*_holder->_normd0ip[0] << endl;
+						prob *= qbin / sbin * _holder->_normd0ip[0];
+					}
+				}
+
+				_result = prob;
+			}
+		private:
+			FtIPProbHolder *_holder;
+	};
+
+	class FtD0cProbIP : public FTAlgo {
+		public:
+			FtD0cProbIP(FtIPProbHolder *holder) : FTAlgo("d0noncprobip") {_holder = holder;}
+			void process() {
+				double prob = 1.;
+				TrackVec tracks = _jet->getAllTracks(true);
+				for(unsigned int n=0;n<tracks.size();n++){
+					double sd0sig = signedD0Significance(tracks[n], _jet, _privtx, true);
+					if( fabs(sd0sig) < 5){
+						double sbin = _holder->_hd0ip[1]->GetBinContent(_holder->_hd0ip[1]->FindBin(sd0sig));
+						double qbin = _holder->_hd0ip[2]->GetBinContent(_holder->_hd0ip[2]->FindBin(sd0sig)); 
+						prob *= qbin / sbin * _holder->_normd0ip[1];
+					}
+				}
+
+				_result = prob;
+			}
+		private:
+			FtIPProbHolder *_holder;
+	};
+
+	class FtZ0bProb : public FTAlgo {
+		public:
+			FtZ0bProb(FtIPProbHolder *holder, bool usevtxtracks = true) : FTAlgo(usevtxtracks ? "z0bprob" : "z0bprobnv")
+				{_holder = holder;_useVertexTracks = usevtxtracks;}
+			void process() {
+				double prob = 1.;
+				TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
+				for(unsigned int n=0;n<tracks.size();n++){
+					double z0sig = trackZ0Significance(tracks[n], _privtx);
+					if( z0sig > 5){
+						double lz0 = log10(fabs(tracks[n]->getZ0()));
+
+						prob *= _holder->_hz0[0]->GetBinContent(_holder->_hz0[0]->FindBin(lz0)) * 3.; // 3 = b,c,q, averaging effect
+					}
+				}
+
+				_result = prob;
+			}
+		private:
+			FtIPProbHolder *_holder;
+			bool _useVertexTracks;
+	};
+
+	class FtZ0cProb : public FTAlgo {
+		public:
+			FtZ0cProb(FtIPProbHolder *holder, bool usevtxtracks = true) : FTAlgo(usevtxtracks ? "z0cprob" : "z0cprobnv")
+				{_holder = holder;_useVertexTracks = usevtxtracks;}
+			void process() {
+				double prob = 1.;
+				TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
+				for(unsigned int n=0;n<tracks.size();n++){
+					double z0sig = trackZ0Significance(tracks[n], _privtx);
+					if( z0sig > 5){
+						double lz0 = log10(fabs(tracks[n]->getZ0()));
+
+						prob *= _holder->_hz0[1]->GetBinContent(_holder->_hz0[1]->FindBin(lz0)) * 3.; // 3 = b,c,q, averaging effect
+					}
+				}
+
+				_result = prob;
+			}
+		private:
+			FtIPProbHolder *_holder;
+			bool _useVertexTracks;
+	};
+
+	class FtZ0qProb : public FTAlgo {
+		public:
+			FtZ0qProb(FtIPProbHolder *holder, bool usevtxtracks = true) : FTAlgo(usevtxtracks ? "z0qprob" : "z0qprobnv")
+				{_holder = holder;_useVertexTracks = usevtxtracks;}
+			void process() {
+				double prob = 1.;
+				TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
+				for(unsigned int n=0;n<tracks.size();n++){
+					double z0sig = trackZ0Significance(tracks[n], _privtx);
+					if( z0sig > 5){
+						double lz0 = log10(fabs(tracks[n]->getZ0()));
+
+						prob *= _holder->_hz0[2]->GetBinContent(_holder->_hz0[2]->FindBin(lz0)) * 3.; // 3 = b,c,q, averaging effect
+					}
+				}
+
+				_result = prob;
+			}
+		private:
+			FtIPProbHolder *_holder;
+			bool _useVertexTracks;
+	};
+
+	class FtZ0bProbIP : public FTAlgo {
+		public:
+			FtZ0bProbIP(FtIPProbHolder *holder) : FTAlgo("z0nonbprobip") {_holder = holder;}
+			void process() {
+				double prob = 1.;
+				TrackVec tracks = _jet->getAllTracks(true);
+				for(unsigned int n=0;n<tracks.size();n++){
+					double sz0sig = signedZ0Significance(tracks[n], _jet, _privtx, true);
+					if( fabs(sz0sig) < 5){
+						double sbin = _holder->_hz0ip[0]->GetBinContent(_holder->_hz0ip[0]->FindBin(sz0sig));
+						double qbin = _holder->_hz0ip[2]->GetBinContent(_holder->_hz0ip[2]->FindBin(sz0sig)); 
+						prob *= qbin / sbin * _holder->_normz0ip[0];
+					}
+				}
+
+				_result = prob;
+			}
+		private:
+			FtIPProbHolder *_holder;
+	};
+
+	class FtZ0cProbIP : public FTAlgo {
+		public:
+			FtZ0cProbIP(FtIPProbHolder *holder) : FTAlgo("z0noncprobip") {_holder = holder;}
+			void process() {
+				double prob = 1.;
+				TrackVec tracks = _jet->getAllTracks(true);
+				for(unsigned int n=0;n<tracks.size();n++){
+					double sz0sig = signedZ0Significance(tracks[n], _jet, _privtx, true);
+					if( fabs(sz0sig) < 5){
+						double sbin = _holder->_hz0ip[1]->GetBinContent(_holder->_hz0ip[1]->FindBin(sz0sig));
+						double qbin = _holder->_hz0ip[2]->GetBinContent(_holder->_hz0ip[2]->FindBin(sz0sig)); 
+						prob *= qbin / sbin * _holder->_normz0ip[1];
+					}
+				}
+
+				_result = prob;
+			}
+		private:
+			FtIPProbHolder *_holder;
+	};
+
+	void FlavorTag::init(Parameters *param) {
+		Algorithm::init(param);
+
+		_primvtxcolname = param->get("PrimaryVertexCollectionName",string("PrimaryVertex"));
+		_jetcolname = param->get("FlavorTag.JetCollectionName",string("VertexJets"));
+		Event::Instance()->setDefaultPrimaryVertex(_primvtxcolname.c_str()); // backward compatibility
+
+		_auxiliaryInfo = param->get("MakeNtuple.AuxiliaryInfo",int(-1));
+
+		string d0probfilename = param->get("FlavorTag.D0ProbFileName",string("data/vtxprob/d0prob_zpole.root"));
+		string z0probfilename = param->get("FlavorTag.Z0ProbFileName",string("data/vtxprob/z0prob_zpole.root"));
+
+		_holder = new FtIPProbHolder(d0probfilename.c_str(), z0probfilename.c_str());
+
+		_nhitsJointProbD0 = param->get("FlavourTag.NVTXhitsJointProbD0", int(4));
+		_nhitsJointProbZ0 = param->get("FlavourTag.NVTXhitsJointProbZ0", int(4));
+		_nhitsMostSignificantTrack = param->get("FlavourTag.NhitsMostSignificantTrack", int(4));
+
+		//string outputFilename = param->get("TrainNtupleFile",string("lcfiplus.root"));
+		//_nJet = (int)param->get("TrainNJet",float(2));
+
+		//cout << "FlavorTag: Ntuple file set to " << outputFilename << endl;
+		//cout << "FlavorTag: Number of jet set to " << _nJet << endl;
+
+		FTManager& mgr = FTManager::getInstance();
+
+		mgr.add( new FtAuxiliary("aux", _auxiliaryInfo) );
+
+		mgr.add( new FtNtrkWithoutV0() );
+		mgr.add( new FtNtrk() );
+
+		mgr.add( new FtNvtxAll() );
+		mgr.add( new FtVtxMassAll() );
+		mgr.add( new FtVtxLen12All() );
+		mgr.add( new FtVtxLen12AllByJetE() );
+		mgr.add( new Ft1VtxProb() );
+
+		mgr.add( new FtNvtx() );
+		mgr.add( new FtJetE() );
+		mgr.add( new FtVtxLen1() );
+		mgr.add( new FtVtxLen2() );
+		mgr.add( new FtVtxLen12() );
+		mgr.add( new FtVtxLen1ByJetE() );
+		mgr.add( new FtVtxLen2ByJetE() );
+		mgr.add( new FtVtxLen12ByJetE() );
+		mgr.add( new FtVtxSig1() );
+		mgr.add( new FtVtxSig2() );
+		mgr.add( new FtVtxSig12() );
+		mgr.add( new FtVtxSig1ByJetE() );
+		mgr.add( new FtVtxSig2ByJetE() );
+		mgr.add( new FtVtxSig12ByJetE() );
+		mgr.add( new FtVtxDirAng1() );
+		mgr.add( new FtVtxDirAng2() );
+		mgr.add( new FtVtxDirAng12() );
+		mgr.add( new FtVtxDirAng1TimesJetE() );
+		mgr.add( new FtVtxDirAng2TimesJetE() );
+		mgr.add( new FtVtxDirAng12TimesJetE() );
+		mgr.add( new FtVtxMom() );
+		mgr.add( new FtVtxMom1() );
+		mgr.add( new FtVtxMom2() );
+		mgr.add( new FtVtxMomByJetE() );
+		mgr.add( new FtVtxMom1ByJetE() );
+		mgr.add( new FtVtxMom2ByJetE() );
+		mgr.add( new FtVtxMass() );
+		mgr.add( new FtVtxMass1() );
+		mgr.add( new FtVtxMass2() );
+		mgr.add( new FtVtxMassPtCorr() );
+		mgr.add( new FtVtxMult() );
+		mgr.add( new FtVtxMult1() );
+		mgr.add( new FtVtxMult2() );
+		mgr.add( new FtVtxProb() );
+		mgr.add( new FtTrk1D0Sig() );
+		mgr.add( new FtTrk2D0Sig() );
+		mgr.add( new FtTrk1Z0Sig() );
+		mgr.add( new FtTrk2Z0Sig() );
+		mgr.add( new FtTrk1Pt() );
+		mgr.add( new FtTrk2Pt() );
+		mgr.add( new FtTrk1PtByJetE() );
+		mgr.add( new FtTrk2PtByJetE() );
+		mgr.add( new FtJProbR() );
+		mgr.add( new FtJProbZ() );
+		mgr.add( new FtJProbR5Sigma(true) );
+		mgr.add( new FtJProbZ5Sigma(true) );
+		mgr.add( new FtJProbR5Sigma(false) );
+		mgr.add( new FtJProbZ5Sigma(false) );
+		mgr.add( new FtSphericity() );
+		mgr.add( new FtTrkMass() );
+		mgr.add( new FtTrkMass2() );
+		mgr.add( new FtNSecTracks(true) );
+		mgr.add( new FtNSecTracks(false) );
+		mgr.add( new FtNMuon(true) );
+		mgr.add( new FtNElectron(true) );
+		mgr.add( new FtNMuon(false) );
+		mgr.add( new FtNElectron(false) );
+		mgr.add( new FtMCNMuon() );
+		mgr.add( new FtMCNElectron() );
+		mgr.add( new FtMCNB() );
+		mgr.add( new FtMCNC() );
+
+		mgr.add( new FtVtxLongitudinalDeviation() );
+
+		// d0/z0 probs
+		mgr.add( new FtD0bProb(_holder));
+		mgr.add( new FtD0cProb(_holder));
+		mgr.add( new FtD0qProb(_holder));
+		mgr.add( new FtD0bProbSigned(_holder,true));
+		mgr.add( new FtD0cProbSigned(_holder,true));
+		mgr.add( new FtD0qProbSigned(_holder,true));
+		mgr.add( new FtD0bProbSigned(_holder,false));
+		mgr.add( new FtD0cProbSigned(_holder,false));
+		mgr.add( new FtD0qProbSigned(_holder,false));
+		mgr.add( new FtD0bProbIP(_holder));
+		mgr.add( new FtD0cProbIP(_holder));
+		mgr.add( new FtZ0bProb(_holder,true));
+		mgr.add( new FtZ0cProb(_holder,true));
+		mgr.add( new FtZ0qProb(_holder,true));
+		mgr.add( new FtZ0bProb(_holder,false));
+		mgr.add( new FtZ0cProb(_holder,false));
+		mgr.add( new FtZ0qProb(_holder,false));
+		mgr.add( new FtZ0bProbIP(_holder));
+		mgr.add( new FtZ0cProbIP(_holder));
+
+	}
+
+	void FlavorTag::process() {
+
+		Event *event = Event::Instance();
+		//if (event->getTracks().size() == 0) return;
+
+		const Vertex *privtx = event->getPrimaryVertex(_primvtxcolname.c_str());
+
+		//TrackVec & tracks = event->getTracks();
+		JetVec *jetsPtr(0);
+		bool success = event->Get(_jetcolname.c_str(), jetsPtr);
+		if (!success) {
+			cout << "jets could not be found" << endl;
+			return;
+		}
+		JetVec& jets = *jetsPtr;
+
+		FTManager &mgr = FTManager::getInstance();
+		mgr.process(event, privtx, _nhitsJointProbD0, _nhitsJointProbZ0, _nhitsMostSignificantTrack, jets);
+	}
+
+	void FlavorTag::end() {
+		delete _holder;
+	}
+}
