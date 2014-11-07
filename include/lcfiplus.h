@@ -39,12 +39,12 @@ namespace lcfiplus {
   // in bins of cosTheta and momentum
   struct ErrorRescale {
     int var;    // 0: d0, 1: z0
-    float cmin; // min cosTheta
-    float cmax; // max cosTheta
-    float pmin; // min momentum
-    float pmax; // max momentum
-    float pull; // pull - scale factor
-    float pullerr; // pull error
+    double cmin; // min cosTheta
+    double cmax; // max cosTheta
+    double pmin; // min momentum
+    double pmax; // max momentum
+    double pull; // pull - scale factor
+    double pullerr; // pull error
   };
 
 	// basic types
@@ -330,23 +330,23 @@ namespace lcfiplus {
 			int getPDG() const { return _pdg; }
 			void setPDG(int pdg) { _pdg = pdg;}
 
-			float getCharge() const { return _charge; }
-			void setCharge(float charge){_charge = charge;}
+			double getCharge() const { return _charge; }
+			void setCharge(double charge){_charge = charge;}
 
-      float getD0()         const { return _par[tpar::d0]; }
-      float getZ0()         const { return _par[tpar::z0]; }
-      float getPhi()        const { return _par[tpar::ph]; }
-      float getOmega()      const { return _par[tpar::om]; }
-      float getTanLambda()  const { return _par[tpar::td]; }
-			void setHelix(float d0, float z0, float phi, float omega, float tanLambda)
+      double getD0()         const { return _par[tpar::d0]; }
+      double getZ0()         const { return _par[tpar::z0]; }
+      double getPhi()        const { return _par[tpar::ph]; }
+      double getOmega()      const { return _par[tpar::om]; }
+      double getTanLambda()  const { return _par[tpar::td]; }
+			void setHelix(double d0, double z0, double phi, double omega, double tanLambda)
 			{
 				_par[tpar::d0] = d0; _par[tpar::z0] = z0; _par[tpar::ph] = phi;
 				_par[tpar::om] = omega; _par[tpar::td] = tanLambda;
 			}
-			void setHelix(float * par){memcpy(_par, par, sizeof(_par));}
+			void setHelix(double * par){memcpy(_par, par, sizeof(_par));}
 
-      const float* getCovMatrix() const { return _cov; }
-      void setCovMatrix(float* cov);
+      const double* getCovMatrix() const { return _cov; }
+      void setCovMatrix(double* cov);
 
       int getVtxHits() const { return _nhits[tpar::VTX]; }
       int getFtdHits() const { return _nhits[tpar::FTD]; }
@@ -356,44 +356,44 @@ namespace lcfiplus {
       int getEtdHits() const { return _nhits[tpar::ETD]; }
 			void setTrackHits(int* hits){memcpy(_nhits, hits, sizeof(_nhits));}
 
-      const float* getCaloEdep() const { return _calo; }
-			void setCaloEdep(float *calo) { memcpy(_calo, calo, sizeof(_calo));}
+      const double* getCaloEdep() const { return _calo; }
+			void setCaloEdep(double *calo) { memcpy(_calo, calo, sizeof(_calo));}
 
-      float getRadiusOfInnermostHit() const { return _rimh; }
-      void setRadiusOfInnermostHit(float rimh) { _rimh = rimh; }
+      double getRadiusOfInnermostHit() const { return _rimh; }
+      void setRadiusOfInnermostHit(double rimh) { _rimh = rimh; }
 
-      float getChi2() const { return _chi2; }
-			void setChi2(float chi2){_chi2 = chi2;}
+      double getChi2() const { return _chi2; }
+			void setChi2(double chi2){_chi2 = chi2;}
 
       int getNdf() const { return _ndf; }
 			void setNdf(int ndf) {_ndf = ndf;}
 
-      void setFlightLength(float flt) const{ _flt = flt; }
-      float getFlightLength() const { return _flt; }
+      void setFlightLength(double flt) const{ _flt = flt; }
+      double getFlightLength() const { return _flt; }
 
-      float getX() const;
-      float getY() const;
-      float getZ() const;
+      double getX() const;
+      double getY() const;
+      double getZ() const;
 			TVector3 getPos()const {return TVector3(getX(), getY(), getZ());}
 			TVector3 momentumAtVertex( const Vertex* vtx ) const;
 
     private:
-      mutable float _flt;
+      mutable double _flt;
 
 			int _id;
 			const lcfiplus::MCParticle * _mcp;
 			int _pdg;
-			float _charge;
+			double _charge;
 
 			// track parameter
-			float _par[tpar::parN];
+			double _par[tpar::parN];
 			// covariance matrix
-			float _cov[tpar::covN];
+			double _cov[tpar::covN];
 			int _nhits[tpar::hitN];
-			float _calo[tpar::caloN];
+			double _calo[tpar::caloN];
 
-			float _rimh; // radius of innermost hit
-			float _chi2; // from track fit
+			double _rimh; // radius of innermost hit
+			double _chi2; // from track fit
 			int _ndf;
 
 			ClassDef(lcfiplus::Track, 2);
@@ -413,9 +413,9 @@ namespace lcfiplus {
 			int getPDG() const { return _pdg; }
 			void setPDG(int pdg) { _pdg = pdg;}
 
-			const float * getCaloEdep() const {return _calo;}
+			const double * getCaloEdep() const {return _calo;}
 			//TODO: range check
-			void setCaloEdep(float *calo) { memcpy(_calo, calo, sizeof(_calo));}
+			void setCaloEdep(double *calo) { memcpy(_calo, calo, sizeof(_calo));}
 
 			bool isV0() const { return _isV0; }
 			void setV0(bool isV0=true) { _isV0 = isV0; }
@@ -426,7 +426,7 @@ namespace lcfiplus {
 			int _isV0;
 			const lcfiplus::MCParticle * _mcp;
 
-			float _calo[tpar::caloN];
+			double _calo[tpar::caloN];
 
 			ClassDef(lcfiplus::Neutral, 3);
 	};
@@ -436,12 +436,12 @@ namespace lcfiplus {
 		public:
 
 			//ctor/dtors ////////////////////////////////////////////////////////
-			MCParticle(int id, int pdg, MCParticle *parent, float charge, const TLorentzVector &p, const TVector3 &v){Init(id, pdg, parent, charge, p, v);}
+			MCParticle(int id, int pdg, MCParticle *parent, double charge, const TLorentzVector &p, const TVector3 &v){Init(id, pdg, parent, charge, p, v);}
 			MCParticle(){}
 			~MCParticle(){}
 
 			// initialization: non-const parent is needed because of adding me to the daughter list
-			void Init(int id, int pdg, MCParticle *parent, float charge, const TLorentzVector &p, const TVector3 &v);
+			void Init(int id, int pdg, MCParticle *parent, double charge, const TLorentzVector &p, const TVector3 &v);
 
 			// simple accessors ///////////////////////////////////////////////////
 			int getId() const { return _id; }
@@ -450,8 +450,8 @@ namespace lcfiplus {
 			int getPDG() const { return _pdg; }
 			void setPDG(int pdg) {_pdg = pdg;}
 
-			float getCharge() const { return _charge; }
-			void setCharge(float charge) { _charge = charge;}
+			double getCharge() const { return _charge; }
+			void setCharge(double charge) { _charge = charge;}
 
 			const TVector3 & getVertex() const { return _vertex;}
 			void setVertex(const TVector3 &v){_vertex = v;}
@@ -485,26 +485,26 @@ namespace lcfiplus {
       const MCParticle* getSemiStableCParent() const;
 
       // end points
-      float decayDistance()const;
+      double decayDistance()const;
       const MCParticle* findDauForDecay()const;
-      float getEx()const;
-      float getEy()const;
-      float getEz()const;
+      double getEx()const;
+      double getEy()const;
+      double getEz()const;
 
       vector<const lcfiplus::MCParticle*> promptTracks()const;
 
       // helix stuff
-      float getD0()const;
-      float getZ0()const;
-      float getPhi()const;
-      float getOmega()const;
-      float getTanLambda()const;
+      double getD0()const;
+      double getZ0()const;
+      double getPhi()const;
+      double getOmega()const;
+      double getTanLambda()const;
 
     private:
 			// basic properties
 			int _id;
 			int _pdg;
-			float _charge;
+			double _charge;
 			const MCParticle *_parent;
 			TVector3 _vertex;
       // list of daughters
@@ -537,7 +537,7 @@ namespace lcfiplus {
       enum vtx { xx=0, xy, yy, xz, yz, zz };
 
       Vertex() : _chi2(0), _prob(0), _x(0), _y(0), _z(0), _isPrimary(false) {}
-			Vertex(const float chi2, const float prob, const float x, const float y, const float z, const float cov[6], bool isPrimary)
+			Vertex(const double chi2, const double prob, const double x, const double y, const double z, const double cov[6], bool isPrimary)
 				: _id(-1), _chi2(chi2), _prob(prob), _x(x), _y(y), _z(z), _isPrimary(isPrimary)
 			{
 				if(cov == 0){
@@ -557,35 +557,35 @@ namespace lcfiplus {
 
       ~Vertex() {};
       void add(const Track* trk);
-      void add(const Track* trk,float chi2);
+      void add(const Track* trk,double chi2);
 			void setId(int id)const{ _id = id; }
 
 			int getId() const { return _id;}
-      float getChi2() const { return _chi2; }
-      float getProb() const { return _prob; }
-      float getX() const { return _x; }
-      float getY() const { return _y; }
-      float getZ() const { return _z; }
+      double getChi2() const { return _chi2; }
+      double getProb() const { return _prob; }
+      double getX() const { return _x; }
+      double getY() const { return _y; }
+      double getZ() const { return _z; }
 			TVector3 getPos() const {return TVector3(_x, _y,_z);}
-      const float* getCov() const { return _cov; }
+      const double* getCov() const { return _cov; }
       const vector<const Track*> & getTracks() const { return _tracks; }
-			const map<const lcfiplus::Track *, float> & getTracksChi2Map() const {return _chi2Tracks;}
-			float getChi2Track(const Track *tr)const{
-				map<const Track*,float>::const_iterator it = _chi2Tracks.find(tr);
+			const map<const lcfiplus::Track *, double> & getTracksChi2Map() const {return _chi2Tracks;}
+			double getChi2Track(const Track *tr)const{
+				map<const Track*,double>::const_iterator it = _chi2Tracks.find(tr);
 				if(it != _chi2Tracks.end())return it->second;
 				else return -1;
 			}
 			const Track * getWorstTrack() const;
 
-      float length(const Vertex* primary=0) const;
-      float significance(const Vertex* primary) const;
+      double length(const Vertex* primary=0) const;
+      double significance(const Vertex* primary) const;
 
 			bool isPrimary()const{return _isPrimary;}
 			void setPrimary(bool isPrimary){_isPrimary = isPrimary;}
 
-			float getPparallel(const TVector3 &axis)const;
-			float getVertexMass(const Vertex *daughter = 0, const TVector3 *paxis = 0, const double dmass = 1.87, double *ppt = 0, double *pp = 0)const;
-			float getVertexAngle(const Vertex *daughter, const Vertex *primary = 0)const;
+			double getPparallel(const TVector3 &axis)const;
+			double getVertexMass(const Vertex *daughter = 0, const TVector3 *paxis = 0, const double dmass = 1.87, double *ppt = 0, double *pp = 0)const;
+			double getVertexAngle(const Vertex *daughter, const Vertex *primary = 0)const;
 
 			const MCParticle *getMcp()const;
 
@@ -600,17 +600,17 @@ namespace lcfiplus {
     private:
 			mutable int _id; // necessary for LCIO relation; -1 if not used, mutable for modification in ConvertVertex()
 
-      float _chi2;
-      float _prob;
-      float _x;
-      float _y;
-      float _z;
-      float _cov[6];
+      double _chi2;
+      double _prob;
+      double _x;
+      double _y;
+      double _z;
+      double _cov[6];
 
 			bool _isPrimary;
 
       vector<const lcfiplus::Track*> _tracks;
-			map<const Track*, float> _chi2Tracks;
+			map<const Track*, double> _chi2Tracks;
 
 			ClassDefNV(Vertex, 1);
   };

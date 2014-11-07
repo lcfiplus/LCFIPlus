@@ -16,19 +16,19 @@ namespace lcfiplus {
     string algo;
     string algoY;
     int nJet;
-    float Ycut;
+    double Ycut;
     int useBeamJets;
-    float rParameter;
-    float coneR;
-    float epsCut;
+    double rParameter;
+    double coneR;
+    double epsCut;
     string coreAlgo;
-    float coreThreshold;
-    float distCut;
+    double coreThreshold;
+    double distCut;
     int nIteration;
-		float YaddVV;
-		float YaddVL;
-		float YaddLL;
-    JetConfig() : nJet(0),Ycut(1),useBeamJets(0),rParameter(1.0),coneR(0),epsCut(0), coreThreshold(0),distCut(0),nIteration(5),YaddVV(100), YaddVL(100), YaddLL(100) {}
+		double YaddVV;
+		double YaddVL;
+		double YaddLL;
+		JetConfig() : nJet(0),Ycut(1),useBeamJets(0),rParameter(1.0),coneR(0),epsCut(0), coreThreshold(0),distCut(0),nIteration(5),YaddVV(100), YaddVL(100), YaddLL(100) {}
   };
 
 	/**

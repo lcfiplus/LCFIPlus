@@ -78,7 +78,7 @@ namespace lcfiplus {
     SymMatrix5x5 Cov;
 
     // Classic order
-    const float* cov = track->getCovMatrix();
+    const double* cov = track->getCovMatrix();
     Cov(0,0)=cov[0]; // d0d0
     Cov(3,0)=cov[6]; // d0z0
     Cov(3,3)=cov[9]; // z0z0

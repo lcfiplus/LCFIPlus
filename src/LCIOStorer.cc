@@ -264,23 +264,6 @@ namespace lcfiplus{
 		}
 	}
 	
-	// helper functions for std::sort()
-/*	bool LCIOStorer::energy_sort_trk(Track* a, Track* b) {
-	  assert(a != 0);
-	  assert(b != 0);
-	  return (a->getOmega() < b->getOmega());
-	}
-
-	bool LCIOStorer::energy_sort_mc(MCParticle *a, MCParticle *b) {
-	  assert(a != 0);
-	  assert(b != 0);
-	  // needs to be converted to float; otherwise
-	  // energy_sort_mc(mcp,mcp) --- can return true...
-	  float en1 = a->getEnergy();
-	  float en2 = b->getEnergy();
-	  return (en1 > en2);
-	}
-*/
 	bool LCIOStorer::energy_sort_pfo(lcio::ReconstructedParticle *a, lcio::ReconstructedParticle *b) {
 	  assert(a != 0);
 	  assert(b != 0);
@@ -414,8 +397,8 @@ namespace lcfiplus{
 			
 				// find clusters
 				vector<lcio::Cluster*> clusters = pfo->getClusters();
-				float clusEnergy(0);
-				float subE[6];
+				double clusEnergy(0);
+				double subE[6];
 				for (int i=0; i<6; ++i) subE[i]=0;
 				if (_readSubdetectorEnergies) {
 				  for (unsigned int iclus=0; iclus<clusters.size(); ++iclus) {
@@ -460,20 +443,20 @@ namespace lcfiplus{
 					// because PandoraPFA can add a parent particle to the tracks container
 					// after the first one for kinks and prongs, etc
 				
-					const float c = 2.99792458e8; // m*s^-1
-					const float B = Globals::Instance()->getBField(); // Tesla
-					const float mm2m = 1e-3;
-					const float eV2GeV = 1e-9;
-					const float eB = B*c*mm2m*eV2GeV;
+					const double c = 2.99792458e8; // m*s^-1
+					const double B = Globals::Instance()->getBField(); // Tesla
+					const double mm2m = 1e-3;
+					const double eV2GeV = 1e-9;
+					const double eB = B*c*mm2m*eV2GeV;
 
 					for (unsigned int i=0; i<pfo->getTracks().size(); ++i) {
 						lcio::Track* testTrk = pfo->getTracks()[i];
-						float om = testTrk->getOmega();
-						float td = testTrk->getTanLambda();
-						float cd = 1./sqrt(1+td*td);
-						float pT = eB/fabs(om);
-						float p = pT/cd;
-						float testDelta = fabs(p-pfoMom);
+						double om = testTrk->getOmega();
+						double td = testTrk->getTanLambda();
+						double cd = 1./sqrt(1+td*td);
+						double pT = eB/fabs(om);
+						double p = pT/cd;
+						double testDelta = fabs(p-pfoMom);
 						if (testDelta < delta) {
 							delta = testDelta;
 							trk = testTrk;
@@ -488,7 +471,7 @@ namespace lcfiplus{
 					assert( trk->getTanLambda() == trk->getTanLambda() );
 					
 					// fill track parameters	
-					float par[lcfiplus::tpar::parN];
+					double par[lcfiplus::tpar::parN];
 					par[lcfiplus::tpar::d0] = trk->getD0();
 					par[lcfiplus::tpar::z0] = trk->getZ0();
 					par[lcfiplus::tpar::ph] = trk->getPhi();
@@ -498,7 +481,7 @@ namespace lcfiplus{
 					
 					// ... and the covariance matrix
 					const vector<float>& cov = trk->getCovMatrix();
-					float fcov[lcfiplus::tpar::covN];
+					double fcov[lcfiplus::tpar::covN];
 					for (int i=0; i<lcfiplus::tpar::covN; ++i) {
 						fcov[i] = cov[i];
 					}
@@ -626,7 +609,7 @@ namespace lcfiplus{
 		for(int n=0;n<colvtx->getNumberOfElements();n++){
 			lcio::Vertex *lciovtx = dynamic_cast<lcio::Vertex*>(colvtx->getElementAt(n));
 		
-			float cov[6];
+			double cov[6];
 			for(int i=0;i<6;i++)cov[i] = lciovtx->getCovMatrix()[i];
 			
 			lcfiplus::Vertex *flavtx;
@@ -814,7 +797,7 @@ namespace lcfiplus{
 			
 			// associate particles
 			TLorentzVector lv;
-			float charge = 0.;
+			double charge = 0.;
 			for(unsigned int ntr = 0; ntr < flavtx->getTracks().size(); ntr++){
 				const lcfiplus::Track *flatr = flavtx->getTracks()[ntr];
 				lcio::ReconstructedParticle *lciotr = _trackLCIORel[const_cast<lcfiplus::Track*>(flatr)];
@@ -832,8 +815,12 @@ namespace lcfiplus{
 							"To switch off the writeback feature in the Marlin processor, specify set \"UpdateVertexRPDaughters\" to false."));
 				}
 			}
-			float mom[3] = {lv.Px(), lv.Py(), lv.Pz()};
-			float vpos[3] = {flavtx->getX(), flavtx->getY(), flavtx->getZ()};
+			double mom[3] = {lv.Px(), lv.Py(), lv.Pz()};
+			float vpos[3] = {
+				static_cast<float>(flavtx->getX()),
+				static_cast<float>(flavtx->getY()),
+				static_cast<float>(flavtx->getZ())
+			};
 			lciorp->setType(3); // 0: unknown 1: single 2:v0 3: compound 4:jet
 			lciorp->setMomentum(mom);
 			lciorp->setEnergy(lv.E());
@@ -848,7 +835,16 @@ namespace lcfiplus{
 			lciovtx->setPrimary(flavtx->isPrimary());
 			lciovtx->setAlgorithmType("lcfiplus");
 			lciovtx->setPosition(vpos);
-			lciovtx->setCovMatrix(flavtx->getCov());
+			// lcio vertex needs floats, not doubles
+			// using {} to limit scope of temporary
+			{
+				float destCov[6];
+				const double* sourceCov = flavtx->getCov();
+				for (int i=0; i<6; ++i) {
+					destCov[i] = static_cast<float>(sourceCov[i]);
+				}
+				lciovtx->setCovMatrix(destCov);
+			}
 			lciovtx->setChi2(flavtx->getChi2());
 			lciovtx->setProbability(flavtx->getProb());
 			lciovtx->setAssociatedParticle(lciorp);
@@ -859,7 +855,7 @@ namespace lcfiplus{
 				<< vpos[1] << ","
 				<< vpos[2] << fixed << endl;
 			
-			const float* cov = flavtx->getCov();
+			const double* cov = flavtx->getCov();
 			cout << scientific << "ConvertVertex covMatrix: "
 				<< cov[0] << ","
 				<< cov[1] << ","
@@ -868,7 +864,7 @@ namespace lcfiplus{
 				<< cov[4] << ","
 				<< cov[5] << fixed << endl;
 
-			const vector<float>& cov2 = lciovtx->getCovMatrix();
+			const vector<double>& cov2 = lciovtx->getCovMatrix();
 			cout << scientific << "ConvertVertex covMatrix (lcio): "
 				<< cov2[0] << ","
 				<< cov2[1] << ","
@@ -944,7 +940,7 @@ namespace lcfiplus{
 				lcio::ReconstructedParticleImpl *lciojet = new lcio::ReconstructedParticleImpl;
 			
 				// associate particles
-				float charge = 0.;
+				double charge = 0.;
 				for(unsigned int ntr = 0; ntr < flajet->getTracks().size(); ntr++){
 					const lcfiplus::Track *flatr = flajet->getTracks()[ntr];
 					lcio::ReconstructedParticle *lciotr = _trackLCIORel[const_cast<lcfiplus::Track*>(flatr)];
@@ -970,7 +966,7 @@ namespace lcfiplus{
 				}
 
 				const TLorentzVector &lv = *flajet;
-				float mom[3] = {lv.Px(), lv.Py(), lv.Pz()};
+				double mom[3] = {lv.Px(), lv.Py(), lv.Pz()};
 				lciojet->setType(4); // 0: unknown 1: single 2:v0 3: compound 4:jet
 				lciojet->setMomentum(mom);
 				lciojet->setEnergy(lv.E());

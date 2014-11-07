@@ -71,7 +71,7 @@ namespace lcfiplus {
 				delete ipConst;
 
 				double prob = vertex_lcfi::util::prob(chi2fit, trackStates.size() * 2 - 3);
-				float cov[6];
+				double cov[6];
 				cov[0] = vtxerr(0,0);
 				cov[1] = vtxerr(0,1);
 				cov[2] = vtxerr(1,1);

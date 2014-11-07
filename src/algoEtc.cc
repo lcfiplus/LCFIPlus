@@ -31,8 +31,8 @@ void makeBeamTracks(Track *&t1, Track *&t2, bool smear)
 		t1 = new Track;
 		t2 = new Track;
 
-		float par[tpar::parN];
-		float cov[tpar::covN];
+		double par[tpar::parN];
+		double cov[tpar::covN];
 
     t1->setId(1000001);
 		
@@ -88,7 +88,7 @@ void makeBeamVertex(Vertex *&vtx, bool smear)
 	float beamsizeY = Globals::Instance()->getBeamSizeY();
 	float beamsizeZ = Globals::Instance()->getBeamSizeZ();
 
-	float cov[6];
+	double cov[6];
 	cov[Vertex::xx] = pow(beamsizeX,2);
 	cov[Vertex::xy] = 0;
 	cov[Vertex::xz] = 0;
@@ -180,7 +180,8 @@ double calcThrust( vector<TVector3>& list, TVector3 &taxis ) {
   const float dConv=0.0001; // 0.0001
   int sgn;
   double theta=0,phi=0;
-  double thp,thps,tds,tmax,dOblateness;
+  double thp,thps,tds,tmax;
+  // double dOblateness;
   vector<TVector3> TAxes(3),Fast(iFastMax+1),Workv(nwork);
   vector<double> Workf(nwork),dThrust(3);
   TVector3 tdi,tpr,mytest;
@@ -320,7 +321,7 @@ double calcThrust( vector<TVector3>& list, TVector3 &taxis ) {
       TAxes[i].RotateY(theta); 
       TAxes[i].RotateZ(phi); 
     }
-  dOblateness = dThrust[1] - dThrust[2];
+  // dOblateness = dThrust[1] - dThrust[2];
 
   //_principleThrustValue = dThrust[0];
   //_majorThrustValue     = dThrust[1];

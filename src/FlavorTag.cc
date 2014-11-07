@@ -759,12 +759,12 @@ namespace lcfiplus {
 					for(unsigned int i=0;i<vtx->getTracks().size();i++){
 						const Track *tr = vtx->getTracks()[i];
 
-						const MCParticle *mcp = tr->getMcp();
-						int cpdg = 0, bpdg = 0;
-						if(mcp){
-							cpdg = (mcp->getSemiStableCParent() ? mcp->getSemiStableCParent()->getPDG() : 0);
-							bpdg = (mcp->getSemiStableBParent() ? mcp->getSemiStableBParent()->getPDG() : 0);
-						}
+						// const MCParticle *mcp = tr->getMcp();
+						// int cpdg = 0, bpdg = 0;
+						// if(mcp){
+						// 	cpdg = (mcp->getSemiStableCParent() ? mcp->getSemiStableCParent()->getPDG() : 0);
+						// 	bpdg = (mcp->getSemiStableBParent() ? mcp->getSemiStableBParent()->getPDG() : 0);
+						// }
 
 						Helix hel(tr);
 						double dev = hel.LongitudinalDeviation(_privtx,vtx);

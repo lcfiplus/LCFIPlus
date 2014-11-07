@@ -36,7 +36,7 @@ namespace lcfiplus {
 					double chi2 = -gh->PointFit(tracks, initial, result);
 
 					TVector3 vresult = result->GetPos();
-					float cov[6];
+					double cov[6];
 					cov[Vertex::xx] = result->GetErr(0,0);
 					cov[Vertex::xy] = result->GetErr(0,1);
 					cov[Vertex::xz] = result->GetErr(0,2);
@@ -90,7 +90,7 @@ namespace lcfiplus {
 				double chi2 = -gh->HelixPointFit(tracks, result);
 
 				TVector3 vresult = result->GetPos();
-				float cov[6];
+				double cov[6];
 				cov[Vertex::xx] = result->GetErr(0,0);
 				cov[Vertex::xy] = result->GetErr(0,1);
 				cov[Vertex::xz] = result->GetErr(0,2);

@@ -876,7 +876,7 @@ vector<Vertex *> VertexFinderSuehara::makeSingleTrackVertices
 			if(linedist / pos.Mag() > cfg.maxSeparationPerPosSingle)continue;
 
 			// all selection passed: make single track vertex
-			float cov[6] = {0.,0.,0.,0.,0.,0.};
+			double cov[6] = {0.,0.,0.,0.,0.,0.};
 			Vertex *newvtx = new Vertex(0,1,pos.x(), pos.y(), pos.z(), cov,false);
 			newvtx->add(track);
 
@@ -1013,8 +1013,6 @@ void VertexFinderSuehara::recombineVertices(vector<Vertex *> &vertices, vector<V
 
 		int nvtx = v.size();
 
-		int n1opt;
-		int n2opt;
 		double chi2min = 1e+300;
 		Vertex *v1opt = 0;
 		Vertex *v2opt = 0;
@@ -1067,8 +1065,6 @@ void VertexFinderSuehara::recombineVertices(vector<Vertex *> &vertices, vector<V
 				double chi2 = v1->getChi2() + v2->getChi2();
 				if(chi2 < chi2min){
 					chi2min = chi2;
-					n1opt = n1;
-					n2opt = n2;
 					if(v1opt)
 						delete v1opt;
 					if(v2opt)

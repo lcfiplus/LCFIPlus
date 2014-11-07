@@ -47,8 +47,8 @@ double trackD0Significance(const Track* trk, const Vertex* pri) {
 	// take primary vertex error before minimization 
 	// because this is what LCFI does
 	trk->setFlightLength(0);
-	double x0 = trk->getX();
-	double y0 = trk->getY();
+	// double x0 = trk->getX();
+	// double y0 = trk->getY();
 	//double priErr = ( pri->getCov()[Vertex::xx]*x0*x0 + 2.0*pri->getCov()[Vertex::xy]*x0*y0 + pri->getCov()[Vertex::yy]*y0*y0 ) / (x0*x0+y0*y0);
 	double priErr = 0;
 
@@ -133,8 +133,8 @@ double signedD0Significance(const Track* trk, const Jet* jet, const Vertex* pri,
 	trk->setFlightLength(0);
 
 	// take primary vertex error before minimization because this is what LCFI does
-	double x0 = trk->getX();
-	double y0 = trk->getY();
+	// double x0 = trk->getX();
+	// double y0 = trk->getY();
 	double priErr = 0.;
 	/*
 	double priErr = ( pri->getCov()[Vertex::xx]*x0*x0

@@ -971,7 +971,7 @@ const Jet * JetMCMatch(JetVec &jets, const MCParticle *mcp, vector<const Track *
 		if(!_jets){
 			Event::Instance()->Get(_jetname.c_str(), _jets);
 		}
-		const Vertex * privtx = Event::Instance()->getPrimaryVertex();
+		// const Vertex * privtx = Event::Instance()->getPrimaryVertex();
 
 		vector<double> btags, ctags;
 

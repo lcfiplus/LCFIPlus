@@ -222,7 +222,7 @@ namespace lcfiplus {
 					// track, d0sigth, z0sigth, posmax, mudepmin, edepmin, edepmax, hdepmin hdepmax
 				if(algoEtc::SimpleSecMuonFinder(tr, 5., 5., 5., 0.05, 0., 1., 1.5, 5.)){
 					// treated as a vertex
-					float cov[6] = {0,0,0,0,0,0};
+					double cov[6] = {0,0,0,0,0,0};
 					Vertex *fakevtx = new Vertex(0,1,tr->Px()/tr->E(), tr->Py()/tr->E(), tr->Pz()/tr->E(), cov, false);
 					fakevtx->add(tr);
 

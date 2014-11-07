@@ -236,10 +236,10 @@ namespace lcfiplus {
 
     for (TrackVecIte iter = _tracks.begin(); iter != _tracks.end(); ++iter) {
       const Track* trk = *iter;
-      float c = fabs(sin(atan(trk->getTanLambda())));
-      float p = trk->P();
-      float d0pull(1);
-      float z0pull(1);
+      double c = fabs(sin(atan(trk->getTanLambda())));
+      double p = trk->P();
+      double d0pull(1);
+      double z0pull(1);
       for (vector<ErrorRescale>::const_iterator tabIter = _errRescaleTable.begin(); tabIter != _errRescaleTable.end(); ++tabIter) {
         const ErrorRescale& resc = *tabIter;
         printf(" testing cmin:cmax:pmin:pmax=%.2f:%.2f:%.2f:%.2f... ",
@@ -256,8 +256,8 @@ namespace lcfiplus {
         }
       }
 
-      const float* cov = trk->getCovMatrix();
-      float newCov[tpar::covN];
+      const double* cov = trk->getCovMatrix();
+      double newCov[tpar::covN];
       for (int i=0; i<tpar::covN; ++i) {
         newCov[i] = cov[i];
       }
@@ -288,21 +288,21 @@ namespace lcfiplus {
 //     _flt(0) {
 //   }
 
-  float Track::getX() const {
+  double Track::getX() const {
     return  ( -_par[tpar::d0] + 1./_par[tpar::om] )*sin( _par[tpar::ph] )
       -  ( sin( _par[tpar::ph] - _par[tpar::om]*_flt ) )/_par[tpar::om];
   }
 
-  float Track::getY() const {
+  double Track::getY() const {
     return  (  _par[tpar::d0] - 1./_par[tpar::om] )*cos( _par[tpar::ph] )
       +  ( cos( _par[tpar::ph] - _par[tpar::om]*_flt ) )/_par[tpar::om];
   }
 
-  float Track::getZ() const {
+  double Track::getZ() const {
     return _par[tpar::z0] + _par[tpar::om]*_flt;
   }
 
-  void Track::setCovMatrix(float* mycov) {
+  void Track::setCovMatrix(double* mycov) {
     for (int i=0; i<tpar::covN; ++i) {
       _cov[i] = mycov[i];
     }
@@ -322,7 +322,7 @@ namespace lcfiplus {
 	}
 
 
-  void MCParticle::Init(int id,int pdg, MCParticle *parent, float charge, const TLorentzVector &p, const TVector3 &v)
+  void MCParticle::Init(int id,int pdg, MCParticle *parent, double charge, const TLorentzVector &p, const TVector3 &v)
 	{
 		*(TLorentzVector *)this = p;
 		_dauForDecay = 0;
@@ -657,7 +657,7 @@ namespace lcfiplus {
   // find the decay distance by iterating over daughters
   // and grand-daughters (and possibly more generations)
   // to find the shortest distance where a daughter tracks splits off
-  float MCParticle::decayDistance() const{
+  double MCParticle::decayDistance() const{
 		findDauForDecay();
     return ( (_dauForDecay->getVertex()-getVertex()).Mag());
   }
@@ -668,7 +668,7 @@ namespace lcfiplus {
 		for (unsigned int i=0; i<_dau.size(); ++i) {
 			const MCParticle* dau = _dau[i];
 			//printf("  checking dau: %d\n",dau->getPDG());
-			float test = ( dau->getVertex()-getVertex() ).Mag();
+			double test = ( dau->getVertex()-getVertex() ).Mag();
 			if (test > 0 && (dau->isStable() || dau->isSemiStable())) {
 				//printf("  dau %d found \n",dau->getPDG());
 				_dauForDecay = dau;
@@ -692,17 +692,17 @@ namespace lcfiplus {
 		return this;
   }
 
-  float MCParticle::getEx() const{
+  double MCParticle::getEx() const{
     if (_dauForDecay == 0) findDauForDecay();
     return _dauForDecay->getVertex().x();
   }
 
-  float MCParticle::getEy() const{
+  double MCParticle::getEy() const{
     if (_dauForDecay == 0) findDauForDecay();
     return _dauForDecay->getVertex().y();
   }
 
-  float MCParticle::getEz() const{
+  double MCParticle::getEz() const{
     if (_dauForDecay == 0) findDauForDecay();
     return _dauForDecay->getVertex().z();
   }
@@ -759,37 +759,72 @@ namespace lcfiplus {
     _dau.push_back(mcp);
   }
 
-  float MCParticle::getD0() const{
-    float pos[3] = { getVertex().x(), getVertex().y(), getVertex().z() };
-    float mom[3] = { Px(), Py(), Pz() };
+  double MCParticle::getD0() const{
+    float pos[3] = { 
+      static_cast<float>(getVertex().x()),
+      static_cast<float>(getVertex().y()),
+      static_cast<float>(getVertex().z())
+    };
+    float mom[3] = { 
+      static_cast<float>(Px()),
+      static_cast<float>(Py()),
+      static_cast<float>(Pz())};
     HelixClass h;
 		h.Initialize_VP(pos,mom,getCharge(),Globals::Instance()->getBField());
 		return h.getD0();
   }
-  float MCParticle::getZ0() const{
-    float pos[3] = { getVertex().x(), getVertex().y(), getVertex().z() };
-    float mom[3] = { Px(), Py(), Pz() };
+  double MCParticle::getZ0() const{
+    float pos[3] = { 
+      static_cast<float>(getVertex().x()),
+      static_cast<float>(getVertex().y()),
+      static_cast<float>(getVertex().z())
+    };
+    float mom[3] = { 
+      static_cast<float>(Px()),
+      static_cast<float>(Py()),
+      static_cast<float>(Pz())};
     HelixClass h;
 		h.Initialize_VP(pos,mom,getCharge(),Globals::Instance()->getBField());
 		return h.getZ0();
   }
-  float MCParticle::getPhi() const{
-    float pos[3] = { getVertex().x(), getVertex().y(), getVertex().z() };
-    float mom[3] = { Px(), Py(), Pz() };
+  double MCParticle::getPhi() const{
+    float pos[3] = { 
+      static_cast<float>(getVertex().x()),
+      static_cast<float>(getVertex().y()),
+      static_cast<float>(getVertex().z())
+    };
+    float mom[3] = { 
+      static_cast<float>(Px()),
+      static_cast<float>(Py()),
+      static_cast<float>(Pz())};
     HelixClass h;
 		h.Initialize_VP(pos,mom,getCharge(),Globals::Instance()->getBField());
 		return h.getPhi0();
   }
-  float MCParticle::getOmega() const{
-    float pos[3] = { getVertex().x(), getVertex().y(), getVertex().z() };
-    float mom[3] = { Px(), Py(), Pz() };
+  double MCParticle::getOmega() const{
+    float pos[3] = { 
+      static_cast<float>(getVertex().x()),
+      static_cast<float>(getVertex().y()),
+      static_cast<float>(getVertex().z())
+    };
+    float mom[3] = { 
+      static_cast<float>(Px()),
+      static_cast<float>(Py()),
+      static_cast<float>(Pz())};
     HelixClass h;
 		h.Initialize_VP(pos,mom,getCharge(),Globals::Instance()->getBField());
 		return h.getOmega();
   }
-  float MCParticle::getTanLambda() const{
-    float pos[3] = { getVertex().x(), getVertex().y(), getVertex().z() };
-    float mom[3] = { Px(), Py(), Pz() };
+  double MCParticle::getTanLambda() const{
+    float pos[3] = { 
+      static_cast<float>(getVertex().x()),
+      static_cast<float>(getVertex().y()),
+      static_cast<float>(getVertex().z())
+    };
+    float mom[3] = { 
+      static_cast<float>(Px()),
+      static_cast<float>(Py()),
+      static_cast<float>(Pz())};
     HelixClass h;
 		h.Initialize_VP(pos,mom,getCharge(),Globals::Instance()->getBField());
 		return h.getTanLambda();
@@ -798,7 +833,7 @@ namespace lcfiplus {
   void Vertex::add(const Track* trk) {
     _tracks.push_back(trk);
   }
-  void Vertex::add(const Track* trk,float chi2){
+  void Vertex::add(const Track* trk,double chi2){
 		_tracks.push_back(trk);
 		_chi2Tracks[trk] = chi2;
 	}
@@ -806,8 +841,8 @@ namespace lcfiplus {
 	const Track * Vertex::getWorstTrack() const{
 		if(_chi2Tracks.size() ==0)return 0;
 
-		map<const Track *, float>::const_iterator it;
-		float chi2max = 0;
+		map<const Track *, double>::const_iterator it;
+		double chi2max = 0;
 		const Track * worstTrack = 0;
 		for(it = _chi2Tracks.begin(); it != _chi2Tracks.end();it++){
 			if(chi2max < it->second){
@@ -818,23 +853,23 @@ namespace lcfiplus {
 		return worstTrack;
 	}
 
-  float Vertex::length(const Vertex* primary) const {
+  double Vertex::length(const Vertex* primary) const {
     TVector3 pos(_x,_y,_z);
 		if (primary) {
 			TVector3 ip(primary->_x,primary->_y,primary->_z);
 			TVector3 dif(pos-ip);
-			float dist = dif.Mag();
+			double dist = dif.Mag();
 			return dist;
 		} else {
 			return pos.Mag();
 		}
   }
 
-  float Vertex::significance(const Vertex* primary) const {
+  double Vertex::significance(const Vertex* primary) const {
     TVector3 pos(_x,_y,_z);
     TVector3 ip(primary->_x,primary->_y,primary->_z);
     TVector3 dif(pos-ip);
-    //float dist = dif.Mag();
+    //double dist = dif.Mag();
 
     TMatrixF dif1(1,3);
     TMatrixF dif2(3,1);
@@ -855,7 +890,7 @@ namespace lcfiplus {
     mat(2,2) = _cov[5];
 
 		/*
-		const float* pcov = primary->getCov();
+		const double* pcov = primary->getCov();
 		if (primary->covIsGood()) {
 			mat(0,0) += pcov[0];
 			mat(0,1) += pcov[1];
@@ -898,7 +933,7 @@ namespace lcfiplus {
     return sqrt(ret);
   }
 
-	float Vertex::getPparallel(const TVector3 &axis)const{
+	double Vertex::getPparallel(const TVector3 &axis)const{
 		TLorentzVector sum4v;
 		for(unsigned int i=0;i<getTracks().size();i++){
 			sum4v += *(TLorentzVector *)getTracks()[i];
@@ -906,7 +941,7 @@ namespace lcfiplus {
 		return sum4v.Vect().Dot(axis.Unit());
 	}
 
-  float Vertex::getVertexMass(const Vertex *daughter, const TVector3 *paxis, const double dmass, double *ppt, double *pp)const{
+  double Vertex::getVertexMass(const Vertex *daughter, const TVector3 *paxis, const double dmass, double *ppt, double *pp)const{
 		TVector3 axis = (paxis ? *paxis : getPos()).Unit();
 
 		TLorentzVector sum4v;
@@ -941,7 +976,7 @@ namespace lcfiplus {
 		return sqrt(e*e-p*p);
 	}
 
-	float Vertex::getVertexAngle(const Vertex *vdaughter, const Vertex *primary)const
+	double Vertex::getVertexAngle(const Vertex *vdaughter, const Vertex *primary)const
 	{
 		TVector3 posip;
 		if(primary)
@@ -1095,7 +1130,7 @@ bool Vertex::passesV0selection(const Vertex* primary) const {
 			cout << "   [track] E = " << tr->E() << ", p = (" << tr->Px() << " " << tr->Py() << " " << tr->Pz() << "), chi2 = " << getChi2Track(tr) << ", ";
 			cout << "MCP = " << (mcp ? mcp->getPDG() : 0) << ", parent = " << (pmcp ? pmcp->getPDG() : 0) << ", parent B = " << (pmcpb ? pmcpb->getPDG() : 0) << endl;
 			/*
-			const float* tcov = tr->getCovMatrix();
+			const double* tcov = tr->getCovMatrix();
 			cout << "   trk cov: "
 				<< "d0d0= " << tcov[tpar::d0d0] << ", "
 				<< "d0ph= " << tcov[tpar::d0ph] << ", "
@@ -1245,7 +1280,7 @@ bool Vertex::passesV0selection(const Vertex* primary) const {
 	void Parameters::remove(const string &key, bool delmap){
 		if(_map.find(key) == _map.end())throw(Exception("Parameters::remove: key not found."));
 		else if(_map[key].first == &typeid(double))deleteData<double>(key);
-		else if(_map[key].first == &typeid(float))deleteData<float>(key);
+		else if(_map[key].first == &typeid(double))deleteData<double>(key);
 		else if(_map[key].first == &typeid(long))deleteData<long>(key);
 		else if(_map[key].first == &typeid(int))deleteData<int>(key);
 		else if(_map[key].first == &typeid(bool))deleteData<bool>(key);
@@ -1283,7 +1318,7 @@ bool Vertex::passesV0selection(const Vertex* primary) const {
 
 			// built-in types
 			if(type == &typeid(double))add(key,*(double*)data);
-			else if(type == &typeid(float))add(key,*(float*)data);
+			else if(type == &typeid(double))add(key,*(double*)data);
 			else if(type == &typeid(long))add(key,*(long*)data);
 			else if(type == &typeid(int))add(key,*(int*)data);
 			else if(type == &typeid(bool))add(key,*(bool*)data);

@@ -391,7 +391,7 @@ namespace lcfiplus{
 		_hel(iom) = trk->getOmega();
 		_hel(itd) = trk->getTanLambda();
 
-		const float *cov = trk->getCovMatrix();
+		const double *cov = trk->getCovMatrix();
 		/*
 		for (int i=0; i<15; ++i) {
 			printf("err (%d) = %e\n",i, cov[i]);
@@ -676,7 +676,7 @@ namespace lcfiplus{
 		ddtrackToXyz(4,2) = 0; 							// d^2z/dtanlambdadt^2
 
 		SMatrix35 trackToXyzTranspose = ROOT::Math::Transpose( trackToXyz );
-		SMatrix35 dtrackToXyzTranspose = ROOT::Math::Transpose( dtrackToXyz );
+		// SMatrix35 dtrackToXyzTranspose = ROOT::Math::Transpose( dtrackToXyz );
 		SMatrix35 ddtrackToXyzTranspose = ROOT::Math::Transpose( ddtrackToXyz );
 
 		// xyz error matrix
@@ -1051,8 +1051,8 @@ namespace lcfiplus{
 		TVector3 dif = pos - p;
 		SVector3 difs(dif.x(), dif.y(), dif.z());
 		SMatrixSym3 err;
-		const float *covIP = _ip->getCov();
-		const float *covSec = _vertex->getCov();
+		const double *covIP = _ip->getCov();
+		const double *covSec = _vertex->getCov();
 /*
 		err(0,0) = (covSec[Vertex::xx] - covIP[Vertex::xx]) * corr + covIP[Vertex::xx];
 		err(0,1) = (covSec[Vertex::xy] - covIP[Vertex::xy]) * corr + covIP[Vertex::xy];
@@ -1347,11 +1347,11 @@ namespace lcfiplus{
 		ROOT::Minuit2::MnAlgebraicSymMatrix matrix = e.Matrix();
 
 		// status
-		int status = 0;
-		if(m.IsAboveMaxEdm())status = 3;
-		else if(m.HasReachedCallLimit())status = 4;
-		else if(m.HasMadePosDefCovar())status = 1;
-		else if(!m.IsValid())status = 5;
+		// int status = 0;
+		// if(m.IsAboveMaxEdm())status = 3;
+		// else if(m.HasReachedCallLimit())status = 4;
+		// else if(m.HasMadePosDefCovar())status = 1;
+		// else if(!m.IsValid())status = 5;
 
 		//if(status>0) cout << "Minuit failed: status: " << status << endl;
 

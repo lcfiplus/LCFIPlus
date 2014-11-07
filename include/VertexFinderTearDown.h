@@ -17,7 +17,7 @@ namespace lcfiplus {
 
 	class SortTracksByChi2{ // decending order
 		public:
-			bool operator() (const pair<const Track *, float> &p1, const pair<const Track *, float> &p2){return p1.second > p2.second;}
+			bool operator() (const pair<const Track *, double> &p1, const pair<const Track *, double> &p2){return p1.second > p2.second;}
 	};
 
 	// Function for recursive search of vertices using TearDown method
@@ -43,14 +43,14 @@ namespace lcfiplus {
 				}
 
 				Vertex *resultVertex = 0;
-				float worstChi2;
+				double worstChi2;
 				while(trackList.size() >= 2){
 					resultVertex = VertexFitter<list<const Track *>::iterator>() (trackList.begin(), trackList.end(), pointConstraint);
 					const Track *worstTrack = resultVertex->getWorstTrack();
 					if(fixedTracks && find(fixedTracks->begin(), fixedTracks->end(), worstTrack) != fixedTracks->end()){
 						// sort Chi2Tracks
-						vector<pair<const Track *, float> > vpair;
-						const map<const Track *, float> &mpair = resultVertex->getTracksChi2Map();
+						vector<pair<const Track *, double> > vpair;
+						const map<const Track *, double> &mpair = resultVertex->getTracksChi2Map();
 						vpair.resize(mpair.size());
 						partial_sort_copy(mpair.begin(), mpair.end(), vpair.begin(), vpair.end(), SortTracksByChi2());
 
