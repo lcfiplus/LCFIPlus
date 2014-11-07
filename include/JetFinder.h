@@ -17,6 +17,8 @@ namespace lcfiplus {
     string algoY;
     int nJet;
     float Ycut;
+    int useBeamJets;
+    float rParameter;
     float coneR;
     float epsCut;
     string coreAlgo;
@@ -26,7 +28,7 @@ namespace lcfiplus {
 		float YaddVV;
 		float YaddVL;
 		float YaddLL;
-    JetConfig() : nJet(0),Ycut(1),coneR(0),epsCut(0), coreThreshold(0),distCut(0),nIteration(5),YaddVV(100), YaddVL(100), YaddLL(100) {}
+    JetConfig() : nJet(0),Ycut(1),useBeamJets(0),rParameter(1.0),coneR(0),epsCut(0), coreThreshold(0),distCut(0),nIteration(5),YaddVV(100), YaddVL(100), YaddLL(100) {}
   };
 
 	/**
@@ -51,6 +53,9 @@ namespace lcfiplus {
       static double funcJadeE(Jet& jet1, Jet& jet2, double Evis2, JetConfig &cfg);
       static double funcDurhamCheat(Jet& jet1, Jet& jet2, double Evis2, JetConfig &cfg);
       static double funcDurhamVertex(Jet& jet1, Jet& jet2, double Evis2, JetConfig &cfg);
+
+      static double funcKt(Jet& jet1, Jet& jet2, double Evis2, JetConfig &cfg);
+      static double funcKtVertex(Jet& jet1, Jet& jet2, double Evis2, JetConfig &cfg);
 
 			/** Constructor.
 				@param[in] cfg specify the algorithm and the parameters

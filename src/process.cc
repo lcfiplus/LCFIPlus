@@ -199,6 +199,8 @@ namespace lcfiplus{
 		param->fetchArray("JetClustering.OutputJetCollectionName",jcolnames);
 		param->fetchArray("JetClustering.NJetsRequested",_njets);
 		param->fetchArray("JetClustering.YCut",_ycut);
+		_useBeamJets = param->get("JetClustering.UseBeamJets", int(0));
+		_rParameter = param->get("JetClustering.RParameter", double(1.0));
 		_outputVertexStoresVertex = param->get("JetClustering.OutputJetStoresVertex",int(0));
 
 		// checks
@@ -217,6 +219,8 @@ namespace lcfiplus{
 		if(_njets.size() > jcolnames.size() || _ycut.size() > jcolnames.size())
 			throw(Exception(
 				"JetClustering::init: please specify enough number of OutputJetCollectionName to meet number of NJetsRequested or YCut."));
+
+		// Need to add some exceptions for the new variables _useBeamJets and _rParameter
 
 		if(_njets.size() == 0)_njets.push_back(0);
 		if(_ycut.size() == 0)_ycut.push_back(0.);
@@ -281,6 +285,8 @@ namespace lcfiplus{
 		JetConfig jetCfg;
 		jetCfg.nJet = _njets[0];
 		jetCfg.Ycut = _ycut[0];
+		jetCfg.useBeamJets = _useBeamJets;
+		jetCfg.rParameter = _rParameter;
 		jetCfg.YaddVV = _yaddVV;
 		jetCfg.YaddVL = _yaddVL;
 		jetCfg.YaddLL = _yaddLL;

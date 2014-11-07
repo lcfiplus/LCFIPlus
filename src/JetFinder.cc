@@ -35,6 +35,18 @@ namespace lcfiplus {
     return val/Evis2;
   }
 
+  double JetFinder::funcKt(Jet& jet1, Jet& jet2, double Evis2, JetConfig &cfg) {
+
+    double R_param = cfg.rParameter;
+
+    double delta_R2 = TMath::Power(jet1.Rapidity() - jet2.Rapidity(),2) + TMath::Power(jet1.Phi() - jet2.Phi(),2);
+
+    double val = min(jet1.Pt() * jet1.Pt(), jet2.Pt() * jet2.Pt()) * delta_R2 / TMath::Power(R_param, 2);
+
+    return val;
+
+  }
+
   double JetFinder::funcDurhamVertex(Jet& jet1, Jet& jet2, double Evis2, JetConfig &cfg){
 		// do not combine vertex-oriented jets
 		double add = 0.;
@@ -67,6 +79,42 @@ namespace lcfiplus {
 		return funcDurham(jet1, jet2, Evis2,cfg) + add;
   }
 
+  double JetFinder::funcKtVertex(Jet& jet1, Jet& jet2, double Evis2, JetConfig &cfg) {
+
+    double add = 0;
+
+    if (jet1.getVertices().size() > 0 && jet2.getVertices().size() > 0) {
+
+      bool lepton1 = true;
+      bool lepton2 = true;
+
+      for (unsigned int n = 0; n < jet1.getVertices().size(); n++) {
+	if (jet1.getVertices()[n]->getTracks().size() >= 2) {
+	  lepton1 = false;
+	  break;
+	}
+      }
+
+      for (unsigned int n = 0; n < jet2.getVertices().size(); n++) {
+	if (jet2.getVertices()[n]->getTracks().size() >= 2) {
+	  lepton2 = false;
+	  break;
+	}
+      }
+
+      if (lepton1 && lepton2) {
+	add = cfg.YaddLL;
+      } else if (lepton1 || lepton2) {
+	add = cfg.YaddVL;
+      } else {
+	add = cfg.YaddVV;
+      }
+
+    }
+
+    return funcKt(jet1, jet2, Evis2, cfg) + add;
+
+  }
 
   double JetFinder::funcDurhamCheat(Jet& jet1, Jet& jet2, double Evis2, JetConfig &cfg){
     double e1 = jet1.E();
@@ -107,7 +155,11 @@ namespace lcfiplus {
   }
 
   JetFinder::JetFinder(const JetConfig& cfg) : _cfg(cfg) {
-    _Yfunc = JetFinder::funcDurham;
+    if (cfg.useBeamJets) {
+      _Yfunc = JetFinder::funcKt;
+    } else {
+      _Yfunc = JetFinder::funcDurham;
+    }
   }
 	void JetFinder::Configure(const JetConfig& cfg){_cfg = cfg;}
 
@@ -151,7 +203,9 @@ namespace lcfiplus {
 		// angle to associate particles to vertex
 		const double vertexassocangle = 0.2;
 
-		_Yfunc = JetFinder::funcDurhamVertex;
+		// this is actually not needed
+		// _Yfunc = JetFinder::funcDurhamVertex;
+		// _Yfunc = JetFinder::funcKtVertex;
 
 		// associate tracks/neutrals to vertex jets
 		vector<bool> usedTracks(tracks.size(), false);
@@ -430,12 +484,120 @@ namespace lcfiplus {
 
     TMatrixTSym<double> matY(njet);
 
+    // calculate the distances
     for (int i1=0; i1<njet; ++i1) {
       for (int i2=i1+1; i2<njet; ++i2) {
         double val = (*_Yfunc)(*jets[i1],*jets[i2],Evis2,_cfg);
         matY[i1][i2] = val;
       }
     }
+
+    // kt algorithm
+    if (_cfg.useBeamJets) {
+
+    while ( njet > _cfg.nJet ) {
+
+      double Ymin = 1e8;
+      int imin=-1;
+      int jmin=-1;
+      bool beam_jet_closest = false;
+      int bmin = -1;
+
+      // calculate the beam distance
+      vector<double> beamY;
+      for (vector<Jet*>::iterator iter = jets.begin(); iter != jets.end(); ++iter) {
+	Jet* jet_here = *iter;
+	double dist_here2 = TMath::Power(jet_here->Pt(),2);
+	beamY.push_back(dist_here2);
+      }
+
+      /* compute upper-right triangle of matY
+       * for the values i2 > i1
+       */
+      for (int i1=0; i1<njet; ++i1) {
+        for (int i2=i1+1; i2<njet; ++i2) {
+          if (matY[i1][i2] < Ymin) {
+            Ymin = matY[i1][i2];
+            imin = i1;
+            jmin = i2;
+          }
+        }
+      }
+
+      if (imin == -1 || jmin == -1) {
+	printf("Further combination cannot be done. njet = %d\n", njet);
+	break;
+      }
+      if (pymin && (ynjetmax >= njet)) pymin[njet-1] = Ymin;
+
+      // check Ymin against Ycut
+      if (_cfg.Ycut > 0 && Ymin > _cfg.Ycut) {
+        printf("Ycut reached: %e\n", Ymin);
+        break;
+      }
+
+      // check if distance to beam closest
+      for (int i = 0; i < njet; ++i) {
+	if (beamY[i] < Ymin) {
+	  beam_jet_closest = true;
+	  bmin = i;
+	  Ymin = beamY[i];
+	}
+      }
+
+      if (beam_jet_closest) {
+
+	delete jets[bmin];
+
+	jets[bmin] = jets.back();
+	jets.pop_back();
+
+	--njet;
+
+	// fix matY - can still be improved
+	for (int i1 = bmin; i1 < njet; ++i1) {
+	  for (int i2 = i1+1; i2 < njet; ++i2) {
+	    double val = (*_Yfunc)(*jets[i1],*jets[i2],Evis2,_cfg);
+	    matY[i1][i2] = val;
+	  }
+	}
+
+      } else {
+
+	if (imin > jmin) {
+	  int tmp = jmin;
+	  jmin = imin;
+	  imin = tmp;
+	}
+
+	jets[imin]->add(*jets[jmin]);
+	delete jets[jmin];
+
+	jets[jmin] = jets.back();
+	jets.pop_back();
+
+	--njet;
+
+	// recompute matY (only the entries that changed from reordering)
+	for (int ii=0; ii<njet; ++ii) {
+	  if (ii != imin) {
+	    int i = min(ii,imin);
+	    int j = max(ii,imin);
+	    matY[i][j] = (*_Yfunc)(*jets[i],*jets[j],Evis2,_cfg);
+	  }
+	  if (ii != jmin) {
+	    int i = min(ii,jmin);
+	    int j = max(ii,jmin);
+	    matY[i][j] = matY[ii][njet];
+	  }
+	}
+
+      }
+
+    }
+
+    // original version: Durham
+    } else {
 
     while ( njet > _cfg.nJet ) {
 
@@ -500,6 +662,8 @@ namespace lcfiplus {
       }
     }
 
+    } // end if: use beam jets?
+
     // order jets by largest energy first
     sort(jets.begin(),jets.end(),Jet::sort_by_energy);
 
@@ -515,8 +679,8 @@ namespace lcfiplus {
     }
      */
 
-
     return jets;
+
   }
 
 	/*

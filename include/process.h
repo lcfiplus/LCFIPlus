@@ -87,6 +87,8 @@ namespace lcfiplus{
 		map<double, vector<Vertex *> * > _jetvtxmap; //!
 		vector<int> _njets;
 		vector<double> _ycut;
+		int _useBeamJets;
+		double _rParameter;
 		bool _useMuonID;
 		double _vsMinDist;
 		double _vsMaxDist;

@@ -2,6 +2,11 @@ Some documentation is available at
 https://confluence.slac.stanford.edu/display/ilc/LCFIPlus
 
 --------------
+| v00-06-01? |
+--------------
+- Added possibility to include beam jets in JetFinder (thanks to Philipp Roloff)
+
+--------------
 | v00-06-00a |
 --------------
 ***** Development release: please use at your own risk *****
