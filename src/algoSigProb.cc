@@ -47,8 +47,8 @@ double trackD0Significance(const Track* trk, const Vertex* pri) {
 	// take primary vertex error before minimization 
 	// because this is what LCFI does
 	trk->setFlightLength(0);
-	// double x0 = trk->getX();
-	// double y0 = trk->getY();
+	//double x0 = trk->getX();
+	//double y0 = trk->getY();
 	//double priErr = ( pri->getCov()[Vertex::xx]*x0*x0 + 2.0*pri->getCov()[Vertex::xy]*x0*y0 + pri->getCov()[Vertex::yy]*y0*y0 ) / (x0*x0+y0*y0);
 	double priErr = 0;
 
@@ -133,8 +133,8 @@ double signedD0Significance(const Track* trk, const Jet* jet, const Vertex* pri,
 	trk->setFlightLength(0);
 
 	// take primary vertex error before minimization because this is what LCFI does
-	// double x0 = trk->getX();
-	// double y0 = trk->getY();
+	//double x0 = trk->getX();
+	//double y0 = trk->getY();
 	double priErr = 0.;
 	/*
 	double priErr = ( pri->getCov()[Vertex::xx]*x0*x0
@@ -303,6 +303,112 @@ double trackProbZ0(const Track* trk, const Vertex* pri) {
 		if (sig>maxz0sigcut)continue;
 		if (sig>maxz0sig)continue;
 		double prob = prob1D(sig,maxz0sig,zpars)/prob1D(0,maxz0sig,zpars);
+		if (prob > hiprob) hiprob = prob;
+		prod *= prob;
+		++ntrk;
+	}
+
+	if (ntrk == 0) {
+		return 0;
+	}
+
+	if (hiprob == 0) {
+		return 0;
+	}
+
+	prod *= 1./hiprob;
+	--ntrk;
+
+	double jprob(0);
+	double factorial(1);
+
+	for (int k=0; k<ntrk; ++k) {
+		if (k>0) factorial *= k;
+		jprob += pow( -log(prod), k )/factorial;
+	}
+
+	jprob *= prod;
+
+	return jprob;
+}
+
+
+double prob1D2(double sig, double maxsig, const TH1 *jh1, const TH1 *jh2) {
+  //double prob = -jh2->GetBinContent(jh2->FindFixBin(maxsig));
+  double prob = 0; // to avoid negative probability
+	if(sig < 5)prob += jh1->GetBinContent(jh1->FindFixBin(sig));
+	if(sig >= 5)prob += jh2->GetBinContent(jh2->FindFixBin(sig));
+
+	return prob;
+}
+
+double jointProb2D0(const Jet* jet, const Vertex* pri, int minhitcut, double maxd0sigcut, bool useVertexTracks, const TH1 *jh1, const TH1 *jh2)
+{
+	double maxd0sig = 200.;
+
+	double prod(1);
+	int ntrk(0);
+	double hiprob(0);
+
+	cout << "jprobr2" << endl;
+
+	TrackVec tracks = (useVertexTracks ? jet->getAllTracks(true) : jet->getTracks());
+	for (TrackVecIte it = tracks.begin(); it != tracks.end(); ++it) {
+		const Track* trk = *it;
+		if (trackSelectionForFlavorTag(trk,minhitcut) == false) continue;
+
+		double sig = fabs( trackD0Significance(trk,pri) );
+		if (sig>maxd0sigcut)continue;
+		if (sig>maxd0sig)continue;
+		double prob = prob1D2(sig,maxd0sig,jh1,jh2)/prob1D2(0,maxd0sig,jh1,jh2);
+		cout << "prob = " << prob << endl;
+		if (prob > hiprob) hiprob = prob;
+		prod *= prob;
+		++ntrk;
+	}
+
+	if (ntrk == 0) {
+		return 0;
+	}
+
+	if (hiprob == 0) {
+		return 0;
+	}
+
+	prod *= 1./hiprob;
+	--ntrk;
+
+	double jprob(0);
+	double factorial(1);
+
+	for (int k=0; k<ntrk; ++k) {
+		if (k>0) factorial *= k;
+		jprob += pow( -log(prod), k )/factorial;
+	}
+
+	jprob *= prod;
+
+	cout << "jprob = " << jprob << endl;
+
+	return jprob;
+}
+
+double jointProb2Z0(const Jet* jet, const Vertex* pri, int minhitcut, double maxz0sigcut, bool useVertexTracks, const TH1 *jh1, const TH1 *jh2)
+{
+	double maxz0sig = 200.;
+
+	double prod(1);
+	int ntrk(0);
+	double hiprob(0);
+
+	TrackVec tracks = (useVertexTracks ? jet->getAllTracks(true) : jet->getTracks());
+	for (TrackVecIte it = tracks.begin(); it != tracks.end(); ++it) {
+		const Track* trk = *it;
+		if (trackSelectionForFlavorTag(trk, minhitcut) == false) continue;
+		double sig = fabs( trackZ0Significance(trk,pri) );
+		if (sig>maxz0sigcut)continue;
+		if (sig>maxz0sig)continue;
+		double prob = prob1D2(sig,maxz0sig,jh1,jh2)/prob1D2(0,maxz0sig,jh1,jh2);
 		if (prob > hiprob) hiprob = prob;
 		prod *= prob;
 		++ntrk;

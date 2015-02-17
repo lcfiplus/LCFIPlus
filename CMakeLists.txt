@@ -52,6 +52,7 @@ SET( ROOT_DICT_INPUT_HEADERS
 		${PROJECT_SOURCE_DIR}/include/TrainMVA.h
 		${PROJECT_SOURCE_DIR}/include/ReadMVA.h
 		${PROJECT_SOURCE_DIR}/include/testproc.h
+		${PROJECT_SOURCE_DIR}/include/TrackNtuple.h
 		${PROJECT_SOURCE_DIR}/include/LinkDef.h
 )
 SET( ROOT_DICT_INCLUDE_DIRS ${Marlin_INCLUDE_DIRS} )

@@ -39,6 +39,8 @@ namespace lcfiplus{
 			double ntrjet[6];
 			double twovtxprobjet[6];
 			double vtxangle[6];
+		  	double mcnb6[6];
+		  	double mcnc6[6];
 
 			double bcat4[4];
 			double btag4[4];
@@ -229,6 +231,28 @@ namespace lcfiplus{
 		TH2D *_h;
 		TH2D *_he;
 
+	};
+
+	class VertexAnalysis : public Algorithm
+	{
+	public:
+		VertexAnalysis(){}
+		virtual ~VertexAnalysis(){}
+
+		void init(Parameters *param);
+		void process();
+		void end();
+
+		ClassDef(VertexAnalysis,1);
+
+	private:
+		TNtupleD *_nt;
+		int _nev;
+
+		TFile *_file;
+
+		string _privtxname;
+		string _secvtxname;
 	};
 
 	class FlavtagReader : public Algorithm

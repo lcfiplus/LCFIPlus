@@ -576,6 +576,7 @@ namespace lcfiplus {
 				else return -1;
 			}
 			const Track * getWorstTrack() const;
+			double getChi2TrackFit(const Track *tr, int mode=1)const;
 
       double length(const Vertex* primary=0) const;
       double significance(const Vertex* primary) const;

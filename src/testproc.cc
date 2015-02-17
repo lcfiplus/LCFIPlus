@@ -295,6 +295,8 @@ const Jet * JetMCMatch(JetVec &jets, const MCParticle *mcp, vector<const Track *
 		_tree->Branch("pyjet",&_d.pyjet,"pyjet[6]/D");
 		_tree->Branch("pzjet",&_d.pzjet,"pzjet[6]/D");
 		_tree->Branch("ntrjet",&_d.ntrjet,"ntrjet[6]/D");
+		_tree->Branch("mcnb6",&_d.mcnb6,"mcnb6[6]/D");
+		_tree->Branch("mcnc6",&_d.mcnc6,"mcnc6[6]/D");
 		_tree->Branch("twovtxprobjet",&_d.twovtxprobjet,"twovtxprobjet[6]/D");
 		_tree->Branch("vtxangle",&_d.vtxangle,"vtxangle[6]/D");
 
@@ -525,6 +527,9 @@ const Jet * JetMCMatch(JetVec &jets, const MCParticle *mcp, vector<const Track *
 			_d.pxjet[nj] = j->Px();
 			_d.pyjet[nj] = j->Py();
 			_d.pzjet[nj] = j->Pz();
+
+			_d.mcnb6[nj] = j->getParam("lcfiplus")->get<double>("MCnb");
+			_d.mcnc6[nj] = j->getParam("lcfiplus")->get<double>("MCnc");
 
 			totp += *j;
 
@@ -910,36 +915,70 @@ const Jet * JetMCMatch(JetVec &jets, const MCParticle *mcp, vector<const Track *
 		string filename = param->get("FileName",string("test.root"));
 		_jetname = param->get("JetCollectionName",string("Durham_2Jets"));
 		string primvtxcolname = param->get("PrimaryVertexCollectionName",string("PrimaryVertex"));
+		string secvtxcolname = param->get("SecondaryVertexCollectionName",string("BuildUpVertex"));
 		Event::Instance()->setDefaultPrimaryVertex(primvtxcolname.c_str());
+		Event::Instance()->setDefaultSecondaryVertices(secvtxcolname.c_str());
 
 		_file = new TFile(filename.c_str(),"RECREATE");
-		_nt = new TNtupleD("nt","nt","nev:pdg:d0:d0sig:z0:z0sig:e:pt:pz:chi2:sd0:sz0:ecaldep:hcaldep");
+//		_nt = new TNtupleD("nt","nt","nev:pdg:d0:d0sig:z0:z0sig:e:pt:pz:chi2:sd0:sz0:ecaldep:hcaldep");
+		_nt = new TNtupleD("nt","nt","nev:pdg:parpdg:d0:d0sig:z0:z0sig:e:pt:pz:chi2:invtx:minchi2:nvtx");
 
 		_jets = 0;
 		_nev = 0;
 	}
 
 	void TestAlgo::process(){
+
 		if(!_jets){
 			Event::Instance()->Get(_jetname.c_str(), _jets);
 		}
+//		TrackVec &tracks = Event::Instance()->getTracks();
 		const Vertex * privtx = Event::Instance()->getPrimaryVertex();
+//		VertexVec &vtcs = Event::Instance()->getSecondaryVertices();
 
 		for(unsigned int nj = 0; nj < _jets->size(); nj++){
 			const Jet *j = (*_jets)[nj];
 			TrackVec tracks = j->getAllTracks(true);
+			VertexVec &vtcs = j->getVertices();
+
+			int nvtx = 0;
+			for(unsigned int nv=0;nv<vtcs.size();nv++)
+				if(vtcs[nv]->getTracks().size() >=2) nvtx ++;
+
 			for(unsigned int n=0;n<tracks.size();n++){
 				const Track *tr = tracks[n];
 
-				double sd0 = signedD0(tr, j, privtx, true);
+				//double sd0 = signedD0(tr, j, privtx, true);
 				//double sd0sig = signedD0Significance(tr, j, privtx, true);
-				double sz0 = signedZ0(tr, j, privtx, true);
+				//double sz0 = signedZ0(tr, j, privtx, true);
 				//double sz0sig = signedZ0Significance(tr, j, privtx, true);
 
+				// vertex-track association
+				int invtx = 0;
+				double minchi2 = 1e+300;
+
+				if(find(privtx->getTracks().begin(), privtx->getTracks().end(), tr) != privtx->getTracks().end())invtx = 1;
+				else{
+					for(unsigned int nv = 0; nv < vtcs.size();nv ++){
+						double chi2 = 1e+300;
+						if(find(vtcs[nv]->getTracks().begin(), vtcs[nv]->getTracks().end(), tr) != vtcs[nv]->getTracks().end()){
+							invtx = 2;
+							chi2 = vtcs[nv]->getChi2Track(tr);
+						}else{// if(vtcs[nv]->getTracks().size() >= 2){
+							chi2 = vtcs[nv]->getChi2TrackFit(tr,3);
+						}
+
+						if(minchi2 > chi2)minchi2 = chi2;
+					}
+				}
+
 				const MCParticle *mcp = tracks[n]->getMcp();
-				_nt->Fill(_nev, mcp ? mcp->getPDG() : 0, fabs(tr->getD0()), fabs(tr->getD0() / sqrt(tr->getCovMatrix()[tpar::d0d0])),
+				const MCParticle *pmcp = (mcp ? mcp->getSemiStableBParent() : 0);
+				_nt->Fill(_nev, mcp ? mcp->getPDG() : 0, pmcp ? pmcp->getPDG() : 0, fabs(tr->getD0()), fabs(tr->getD0() / sqrt(tr->getCovMatrix()[tpar::d0d0])),
 					fabs(tr->getZ0()), fabs(tr->getZ0() / sqrt(tr->getCovMatrix()[tpar::z0z0])),
-					  tr->E(), tr->Pt(), tr->Pz(), tr->getChi2(), sd0, sz0, tr->getCaloEdep()[tpar::ecal], tr->getCaloEdep()[tpar::hcal]);
+					  tr->E(), tr->Pt(), tr->Pz(), tr->getChi2(), invtx, minchi2, nvtx * 10 + vtcs.size());
+						//sd0, sz0, tr->getCaloEdep()[tpar::ecal], tr->getCaloEdep()[tpar::hcal]);
+
 			}
 		}
 
@@ -971,7 +1010,7 @@ const Jet * JetMCMatch(JetVec &jets, const MCParticle *mcp, vector<const Track *
 		if(!_jets){
 			Event::Instance()->Get(_jetname.c_str(), _jets);
 		}
-		// const Vertex * privtx = Event::Instance()->getPrimaryVertex();
+		//const Vertex * privtx = Event::Instance()->getPrimaryVertex();
 
 		vector<double> btags, ctags;
 
@@ -1371,6 +1410,72 @@ const Jet * JetMCMatch(JetVec &jets, const MCParticle *mcp, vector<const Track *
 		_file->Close();
 	}
 #endif
+
+	void VertexAnalysis::init(Parameters *param){
+		Algorithm::init(param);
+		_privtxname = param->get("PrimaryVertexCollectionName",string("PrimaryVertex"));
+
+		string filename = param->get("VertexAnalysis.FileName",string("VertexAnalysis.root"));
+		_secvtxname = param->get("VertexAnalysis.SecondaryVertexCollectionName",string("BuildUpVertex"));
+		_file = new TFile(filename.c_str(),"RECREATE");
+		_nt = new TNtupleD("vtxtree","vtxtree","track:invtx:d0:d0err:z0:z0err:e:pt:chi2:ndf:vtxftdhits");
+	}
+
+	void VertexAnalysis::process(){
+		const Vertex * privtx = Event::Instance()->getPrimaryVertex(_privtxname.c_str());
+		TrackVec & tracks = Event::Instance()->getTracks();
+		MCParticleVec & mcps = Event::Instance()->getMCParticles();
+		VertexVec * psecvtx = 0;
+		if(_secvtxname != "")
+			Event::Instance()->Get(_secvtxname.c_str(), psecvtx);
+
+		if(mcps.size() == 0){
+			cout << "MCParticle collection not specified. We need the MCParticle collection for vertex analysis." << endl;
+			return;
+		}
+
+		for(unsigned int i=0; i < tracks.size(); ++i) {
+			const Track *tr = tracks[i];
+			const MCParticle *mcp = tr->getMcp();
+
+			double trackseed, invtx, d0, d0err, z0, z0err, e, pt, chi2, ndf, vtxftdhits;
+
+			if(mcp->getSemiStableParent() == 0) trackseed = 0.;
+			else if(mcp->getSemiStableBParent() != 0) trackseed = 1.;
+			else if(mcp->getSemiStableCParent() != 0) trackseed = 2.;
+			else trackseed = 3.;
+
+			invtx = (find(privtx->getTracks().begin(), privtx->getTracks().end(), tr) != privtx->getTracks().end());
+			if(invtx == 0. && psecvtx){
+				// looking for secondary vertices
+				for(unsigned int j=0; j<psecvtx->size(); j++){
+					TrackVec & vtr = (*psecvtx)[j]->getTracks();
+					if(find(vtr.begin(), vtr.end(), tr) != vtr.end())
+						invtx = 2.;
+				}
+			}
+
+			d0 = tr->getD0();
+			d0err = sqrt(tr->getCovMatrix()[tpar::d0d0]);
+			z0 = tr->getZ0();
+			z0err = sqrt(tr->getCovMatrix()[tpar::z0z0]);
+
+			e = tr->E();
+			pt = tr->Pt();
+
+			chi2 = tr->getChi2();
+			ndf = tr->getNdf();
+			vtxftdhits = tr->getVtxHits() + tr->getFtdHits();
+
+			_nt->Fill(trackseed, invtx, d0, d0err, z0, z0err, e, pt, chi2, ndf, vtxftdhits);
+		}
+	}
+
+	void VertexAnalysis::end() {
+		_file->Write();
+		_file->Close();
+	}
+
 
 }
 

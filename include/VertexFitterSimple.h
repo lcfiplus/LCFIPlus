@@ -120,7 +120,7 @@ namespace lcfiplus {
 				return vtx;
 			}
 
-			double getChi2(Vertex *vtx, const Track *trk, int mode=1){
+			double getChi2(const Vertex *vtx, const Track *trk, int mode=1){
 				// 110510 suehara for IPassoc study
 				if(mode == 0){
 					// mode 0: no fit at all
@@ -149,12 +149,18 @@ namespace lcfiplus {
 					vpt.push_back(new Helix(trk));
 
 					GeometryHandler *gh = GeometryHandler::Instance();
-					double ll = -gh->PointFit(vpt, vtx->getPos(), 0);
+					Point ret;
+					double ll = -gh->PointFit(vpt, vtx->getPos(), &ret);
 
 					for(unsigned int n=0;n<vpt.size();n++){
 						delete vpt[n];
 					}
-					return ll;
+					if(mode == 2){
+						return ll;
+					}else{
+						Helix hel(trk);
+						return -hel.LogLikelihood(ret.GetPos());
+					}
 				}
 			}
 

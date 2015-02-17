@@ -39,7 +39,7 @@ namespace lcfiplus{
 		Point(){}
 		Point(const SVector3 &pos, const SMatrixSym3 &err){_pos = pos; _err = err;}
 		Point(const Point &ref){_pos = ref._pos; _err = ref._err;}
-		Point(Vertex *vtx);
+		Point(const Vertex *vtx);
 		~Point(){}
 
 		void SetPosErr(const SVector3 &pos, const SMatrixSym3 &err){_pos = pos; _err = err;}

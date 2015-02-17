@@ -1062,8 +1062,8 @@ void LCIOStorer::WriteAllPIDs(lcio::LCCollection *lciocol, lcio::ReconstructedPa
 
 void LCIOStorer::SetColorSinglets(vector<MCParticle *> &mcps, vector<MCColorSinglet *> &mccs)
 {
-	int cspdg[] = {22, 23, 24, 25, 91, 92, 93, 94};
-	int cspdg2[] = {22, 91, 92, 93, 94}; // color singlet candidates which should check parents
+	int cspdg[] = {22, 23, 24, 25, 91, 92, 93, 94, -1}; // -1 is added to avoid warning
+	int cspdg2[] = {22, 91, 92, 93, 94, -1}; // color singlet candidates which should check parents
 
 	vector<MCParticle *> initialquarks;
 

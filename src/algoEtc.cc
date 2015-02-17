@@ -125,7 +125,10 @@ void connectVerticesToJets(const JetVec &jets, const vector<Vertex *> &vtcs, vec
 
 	for(unsigned int v=0;v<vtcs.size();v++){
 		Vertex *curv = vtcs[v];
-		if(curv->getTracks().size() == 0)throw(Exception("connectVerticesToJets: vertex-jet association failed! No tracks found in a vertex."));
+		if(curv->getTracks().size() == 0){
+		  cout << "connectVerticesToJets: vertex-jet association failed! No tracks found in a vertex." << endl;
+		  continue;
+		}
 
 		// selecting associating jets with energy fraction
 		vector<double> efrac;

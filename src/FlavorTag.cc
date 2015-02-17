@@ -43,6 +43,14 @@ namespace lcfiplus {
 			}
 	};
 
+	class FtAuxiliaryM : public FTAlgo {
+		public:
+			FtAuxiliaryM(const char *auxname) : FTAlgo(auxname){}
+			void process() {
+				_result = FTManager::getInstance().getAuxiliary();
+			}
+	};
+
 	class FtNtrkWithoutV0 : public FTAlgo {
 		public:
 			FtNtrkWithoutV0() : FTAlgo("ntrkwithoutv0") {}
@@ -635,6 +643,45 @@ namespace lcfiplus {
 			bool _useVertexTracks;
 	};
 
+	class FtJProbR2 : public FTAlgo {
+		public:
+			FtJProbR2() : FTAlgo("jprobr2") {}
+			void process() {
+				const FtIPProbHolder *holder = FTManager::getInstance().getIPProbHolder();
+			  _result = jointProb2D0(_jet,_privtx,_nhitsJointProbD0, 200, true, holder->_hd0jprob, holder->_hd0jprob2);
+			}
+	};
+
+	class FtJProbZ2 : public FTAlgo {
+		public:
+			FtJProbZ2() : FTAlgo("jprobz2") {}
+			void process() {
+				const FtIPProbHolder *holder = FTManager::getInstance().getIPProbHolder();
+			  _result = jointProb2Z0(_jet,_privtx,_nhitsJointProbZ0, 200, true, holder->_hz0jprob, holder->_hz0jprob2);
+			}
+	};
+
+	class FtJProbR25Sigma : public FTAlgo {
+		public:
+			FtJProbR25Sigma(bool usevt) : FTAlgo(usevt ? "jprobr25sigma" : "jprobr25sigmanv"), _useVertexTracks(usevt) {}
+			void process() {
+				const FtIPProbHolder *holder = FTManager::getInstance().getIPProbHolder();
+			  _result = jointProb2D0(_jet,_privtx,_nhitsJointProbD0,5., _useVertexTracks, holder->_hd0jprob, holder->_hd0jprob2);
+			}
+		private:
+			bool _useVertexTracks;
+	};
+
+	class FtJProbZ25Sigma : public FTAlgo {
+		public:
+			FtJProbZ25Sigma(bool usevt) : FTAlgo(usevt ? "jprobz25sigma" : "jprobz25sigmanv"), _useVertexTracks(usevt) {}
+			void process() {
+				const FtIPProbHolder *holder = FTManager::getInstance().getIPProbHolder();
+			  _result = jointProb2Z0(_jet,_privtx,_nhitsJointProbZ0,5., _useVertexTracks, holder->_hz0jprob, holder->_hz0jprob2);
+			}
+			bool _useVertexTracks;
+	};
+
 	class FtSphericity : public FTAlgo {
 		public:
 			FtSphericity() : FTAlgo("sphericity") {}
@@ -759,12 +806,12 @@ namespace lcfiplus {
 					for(unsigned int i=0;i<vtx->getTracks().size();i++){
 						const Track *tr = vtx->getTracks()[i];
 
-						// const MCParticle *mcp = tr->getMcp();
-						// int cpdg = 0, bpdg = 0;
-						// if(mcp){
-						// 	cpdg = (mcp->getSemiStableCParent() ? mcp->getSemiStableCParent()->getPDG() : 0);
-						// 	bpdg = (mcp->getSemiStableBParent() ? mcp->getSemiStableBParent()->getPDG() : 0);
-						// }
+						const MCParticle *mcp = tr->getMcp();
+						int cpdg = 0, bpdg = 0;
+						if(mcp){
+							cpdg = (mcp->getSemiStableCParent() ? mcp->getSemiStableCParent()->getPDG() : 0);
+							bpdg = (mcp->getSemiStableBParent() ? mcp->getSemiStableBParent()->getPDG() : 0);
+						}
 
 						Helix hel(tr);
 						double dev = hel.LongitudinalDeviation(_privtx,vtx);
@@ -1013,120 +1060,9 @@ namespace lcfiplus {
 			}
 	};
 
-	// historgram holder for d0/z0 probability
-	class FtD0bProb;
-	class FtD0cProb;
-	class FtD0qProb;
-	class FtD0bProbSigned;
-	class FtD0cProbSigned;
-	class FtD0qProbSigned;
-	class FtD0bProbIP;
-	class FtD0cProbIP;
-	class FtZ0bProb;
-	class FtZ0cProb;
-	class FtZ0qProb;
-	class FtZ0bProbIP;
-	class FtZ0cProbIP;
-
-	class FtIPProbHolder {
-		friend class FtD0bProb;
-		friend class FtD0cProb;
-		friend class FtD0qProb;
-		friend class FtD0bProbSigned;
-		friend class FtD0cProbSigned;
-		friend class FtD0qProbSigned;
-		friend class FtD0bProbIP;
-		friend class FtD0cProbIP;
-		friend class FtZ0bProb;
-		friend class FtZ0cProb;
-		friend class FtZ0qProb;
-		friend class FtZ0bProbIP;
-		friend class FtZ0cProbIP;
-
-		public: 
-			FtIPProbHolder(const char *d0probfile, const char *z0probfile)
-			{
-				TDirectory *dir = gDirectory;
-				_fd0 = TFile::Open(d0probfile);
-				if(!_fd0)throw(Exception("FlavorTag: D0 probability file open error!"));
-				_fz0 = TFile::Open(z0probfile);
-				if(!_fz0)throw(Exception("FlavorTag: Z0 probability file open error!"));
-				dir->cd();
-
-				_hd0[0] = dynamic_cast<TH1F *>(_fd0->Get("hb"));
-				_hd0[1] = dynamic_cast<TH1F *>(_fd0->Get("hc"));
-				_hd0[2] = dynamic_cast<TH1F *>(_fd0->Get("hq"));
-
-				if(!(_hd0[0] && _hd0[1] && _hd0[2]))throw(Exception("FlavorTag: D0 probability histogram open error!"));
-
-				_hd0p[0] = dynamic_cast<TH1F *>(_fd0->Get("hbp"));
-				_hd0p[1] = dynamic_cast<TH1F *>(_fd0->Get("hcp"));
-				_hd0p[2] = dynamic_cast<TH1F *>(_fd0->Get("hqp"));
-
-				if(!(_hd0p[0] && _hd0p[1] && _hd0p[2]))throw(Exception("FlavorTag: D0 probability positive histogram open error!"));
-
-				_hd0n[0] = dynamic_cast<TH1F *>(_fd0->Get("hbn"));
-				_hd0n[1] = dynamic_cast<TH1F *>(_fd0->Get("hcn"));
-				_hd0n[2] = dynamic_cast<TH1F *>(_fd0->Get("hqn"));
-
-				if(!(_hd0n[0] && _hd0n[1] && _hd0n[2]))throw(Exception("FlavorTag: D0 probability negative histogram open error!"));
-
-				_hd0ip[0] = dynamic_cast<TH1F *>(_fd0->Get("hbip"));
-				_hd0ip[1] = dynamic_cast<TH1F *>(_fd0->Get("hcip"));
-				_hd0ip[2] = dynamic_cast<TH1F *>(_fd0->Get("hqip"));
-
-				double norm;
-				norm = _hd0ip[2]->Integral(_hd0ip[2]->FindBin(-0.5), _hd0ip[2]->FindBin(0.5));
-				_normd0ip[0] = _hd0ip[0]->Integral(_hd0ip[0]->FindBin(-0.5), _hd0ip[0]->FindBin(0.5)) / norm;
-				_normd0ip[1] = _hd0ip[1]->Integral(_hd0ip[1]->FindBin(-0.5), _hd0ip[1]->FindBin(0.5)) / norm;
-
-				cout << "normd0ip[0] = " << _normd0ip[0] << " normd0ip[1] = " << _normd0ip[1] << endl;
-
-				if(!(_hd0ip[0] && _hd0ip[1] && _hd0ip[2]))throw(Exception("FlavorTag: D0 probability near-IP histogram open error!"));
-
-				_hz0[0] = dynamic_cast<TH1F *>(_fz0->Get("hb"));
-				_hz0[1] = dynamic_cast<TH1F *>(_fz0->Get("hc"));
-				_hz0[2] = dynamic_cast<TH1F *>(_fz0->Get("hq"));
-
-				if(!(_hz0[0] && _hz0[1] && _hz0[2]))throw(Exception("FlavorTag: D0 probability histogram open error!"));
-
-				_hz0ip[0] = dynamic_cast<TH1F *>(_fz0->Get("hbip"));
-				_hz0ip[1] = dynamic_cast<TH1F *>(_fz0->Get("hcip"));
-				_hz0ip[2] = dynamic_cast<TH1F *>(_fz0->Get("hqip"));
-
-				norm = _hz0ip[2]->Integral(_hz0ip[2]->FindBin(-0.5), _hz0ip[2]->FindBin(0.5));
-				_normz0ip[0] = _hz0ip[0]->Integral(_hz0ip[0]->FindBin(-0.5), _hz0ip[0]->FindBin(0.5)) / norm;
-				_normz0ip[1] = _hz0ip[1]->Integral(_hz0ip[1]->FindBin(-0.5), _hz0ip[1]->FindBin(0.5)) / norm;
-
-				cout << "normz0ip[0] = " << _normz0ip[0] << " normz0ip[1] = " << _normz0ip[1] << endl;
-
-				if(!(_hz0ip[0] && _hz0ip[1] && _hz0ip[2]))throw(Exception("FlavorTag: Z0 probability near-IP histogram open error!"));
-
-			}
-
-			~FtIPProbHolder(){
-				if(_fd0)_fd0->Close();
-				if(_fz0)_fz0->Close();
-			}
-
-		private:
-			TFile *_fd0;
-			TFile *_fz0;
-			TH1F *_hd0[3];
-			TH1F *_hd0p[3]; // signed-positive
-			TH1F *_hd0n[3]; // signed-negative
-			TH1F *_hd0ip[3];
-			TH1F *_hz0[3];
-			TH1F *_hz0ip[3];
-
-			// normalization factors
-			double _normd0ip[2];
-			double _normz0ip[2];
-	};
-
 	class FtD0bProb : public FTAlgo {
 		public:
-			FtD0bProb(FtIPProbHolder *holder) : FTAlgo("d0bprob") {_holder = holder;}
+			FtD0bProb() : FTAlgo("d0bprob") {}
 			void process() {
 				double prob = 1.;
 				TrackVec tracks = _jet->getAllTracks(true);
@@ -1135,19 +1071,17 @@ namespace lcfiplus {
 					if( d0sig > 5){
 						double ld0 = log10(fabs(tracks[n]->getD0()));
 
-						prob *= _holder->_hd0[0]->GetBinContent(_holder->_hd0[0]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
+						prob *= FTManager::getInstance().getIPProbHolder()->_hd0[0]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hd0[0]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
 					}
 				}
 
 				_result = prob;
 			}
-		private:
-			FtIPProbHolder *_holder;
 	};
 
 	class FtD0cProb : public FTAlgo {
 		public:
-			FtD0cProb(FtIPProbHolder *holder) : FTAlgo("d0cprob") {_holder = holder;}
+			FtD0cProb() : FTAlgo("d0cprob") {}
 			void process() {
 				double prob = 1.;
 				TrackVec tracks = _jet->getAllTracks(true);
@@ -1156,19 +1090,17 @@ namespace lcfiplus {
 					if( d0sig > 5){
 						double ld0 = log10(fabs(tracks[n]->getD0()));
 
-						prob *= _holder->_hd0[1]->GetBinContent(_holder->_hd0[1]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
+						prob *= FTManager::getInstance().getIPProbHolder()->_hd0[1]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hd0[1]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
 					}
 				}
 
 				_result = prob;
 			}
-		private:
-			FtIPProbHolder *_holder;
 	};
 
 	class FtD0qProb : public FTAlgo {
 		public:
-			FtD0qProb(FtIPProbHolder *holder) : FTAlgo("d0qprob") {_holder = holder;}
+			FtD0qProb() : FTAlgo("d0qprob") {}
 			void process() {
 				double prob = 1.;
 				TrackVec tracks = _jet->getAllTracks(true);
@@ -1177,23 +1109,21 @@ namespace lcfiplus {
 					if( d0sig > 5){
 						double ld0 = log10(fabs(tracks[n]->getD0()));
 
-						prob *= _holder->_hd0[2]->GetBinContent(_holder->_hd0[2]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
+						prob *= FTManager::getInstance().getIPProbHolder()->_hd0[2]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hd0[2]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
 
-//						cout << "d0 = " << tracks[n]->getD0() << ", pq = " <<  _holder->_hd0[2]->GetBinContent(_holder->_hd0[2]->FindBin(ld0)) * 3. << endl;
+//						cout << "d0 = " << tracks[n]->getD0() << ", pq = " <<  FTManager::getInstance().getIPProbHolder()->_hd0[2]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hd0[2]->FindBin(ld0)) * 3. << endl;
 					}
 				}
 
 //				cout << "prob = " << prob << endl;
 				_result = prob;
 			}
-		private:
-			FtIPProbHolder *_holder;
 	};
 
 	class FtD0bProbSigned : public FTAlgo {
 		public:
-			FtD0bProbSigned(FtIPProbHolder *holder, bool usevtxtracks = true) : FTAlgo(usevtxtracks ? "d0bprobsigned" : "d0bprobsignednv")
-				{_holder = holder;_useVertexTracks = usevtxtracks;}
+			FtD0bProbSigned(bool usevtxtracks = true) : FTAlgo(usevtxtracks ? "d0bprobsigned" : "d0bprobsignednv")
+				{_useVertexTracks = usevtxtracks;}
 			void process() {
 				double prob = 1.;
 				TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
@@ -1203,10 +1133,10 @@ namespace lcfiplus {
 						double sd0 = signedD0(tracks[n], _jet, _privtx, true);
 						if(sd0>0){
 							double ld0 = log10(sd0);
-							prob *= _holder->_hd0p[0]->GetBinContent(_holder->_hd0p[0]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
+							prob *= FTManager::getInstance().getIPProbHolder()->_hd0p[0]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hd0p[0]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
 						}else{
 							double ld0 = log10(-sd0);
-							prob *= _holder->_hd0n[0]->GetBinContent(_holder->_hd0n[0]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
+							prob *= FTManager::getInstance().getIPProbHolder()->_hd0n[0]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hd0n[0]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
 						}
 					}
 				}
@@ -1214,14 +1144,13 @@ namespace lcfiplus {
 				_result = prob;
 			}
 		private:
-			FtIPProbHolder *_holder;
 			bool _useVertexTracks;
 	};
 
 	class FtD0cProbSigned : public FTAlgo {
 		public:
-			FtD0cProbSigned(FtIPProbHolder *holder, bool usevtxtracks = true) : FTAlgo(usevtxtracks ? "d0cprobsigned" : "d0cprobsignednv")
-				{_holder = holder;_useVertexTracks = usevtxtracks;}
+			FtD0cProbSigned(bool usevtxtracks = true) : FTAlgo(usevtxtracks ? "d0cprobsigned" : "d0cprobsignednv")
+				{_useVertexTracks = usevtxtracks;}
 			void process() {
 				double prob = 1.;
 				TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
@@ -1231,10 +1160,10 @@ namespace lcfiplus {
 						double sd0 = signedD0(tracks[n], _jet, _privtx, true);
 						if(sd0>0){
 							double ld0 = log10(sd0);
-							prob *= _holder->_hd0p[1]->GetBinContent(_holder->_hd0p[1]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
+							prob *= FTManager::getInstance().getIPProbHolder()->_hd0p[1]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hd0p[1]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
 						}else{
 							double ld0 = log10(-sd0);
-							prob *= _holder->_hd0n[1]->GetBinContent(_holder->_hd0n[1]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
+							prob *= FTManager::getInstance().getIPProbHolder()->_hd0n[1]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hd0n[1]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
 						}
 					}
 				}
@@ -1242,14 +1171,13 @@ namespace lcfiplus {
 				_result = prob;
 			}
 		private:
-			FtIPProbHolder *_holder;
 			bool _useVertexTracks;
 	};
 
 	class FtD0qProbSigned : public FTAlgo {
 		public:
-			FtD0qProbSigned(FtIPProbHolder *holder, bool usevtxtracks = true) : FTAlgo(usevtxtracks ? "d0qprobsigned" : "d0qprobsignednv")
-				{_holder = holder;_useVertexTracks = usevtxtracks;}
+			FtD0qProbSigned(bool usevtxtracks = true) : FTAlgo(usevtxtracks ? "d0qprobsigned" : "d0qprobsignednv")
+				{_useVertexTracks = usevtxtracks;}
 			void process() {
 				double prob = 1.;
 				TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
@@ -1259,10 +1187,10 @@ namespace lcfiplus {
 						double sd0 = signedD0(tracks[n], _jet, _privtx, true);
 						if(sd0>0){
 							double ld0 = log10(sd0);
-							prob *= _holder->_hd0p[2]->GetBinContent(_holder->_hd0p[2]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
+							prob *= FTManager::getInstance().getIPProbHolder()->_hd0p[2]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hd0p[2]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
 						}else{
 							double ld0 = log10(-sd0);
-							prob *= _holder->_hd0n[2]->GetBinContent(_holder->_hd0n[2]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
+							prob *= FTManager::getInstance().getIPProbHolder()->_hd0n[2]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hd0n[2]->FindBin(ld0)) * 3.; // 3 = b,c,q, averaging effect
 						}
 					}
 				}
@@ -1270,57 +1198,52 @@ namespace lcfiplus {
 				_result = prob;
 			}
 		private:
-			FtIPProbHolder *_holder;
 			bool _useVertexTracks;
 	};
 
 	class FtD0bProbIP : public FTAlgo {
 		public:
-			FtD0bProbIP(FtIPProbHolder *holder) : FTAlgo("d0nonbprobip") {_holder = holder;}
+			FtD0bProbIP() : FTAlgo("d0nonbprobip") {}
 			void process() {
 				double prob = 1.;
 				TrackVec tracks = _jet->getAllTracks(true);
 				for(unsigned int n=0;n<tracks.size();n++){
 					double sd0sig = signedD0Significance(tracks[n], _jet, _privtx, true);
 					if( fabs(sd0sig) < 5){
-						double sbin = _holder->_hd0ip[0]->GetBinContent(_holder->_hd0ip[0]->FindBin(sd0sig));
-						double qbin = _holder->_hd0ip[2]->GetBinContent(_holder->_hd0ip[2]->FindBin(sd0sig)); 
-//						cout << sd0sig << " " << sbin << " " << qbin << " " << qbin/sbin*_holder->_normd0ip[0] << endl;
-						prob *= qbin / sbin * _holder->_normd0ip[0];
+						double sbin = FTManager::getInstance().getIPProbHolder()->_hd0ip[0]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hd0ip[0]->FindBin(sd0sig));
+						double qbin = FTManager::getInstance().getIPProbHolder()->_hd0ip[2]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hd0ip[2]->FindBin(sd0sig)); 
+//						cout << sd0sig << " " << sbin << " " << qbin << " " << qbin/sbin*FTManager::getInstance().getIPProbHolder()->_normd0ip[0] << endl;
+						prob *= qbin / sbin * FTManager::getInstance().getIPProbHolder()->_normd0ip[0];
 					}
 				}
 
 				_result = prob;
 			}
-		private:
-			FtIPProbHolder *_holder;
 	};
 
 	class FtD0cProbIP : public FTAlgo {
 		public:
-			FtD0cProbIP(FtIPProbHolder *holder) : FTAlgo("d0noncprobip") {_holder = holder;}
+			FtD0cProbIP() : FTAlgo("d0noncprobip") {}
 			void process() {
 				double prob = 1.;
 				TrackVec tracks = _jet->getAllTracks(true);
 				for(unsigned int n=0;n<tracks.size();n++){
 					double sd0sig = signedD0Significance(tracks[n], _jet, _privtx, true);
 					if( fabs(sd0sig) < 5){
-						double sbin = _holder->_hd0ip[1]->GetBinContent(_holder->_hd0ip[1]->FindBin(sd0sig));
-						double qbin = _holder->_hd0ip[2]->GetBinContent(_holder->_hd0ip[2]->FindBin(sd0sig)); 
-						prob *= qbin / sbin * _holder->_normd0ip[1];
+						double sbin = FTManager::getInstance().getIPProbHolder()->_hd0ip[1]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hd0ip[1]->FindBin(sd0sig));
+						double qbin = FTManager::getInstance().getIPProbHolder()->_hd0ip[2]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hd0ip[2]->FindBin(sd0sig)); 
+						prob *= qbin / sbin * FTManager::getInstance().getIPProbHolder()->_normd0ip[1];
 					}
 				}
 
 				_result = prob;
 			}
-		private:
-			FtIPProbHolder *_holder;
 	};
 
 	class FtZ0bProb : public FTAlgo {
 		public:
-			FtZ0bProb(FtIPProbHolder *holder, bool usevtxtracks = true) : FTAlgo(usevtxtracks ? "z0bprob" : "z0bprobnv")
-				{_holder = holder;_useVertexTracks = usevtxtracks;}
+			FtZ0bProb(bool usevtxtracks = true) : FTAlgo(usevtxtracks ? "z0bprob" : "z0bprobnv")
+				{_useVertexTracks = usevtxtracks;}
 			void process() {
 				double prob = 1.;
 				TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
@@ -1329,21 +1252,20 @@ namespace lcfiplus {
 					if( z0sig > 5){
 						double lz0 = log10(fabs(tracks[n]->getZ0()));
 
-						prob *= _holder->_hz0[0]->GetBinContent(_holder->_hz0[0]->FindBin(lz0)) * 3.; // 3 = b,c,q, averaging effect
+						prob *= FTManager::getInstance().getIPProbHolder()->_hz0[0]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hz0[0]->FindBin(lz0)) * 3.; // 3 = b,c,q, averaging effect
 					}
 				}
 
 				_result = prob;
 			}
 		private:
-			FtIPProbHolder *_holder;
 			bool _useVertexTracks;
 	};
 
 	class FtZ0cProb : public FTAlgo {
 		public:
-			FtZ0cProb(FtIPProbHolder *holder, bool usevtxtracks = true) : FTAlgo(usevtxtracks ? "z0cprob" : "z0cprobnv")
-				{_holder = holder;_useVertexTracks = usevtxtracks;}
+			FtZ0cProb(bool usevtxtracks = true) : FTAlgo(usevtxtracks ? "z0cprob" : "z0cprobnv")
+				{_useVertexTracks = usevtxtracks;}
 			void process() {
 				double prob = 1.;
 				TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
@@ -1352,21 +1274,20 @@ namespace lcfiplus {
 					if( z0sig > 5){
 						double lz0 = log10(fabs(tracks[n]->getZ0()));
 
-						prob *= _holder->_hz0[1]->GetBinContent(_holder->_hz0[1]->FindBin(lz0)) * 3.; // 3 = b,c,q, averaging effect
+						prob *= FTManager::getInstance().getIPProbHolder()->_hz0[1]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hz0[1]->FindBin(lz0)) * 3.; // 3 = b,c,q, averaging effect
 					}
 				}
 
 				_result = prob;
 			}
 		private:
-			FtIPProbHolder *_holder;
 			bool _useVertexTracks;
 	};
 
 	class FtZ0qProb : public FTAlgo {
 		public:
-			FtZ0qProb(FtIPProbHolder *holder, bool usevtxtracks = true) : FTAlgo(usevtxtracks ? "z0qprob" : "z0qprobnv")
-				{_holder = holder;_useVertexTracks = usevtxtracks;}
+			FtZ0qProb(bool usevtxtracks = true) : FTAlgo(usevtxtracks ? "z0qprob" : "z0qprobnv")
+				{_useVertexTracks = usevtxtracks;}
 			void process() {
 				double prob = 1.;
 				TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
@@ -1375,58 +1296,163 @@ namespace lcfiplus {
 					if( z0sig > 5){
 						double lz0 = log10(fabs(tracks[n]->getZ0()));
 
-						prob *= _holder->_hz0[2]->GetBinContent(_holder->_hz0[2]->FindBin(lz0)) * 3.; // 3 = b,c,q, averaging effect
+						prob *= FTManager::getInstance().getIPProbHolder()->_hz0[2]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hz0[2]->FindBin(lz0)) * 3.; // 3 = b,c,q, averaging effect
 					}
 				}
 
 				_result = prob;
 			}
 		private:
-			FtIPProbHolder *_holder;
 			bool _useVertexTracks;
 	};
 
 	class FtZ0bProbIP : public FTAlgo {
 		public:
-			FtZ0bProbIP(FtIPProbHolder *holder) : FTAlgo("z0nonbprobip") {_holder = holder;}
+			FtZ0bProbIP() : FTAlgo("z0nonbprobip") {}
 			void process() {
 				double prob = 1.;
 				TrackVec tracks = _jet->getAllTracks(true);
 				for(unsigned int n=0;n<tracks.size();n++){
 					double sz0sig = signedZ0Significance(tracks[n], _jet, _privtx, true);
 					if( fabs(sz0sig) < 5){
-						double sbin = _holder->_hz0ip[0]->GetBinContent(_holder->_hz0ip[0]->FindBin(sz0sig));
-						double qbin = _holder->_hz0ip[2]->GetBinContent(_holder->_hz0ip[2]->FindBin(sz0sig)); 
-						prob *= qbin / sbin * _holder->_normz0ip[0];
+						double sbin = FTManager::getInstance().getIPProbHolder()->_hz0ip[0]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hz0ip[0]->FindBin(sz0sig));
+						double qbin = FTManager::getInstance().getIPProbHolder()->_hz0ip[2]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hz0ip[2]->FindBin(sz0sig)); 
+						prob *= qbin / sbin * FTManager::getInstance().getIPProbHolder()->_normz0ip[0];
 					}
 				}
 
 				_result = prob;
 			}
-		private:
-			FtIPProbHolder *_holder;
 	};
 
 	class FtZ0cProbIP : public FTAlgo {
 		public:
-			FtZ0cProbIP(FtIPProbHolder *holder) : FTAlgo("z0noncprobip") {_holder = holder;}
+			FtZ0cProbIP() : FTAlgo("z0noncprobip") {}
 			void process() {
 				double prob = 1.;
 				TrackVec tracks = _jet->getAllTracks(true);
 				for(unsigned int n=0;n<tracks.size();n++){
 					double sz0sig = signedZ0Significance(tracks[n], _jet, _privtx, true);
 					if( fabs(sz0sig) < 5){
-						double sbin = _holder->_hz0ip[1]->GetBinContent(_holder->_hz0ip[1]->FindBin(sz0sig));
-						double qbin = _holder->_hz0ip[2]->GetBinContent(_holder->_hz0ip[2]->FindBin(sz0sig)); 
-						prob *= qbin / sbin * _holder->_normz0ip[1];
+						double sbin = FTManager::getInstance().getIPProbHolder()->_hz0ip[1]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hz0ip[1]->FindBin(sz0sig));
+						double qbin = FTManager::getInstance().getIPProbHolder()->_hz0ip[2]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hz0ip[2]->FindBin(sz0sig)); 
+						prob *= qbin / sbin * FTManager::getInstance().getIPProbHolder()->_normz0ip[1];
 					}
 				}
 
 				_result = prob;
 			}
-		private:
-			FtIPProbHolder *_holder;
 	};
+
+	void FTManager::initVars()
+	{
+		if(_initialized)return;
+		_initialized = true;
+
+		cout << "Initializing FTManager variables." << endl;
+
+		add( new FtAuxiliaryM("aux") );
+
+		add( new FtNtrkWithoutV0() );
+		add( new FtNtrk() );
+
+		add( new FtNvtxAll() );
+		add( new FtVtxMassAll() );
+		add( new FtVtxLen12All() );
+		add( new FtVtxLen12AllByJetE() );
+		add( new Ft1VtxProb() );
+
+		add( new FtNvtx() );
+		add( new FtJetE() );
+		add( new FtVtxLen1() );
+		add( new FtVtxLen2() );
+		add( new FtVtxLen12() );
+		add( new FtVtxLen1ByJetE() );
+		add( new FtVtxLen2ByJetE() );
+		add( new FtVtxLen12ByJetE() );
+		add( new FtVtxSig1() );
+		add( new FtVtxSig2() );
+		add( new FtVtxSig12() );
+		add( new FtVtxSig1ByJetE() );
+		add( new FtVtxSig2ByJetE() );
+		add( new FtVtxSig12ByJetE() );
+		add( new FtVtxDirAng1() );
+		add( new FtVtxDirAng2() );
+		add( new FtVtxDirAng12() );
+		add( new FtVtxDirAng1TimesJetE() );
+		add( new FtVtxDirAng2TimesJetE() );
+		add( new FtVtxDirAng12TimesJetE() );
+		add( new FtVtxMom() );
+		add( new FtVtxMom1() );
+		add( new FtVtxMom2() );
+		add( new FtVtxMomByJetE() );
+		add( new FtVtxMom1ByJetE() );
+		add( new FtVtxMom2ByJetE() );
+		add( new FtVtxMass() );
+		add( new FtVtxMass1() );
+		add( new FtVtxMass2() );
+		add( new FtVtxMassPtCorr() );
+		add( new FtVtxMult() );
+		add( new FtVtxMult1() );
+		add( new FtVtxMult2() );
+		add( new FtVtxProb() );
+		add( new FtTrk1D0Sig() );
+		add( new FtTrk2D0Sig() );
+		add( new FtTrk1Z0Sig() );
+		add( new FtTrk2Z0Sig() );
+		add( new FtTrk1Pt() );
+		add( new FtTrk2Pt() );
+		add( new FtTrk1PtByJetE() );
+		add( new FtTrk2PtByJetE() );
+		add( new FtJProbR() );
+		add( new FtJProbZ() );
+		add( new FtJProbR5Sigma(true) );
+		add( new FtJProbZ5Sigma(true) );
+		add( new FtJProbR5Sigma(false) );
+		add( new FtJProbZ5Sigma(false) );
+		add( new FtJProbR2() );
+		add( new FtJProbZ2() );
+		add( new FtJProbR25Sigma(true) );
+		add( new FtJProbZ25Sigma(true) );
+		add( new FtJProbR25Sigma(false) );
+		add( new FtJProbZ25Sigma(false) );
+		add( new FtSphericity() );
+		add( new FtTrkMass() );
+		add( new FtTrkMass2() );
+		add( new FtNSecTracks(true) );
+		add( new FtNSecTracks(false) );
+		add( new FtNMuon(true) );
+		add( new FtNElectron(true) );
+		add( new FtNMuon(false) );
+		add( new FtNElectron(false) );
+		add( new FtMCNMuon() );
+		add( new FtMCNElectron() );
+		add( new FtMCNB() );
+		add( new FtMCNC() );
+
+		add( new FtVtxLongitudinalDeviation() );
+
+		// d0/z0 probs
+		add( new FtD0bProb());
+		add( new FtD0cProb());
+		add( new FtD0qProb());
+		add( new FtD0bProbSigned(true));
+		add( new FtD0cProbSigned(true));
+		add( new FtD0qProbSigned(true));
+		add( new FtD0bProbSigned(false));
+		add( new FtD0cProbSigned(false));
+		add( new FtD0qProbSigned(false));
+		add( new FtD0bProbIP());
+		add( new FtD0cProbIP());
+		add( new FtZ0bProb(true));
+		add( new FtZ0cProb(true));
+		add( new FtZ0qProb(true));
+		add( new FtZ0bProb(false));
+		add( new FtZ0cProb(false));
+		add( new FtZ0qProb(false));
+		add( new FtZ0bProbIP());
+		add( new FtZ0cProbIP());
+	}
 
 	void FlavorTag::init(Parameters *param) {
 		Algorithm::init(param);
@@ -1452,103 +1478,8 @@ namespace lcfiplus {
 		//cout << "FlavorTag: Ntuple file set to " << outputFilename << endl;
 		//cout << "FlavorTag: Number of jet set to " << _nJet << endl;
 
-		FTManager& mgr = FTManager::getInstance();
-
-		mgr.add( new FtAuxiliary("aux", _auxiliaryInfo) );
-
-		mgr.add( new FtNtrkWithoutV0() );
-		mgr.add( new FtNtrk() );
-
-		mgr.add( new FtNvtxAll() );
-		mgr.add( new FtVtxMassAll() );
-		mgr.add( new FtVtxLen12All() );
-		mgr.add( new FtVtxLen12AllByJetE() );
-		mgr.add( new Ft1VtxProb() );
-
-		mgr.add( new FtNvtx() );
-		mgr.add( new FtJetE() );
-		mgr.add( new FtVtxLen1() );
-		mgr.add( new FtVtxLen2() );
-		mgr.add( new FtVtxLen12() );
-		mgr.add( new FtVtxLen1ByJetE() );
-		mgr.add( new FtVtxLen2ByJetE() );
-		mgr.add( new FtVtxLen12ByJetE() );
-		mgr.add( new FtVtxSig1() );
-		mgr.add( new FtVtxSig2() );
-		mgr.add( new FtVtxSig12() );
-		mgr.add( new FtVtxSig1ByJetE() );
-		mgr.add( new FtVtxSig2ByJetE() );
-		mgr.add( new FtVtxSig12ByJetE() );
-		mgr.add( new FtVtxDirAng1() );
-		mgr.add( new FtVtxDirAng2() );
-		mgr.add( new FtVtxDirAng12() );
-		mgr.add( new FtVtxDirAng1TimesJetE() );
-		mgr.add( new FtVtxDirAng2TimesJetE() );
-		mgr.add( new FtVtxDirAng12TimesJetE() );
-		mgr.add( new FtVtxMom() );
-		mgr.add( new FtVtxMom1() );
-		mgr.add( new FtVtxMom2() );
-		mgr.add( new FtVtxMomByJetE() );
-		mgr.add( new FtVtxMom1ByJetE() );
-		mgr.add( new FtVtxMom2ByJetE() );
-		mgr.add( new FtVtxMass() );
-		mgr.add( new FtVtxMass1() );
-		mgr.add( new FtVtxMass2() );
-		mgr.add( new FtVtxMassPtCorr() );
-		mgr.add( new FtVtxMult() );
-		mgr.add( new FtVtxMult1() );
-		mgr.add( new FtVtxMult2() );
-		mgr.add( new FtVtxProb() );
-		mgr.add( new FtTrk1D0Sig() );
-		mgr.add( new FtTrk2D0Sig() );
-		mgr.add( new FtTrk1Z0Sig() );
-		mgr.add( new FtTrk2Z0Sig() );
-		mgr.add( new FtTrk1Pt() );
-		mgr.add( new FtTrk2Pt() );
-		mgr.add( new FtTrk1PtByJetE() );
-		mgr.add( new FtTrk2PtByJetE() );
-		mgr.add( new FtJProbR() );
-		mgr.add( new FtJProbZ() );
-		mgr.add( new FtJProbR5Sigma(true) );
-		mgr.add( new FtJProbZ5Sigma(true) );
-		mgr.add( new FtJProbR5Sigma(false) );
-		mgr.add( new FtJProbZ5Sigma(false) );
-		mgr.add( new FtSphericity() );
-		mgr.add( new FtTrkMass() );
-		mgr.add( new FtTrkMass2() );
-		mgr.add( new FtNSecTracks(true) );
-		mgr.add( new FtNSecTracks(false) );
-		mgr.add( new FtNMuon(true) );
-		mgr.add( new FtNElectron(true) );
-		mgr.add( new FtNMuon(false) );
-		mgr.add( new FtNElectron(false) );
-		mgr.add( new FtMCNMuon() );
-		mgr.add( new FtMCNElectron() );
-		mgr.add( new FtMCNB() );
-		mgr.add( new FtMCNC() );
-
-		mgr.add( new FtVtxLongitudinalDeviation() );
-
-		// d0/z0 probs
-		mgr.add( new FtD0bProb(_holder));
-		mgr.add( new FtD0cProb(_holder));
-		mgr.add( new FtD0qProb(_holder));
-		mgr.add( new FtD0bProbSigned(_holder,true));
-		mgr.add( new FtD0cProbSigned(_holder,true));
-		mgr.add( new FtD0qProbSigned(_holder,true));
-		mgr.add( new FtD0bProbSigned(_holder,false));
-		mgr.add( new FtD0cProbSigned(_holder,false));
-		mgr.add( new FtD0qProbSigned(_holder,false));
-		mgr.add( new FtD0bProbIP(_holder));
-		mgr.add( new FtD0cProbIP(_holder));
-		mgr.add( new FtZ0bProb(_holder,true));
-		mgr.add( new FtZ0cProb(_holder,true));
-		mgr.add( new FtZ0qProb(_holder,true));
-		mgr.add( new FtZ0bProb(_holder,false));
-		mgr.add( new FtZ0cProb(_holder,false));
-		mgr.add( new FtZ0qProb(_holder,false));
-		mgr.add( new FtZ0bProbIP(_holder));
-		mgr.add( new FtZ0cProbIP(_holder));
+		FTManager &mgr = FTManager::getInstance();
+		mgr.initVars();
 
 	}
 
@@ -1569,6 +1500,10 @@ namespace lcfiplus {
 		JetVec& jets = *jetsPtr;
 
 		FTManager &mgr = FTManager::getInstance();
+
+		mgr.setAuxiliary(_auxiliaryInfo);
+		mgr.setIPProbHolder(_holder);
+
 		mgr.process(event, privtx, _nhitsJointProbD0, _nhitsJointProbZ0, _nhitsMostSignificantTrack, jets);
 	}
 

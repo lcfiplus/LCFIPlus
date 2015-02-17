@@ -63,7 +63,7 @@ namespace lcfiplus{
 
 	// initialization ///////////////////////////////////////////////////////////
 
-	Point::Point(Vertex *vtx){
+	Point::Point(const Vertex *vtx){
 		_pos = SVector3(vtx->getX(), vtx->getY(), vtx->getZ());
 		_err(0,0) = vtx->getCov()[Vertex::xx];
 		_err(0,1) = vtx->getCov()[Vertex::xy];
