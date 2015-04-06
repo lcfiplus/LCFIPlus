@@ -2,6 +2,12 @@ Some documentation is available at
 https://confluence.slac.stanford.edu/display/ilc/LCFIPlus
 
 --------------
+| v00-06-02 |
+--------------
+- Automatic creation of JointProbability histograms implemented
+- Calculation of joint probability with histograms automatically created (jprob2)
+
+--------------
 | v00-06-01? |
 --------------
 - Added possibility to include beam jets in JetFinder (thanks to Philipp Roloff)

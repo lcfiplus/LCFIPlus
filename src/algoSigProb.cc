@@ -350,7 +350,7 @@ double jointProb2D0(const Jet* jet, const Vertex* pri, int minhitcut, double max
 	int ntrk(0);
 	double hiprob(0);
 
-	cout << "jprobr2" << endl;
+	//cout << "jprobr2" << endl;
 
 	TrackVec tracks = (useVertexTracks ? jet->getAllTracks(true) : jet->getTracks());
 	for (TrackVecIte it = tracks.begin(); it != tracks.end(); ++it) {
@@ -361,7 +361,7 @@ double jointProb2D0(const Jet* jet, const Vertex* pri, int minhitcut, double max
 		if (sig>maxd0sigcut)continue;
 		if (sig>maxd0sig)continue;
 		double prob = prob1D2(sig,maxd0sig,jh1,jh2)/prob1D2(0,maxd0sig,jh1,jh2);
-		cout << "prob = " << prob << endl;
+		//cout << "prob = " << prob << endl;
 		if (prob > hiprob) hiprob = prob;
 		prod *= prob;
 		++ntrk;
@@ -388,7 +388,7 @@ double jointProb2D0(const Jet* jet, const Vertex* pri, int minhitcut, double max
 
 	jprob *= prod;
 
-	cout << "jprob = " << jprob << endl;
+	//cout << "jprob = " << jprob << endl;
 
 	return jprob;
 }
