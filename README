@@ -6,6 +6,8 @@ https://confluence.slac.stanford.edu/display/ilc/LCFIPlus
 --------------
 - Automatic creation of JointProbability histograms implemented
 - Calculation of joint probability with histograms automatically created (jprob2)
+  Use v03_p01 steering, vertex probability and weight files in ILDConfig
+  for the new joint probability.
 
 --------------
 | v00-06-01? |
