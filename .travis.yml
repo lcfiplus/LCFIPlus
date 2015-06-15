@@ -15,7 +15,7 @@ before_install:
   - svn co https://svnsrv.desy.de/public/ilctools/ilcinstall/trunk/ ilcinstall
   - cd ilcinstall
   - sed -i 's#ilcsoft_install_prefix = "scratch/$USER/ilcsoft"#ilcsoft_install_prefix = "PACKAGES"#' examples/lcfiplus/release-versions.py
-  - sed -i 's#ilcsoft.use\(ROOT\(os.environ\[\'ROOTSYS\'\]\)\)#ilcsoft.install\(ROOT\(ROOT_version\)\)#/' examples/lcfiplus/release-scratch.py
+  - sed -i "s#ilcsoft.use(ROOT(os.environ\['ROOTSYS'\]))#ilcsoft.install\(ROOT\(ROOT_version\)\)#" examples/lcfiplus/release-scratch.py
   - python ilcsoft-install -i examples/lcfiplus/release-scratch.cfg
 
 before_script:
