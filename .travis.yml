@@ -18,12 +18,9 @@ before_install:
   - cat examples/lcfiplus/release-versions.py
   - sed -i "s#ilcsoft.use(ROOT(os.environ\['ROOTSYS'\]))#ilcsoft.install\(ROOT\(ROOT_version\)\)#" examples/lcfiplus/release-scratch.cfg
   - sed -i 's/http:/https:/' ilcsoft/root.py
+  - mkdir PACKAGES
   - python ilcsoft-install -i examples/lcfiplus/release-scratch.cfg
 
-before_script:
-  - travis_retry bundle
-  - if [ $TRAVIS_OS_NAME == linux ]; then travis_retry ./configure --llvm-config llvm-config-3.4; fi
-  - if [ $TRAVIS_OS_NAME == osx ]; then travis_retry ./configure; fi
 
 os:
   - linux
