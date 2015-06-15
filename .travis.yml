@@ -17,6 +17,7 @@ before_install:
   - sed -i 's#ilcsoft_install_prefix = "/scratch/$USER/ilcsoft/"#ilcsoft_install_prefix = "PACKAGES"#' examples/lcfiplus/release-versions.py
   - cat examples/lcfiplus/release-versions.py
   - sed -i "s#ilcsoft.use(ROOT(os.environ\['ROOTSYS'\]))#ilcsoft.install\(ROOT\(ROOT_version\)\)#" examples/lcfiplus/release-scratch.cfg
+  - sed -i 's/http:/https:/' ilcsoft/root.py
   - python ilcsoft-install -i examples/lcfiplus/release-scratch.cfg
 
 before_script:
