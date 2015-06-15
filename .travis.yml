@@ -10,9 +10,12 @@ before_install:
   - echo $LANG
   - echo $LC_ALL
   - sudo apt-get update
-  - svn co https://svnsrv.desy.de/public/ilctools/ilcinstall/tags/v01-17 ilcinstall
+  - sudo apt-get install -y default_jre default_jdk
+  - export JDK_HOME=/usr
+  - svn co https://svnsrv.desy.de/public/ilctools/ilcinstall/trunk/ ilcinstall
   - cd ilcinstall
-  - python ilcsoft-install -i releases/v01-17/release-scratch.cfg
+  - sed -i 's/ilcsoft_install_prefix = "scratch/$USER/ilcsoft"/ilcsoft_install_prefix = "PACKAGES"/' examples/lcfiplus/release-versions.py
+  - python ilcsoft-install -i examples/lcfiplus/release-scratch.cfg
 
 before_script:
   - travis_retry bundle
