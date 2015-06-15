@@ -12,7 +12,7 @@ before_install:
   - sudo apt-get update
   - svn co https://svnsrv.desy.de/public/ilctools/ilcinstall/tags/v01-17 ilcinstall
   - cd ilcinstall
-  - python -i releases/v01-17/release-scratch.cfg
+  - python ilcsoft-install -i releases/v01-17/release-scratch.cfg
 
 before_script:
   - travis_retry bundle
