@@ -19,7 +19,7 @@ before_script:
   - mkdir build
   - cd build
   - pwd
-  - cmake -C ${HOME}/ilcsoft/v01-17-01-pre02/ILCSoft.cmake ..
+  - cmake -C ${HOME}/build/lcfiplus/LCFIPlus/ilcsoft/v01-17-01-pre02/ILCSoft.cmake ..
 
 os:
   - linux
