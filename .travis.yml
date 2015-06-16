@@ -12,7 +12,6 @@ before_install:
   - export JDK_HOME=/usr
   - wget ftp://ftp-lcd.slac.stanford.edu/ilc2/jstrube/ilcsoft.tar.bz2
   - tar xjf ilcsoft.tar.bz2
-  - bash
   - source ilcsoft/v01-17-01-pre02/init_ilcsoft.sh
 
 os:
