@@ -12,14 +12,13 @@ before_install:
   - export JDK_HOME=/usr
   - wget ftp://ftp-lcd.slac.stanford.edu/ilc2/jstrube/ilcsoft.tar.bz2 -O /tmp/ilcsoft.tar.bz2
   - tar xjf /tmp/ilcsoft.tar.bz2
-  - source ilcsoft/v01-17-01-pre02/init_ilcsoft.sh
-  - find ${HOME} -type d
+  - mv ilcsoft ${HOME}/build
+  - source ${HOME}/build/ilcsoft/v01-17-01-pre02/init_ilcsoft.sh
 
 before_script:
   - mkdir build
   - cd build
-  - pwd
-  - cmake -C ${HOME}/build/lcfiplus/LCFIPlus/ilcsoft/v01-17-01-pre02/ILCSoft.cmake ..
+  - cmake -C ${ILCSOFT}/ILCSoft.cmake ..
 
 os:
   - linux
