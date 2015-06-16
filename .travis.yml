@@ -3,7 +3,7 @@ language: cpp
 compiler:
   - gcc
 
-script: cmake -C ${ILCSOFT}/ILCSoft.cmake ..
+script: make 
 
 before_install:
   - echo $LANG
@@ -13,6 +13,11 @@ before_install:
   - wget ftp://ftp-lcd.slac.stanford.edu/ilc2/jstrube/ilcsoft.tar.bz2
   - tar xjf ilcsoft.tar.bz2
   - source ilcsoft/v01-17-01-pre02/init_ilcsoft.sh
+
+before_script:
+  - mkdir build
+  - cd build
+  - cmake -C ${ILCSOFT}/ILCSoft.cmake ..
 
 os:
   - linux
