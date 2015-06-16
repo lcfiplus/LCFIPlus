@@ -4,23 +4,18 @@ compiler:
   - gcc
   - clang
 
-script: cmake
+script: cmake -C ${ILCSOFT}/ILCSoft.cmake ..
 
 before_install:
   - echo $LANG
   - echo $LC_ALL
   - sudo apt-get update
-  - sudo apt-get install -y default-jre default-jdk libxpm-dev
+  - sudo apt-get install -y default-jre default-jdk libxpm-dev x11-common libx11-6 x11-utils libX11-dev libgsl0-dev gsl-bin libxft-dev g++ gfortran build-essential libjpeg-turbo8-dev libjpeg8-dev libjpeg8-dev libjpeg-dev libtiff4-dev libxml2-dev libssl-dev libgnutls-dev libgmp3-dev libpng12-dev libldap2-dev libkrb5-dev freeglut3-dev libfftw3-dev python-dev libmysqlclient-dev libgif-dev libiodbc2 libiodbc2-dev subversion libxext-dev libxmu-dev libimlib2 gccxml
   - export JDK_HOME=/usr
-  - svn co https://svnsrv.desy.de/public/ilctools/ilcinstall/trunk/ ilcinstall
-  - cd ilcinstall
-  - sed -i 's#ilcsoft_install_prefix = "/scratch/$USER/ilcsoft/"#ilcsoft_install_prefix = "$HOME/PACKAGES"#' examples/lcfiplus/release-versions.py
-  - cat examples/lcfiplus/release-versions.py
-  - sed -i "s#ilcsoft.use(ROOT(os.environ\['ROOTSYS'\]))#ilcsoft.install\(ROOT\(ROOT_version\)\)#" examples/lcfiplus/release-scratch.cfg
-  - sed -i 's/http:/https:/' ilcsoft/root.py
-  - mkdir -p $HOME/PACKAGES/v01-17-01-pre02
-  - python ilcsoft-install -i examples/lcfiplus/release-scratch.cfg
-
+  - wget ftp://ftp-lcd.slac.stanford.edu/ilc2/jstrube/ilcsoft.tar.bz2
+  - tar xjf ilcsoft.tar.bz2
+  - bash
+  - source ilcsoft/v01-17-01-pre02/init_ilcsoft.sh
 
 os:
   - linux
