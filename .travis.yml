@@ -17,7 +17,7 @@ before_install:
 before_script:
   - mkdir build
   - cd build
-  - cmake -C ${ILCSOFT}/ILCSoft.cmake ..
+  - cmake -C ${HOME}/ilcsoft/ILCSoft.cmake ..
 
 os:
   - linux
