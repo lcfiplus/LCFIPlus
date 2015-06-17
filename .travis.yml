@@ -14,7 +14,9 @@ before_install:
   - tar xjf /tmp/ilcsoft.tar.bz2
   - mv ilcsoft ${HOME}/build
   - find ${HOME}/build/ilcsoft -type f -exec sed -i 's#jstrube#travis/build#g' {} \;
+  - cmake --version
   - source ${HOME}/build/ilcsoft/v01-17-01-pre02/init_ilcsoft.sh
+  - cmake --version
 
 before_script:
   - mkdir build
