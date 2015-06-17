@@ -47,154 +47,154 @@ using namespace lcfiplus::algoEtc;
 	 that jet will be designated as a heavy jet.
  */
 vector<int> findMcJetFlavor(vector<const Jet*> jets, vector<const MCParticle*> mcps) {
-	vector<int> mcJetFlavor;
-	vector<TVector3> jetDirs;
+  vector<int> mcJetFlavor;
+  vector<TVector3> jetDirs;
 
-	for (JetVecIte iter = jets.begin(); iter != jets.end(); ++iter) {
-		const Jet* jet = *iter;
-		TVector3 v = jet->Vect();
-		jetDirs.push_back(v.Unit());
-		mcJetFlavor.push_back(1);
-	}
+  for (JetVecIte iter = jets.begin(); iter != jets.end(); ++iter) {
+    const Jet* jet = *iter;
+    TVector3 v = jet->Vect();
+    jetDirs.push_back(v.Unit());
+    mcJetFlavor.push_back(1);
+  }
 
-	for (MCParticleVecIte iter = mcps.begin(); iter != mcps.end(); ++iter) {
-		const MCParticle* mcp = *iter;
-		int mcFlavor = mcp->getFlavor();
-		if (mcFlavor < 4) continue;
+  for (MCParticleVecIte iter = mcps.begin(); iter != mcps.end(); ++iter) {
+    const MCParticle* mcp = *iter;
+    int mcFlavor = mcp->getFlavor();
+    if (mcFlavor < 4) continue;
 
-		//printf("PDG code: %d (flavor=%d)\n", mcp->pdg, mcFlavor);
-		TVector3 v = mcp->getVertex();
-		TVector3 dir = v.Unit();
+    //printf("PDG code: %d (flavor=%d)\n", mcp->pdg, mcFlavor);
+    TVector3 v = mcp->getVertex();
+    TVector3 dir = v.Unit();
 
-		double minAngle(1e10);
-		unsigned int minIndex(0);
+    double minAngle(1e10);
+    unsigned int minIndex(0);
 
-		for (unsigned int j=0; j<jetDirs.size(); ++j) {
-			double angle = dir.Angle(jetDirs[j]);
-			if (angle < minAngle) {
-				minAngle = angle;
-				minIndex = j;
-			}
-		}
+    for (unsigned int j=0; j<jetDirs.size(); ++j) {
+      double angle = dir.Angle(jetDirs[j]);
+      if (angle < minAngle) {
+        minAngle = angle;
+        minIndex = j;
+      }
+    }
 
-		/*
-			 if (minAngle > 0.5) {
-			 printf("While matching MC particle to jets, a large angle deviation detected: %f\n", minAngle);
-			 }
-		 */
+    /*
+    	 if (minAngle > 0.5) {
+    	 printf("While matching MC particle to jets, a large angle deviation detected: %f\n", minAngle);
+    	 }
+     */
 
-		if (mcFlavor > mcJetFlavor[minIndex])
-			mcJetFlavor[minIndex] = mcFlavor;
-	}
+    if (mcFlavor > mcJetFlavor[minIndex])
+      mcJetFlavor[minIndex] = mcFlavor;
+  }
 
-	return mcJetFlavor;
+  return mcJetFlavor;
 }
 
 vector<MCVertex*> findMcVertex(vector<const MCParticle*> mcps) {
-	bool debug(false);
-	vector<MCVertex*> ret;
+  bool debug(false);
+  vector<MCVertex*> ret;
 
-	// map to store daughter -> semi-stable parent association
-	map<const MCParticle*,vector<const MCParticle*> > sspDau;
+  // map to store daughter -> semi-stable parent association
+  map<const MCParticle*,vector<const MCParticle*> > sspDau;
 
-	for (MCParticleVecIte it = mcps.begin(); it != mcps.end(); ++it) {
-		const MCParticle* mcp = *it;
-		if (mcp->isStable() == false && mcp->isSemiStable() == false)
-			continue;
+  for (MCParticleVecIte it = mcps.begin(); it != mcps.end(); ++it) {
+    const MCParticle* mcp = *it;
+    if (mcp->isStable() == false && mcp->isSemiStable() == false)
+      continue;
 
-		const MCParticle* ssp = mcp->getSemiStableParent();
-		if (ssp == 0) continue;
-		//printf("%d is stable with ssp %d\n",mcp->getPDG(),ssp->getPDG());
+    const MCParticle* ssp = mcp->getSemiStableParent();
+    if (ssp == 0) continue;
+    //printf("%d is stable with ssp %d\n",mcp->getPDG(),ssp->getPDG());
 
-		// is the ssp very short-lived?
-		float dif = ( ssp->getVertex()-mcp->getVertex() ).Mag();
-		if (dif < 5e-3) {
-			// if less than 5 microns, consider the vertex unresolvable
-			//printf("less than 5e-3\n");
-			const MCParticle* sspp = ssp->getSemiStableParent();
-			if (sspp) ssp = sspp;
-		}
-		/*
-			printf("sspp=%.3e, ssp=%.3e, dif=%.3e\n",
-					sspp->getVertex().Mag(),
-					ssp->getVertex().Mag(),
-					dif);
-		 */
+    // is the ssp very short-lived?
+    float dif = ( ssp->getVertex()-mcp->getVertex() ).Mag();
+    if (dif < 5e-3) {
+      // if less than 5 microns, consider the vertex unresolvable
+      //printf("less than 5e-3\n");
+      const MCParticle* sspp = ssp->getSemiStableParent();
+      if (sspp) ssp = sspp;
+    }
+    /*
+    	printf("sspp=%.3e, ssp=%.3e, dif=%.3e\n",
+    			sspp->getVertex().Mag(),
+    			ssp->getVertex().Mag(),
+    			dif);
+     */
 
-		map<const MCParticle*,vector<const MCParticle*> >::iterator sspIter = sspDau.find(ssp);
-		if ( sspIter == sspDau.end() ) {
-			vector<const MCParticle*> a;
-			a.push_back(mcp);
-			sspDau.insert( make_pair(ssp, a) );
-		} else {
-			// find vector and push mcp
-			sspDau[ssp].push_back(mcp);
-		}
-	}
+    map<const MCParticle*,vector<const MCParticle*> >::iterator sspIter = sspDau.find(ssp);
+    if ( sspIter == sspDau.end() ) {
+      vector<const MCParticle*> a;
+      a.push_back(mcp);
+      sspDau.insert( make_pair(ssp, a) );
+    } else {
+      // find vector and push mcp
+      sspDau[ssp].push_back(mcp);
+    }
+  }
 
-	if (debug) {
-		for (map<const MCParticle*,vector<const MCParticle*> >::iterator it = sspDau.begin(); it != sspDau.end(); ++it) {
-			const MCParticle* ssp = it->first;
-			vector<const MCParticle*>& dauVec = it->second;
-			printf(" ssp=%d ndau=%d (start=%.3e, end=%.3e) \n",
-					(int)ssp->getPDG(), (int)ssp->getDaughters().size(),
-					ssp->getVertex().Mag(), ssp->getEndVertex().Mag());
-			for (MCParticleVecIte dauIter = dauVec.begin(); dauIter != dauVec.end(); ++dauIter) {
-				const MCParticle* dau = *dauIter;
-				printf("   %d [p=%d] (start=%.3e, end=%.3e)\n", dau->getPDG(),
-						dau->getParent()->getPDG(), dau->getVertex().Mag(),
-						dau->getEndVertex().Mag() );
-			}
-		}
-	}
+  if (debug) {
+    for (map<const MCParticle*,vector<const MCParticle*> >::iterator it = sspDau.begin(); it != sspDau.end(); ++it) {
+      const MCParticle* ssp = it->first;
+      vector<const MCParticle*>& dauVec = it->second;
+      printf(" ssp=%d ndau=%d (start=%.3e, end=%.3e) \n",
+             (int)ssp->getPDG(), (int)ssp->getDaughters().size(),
+             ssp->getVertex().Mag(), ssp->getEndVertex().Mag());
+      for (MCParticleVecIte dauIter = dauVec.begin(); dauIter != dauVec.end(); ++dauIter) {
+        const MCParticle* dau = *dauIter;
+        printf("   %d [p=%d] (start=%.3e, end=%.3e)\n", dau->getPDG(),
+               dau->getParent()->getPDG(), dau->getVertex().Mag(),
+               dau->getEndVertex().Mag() );
+      }
+    }
+  }
 
-	for (map<const MCParticle*,vector<const MCParticle*> >::iterator it = sspDau.begin(); it != sspDau.end(); ++it) {
-		const MCParticle* ssp = it->first;
-		if (ssp->getEndVertex().Mag() > 1000) continue;
+  for (map<const MCParticle*,vector<const MCParticle*> >::iterator it = sspDau.begin(); it != sspDau.end(); ++it) {
+    const MCParticle* ssp = it->first;
+    if (ssp->getEndVertex().Mag() > 1000) continue;
 
-		int ntrk(0);
-		vector<const MCParticle*>& dauVec = it->second;
-		for (MCParticleVecIte dauIter = dauVec.begin(); dauIter != dauVec.end(); ++dauIter) {
-			const MCParticle* dau = *dauIter;
-			if (dau->isStableTrack())
-				++ntrk;
-		}
-		
-		if (ntrk == 0) continue;
+    int ntrk(0);
+    vector<const MCParticle*>& dauVec = it->second;
+    for (MCParticleVecIte dauIter = dauVec.begin(); dauIter != dauVec.end(); ++dauIter) {
+      const MCParticle* dau = *dauIter;
+      if (dau->isStableTrack())
+        ++ntrk;
+    }
 
-		MCVertex* v = new MCVertex;
-		v->setParent(ssp);
+    if (ntrk == 0) continue;
 
-		for (MCParticleVecIte dauIter = dauVec.begin(); dauIter != dauVec.end(); ++dauIter) {
-			const MCParticle* dau = *dauIter;
-			if (dau->isStableTrack()) {
-				v->add(dau);
-			}
-		}
-		ret.push_back(v);
-	}
+    MCVertex* v = new MCVertex;
+    v->setParent(ssp);
 
-	if (debug) {
-		for (vector<MCVertex*>::iterator it = ret.begin(); it != ret.end(); ++it) {
-			MCVertex* v = *it;
-			const MCParticle* ssp = v->getParent();
-			vector<const MCParticle*> dauVec = v->getDaughters();
+    for (MCParticleVecIte dauIter = dauVec.begin(); dauIter != dauVec.end(); ++dauIter) {
+      const MCParticle* dau = *dauIter;
+      if (dau->isStableTrack()) {
+        v->add(dau);
+      }
+    }
+    ret.push_back(v);
+  }
 
-			printf(" ssp=%d ndau=%d (start=%.3e, end=%.3e) \n",
-					(int)ssp->getPDG(), (int)ssp->getDaughters().size(),
-					ssp->getVertex().Mag(), ssp->getEndVertex().Mag());
-			for (vector<const MCParticle*>::iterator dauIter = dauVec.begin(); dauIter != dauVec.end(); ++dauIter) {
-				const MCParticle* dau = *dauIter;
-				if (dau->isStableTrack()) {
-					printf("   %d [p=%d] (start=%.3e, end=%.3e)\n", (int)dau->getPDG(),
-							(int)dau->getParent()->getPDG(), dau->getVertex().Mag(),
-							dau->getEndVertex().Mag() );
-				}
-			}
-		}
-	}
+  if (debug) {
+    for (vector<MCVertex*>::iterator it = ret.begin(); it != ret.end(); ++it) {
+      MCVertex* v = *it;
+      const MCParticle* ssp = v->getParent();
+      vector<const MCParticle*> dauVec = v->getDaughters();
 
-	return ret;
+      printf(" ssp=%d ndau=%d (start=%.3e, end=%.3e) \n",
+             (int)ssp->getPDG(), (int)ssp->getDaughters().size(),
+             ssp->getVertex().Mag(), ssp->getEndVertex().Mag());
+      for (vector<const MCParticle*>::iterator dauIter = dauVec.begin(); dauIter != dauVec.end(); ++dauIter) {
+        const MCParticle* dau = *dauIter;
+        if (dau->isStableTrack()) {
+          printf("   %d [p=%d] (start=%.3e, end=%.3e)\n", (int)dau->getPDG(),
+                 (int)dau->getParent()->getPDG(), dau->getVertex().Mag(),
+                 dau->getEndVertex().Mag() );
+        }
+      }
+    }
+  }
+
+  return ret;
 }
 
 const int SINGLE_MC_TRACK					= 1 << 0;
@@ -208,741 +208,748 @@ const int TRACKS_IN_MULTIPLE_JETS	= 1 << 7;
 const int RECO_MATCH							= 1 << 8;
 const int V0_MATCH								= 1 << 9;
 
-void matchMcVertex( const Event& evt, vector<MCVertex*>& vtxList, map<MCVertex*,int>& table, bool vertexing )
-{
-	bool debug(false);
-	vector<const Track*> tracks = evt.getTracks();
-	LcfiInterface lcfi;
+void matchMcVertex( const Event& evt, vector<MCVertex*>& vtxList, map<MCVertex*,int>& table, bool vertexing ) {
+  bool debug(false);
+  vector<const Track*> tracks = evt.getTracks();
+  LcfiInterface lcfi;
 
-	for (vector<MCVertex*>::const_iterator it = vtxList.begin(); it != vtxList.end(); ++it) {
-		MCVertex* v = *it;
-		table[v] = 0; // initialize flag
+  for (vector<MCVertex*>::const_iterator it = vtxList.begin(); it != vtxList.end(); ++it) {
+    MCVertex* v = *it;
+    table[v] = 0; // initialize flag
 
-		const MCParticle* ssp = v->getParent();
-		vector<const MCParticle*> dauVec = v->getDaughters();
+    const MCParticle* ssp = v->getParent();
+    vector<const MCParticle*> dauVec = v->getDaughters();
 
-		if (debug) {
-			printf("================================================\n");
-			printf("MC Vertex: pdg=%d ndau=%d decay=(%.3e,%.3e,%.3e) \n",
-					(int)ssp->getPDG(), (int)dauVec.size(),
-					ssp->getEndVertex().x(),
-					ssp->getEndVertex().y(),
-					ssp->getEndVertex().z()
-					);
-		}
+    if (debug) {
+      printf("================================================\n");
+      printf("MC Vertex: pdg=%d ndau=%d decay=(%.3e,%.3e,%.3e) \n",
+             (int)ssp->getPDG(), (int)dauVec.size(),
+             ssp->getEndVertex().x(),
+             ssp->getEndVertex().y(),
+             ssp->getEndVertex().z()
+            );
+    }
 
-		if (ssp->getDaughters().size() == 1) { table[v] |= SINGLE_MC_TRACK; }
+    if (ssp->getDaughters().size() == 1) {
+      table[v] |= SINGLE_MC_TRACK;
+    }
 
-		int nRecoTrk(0);
-		vector<const Track*> trkList;
+    int nRecoTrk(0);
+    vector<const Track*> trkList;
 
-		for (MCParticleVecIte dauIter = dauVec.begin(); dauIter != dauVec.end(); ++dauIter) {
-			const MCParticle* dau = *dauIter;
-			const Track* trk(0);
-			for (TrackVecIte trkIter = tracks.begin(); trkIter != tracks.end(); ++trkIter) {
+    for (MCParticleVecIte dauIter = dauVec.begin(); dauIter != dauVec.end(); ++dauIter) {
+      const MCParticle* dau = *dauIter;
+      const Track* trk(0);
+      for (TrackVecIte trkIter = tracks.begin(); trkIter != tracks.end(); ++trkIter) {
 //				if ( dau == evt.getMCParticle(*trkIter) ) {
-				if ( dau == (*trkIter)->getMcp() ) {
-					//printf(" match\n");
-					if (trk != 0) {
-						printf("double-match found: track1, track2 -> mcparticle\n");
-					} else {
-						trk = *trkIter;
-						++nRecoTrk;
-					}
-				}
-			}
+        if ( dau == (*trkIter)->getMcp() ) {
+          //printf(" match\n");
+          if (trk != 0) {
+            printf("double-match found: track1, track2 -> mcparticle\n");
+          } else {
+            trk = *trkIter;
+            ++nRecoTrk;
+          }
+        }
+      }
 
-			if (trk) {
-				v->add(trk); // add recotrk to mcvertex
-				trkList.push_back(trk);
-			}
+      if (trk) {
+        v->add(trk); // add recotrk to mcvertex
+        trkList.push_back(trk);
+      }
 
-			if (debug) {
-				printf("  %s dau=%4d", trk ? "      " : "*LOST*", dau->getPDG() );
+      if (debug) {
+        printf("  %s dau=%4d", trk ? "      " : "*LOST*", dau->getPDG() );
 
-				if (!trk) {
-					float cosTheta = fabs( sin( atan( dau->getTanLambda() ) ) );
-					printf("   **** track lost due to ");
-					if (dau->Pt() < 0.2) {
-						printf("low pt (%.4f)",dau->Pt());
-					} else if (cosTheta > 0.95) {
-						printf("being outside acceptance (cosTheta=%.4f)",cosTheta);
-					} else {
-						printf("unknown reasons");
-					}
-				}
-				printf("\n");
-			}
-		}
+        if (!trk) {
+          float cosTheta = fabs( sin( atan( dau->getTanLambda() ) ) );
+          printf("   **** track lost due to ");
+          if (dau->Pt() < 0.2) {
+            printf("low pt (%.4f)",dau->Pt());
+          } else if (cosTheta > 0.95) {
+            printf("being outside acceptance (cosTheta=%.4f)",cosTheta);
+          } else {
+            printf("unknown reasons");
+          }
+        }
+        printf("\n");
+      }
+    }
 
-		if (nRecoTrk <= 1) { table[v] |= NOT_ENOUGH_RECOTRK; }//printf("setting not enough reco: %d\n",table[v]);}
+    if (nRecoTrk <= 1) {
+      table[v] |= NOT_ENOUGH_RECOTRK;
+    }//printf("setting not enough reco: %d\n",table[v]);}
 
-		if (vertexing && nRecoTrk > 1) {
-			//printf("--------------- Running teardown vertexing...\n");
-			Vertex* vtx = VertexFinderTearDown<vector>()(trkList, 0, 1e10, 0);
+    if (vertexing && nRecoTrk > 1) {
+      //printf("--------------- Running teardown vertexing...\n");
+      Vertex* vtx = VertexFinderTearDown<vector>()(trkList, 0, 1e10, 0);
 
-			if (!vtx) {
-				//printf("*************** NOT FOUND\n");
-				table[v] |= TEARDOWN_FAILED;
-			}
-			
-			if (vtx) {
-				if (vtx->getChi2() > 10) { table[v] |= TEARDOWN_LARGE_CHISQ; }
+      if (!vtx) {
+        //printf("*************** NOT FOUND\n");
+        table[v] |= TEARDOWN_FAILED;
+      }
 
-				if (debug) {
-					printf("Teardown Vertex found:  (%.3e,%.3e,%.3e) chi2=%.3e ntrk=%d\n",
-							vtx->getX(),vtx->getY(),vtx->getZ(),
-							vtx->getChi2(),
-							(int)vtx->getTracks().size()
-							);
-					for(unsigned int i=0;i<vtx->getTracks().size();i++){
-						const Track * tr = vtx->getTracks()[i];
-						printf("        Track #%d  pos=(%.3e,%.3e,%.3e), chi2=%e\n",
-								i, tr->getX(), tr->getY(), tr->getZ(), vtx->getChi2Track(tr));
-					}
-				}
-				delete vtx;
-			}
-			//printf("--------------- Running ZVTOP...\n");
-			Jet jet;
-			for (unsigned int i=0; i<trkList.size(); ++i) {
-				jet.add( Jet(trkList[i]) );
-			}
-			//printf("jet e=%.3e\n",jet.E());
-			vector<Vertex*> zvtopList = lcfi.forceZvtop(jet);
-			if (zvtopList.size() == 0) {
-				//printf("*************** NOT FOUND\n");
-				table[v] |= ZVTOP_FAILED;
-			}
-			if (zvtopList.size() > 0) {
-				Vertex* vtx = zvtopList[0];
-				if (vtx->getChi2() > 10) { table[v] |= ZVTOP_LARGE_CHISQ; }
+      if (vtx) {
+        if (vtx->getChi2() > 10) {
+          table[v] |= TEARDOWN_LARGE_CHISQ;
+        }
 
-				if (debug) {
-					printf("ZVTOP Vertex Found (%d): (%.3e,%.3e,%.3e) chi2=%.3e ntrk=%d\n",
-							(int)zvtopList.size(),
-							vtx->getX(),vtx->getY(),vtx->getZ(),
-							vtx->getChi2(),
-							(int)vtx->getTracks().size()
-							);
-					for(unsigned int i=0;i<vtx->getTracks().size();i++){
-						const Track * tr = vtx->getTracks()[i];
-						printf("        Track #%d  pos=(%.3e,%.3e,%.3e), chi2=%e\n",
-								i, tr->getX(), tr->getY(), tr->getZ(), vtx->getChi2Track(tr) );
-					}
-				}
-			}
-		}
-	}
+        if (debug) {
+          printf("Teardown Vertex found:  (%.3e,%.3e,%.3e) chi2=%.3e ntrk=%d\n",
+                 vtx->getX(),vtx->getY(),vtx->getZ(),
+                 vtx->getChi2(),
+                 (int)vtx->getTracks().size()
+                );
+          for (unsigned int i=0; i<vtx->getTracks().size(); i++) {
+            const Track* tr = vtx->getTracks()[i];
+            printf("        Track #%d  pos=(%.3e,%.3e,%.3e), chi2=%e\n",
+                   i, tr->getX(), tr->getY(), tr->getZ(), vtx->getChi2Track(tr));
+          }
+        }
+        delete vtx;
+      }
+      //printf("--------------- Running ZVTOP...\n");
+      Jet jet;
+      for (unsigned int i=0; i<trkList.size(); ++i) {
+        jet.add( Jet(trkList[i]) );
+      }
+      //printf("jet e=%.3e\n",jet.E());
+      vector<Vertex*> zvtopList = lcfi.forceZvtop(jet);
+      if (zvtopList.size() == 0) {
+        //printf("*************** NOT FOUND\n");
+        table[v] |= ZVTOP_FAILED;
+      }
+      if (zvtopList.size() > 0) {
+        Vertex* vtx = zvtopList[0];
+        if (vtx->getChi2() > 10) {
+          table[v] |= ZVTOP_LARGE_CHISQ;
+        }
 
-	/*
-	for (vector<Vertex*>::iterator rvtxIter = recovtx.begin(); rvtxIter != recovtx.end(); ++rvtxIter) {
-		Vertex* recov = *rvtxIter;
-		vector<Track*> dauList = recov->getTracks();
-		Vertex * vtx = lcfiplus::VertexFinderTearDown<vector>()(tracksForPrimary, &beamTracks, 9.0, 0);
-		printf("ndau = %d\n", dauList.size() );
-	}
-	*/
+        if (debug) {
+          printf("ZVTOP Vertex Found (%d): (%.3e,%.3e,%.3e) chi2=%.3e ntrk=%d\n",
+                 (int)zvtopList.size(),
+                 vtx->getX(),vtx->getY(),vtx->getZ(),
+                 vtx->getChi2(),
+                 (int)vtx->getTracks().size()
+                );
+          for (unsigned int i=0; i<vtx->getTracks().size(); i++) {
+            const Track* tr = vtx->getTracks()[i];
+            printf("        Track #%d  pos=(%.3e,%.3e,%.3e), chi2=%e\n",
+                   i, tr->getX(), tr->getY(), tr->getZ(), vtx->getChi2Track(tr) );
+          }
+        }
+      }
+    }
+  }
+
+  /*
+  for (vector<Vertex*>::iterator rvtxIter = recovtx.begin(); rvtxIter != recovtx.end(); ++rvtxIter) {
+  	Vertex* recov = *rvtxIter;
+  	vector<Track*> dauList = recov->getTracks();
+  	Vertex * vtx = lcfiplus::VertexFinderTearDown<vector>()(tracksForPrimary, &beamTracks, 9.0, 0);
+  	printf("ndau = %d\n", dauList.size() );
+  }
+  */
 }
 
 void matchMcVertexJet(
-		const Event& evt,
-		const vector<MCVertex*>& vtxList, map<MCVertex*,int>& table,
-		const vector<const Jet*>& jets)
-{
-	for (vector<MCVertex*>::const_iterator it = vtxList.begin(); it != vtxList.end(); ++it) {
-		MCVertex* v = *it;
-		vector<const MCParticle*> dauVec = v->getDaughters();
+  const Event& evt,
+  const vector<MCVertex*>& vtxList, map<MCVertex*,int>& table,
+  const vector<const Jet*>& jets) {
+  for (vector<MCVertex*>::const_iterator it = vtxList.begin(); it != vtxList.end(); ++it) {
+    MCVertex* v = *it;
+    vector<const MCParticle*> dauVec = v->getDaughters();
 
-		vector<const Track*> trkList;
-		int nRecoTrk(0);
-		TrackVec & tracks = evt.getTracks();
+    vector<const Track*> trkList;
+    int nRecoTrk(0);
+    TrackVec& tracks = evt.getTracks();
 
-		for (MCParticleVecIte dauIter = dauVec.begin();
-				dauIter != dauVec.end(); ++dauIter) {
+    for (MCParticleVecIte dauIter = dauVec.begin();
+         dauIter != dauVec.end(); ++dauIter) {
 
-			const MCParticle* dau = *dauIter;
-			const Track* trk(0);
-			for (TrackVecIte trkIter = tracks.begin(); trkIter != tracks.end(); ++trkIter) {
-				if ( dau == evt.getMCParticle(*trkIter) ) {
-					trk = *trkIter;
-					break;
-				}
-			}
-			if (trk) {
-				trkList.push_back(trk);
-				++nRecoTrk;
-			}
-		}
+      const MCParticle* dau = *dauIter;
+      const Track* trk(0);
+      for (TrackVecIte trkIter = tracks.begin(); trkIter != tracks.end(); ++trkIter) {
+        if ( dau == evt.getMCParticle(*trkIter) ) {
+          trk = *trkIter;
+          break;
+        }
+      }
+      if (trk) {
+        trkList.push_back(trk);
+        ++nRecoTrk;
+      }
+    }
 
-		if (nRecoTrk==0) continue;
+    if (nRecoTrk==0) continue;
 
-		// check to see if the daughter tracks are split among jets
-		int nJetMatch(0); // should be just one if there are no split
-		for (JetVecIte jetIter = jets.begin(); jetIter != jets.end(); ++jetIter) {
-			const Jet* j = *jetIter;
-			vector<const Track*> jtrks = j->getTracks();
-			for (TrackVecIte trkIter = trkList.begin(); trkIter != trkList.end(); ++trkIter) {
-				if ( find( jtrks.begin(), jtrks.end(), *trkIter ) != jtrks.end() ) {
-					++nJetMatch;
-					break;
-				}
-			}
-		}
+    // check to see if the daughter tracks are split among jets
+    int nJetMatch(0); // should be just one if there are no split
+    for (JetVecIte jetIter = jets.begin(); jetIter != jets.end(); ++jetIter) {
+      const Jet* j = *jetIter;
+      vector<const Track*> jtrks = j->getTracks();
+      for (TrackVecIte trkIter = trkList.begin(); trkIter != trkList.end(); ++trkIter) {
+        if ( find( jtrks.begin(), jtrks.end(), *trkIter ) != jtrks.end() ) {
+          ++nJetMatch;
+          break;
+        }
+      }
+    }
 
-		if (nJetMatch == 0) {
-			table[v] |= TRACKS_NOT_IN_JETS;
-		}
-		if (nJetMatch > 1) {
-			table[v] |= TRACKS_IN_MULTIPLE_JETS;
-		}
+    if (nJetMatch == 0) {
+      table[v] |= TRACKS_NOT_IN_JETS;
+    }
+    if (nJetMatch > 1) {
+      table[v] |= TRACKS_IN_MULTIPLE_JETS;
+    }
 
-		//printf("nJetMatch=%d\n",nJetMatch);
-	}
+    //printf("nJetMatch=%d\n",nJetMatch);
+  }
 }
 
 void matchMcVertexReco(
-		const Event& evt,
-		const vector<MCVertex*>& vtxList, map<MCVertex*,int>& table,
-		Vertex* vertex )
-{
-	const vector<const Track*>& tracks = vertex->getTracks();
+  const Event& evt,
+  const vector<MCVertex*>& vtxList, map<MCVertex*,int>& table,
+  Vertex* vertex ) {
+  const vector<const Track*>& tracks = vertex->getTracks();
 
-	int nTrkMatchMAX(0);
-	MCVertex* match(0);
+  int nTrkMatchMAX(0);
+  MCVertex* match(0);
 
-	for (vector<MCVertex*>::const_iterator it = vtxList.begin(); it != vtxList.end(); ++it) {
-		MCVertex* v = *it;
-		vector<const Track*> recoTrksMatch = v->getRecoTracks();
+  for (vector<MCVertex*>::const_iterator it = vtxList.begin(); it != vtxList.end(); ++it) {
+    MCVertex* v = *it;
+    vector<const Track*> recoTrksMatch = v->getRecoTracks();
 
-		int nTrkMatch(0);
+    int nTrkMatch(0);
 
-		for (TrackVecIte trkIter = recoTrksMatch.begin();
-				trkIter != recoTrksMatch.end(); ++trkIter) {
-			const Track* trk = *trkIter;
-			if ( find( tracks.begin(), tracks.end(), trk ) != tracks.end() ) {
-				++nTrkMatch;
-			}
-		}
+    for (TrackVecIte trkIter = recoTrksMatch.begin();
+         trkIter != recoTrksMatch.end(); ++trkIter) {
+      const Track* trk = *trkIter;
+      if ( find( tracks.begin(), tracks.end(), trk ) != tracks.end() ) {
+        ++nTrkMatch;
+      }
+    }
 
-		//if (nTrkMatch > 0) {
-		if (nTrkMatch >= 2) {
-			if (nTrkMatch > nTrkMatchMAX) {
-				match = v;
-			}
-		}
-	}
+    //if (nTrkMatch > 0) {
+    if (nTrkMatch >= 2) {
+      if (nTrkMatch > nTrkMatchMAX) {
+        match = v;
+      }
+    }
+  }
 
-	if (match) {
-		if (match->getRecoVertex() != 0) {
-			printf(" vertex already matched!!\n");
-		} else {
-			match->setRecoVertex(vertex);
-			table[match] |= RECO_MATCH;
-		}
-	}
+  if (match) {
+    if (match->getRecoVertex() != 0) {
+      printf(" vertex already matched!!\n");
+    } else {
+      match->setRecoVertex(vertex);
+      table[match] |= RECO_MATCH;
+    }
+  }
 }
 
 void matchMcVertexRecoV0(
-		const Event& evt,
-		const vector<MCVertex*>& vtxList, map<MCVertex*,int>& table )
-{
-	const vector<const Neutral*>& neutrals = evt.getNeutrals();
+  const Event& evt,
+  const vector<MCVertex*>& vtxList, map<MCVertex*,int>& table ) {
+  const vector<const Neutral*>& neutrals = evt.getNeutrals();
 
-	for (NeutralVecIte neutIter = neutrals.begin();
-			neutIter != neutrals.end(); ++neutIter) {
-		const Neutral* neut = *neutIter;
-		if (neut->isV0()) {
-			for (vector<MCVertex*>::const_iterator it = vtxList.begin(); it != vtxList.end(); ++it) {
-				MCVertex* v = *it;
-				const MCParticle* mcv0 = v->getParent();
-				int vpdg = mcv0 ? mcv0->getPDG() : 0;
-				if (mcv0 && vpdg == neut->getPDG()) {
-					printf(" pfo %d, parent %d\n",neut->getPDG(), vpdg );
-					printf(" reco (%.2e,%.2e,%.2e) mc (%.2e,%.2e,%.2e)\n",
-							neut->Px(), neut->Py(), neut->Pz(),
-							mcv0->Px(), mcv0->Py(), mcv0->Pz()
-							);
-					table[v] |= V0_MATCH;
-				}
-			}
-		}
-	}
+  for (NeutralVecIte neutIter = neutrals.begin();
+       neutIter != neutrals.end(); ++neutIter) {
+    const Neutral* neut = *neutIter;
+    if (neut->isV0()) {
+      for (vector<MCVertex*>::const_iterator it = vtxList.begin(); it != vtxList.end(); ++it) {
+        MCVertex* v = *it;
+        const MCParticle* mcv0 = v->getParent();
+        int vpdg = mcv0 ? mcv0->getPDG() : 0;
+        if (mcv0 && vpdg == neut->getPDG()) {
+          printf(" pfo %d, parent %d\n",neut->getPDG(), vpdg );
+          printf(" reco (%.2e,%.2e,%.2e) mc (%.2e,%.2e,%.2e)\n",
+                 neut->Px(), neut->Py(), neut->Pz(),
+                 mcv0->Px(), mcv0->Py(), mcv0->Pz()
+                );
+          table[v] |= V0_MATCH;
+        }
+      }
+    }
+  }
 }
 
 vector<Vertex*> findAdditionalVertices(
-		const Event& evt, const Jet* jet,
-		const vector<Vertex*>& seedList,
-		const Vertex* primaryVertex )
-{
-	vector<Vertex*> ret;
+  const Event& evt, const Jet* jet,
+  const vector<Vertex*>& seedList,
+  const Vertex* primaryVertex ) {
+  vector<Vertex*> ret;
 
-	vector<const Track*> useTracks;
-	vector<const Track*> tracksToReject; // not require single
+  vector<const Track*> useTracks;
+  vector<const Track*> tracksToReject; // not require single
 
-	TrackVec & ptrks = primaryVertex->getTracks();
-	for (TrackVecIte trkIter = ptrks.begin(); trkIter != ptrks.end(); ++trkIter) {
-		tracksToReject.push_back(*trkIter);
-	}
+  TrackVec& ptrks = primaryVertex->getTracks();
+  for (TrackVecIte trkIter = ptrks.begin(); trkIter != ptrks.end(); ++trkIter) {
+    tracksToReject.push_back(*trkIter);
+  }
 
-	for (vector<Vertex *>::const_iterator it = seedList.begin(); it != seedList.end(); ++it) {
-		Vertex* v = *it;
-		ret.push_back(v);
-		TrackVec & vtrks = v->getTracks();
-		for (TrackVecIte vtrkIter = vtrks.begin(); vtrkIter != vtrks.end(); ++vtrkIter) {
-			tracksToReject.push_back(*vtrkIter);
-		}
-	}
+  for (vector<Vertex*>::const_iterator it = seedList.begin(); it != seedList.end(); ++it) {
+    Vertex* v = *it;
+    ret.push_back(v);
+    TrackVec& vtrks = v->getTracks();
+    for (TrackVecIte vtrkIter = vtrks.begin(); vtrkIter != vtrks.end(); ++vtrkIter) {
+      tracksToReject.push_back(*vtrkIter);
+    }
+  }
 
-	TrackVec & jtrks = jet->getTracks();
-	for (TrackVecIte jtrkIter = jtrks.begin(); jtrkIter != jtrks.end(); ++jtrkIter) {
-		if ( find( tracksToReject.begin(), tracksToReject.end(), *jtrkIter ) == tracksToReject.end() ) {
-			useTracks.push_back(*jtrkIter);
-		}
-	}
+  TrackVec& jtrks = jet->getTracks();
+  for (TrackVecIte jtrkIter = jtrks.begin(); jtrkIter != jtrks.end(); ++jtrkIter) {
+    if ( find( tracksToReject.begin(), tracksToReject.end(), *jtrkIter ) == tracksToReject.end() ) {
+      useTracks.push_back(*jtrkIter);
+    }
+  }
 
-	Jet jet2;
-	for (TrackVecIte utrkIter = useTracks.begin(); utrkIter != useTracks.end(); ++utrkIter) {
-		jet2.add(*utrkIter);
-	}
+  Jet jet2;
+  for (TrackVecIte utrkIter = useTracks.begin(); utrkIter != useTracks.end(); ++utrkIter) {
+    jet2.add(*utrkIter);
+  }
 
-	vector<Vertex*>* extraVtxList = findTearDownVertices( evt, jet2 );
+  vector<Vertex*>* extraVtxList = findTearDownVertices( evt, jet2 );
 
-	for (vector<Vertex *>::const_iterator it = extraVtxList->begin(); it != extraVtxList->end(); ++it) {
-		ret.push_back(*it);
-	}
+  for (vector<Vertex*>::const_iterator it = extraVtxList->begin(); it != extraVtxList->end(); ++it) {
+    ret.push_back(*it);
+  }
 
-	delete extraVtxList;
+  delete extraVtxList;
 
-	return ret;
+  return ret;
 }
 
 vector<const Track*> findSingleTracks(const Event& evt, const Jet& jet, const vector<lcfiplus::Vertex*>& vtxList) {
-	vector<const Track*> ret;
-	vector<const Track*> cand;
+  vector<const Track*> ret;
+  vector<const Track*> cand;
 
-	TrackVec &tracks = jet.getTracks();
-	for (unsigned int i=0; i<tracks.size(); ++i) {
-		const Track* trk = tracks[i];
-		for (unsigned int j=0; j<vtxList.size(); ++j) {
-			TrackVec & vtxTracks = vtxList[j]->getTracks();
-			if (find(vtxTracks.begin(),vtxTracks.end(),trk) != vtxTracks.end()) {
-				cand.push_back(trk);
-			}
-		}
-	}
+  TrackVec& tracks = jet.getTracks();
+  for (unsigned int i=0; i<tracks.size(); ++i) {
+    const Track* trk = tracks[i];
+    for (unsigned int j=0; j<vtxList.size(); ++j) {
+      TrackVec& vtxTracks = vtxList[j]->getTracks();
+      if (find(vtxTracks.begin(),vtxTracks.end(),trk) != vtxTracks.end()) {
+        cand.push_back(trk);
+      }
+    }
+  }
 
-	//printf("%d\n",cand.size());
+  //printf("%d\n",cand.size());
 
-	return cand;
-	return ret;
+  return cand;
+  return ret;
 }
 
-		void eventDisplay(const char* input, int start) {
-			TRint* theApp = 0;
-			theApp = new TRint("ROOT",0,0);
+void eventDisplay(const char* input, int start) {
+  TRint* theApp = 0;
+  theApp = new TRint("ROOT",0,0);
 
-			TEveManager::Create();
+  TEveManager::Create();
 
-			TEveBrowser* browser = gEve->GetBrowser();
-			browser->StartEmbedding(TRootBrowser::kLeft);
+  TEveBrowser* browser = gEve->GetBrowser();
+  browser->StartEmbedding(TRootBrowser::kLeft);
 
-			TGMainFrame* frmMain = new TGMainFrame(gClient->GetRoot(),600,400);
-			frmMain->SetWindowName("XX GUI");
-			frmMain->SetCleanup(kDeepCleanup);
+  TGMainFrame* frmMain = new TGMainFrame(gClient->GetRoot(),600,400);
+  frmMain->SetWindowName("XX GUI");
+  frmMain->SetCleanup(kDeepCleanup);
 
-			TGGroupFrame* frmEvent = new TGGroupFrame(frmMain, "Event Navigation", kHorizontalFrame);
-			TGHorizontalFrame* hf = new TGHorizontalFrame(frmMain);
+  TGGroupFrame* frmEvent = new TGGroupFrame(frmMain, "Event Navigation", kHorizontalFrame);
+  TGHorizontalFrame* hf = new TGHorizontalFrame(frmMain);
 
-			EventNavigator* fh = new EventNavigator(input,start);
-			//void* fh(0);
+  EventNavigator* fh = new EventNavigator(input,start);
+  //void* fh(0);
 
-			TString icondir( Form("%s/icons/", gSystem->Getenv("ROOTSYS")) );
-			TGPictureButton* b = 0;
+  TString icondir( Form("%s/icons/", gSystem->Getenv("ROOTSYS")) );
+  TGPictureButton* b = 0;
 
-			b = new TGPictureButton(hf, gClient->GetPicture(icondir + "GoBack.gif"));
-			hf->AddFrame(b);
-			b->Connect("Clicked()", "lcfiplus::EventNavigator", fh, "Bck()");
+  b = new TGPictureButton(hf, gClient->GetPicture(icondir + "GoBack.gif"));
+  hf->AddFrame(b);
+  b->Connect("Clicked()", "lcfiplus::EventNavigator", fh, "Bck()");
 
-			b = new TGPictureButton(hf, gClient->GetPicture(icondir + "GoForward.gif"));
-			hf->AddFrame(b);
-			b->Connect("Clicked()", "lcfiplus::EventNavigator", fh, "Fwd()");
+  b = new TGPictureButton(hf, gClient->GetPicture(icondir + "GoForward.gif"));
+  hf->AddFrame(b);
+  b->Connect("Clicked()", "lcfiplus::EventNavigator", fh, "Fwd()");
 
-			frmEvent->AddFrame(hf);
-			frmMain->AddFrame(frmEvent);
+  frmEvent->AddFrame(hf);
+  frmMain->AddFrame(frmEvent);
 
-			frmMain->MapSubwindows();
-			frmMain->Resize();
-			frmMain->MapWindow();
+  frmMain->MapSubwindows();
+  frmMain->Resize();
+  frmMain->MapWindow();
 
-			browser->StopEmbedding();
-			browser->SetTabTitle("Navigation",0);
+  browser->StopEmbedding();
+  browser->SetTabTitle("Navigation",0);
 
 
-			gEve->FullRedraw3D(kTRUE);
-			theApp->Run();
-		}
+  gEve->FullRedraw3D(kTRUE);
+  theApp->Run();
+}
 
 int main(int argc, char* argv[]) {
 
-	// if argc==1 abort
-	// if argc==2 argv[1] macro is processed
-	// if argc==3 argv[2] function in argv[1] file is processed
-	// if argc==4 argv[2] function in argv[1] file is processed with param argv[3]
-	// if argc>=5 abort 
+  // if argc==1 abort
+  // if argc==2 argv[1] macro is processed
+  // if argc==3 argv[2] function in argv[1] file is processed
+  // if argc==4 argv[2] function in argv[1] file is processed with param argv[3]
+  // if argc>=5 abort
 
-	if(argc==1 || argc>=5){cout << "Usage: lcfiplus filename [ funcname [ params ] ]" << endl; return 1;}
-	const char *macroname = argv[1];
-	const char *funcname = (argc>2 ? argv[2] : "");
-	const char *params = (argc>3 ? argv[3] : "");
+  if (argc==1 || argc>=5) {
+    cout << "Usage: lcfiplus filename [ funcname [ params ] ]" << endl;
+    return 1;
+  }
+  const char* macroname = argv[1];
+  const char* funcname = (argc>2 ? argv[2] : "");
+  const char* params = (argc>3 ? argv[3] : "");
 
-	if(argc==2){
-		cout << "Executing " << macroname << " ..." << endl;
-		gROOT->Macro(macroname);
-		//			gROOT->ProcessLine(TString::Format(".x %s",macroname));
-	}
-	else{
-		if(strcmp(macroname, "0")){
-			cout << "Loading " << macroname << " ..." << endl;
-			gROOT->LoadMacro(macroname);
-		}
-		cout << "Calling " << funcname;
-		if(argc==4)	cout << " with param " << params;
-		cout << " ..." << endl;
-		gROOT->GetInterpreter()->Execute(funcname, params);
-	}
+  if (argc==2) {
+    cout << "Executing " << macroname << " ..." << endl;
+    gROOT->Macro(macroname);
+    //			gROOT->ProcessLine(TString::Format(".x %s",macroname));
+  } else {
+    if (strcmp(macroname, "0")) {
+      cout << "Loading " << macroname << " ..." << endl;
+      gROOT->LoadMacro(macroname);
+    }
+    cout << "Calling " << funcname;
+    if (argc==4)	cout << " with param " << params;
+    cout << " ..." << endl;
+    gROOT->GetInterpreter()->Execute(funcname, params);
+  }
 
-	return 0;
+  return 0;
 }
 
 
 /////////////////////////////////////////////////////////////////////////
 
-void testSuehara(const char *inputlist, const char *output)
-{
-	Globals::Instance()->setBField(3.5);
+void testSuehara(const char* inputlist, const char* output) {
+  Globals::Instance()->setBField(3.5);
 
-	LCIOStorer ls(inputlist);
-	ls.InitCollections("PandoraPFOs","MCParticlesSkimmed","RecoMCTruthLink","Tracks","Neutrals","MCParticles");
-	ls.InitVertexCollection("BuildUpVertex2", "BuildUpVertex2");
-	ls.InitJetCollection("Durham_2Jets", "Durham_2Jets");
+  LCIOStorer ls(inputlist);
+  ls.InitCollections("PandoraPFOs","MCParticlesSkimmed","RecoMCTruthLink","Tracks","Neutrals","MCParticles");
+  ls.InitVertexCollection("BuildUpVertex2", "BuildUpVertex2");
+  ls.InitJetCollection("Durham_2Jets", "Durham_2Jets");
 
-	cout << "LCIO initialization successful." << endl;
+  cout << "LCIO initialization successful." << endl;
 
-	Event *event = Event::Instance();
-	event->Print();
+  Event* event = Event::Instance();
+  event->Print();
 
-	TFile f(output,"RECREATE");
-	TNtuple *nt = new TNtuple("nt","nt","nev:nb:bidx:id:category:nvtx:btr:ctr:btrvtx:ctrvtx:d0:d0err:z0:z0err:e:pdg");
+  TFile f(output,"RECREATE");
+  TNtuple* nt = new TNtuple("nt","nt","nev:nb:bidx:id:category:nvtx:btr:ctr:btrvtx:ctrvtx:d0:d0err:z0:z0err:e:pdg");
 
-	struct {
-		float nev;
-		float nb;
-		float bidx;
-		float id;
-		float trackcategory;
-		float nvtx;
-		float btracks;
-		float ctracks;
-		float vtxbtracks;
-		float vtxctracks;
-		float d0;
-		float d0err;
-		float z0;
-		float z0err;
-		float e;
-		float pdg;
-	}data;
+  struct {
+    float nev;
+    float nb;
+    float bidx;
+    float id;
+    float trackcategory;
+    float nvtx;
+    float btracks;
+    float ctracks;
+    float vtxbtracks;
+    float vtxctracks;
+    float d0;
+    float d0err;
+    float z0;
+    float z0err;
+    float e;
+    float pdg;
+  } data;
 
-	TNtuple *ntJet = new TNtuple("ntJet","ntJet","nev:nj:btr:ctr:otr:nvtx:chi21o:chi22o:chi23o:chi24o:chi21:chi22");
-	struct {
-		float nev;
-		float nj;
-		float btracks;
-		float ctracks;
-		float otracks;
-		float nvtxorig;
-		float chi2orig[4];
-		float chi2[2];
-	}jetdata;
+  TNtuple* ntJet = new TNtuple("ntJet","ntJet","nev:nj:btr:ctr:otr:nvtx:chi21o:chi22o:chi23o:chi24o:chi21:chi22");
+  struct {
+    float nev;
+    float nj;
+    float btracks;
+    float ctracks;
+    float otracks;
+    float nvtxorig;
+    float chi2orig[4];
+    float chi2[2];
+  } jetdata;
 
-	int nev = 0;
-	int nbsum = 0, ncsum = 0;
+  int nev = 0;
+  int nbsum = 0, ncsum = 0;
 
-	try{
+  try {
 
-	while(ls.Next()){
-		MCParticleVec& mcps = event->getMCParticles();
-/*
-		// check bbbbbb (reject H->WW etc.)
-		int hcount = 0;
-		for(unsigned int i=0;i<mcps.size();i++){
-			if(mcps[i]->getPDG() != 25)continue;
+    while (ls.Next()) {
+      MCParticleVec& mcps = event->getMCParticles();
+      /*
+      		// check bbbbbb (reject H->WW etc.)
+      		int hcount = 0;
+      		for(unsigned int i=0;i<mcps.size();i++){
+      			if(mcps[i]->getPDG() != 25)continue;
 
-			// higgs
-			if(mcps[i]->getDaughters().size() != 2){
-				cout << "ERR: # of higgs daughters = " << mcps[i]->getDaughters().size() << endl;
-				break;
-			}
-			if(abs(mcps[i]->getDaughters()[0]->getPDG()) != 5)break;
-			if(abs(mcps[i]->getDaughters()[1]->getPDG()) != 5)break;
-			hcount ++;
-		}
-		if(hcount < 2)continue;
-*/
-		TrackVec &tracks = event->getTracks();
-		VertexVec &vtcs_ = event->getSecondaryVertices("BuildUpVertex2");
-		const Vertex *ip = vtcs_[0];
+      			// higgs
+      			if(mcps[i]->getDaughters().size() != 2){
+      				cout << "ERR: # of higgs daughters = " << mcps[i]->getDaughters().size() << endl;
+      				break;
+      			}
+      			if(abs(mcps[i]->getDaughters()[0]->getPDG()) != 5)break;
+      			if(abs(mcps[i]->getDaughters()[1]->getPDG()) != 5)break;
+      			hcount ++;
+      		}
+      		if(hcount < 2)continue;
+      */
+      TrackVec& tracks = event->getTracks();
+      VertexVec& vtcs_ = event->getSecondaryVertices("BuildUpVertex2");
+      const Vertex* ip = vtcs_[0];
 
-		VertexSelectorConfig vscfg;
-		vscfg.minpos = 0.3;
-		vscfg.maxpos = 30.;
-		vscfg.rejectk0 = true;
-		vscfg.k0width = .01;
+      VertexSelectorConfig vscfg;
+      vscfg.minpos = 0.3;
+      vscfg.maxpos = 30.;
+      vscfg.rejectk0 = true;
+      vscfg.k0width = .01;
 //		vscfg.minpos = 0.3;
 //		vscfg.maxpos = 10000.;
 //		vscfg.rejectk0 = false;
 
-		vector<const Track *> residualTracks = tracks;
-		VertexVec &vtcs__ = VertexSelector()(vtcs_, vscfg, residualTracks,false);
-		vector<const Vertex *> vtcs;
-		for(unsigned int v=0;v<vtcs__.size();v++){
-			vtcs.push_back(new Vertex(*vtcs__[v]));
-		}
+      vector<const Track*> residualTracks = tracks;
+      VertexVec& vtcs__ = VertexSelector()(vtcs_, vscfg, residualTracks,false);
+      vector<const Vertex*> vtcs;
+      for (unsigned int v=0; v<vtcs__.size(); v++) {
+        vtcs.push_back(new Vertex(*vtcs__[v]));
+      }
 
-		cout << "Vertex selector: " << vtcs.size() << "/" << vtcs_.size() << " selected." << endl;
+      cout << "Vertex selector: " << vtcs.size() << "/" << vtcs_.size() << " selected." << endl;
 
-		JetVec &jets = event->getJets("Durham_2Jets");
-		MCParticleVec bs = event->mcGetSemiStableBs();
-		MCParticleVec cs = event->mcGetSemiStableCs();
-		nbsum += bs.size();
-		ncsum += cs.size();
+      JetVec& jets = event->getJets("Durham_2Jets");
+      MCParticleVec bs = event->mcGetSemiStableBs();
+      MCParticleVec cs = event->mcGetSemiStableCs();
+      nbsum += bs.size();
+      ncsum += cs.size();
 
-		cout << "We have " << bs.size() << " bs & " << cs.size() << " cs." << endl;
-		cout << "# vertices = " << vtcs.size() << endl;
-		for(unsigned int n=0;n<vtcs.size();n++){
-			cout << "RecoVertices at (" << vtcs[n]->getX() << ", " << vtcs[n]->getY() << ", " << vtcs[n]->getZ() << "), # tracks = " << vtcs[n]->getTracks().size();
-			for(unsigned int t=0;t<vtcs[n]->getTracks().size();t++){
-				const MCParticle *mcp = vtcs[n]->getTracks()[t]->getMcp()->getSemiStableParent();
-				cout << " " << (mcp ? mcp->getPDG() : 0);
-			}
-			cout << endl;
-		}
+      cout << "We have " << bs.size() << " bs & " << cs.size() << " cs." << endl;
+      cout << "# vertices = " << vtcs.size() << endl;
+      for (unsigned int n=0; n<vtcs.size(); n++) {
+        cout << "RecoVertices at (" << vtcs[n]->getX() << ", " << vtcs[n]->getY() << ", " << vtcs[n]->getZ() << "), # tracks = " << vtcs[n]->getTracks().size();
+        for (unsigned int t=0; t<vtcs[n]->getTracks().size(); t++) {
+          const MCParticle* mcp = vtcs[n]->getTracks()[t]->getMcp()->getSemiStableParent();
+          cout << " " << (mcp ? mcp->getPDG() : 0);
+        }
+        cout << endl;
+      }
 
-		// Jet-vertex pairing
-		unsigned int nj = jets.size();
-		vector<vector<Vertex *> > jetVertex;
-		jetVertex.resize(nj);
+      // Jet-vertex pairing
+      unsigned int nj = jets.size();
+      vector<vector<Vertex*> > jetVertex;
+      jetVertex.resize(nj);
 
-		for(unsigned int v=0;v<vtcs.size();v++){
-			const Vertex *curv = vtcs[v];
-			const Track *curt = curv->getTracks()[0];
-			for(unsigned int j=0;j<nj;j++){
-				const Jet *curj = jets[j];
+      for (unsigned int v=0; v<vtcs.size(); v++) {
+        const Vertex* curv = vtcs[v];
+        const Track* curt = curv->getTracks()[0];
+        for (unsigned int j=0; j<nj; j++) {
+          const Jet* curj = jets[j];
 
-				if(find(curj->getTracks().begin(), curj->getTracks().end(), curt) != curj->getTracks().end()){
-					jetVertex[j].push_back(const_cast<Vertex *>(curv));
-					cout << "Jet-vertex pairing: vertex " << v << " assigned to jet " << j << endl;
-					break;
-				}
-			}
-		}
+          if (find(curj->getTracks().begin(), curj->getTracks().end(), curt) != curj->getTracks().end()) {
+            jetVertex[j].push_back(const_cast<Vertex*>(curv));
+            cout << "Jet-vertex pairing: vertex " << v << " assigned to jet " << j << endl;
+            break;
+          }
+        }
+      }
 
-		vector<int> btracksjet, ctracksjet, otracksjet;
-		btracksjet.resize(nj);
-		ctracksjet.resize(nj);
-		otracksjet.resize(nj);
-		for(unsigned int j=0;j<nj;j++){
-			const Jet *jet = jets[j];
+      vector<int> btracksjet, ctracksjet, otracksjet;
+      btracksjet.resize(nj);
+      ctracksjet.resize(nj);
+      otracksjet.resize(nj);
+      for (unsigned int j=0; j<nj; j++) {
+        const Jet* jet = jets[j];
 
-			for(unsigned int t=0;t<jet->getTracks().size();t++){
-				const Track *tr = jet->getTracks()[t];
-				const MCParticle *mcp = tr->getMcp();
+        for (unsigned int t=0; t<jet->getTracks().size(); t++) {
+          const Track* tr = jet->getTracks()[t];
+          const MCParticle* mcp = tr->getMcp();
 
-				if(mcp && mcp->getSemiStableCParent())
-					ctracksjet[j] ++;
-				else if(mcp && mcp->getSemiStableBParent())
-					btracksjet[j] ++;
-				else
-					otracksjet[j] ++;
-			}
-		}
+          if (mcp && mcp->getSemiStableCParent())
+            ctracksjet[j] ++;
+          else if (mcp && mcp->getSemiStableBParent())
+            btracksjet[j] ++;
+          else
+            otracksjet[j] ++;
+        }
+      }
 
-		// perfect vertices
-		vector<MCVertex *> mcvtcs;
-		VertexFinderPerfect::findPerfectVertices(tracks, mcps, mcvtcs, 2);
-		cout << "MCVertices ( >= 2 tracks) : " << mcvtcs.size() << endl;
-		mcvtcs.clear();
-		VertexFinderPerfect::findPerfectVertices(tracks, mcps, mcvtcs, 1);
-		cout << "MCVertices ( >= 1 tracks) : " << mcvtcs.size() << endl;
+      // perfect vertices
+      vector<MCVertex*> mcvtcs;
+      VertexFinderPerfect::findPerfectVertices(tracks, mcps, mcvtcs, 2);
+      cout << "MCVertices ( >= 2 tracks) : " << mcvtcs.size() << endl;
+      mcvtcs.clear();
+      VertexFinderPerfect::findPerfectVertices(tracks, mcps, mcvtcs, 1);
+      cout << "MCVertices ( >= 1 tracks) : " << mcvtcs.size() << endl;
 
-		vector<int> btracks, bctracks;
-		btracks.resize(bs.size());
-		bctracks.resize(bs.size());
+      vector<int> btracks, bctracks;
+      btracks.resize(bs.size());
+      bctracks.resize(bs.size());
 
-		// counting b/c tracks
-		for(unsigned int n=0;n<tracks.size();n++){
-			const MCParticle *mcp = tracks[n]->getMcp();
+      // counting b/c tracks
+      for (unsigned int n=0; n<tracks.size(); n++) {
+        const MCParticle* mcp = tracks[n]->getMcp();
 
-			int npar = event->mcFindParent(bs, mcp);
-			if(npar < 0)continue; // non-bc track
+        int npar = event->mcFindParent(bs, mcp);
+        if (npar < 0)continue; // non-bc track
 
-			btracks[npar] ++;
-			if(mcp->getSemiStableCParent())
-				bctracks[npar] ++;
-		}
+        btracks[npar] ++;
+        if (mcp->getSemiStableCParent())
+          bctracks[npar] ++;
+      }
 
-		// counting vertices / redidual tracks
+      // counting vertices / redidual tracks
 
-		vector<int> nvtcs, vbtracks, vbctracks;
-		nvtcs.resize(bs.size());
-		vbtracks.resize(bs.size());
-		vbctracks.resize(bs.size());
-		for(unsigned int n=0;n<vtcs.size();n++){
-			vector<int> npars;
-			npars.resize(bs.size());
+      vector<int> nvtcs, vbtracks, vbctracks;
+      nvtcs.resize(bs.size());
+      vbtracks.resize(bs.size());
+      vbctracks.resize(bs.size());
+      for (unsigned int n=0; n<vtcs.size(); n++) {
+        vector<int> npars;
+        npars.resize(bs.size());
 
-			for(unsigned int ntr=0;ntr<vtcs[n]->getTracks().size();ntr++){
-				const Track *tr = vtcs[n]->getTracks()[ntr];
-				const MCParticle *mcp = tr->getMcp();
+        for (unsigned int ntr=0; ntr<vtcs[n]->getTracks().size(); ntr++) {
+          const Track* tr = vtcs[n]->getTracks()[ntr];
+          const MCParticle* mcp = tr->getMcp();
 
-				int npar = event->mcFindParent(bs, mcp);
-				if(npar < 0){cout << "Non-b track found in vtx." << endl; continue;}
+          int npar = event->mcFindParent(bs, mcp);
+          if (npar < 0) {
+            cout << "Non-b track found in vtx." << endl;
+            continue;
+          }
 
-				npars[npar] ++;
-				vbtracks[npar] ++;
-				if(mcp->getSemiStableCParent())
-					vbctracks[npar] ++;
-			}
+          npars[npar] ++;
+          vbtracks[npar] ++;
+          if (mcp->getSemiStableCParent())
+            vbctracks[npar] ++;
+        }
 
-			int nparmax =0, nparmaxidx = -1;
-			for(unsigned int np = 0;np < bs.size(); np++){
-				if(npars[np] > nparmax){
-					nparmax = npars[np];
-					nparmaxidx = np;
-				}
-			}
+        int nparmax =0, nparmaxidx = -1;
+        for (unsigned int np = 0; np < bs.size(); np++) {
+          if (npars[np] > nparmax) {
+            nparmax = npars[np];
+            nparmaxidx = np;
+          }
+        }
 
-			if(nparmaxidx>=0)
-				nvtcs[nparmaxidx] ++;
-		}
+        if (nparmaxidx>=0)
+          nvtcs[nparmaxidx] ++;
+      }
 
-		cout << "Residual tracks: " << residualTracks.size() << "/" << tracks.size() << endl;
+      cout << "Residual tracks: " << residualTracks.size() << "/" << tracks.size() << endl;
 
-		vector<vector<const Track *> > jetResidualTracks;
-		jetResidualTracks.resize(nj);
+      vector<vector<const Track*> > jetResidualTracks;
+      jetResidualTracks.resize(nj);
 
-		for(unsigned int t=0;t<residualTracks.size();t++){
-			const Track *curt = residualTracks[t];
-			for(unsigned int j=0;j<nj;j++){
-				const Jet *curj = jets[j];
+      for (unsigned int t=0; t<residualTracks.size(); t++) {
+        const Track* curt = residualTracks[t];
+        for (unsigned int j=0; j<nj; j++) {
+          const Jet* curj = jets[j];
 
-				if(find(curj->getTracks().begin(), curj->getTracks().end(), curt) != curj->getTracks().end()){
-					jetResidualTracks[j].push_back(curt);
+          if (find(curj->getTracks().begin(), curj->getTracks().end(), curt) != curj->getTracks().end()) {
+            jetResidualTracks[j].push_back(curt);
 //					cout << "Jet-track pairing: track " << t << " assigned to jet " << j << endl;
-					break;
-				}
-			}
-		}
+            break;
+          }
+        }
+      }
 
-		// single track finder
-		vector<Vertex *> recvtx = VertexFinderSuehara::makeSingleTrackVertices(vtcs, residualTracks, ip, 0.3, 30., 0.5, 0.1, 5., 5.);
-		cout << "Single Track Vertices for whole event: " << recvtx.size() << " found." << endl;
+      // single track finder
+      vector<Vertex*> recvtx = VertexFinderSuehara::makeSingleTrackVertices(vtcs, residualTracks, ip, 0.3, 30., 0.5, 0.1, 5., 5.);
+      cout << "Single Track Vertices for whole event: " << recvtx.size() << " found." << endl;
 
-		for(unsigned int j=0;j<nj;j++){
-			vector<Vertex *> recvj = VertexFinderSuehara::makeSingleTrackVertices(constVector(jetVertex[j]), jetResidualTracks[j], ip, 0.3, 30., 0.5, 0.1, 5., 5.);
-			jetdata.nvtxorig = jetVertex[j].size() + recvj.size();
-			
-			unsigned int v=0;
-			for(v=0;v<jetdata.nvtxorig;v++){
-				if(v == jetVertex[j].size())break;
-				jetdata.chi2orig[v] = jetVertex[j][v]->getChi2();
-			}
-			for(;v<jetdata.nvtxorig;v++){
-				jetdata.chi2orig[v] = 0.; //single-track vertex
-			}
+      for (unsigned int j=0; j<nj; j++) {
+        vector<Vertex*> recvj = VertexFinderSuehara::makeSingleTrackVertices(constVector(jetVertex[j]), jetResidualTracks[j], ip, 0.3, 30., 0.5, 0.1, 5., 5.);
+        jetdata.nvtxorig = jetVertex[j].size() + recvj.size();
+
+        unsigned int v=0;
+        for (v=0; v<jetdata.nvtxorig; v++) {
+          if (v == jetVertex[j].size())break;
+          jetdata.chi2orig[v] = jetVertex[j][v]->getChi2();
+        }
+        for (; v<jetdata.nvtxorig; v++) {
+          jetdata.chi2orig[v] = 0.; //single-track vertex
+        }
 
 //			VertexFinderSuehara::recombineVertices(jetVertex[j], recvj,true); // precise mode
-			VertexFinderSuehara::recombineVertices(jetVertex[j], recvj,false); // rough mode
+        VertexFinderSuehara::recombineVertices(jetVertex[j], recvj,false); // rough mode
 
-			cout << "recombineVertices end" << endl;
+        cout << "recombineVertices end" << endl;
 
-			for(v=0;v<jetVertex[j].size();v++){
-				TVector3 vpos = jetVertex[j][v]->getPos();
-				cout << "Vertex #" << v << ": pos ( " << vpos.x() << ", " << vpos.y() << ", " << vpos.z() << "), ";
-				for(unsigned int t=0;t<jetVertex[j][v]->getTracks().size();t++){
-					const Track *tr = jetVertex[j][v]->getTracks()[t];
-					const MCParticle *mcp = tr->getMcp()->getSemiStableParent();
-					cout << (mcp ? mcp->getPDG() : 0) << " ";
-				}
-				cout << endl;
-			}
-
-
-			if(jetVertex[j].size() > 0)
-				jetdata.chi2[0] = jetVertex[j][0]->getChi2();
-			else
-				jetdata.chi2[0] = -1;
-
-			if(jetVertex[j].size() > 1)
-				jetdata.chi2[1] = jetVertex[j][1]->getChi2();
-			else
-				jetdata.chi2[1] = -1;
-
-			jetdata.nev = nev;
-			jetdata.nj = j;
-			jetdata.btracks = btracksjet[nj];
-			jetdata.ctracks = ctracksjet[nj];
-			jetdata.otracks = otracksjet[nj];
-
-			ntJet->Fill((float *)&jetdata);
-		}
-
-		cout << "jetLoop end" << endl;
+        for (v=0; v<jetVertex[j].size(); v++) {
+          TVector3 vpos = jetVertex[j][v]->getPos();
+          cout << "Vertex #" << v << ": pos ( " << vpos.x() << ", " << vpos.y() << ", " << vpos.z() << "), ";
+          for (unsigned int t=0; t<jetVertex[j][v]->getTracks().size(); t++) {
+            const Track* tr = jetVertex[j][v]->getTracks()[t];
+            const MCParticle* mcp = tr->getMcp()->getSemiStableParent();
+            cout << (mcp ? mcp->getPDG() : 0) << " ";
+          }
+          cout << endl;
+        }
 
 
-		// fill ntuple
-		for(unsigned int n=0;n<recvtx.size();n++){
-			const Track *tr = recvtx[n]->getTracks()[0]; // single track vertices
-			const MCParticle *mcp = tr->getMcp();
+        if (jetVertex[j].size() > 0)
+          jetdata.chi2[0] = jetVertex[j][0]->getChi2();
+        else
+          jetdata.chi2[0] = -1;
 
-			data.nev = nev;
-			data.trackcategory = 0;
-			if(mcp->getSemiStableCParent()) data.trackcategory = 2;
-			else if(mcp->getSemiStableBParent()) data.trackcategory = 1;
-			else if(mcp->getSemiStableParent()) data.trackcategory = mcp->getSemiStableParent()->getPDG();
+        if (jetVertex[j].size() > 1)
+          jetdata.chi2[1] = jetVertex[j][1]->getChi2();
+        else
+          jetdata.chi2[1] = -1;
 
-			int nb = event->mcFindParent(bs, mcp);
+        jetdata.nev = nev;
+        jetdata.nj = j;
+        jetdata.btracks = btracksjet[nj];
+        jetdata.ctracks = ctracksjet[nj];
+        jetdata.otracks = otracksjet[nj];
 
-			data.nb = bs.size();
-			data.bidx = nb;
-			data.id = tr->getId();
-			if(nb>=0){
-				data.nvtx = nvtcs[nb];
-				data.btracks = btracks[nb] - bctracks[nb];
-				data.ctracks = bctracks[nb];
-				data.vtxbtracks = vbtracks[nb] - vbctracks[nb];
-				data.vtxctracks = vbctracks[nb];
-			}
+        ntJet->Fill((float*)&jetdata);
+      }
 
-			data.d0 = tr->getD0();
-			data.d0err = sqrt(tr->getCovMatrix()[tpar::d0d0]);
-			data.z0 = tr->getZ0();
-			data.z0err = sqrt(tr->getCovMatrix()[tpar::z0z0]);
-			data.e = tr->E();
-			data.pdg = mcp->getPDG();
+      cout << "jetLoop end" << endl;
 
-			nt->Fill((float *)&data);
-		}
-		cout << "end" << endl;
-		nev ++;
-	}
-	}catch(Exception &e){
-		e.Print();
-	}
-	f.Write();
-	cout << "Nb total: " << nbsum << endl;
-	cout << "Nc total: " << ncsum << endl;
+
+      // fill ntuple
+      for (unsigned int n=0; n<recvtx.size(); n++) {
+        const Track* tr = recvtx[n]->getTracks()[0]; // single track vertices
+        const MCParticle* mcp = tr->getMcp();
+
+        data.nev = nev;
+        data.trackcategory = 0;
+        if (mcp->getSemiStableCParent()) data.trackcategory = 2;
+        else if (mcp->getSemiStableBParent()) data.trackcategory = 1;
+        else if (mcp->getSemiStableParent()) data.trackcategory = mcp->getSemiStableParent()->getPDG();
+
+        int nb = event->mcFindParent(bs, mcp);
+
+        data.nb = bs.size();
+        data.bidx = nb;
+        data.id = tr->getId();
+        if (nb>=0) {
+          data.nvtx = nvtcs[nb];
+          data.btracks = btracks[nb] - bctracks[nb];
+          data.ctracks = bctracks[nb];
+          data.vtxbtracks = vbtracks[nb] - vbctracks[nb];
+          data.vtxctracks = vbctracks[nb];
+        }
+
+        data.d0 = tr->getD0();
+        data.d0err = sqrt(tr->getCovMatrix()[tpar::d0d0]);
+        data.z0 = tr->getZ0();
+        data.z0err = sqrt(tr->getCovMatrix()[tpar::z0z0]);
+        data.e = tr->E();
+        data.pdg = mcp->getPDG();
+
+        nt->Fill((float*)&data);
+      }
+      cout << "end" << endl;
+      nev ++;
+    }
+  } catch (Exception& e) {
+    e.Print();
+  }
+  f.Write();
+  cout << "Nb total: " << nbsum << endl;
+  cout << "Nc total: " << ncsum << endl;
 }
 
 #include "TrackSelector.h"
@@ -958,258 +965,258 @@ typedef ROOT::Math::SMatrix<double, 2,3,ROOT::Math::MatRepStd<double,2,3> > SMat
 typedef ROOT::Math::SMatrix<double, 3,2,ROOT::Math::MatRepStd<double,3,2> > SMatrix32;
 
 struct KalVtx {
-	SVector3 pos;
-	SMatrixSym3 cov;
+  SVector3 pos;
+  SMatrixSym3 cov;
 };
 
 struct KalTrk {
-	SVector2 _dz;
-	SVector3 _mom;
-	SMatrixSym5 _cov;
-	SMatrixSym2 _cov11;
-	SMatrixSym3 _cov22;
-	SMatrix23 _cov12;
+  SVector2 _dz;
+  SVector3 _mom;
+  SMatrixSym5 _cov;
+  SMatrixSym2 _cov11;
+  SMatrixSym3 _cov22;
+  SMatrix23 _cov12;
 
-	SMatrix32 _matGain;
-	SVector2 _residual;
+  SMatrix32 _matGain;
+  SVector2 _residual;
 
-	KalTrk(const Track& trk) {
-		_dz(0) = trk.getD0();
-		_dz(1) = trk.getZ0();
-		_mom(0) = trk.getPhi();
-		_mom(1) = trk.getOmega();
-		_mom(2) = trk.getTanLambda();
-		_cov(0,0) = trk.getCovMatrix()[tpar::d0d0];
-		_cov(0,1) = trk.getCovMatrix()[tpar::d0z0];
-		_cov(0,2) = trk.getCovMatrix()[tpar::d0ph];
-		_cov(0,3) = trk.getCovMatrix()[tpar::d0om];
-		_cov(0,4) = trk.getCovMatrix()[tpar::d0td];
-		_cov(1,1) = trk.getCovMatrix()[tpar::z0z0];
-		_cov(1,2) = trk.getCovMatrix()[tpar::z0ph];
-		_cov(1,3) = trk.getCovMatrix()[tpar::z0om];
-		_cov(1,4) = trk.getCovMatrix()[tpar::z0td];
-		_cov(2,2) = trk.getCovMatrix()[tpar::phph];
-		_cov(2,3) = trk.getCovMatrix()[tpar::phom];
-		_cov(2,4) = trk.getCovMatrix()[tpar::phtd];
-		_cov(3,3) = trk.getCovMatrix()[tpar::omom];
-		_cov(3,4) = trk.getCovMatrix()[tpar::omtd];
-		_cov(4,4) = trk.getCovMatrix()[tpar::tdtd];
+  KalTrk(const Track& trk) {
+    _dz(0) = trk.getD0();
+    _dz(1) = trk.getZ0();
+    _mom(0) = trk.getPhi();
+    _mom(1) = trk.getOmega();
+    _mom(2) = trk.getTanLambda();
+    _cov(0,0) = trk.getCovMatrix()[tpar::d0d0];
+    _cov(0,1) = trk.getCovMatrix()[tpar::d0z0];
+    _cov(0,2) = trk.getCovMatrix()[tpar::d0ph];
+    _cov(0,3) = trk.getCovMatrix()[tpar::d0om];
+    _cov(0,4) = trk.getCovMatrix()[tpar::d0td];
+    _cov(1,1) = trk.getCovMatrix()[tpar::z0z0];
+    _cov(1,2) = trk.getCovMatrix()[tpar::z0ph];
+    _cov(1,3) = trk.getCovMatrix()[tpar::z0om];
+    _cov(1,4) = trk.getCovMatrix()[tpar::z0td];
+    _cov(2,2) = trk.getCovMatrix()[tpar::phph];
+    _cov(2,3) = trk.getCovMatrix()[tpar::phom];
+    _cov(2,4) = trk.getCovMatrix()[tpar::phtd];
+    _cov(3,3) = trk.getCovMatrix()[tpar::omom];
+    _cov(3,4) = trk.getCovMatrix()[tpar::omtd];
+    _cov(4,4) = trk.getCovMatrix()[tpar::tdtd];
 
-		for (int i=0; i<2; ++i) for (int j=i; j<2; ++j) _cov11(i,j) = _cov(i,j);
-		for (int i=0; i<3; ++i) for (int j=i; j<3; ++j) _cov22(i,j) = _cov(i+2,j+2);
-		for (int i=0; i<2; ++i) for (int j=i; j<3; ++j) _cov12(i,j) = _cov(i,j+2);
-	}
+    for (int i=0; i<2; ++i) for (int j=i; j<2; ++j) _cov11(i,j) = _cov(i,j);
+    for (int i=0; i<3; ++i) for (int j=i; j<3; ++j) _cov22(i,j) = _cov(i+2,j+2);
+    for (int i=0; i<2; ++i) for (int j=i; j<3; ++j) _cov12(i,j) = _cov(i,j+2);
+  }
 
-	// computes & returns chi2 contribution
-	double compute(const KalVtx& vtx) {
-		SMatrix2 covRes;
-		double chi2(0.);
+  // computes & returns chi2 contribution
+  double compute(const KalVtx& vtx) {
+    SMatrix2 covRes;
+    double chi2(0.);
 
-		SVector2 dz2 = getClosestXY(vtx.pos);
-		_residual = dz2-_dz; // residual
+    SVector2 dz2 = getClosestXY(vtx.pos);
+    _residual = dz2-_dz; // residual
 
-		/*
-		printf(" trk dz: (%.4e,%.4e)\n", _dz(0),_dz(1));
-		printf(" vtx dz: (%.4e,%.4e)\n", dz2(0),dz2(1));
-		printf("----------\n");
-		*/
+    /*
+    printf(" trk dz: (%.4e,%.4e)\n", _dz(0),_dz(1));
+    printf(" vtx dz: (%.4e,%.4e)\n", dz2(0),dz2(1));
+    printf("----------\n");
+    */
 
-		if ( fabs(_residual(0)) > 1e-3) printf(" res warning\n");
-		//printf(" res: (%.3e,%.e)\n", res(0), res(1));
+    if ( fabs(_residual(0)) > 1e-3) printf(" res warning\n");
+    //printf(" res: (%.3e,%.e)\n", res(0), res(1));
 
-		double phi0 = _mom(0);
-		double cphi0 = cos(phi0);
-		double sphi0 = sin(phi0);
+    double phi0 = _mom(0);
+    double cphi0 = cos(phi0);
+    double sphi0 = sin(phi0);
 
-		SMatrix23 matA;
-		matA(0,0) = -sphi0;
-		matA(0,1) =  cphi0;
-		matA(0,2) = 0;
-		matA(1,0) = 0;
-		matA(1,1) = 0;
-		matA(1,2) = 1;
+    SMatrix23 matA;
+    matA(0,0) = -sphi0;
+    matA(0,1) =  cphi0;
+    matA(0,2) = 0;
+    matA(1,0) = 0;
+    matA(1,1) = 0;
+    matA(1,2) = 1;
 
-		SMatrix23 matB;
-		matB(0,0) = -sphi0;
-		matB(0,1) =  cphi0;
-		matB(0,2) = 0;
-		matB(1,0) = 0;
-		matB(1,1) = 0;
-		matB(1,2) = 1;
+    SMatrix23 matB;
+    matB(0,0) = -sphi0;
+    matB(0,1) =  cphi0;
+    matB(0,2) = 0;
+    matB(1,0) = 0;
+    matB(1,1) = 0;
+    matB(1,2) = 1;
 
-		// get linearized coefficient
+    // get linearized coefficient
 
-		return chi2;
-	}
+    return chi2;
+  }
 
-	void update(KalVtx& vtx) {
-		SVector3 delta = _matGain * _residual;
-		vtx.pos += delta;
+  void update(KalVtx& vtx) {
+    SVector3 delta = _matGain * _residual;
+    vtx.pos += delta;
 
-		//SMatrix
+    //SMatrix
 
-		//vtx.cov = vtx.cov - _matGain * matMtransp;
-	}
+    //vtx.cov = vtx.cov - _matGain * matMtransp;
+  }
 
-	// compute closest point in xy plane
-	SVector2 getClosestXY( SVector3 pos ) {
-		double x0 = pos(0);
-		double y0 = pos(1);
+  // compute closest point in xy plane
+  SVector2 getClosestXY( SVector3 pos ) {
+    double x0 = pos(0);
+    double y0 = pos(1);
 
-		double d0 = _dz(0);
-		double z0 = _dz(1);
+    double d0 = _dz(0);
+    double z0 = _dz(1);
 
-		double phi0 = _mom(0);
-		double cphi0 = cos(phi0);
-		double sphi0 = sin(phi0);
+    double phi0 = _mom(0);
+    double cphi0 = cos(phi0);
+    double sphi0 = sin(phi0);
 
-		double om = _mom(1);
-		double R=1./om;
+    double om = _mom(1);
+    double R=1./om;
 
-		double tl = _mom(2);
+    double tl = _mom(2);
 
-		double xc = -(d0+R)*sphi0;
-		double yc =  (d0+R)*cphi0;
+    double xc = -(d0+R)*sphi0;
+    double yc =  (d0+R)*cphi0;
 
-		double tandphi = ( x0*cphi0+y0*sphi0 )/( x0*sphi0-y0*cphi0+d0+R );
-		double dphi = atan( tandphi );
-		double cphi = cos( phi0+dphi );
-		double sphi = sin( phi0+dphi );
+    double tandphi = ( x0*cphi0+y0*sphi0 )/( x0*sphi0-y0*cphi0+d0+R );
+    double dphi = atan( tandphi );
+    double cphi = cos( phi0+dphi );
+    double sphi = sin( phi0+dphi );
 
-		double x2 = -( d0+R )*sphi0+R*sphi;
-		double y2 =  ( d0+R )*cphi0-R*cphi;
-		double z2 = z0 + dphi*R*tl;
+    double x2 = -( d0+R )*sphi0+R*sphi;
+    double y2 =  ( d0+R )*cphi0-R*cphi;
+    double z2 = z0 + dphi*R*tl;
 
-		double x1 = -( d0+R )*sphi0+R*sphi0;
-		double y1 =  ( d0+R )*cphi0-R*cphi0;
-		double z1 = z0;
+    double x1 = -( d0+R )*sphi0+R*sphi0;
+    double y1 =  ( d0+R )*cphi0-R*cphi0;
+    double z1 = z0;
 
-		int sign1 = ( pow(x2-xc,2) + pow(y2-yc,2) > R*R ) ? 1 : -1 ;
-		int sign2 = ( pow(x0-xc,2) + pow(y0-yc,2) > R*R ) ? 1 : -1 ;
-		int sign3 = om/fabs(om)>0 ? 1 : -1 ;
-		
-		/*
-		printf(" dist criteria  = %d\n", sign1);
-		printf(" dist criteria2 = %d\n", sign2);
-		printf(" chrg criteria  = %d\n", sign3);
-		printf(" xc=%.2e, yc=%.2e\n", xc, yc);
-		printf(" x1=%.2e, y1=%.2e\n", x1, y1);
-		printf(" x2=%.2e, y2=%.2e\n", x2, y2);
-		printf(" x0=%.2e, y0=%.2e\n", x0, y0);
-		printf(" (x2-xc) = %.2e, (y2-yc) = %.2e, discr = %.2e,  R = %.2e\n",
-				x2-xc, y2-yc,
-				sqrt( (x2-xc)*(x2-xc) + (y2-yc)*(y2-yc) ),
-				R);
-		 */
+    int sign1 = ( pow(x2-xc,2) + pow(y2-yc,2) > R*R ) ? 1 : -1 ;
+    int sign2 = ( pow(x0-xc,2) + pow(y0-yc,2) > R*R ) ? 1 : -1 ;
+    int sign3 = om/fabs(om)>0 ? 1 : -1 ;
 
-		double sign = sign2*sign3;
+    /*
+    printf(" dist criteria  = %d\n", sign1);
+    printf(" dist criteria2 = %d\n", sign2);
+    printf(" chrg criteria  = %d\n", sign3);
+    printf(" xc=%.2e, yc=%.2e\n", xc, yc);
+    printf(" x1=%.2e, y1=%.2e\n", x1, y1);
+    printf(" x2=%.2e, y2=%.2e\n", x2, y2);
+    printf(" x0=%.2e, y0=%.2e\n", x0, y0);
+    printf(" (x2-xc) = %.2e, (y2-yc) = %.2e, discr = %.2e,  R = %.2e\n",
+    		x2-xc, y2-yc,
+    		sqrt( (x2-xc)*(x2-xc) + (y2-yc)*(y2-yc) ),
+    		R);
+     */
 
-		SVector2 trkpos;
-		trkpos(0) = sqrt( x2*x2+y2*y2 )*sign;
-		trkpos(1) = z2;
-		return trkpos;
-	}
+    double sign = sign2*sign3;
+
+    SVector2 trkpos;
+    trkpos(0) = sqrt( x2*x2+y2*y2 )*sign;
+    trkpos(1) = z2;
+    return trkpos;
+  }
 };
 
 void testTomohiko() {
-	Globals::Instance()->setBField(3.5);
-	LCIOStorer ls("input.slcio");
-	ls.InitCollections("PandoraPFOs","MCParticlesSkimmed","RecoMCTruthLink","Tracks","Neutrals","MCParticles");
+  Globals::Instance()->setBField(3.5);
+  LCIOStorer ls("input.slcio");
+  ls.InitCollections("PandoraPFOs","MCParticlesSkimmed","RecoMCTruthLink","Tracks","Neutrals","MCParticles");
 
-	LcfiInterface interface;
+  LcfiInterface interface;
 
-	Event *event = Event::Instance();
-	event->Print();
+  Event* event = Event::Instance();
+  event->Print();
 
-	TrackSelectorConfig _secVtxCfg;
-	_secVtxCfg.maxD0 = 20;
-	_secVtxCfg.maxZ0 = 20;
-	_secVtxCfg.maxInnermostHitRadius = 20;
-	_secVtxCfg.minVtxPlusFtdHits = 5;
+  TrackSelectorConfig _secVtxCfg;
+  _secVtxCfg.maxD0 = 20;
+  _secVtxCfg.maxZ0 = 20;
+  _secVtxCfg.maxInnermostHitRadius = 20;
+  _secVtxCfg.minVtxPlusFtdHits = 5;
 
-	int nEvt(0);
+  int nEvt(0);
 
-	while(ls.Next()){
-		++nEvt; //if (nEvt>20) exit(0);
+  while (ls.Next()) {
+    ++nEvt; //if (nEvt>20) exit(0);
 
-		TrackVec& tracks = event->getTracks();
-		TrackVec passedTracks = TrackSelector() (tracks, _secVtxCfg);
-		//printf("all tracks: %d, selected: %d\n",tracks.size(),passedTracks.size());
-		Vertex *ip;
-		makeBeamVertex(ip);
+    TrackVec& tracks = event->getTracks();
+    TrackVec passedTracks = TrackSelector() (tracks, _secVtxCfg);
+    //printf("all tracks: %d, selected: %d\n",tracks.size(),passedTracks.size());
+    Vertex* ip;
+    makeBeamVertex(ip);
 
-		/*
-		Vertex * vtx =  VertexFinderTearDown<vector, VertexFitterSimple>()(tracks, 0, 25., 0, ip);
-		//Vertex * vtx =  VertexFinderTearDown<vector>()(tracks, 0, 25., 0, ip);
+    /*
+    Vertex * vtx =  VertexFinderTearDown<vector, VertexFitterSimple>()(tracks, 0, 25., 0, ip);
+    //Vertex * vtx =  VertexFinderTearDown<vector>()(tracks, 0, 25., 0, ip);
 
-		if (vtx) {
-			printf("pri_vtx found: (%.2e,%.2e,%.2e)\n",vtx->getX(),vtx->getY(),vtx->getZ());
-		} else {
-			printf("pri_vtx not found\n");
-		}
-		*/
+    if (vtx) {
+    	printf("pri_vtx found: (%.2e,%.2e,%.2e)\n",vtx->getX(),vtx->getY(),vtx->getZ());
+    } else {
+    	printf("pri_vtx not found\n");
+    }
+    */
 
-		int ntrk(0);
+    int ntrk(0);
 
-		KalVtx kvtx;
-		kvtx.pos(0)=1e-2;
-		kvtx.pos(1)=1e-2;
-		kvtx.pos(0)=0;
-		kvtx.pos(1)=0;
+    KalVtx kvtx;
+    kvtx.pos(0)=1e-2;
+    kvtx.pos(1)=1e-2;
+    kvtx.pos(0)=0;
+    kvtx.pos(1)=0;
 
-		vector<KalTrk> kvtrks;
-		for (TrackVec::const_iterator iter = passedTracks.begin(); iter != passedTracks.end(); ++iter) {
-			const Track* trk = *iter;
+    vector<KalTrk> kvtrks;
+    for (TrackVec::const_iterator iter = passedTracks.begin(); iter != passedTracks.end(); ++iter) {
+      const Track* trk = *iter;
 
-			/*
-			Helix hel(trk);
-			TVector3 vec = hel.GetPos(0);
+      /*
+      Helix hel(trk);
+      TVector3 vec = hel.GetPos(0);
 
-			double d0 = trk->getD0();
-			double z0 = trk->getZ0();
-			double om = trk->getOmega();
-			double tl = trk->getTanLambda();
-			double R=1./om;
-			double D=d0+R;
+      double d0 = trk->getD0();
+      double z0 = trk->getZ0();
+      double om = trk->getOmega();
+      double tl = trk->getTanLambda();
+      double R=1./om;
+      double D=d0+R;
 
-			double phi0 = trk->getPhi();
-			double cphi0 = cos(phi0);
-			double sphi0 = sin(phi0);
+      double phi0 = trk->getPhi();
+      double cphi0 = cos(phi0);
+      double sphi0 = sin(phi0);
 
-			double x=0;
-			double y=0;
-			double z=0;
+      double x=0;
+      double y=0;
+      double z=0;
 
-			{
-				double dphi = 1e-8;
-				double cphi = cos(phi0+dphi);
-				double sphi = sin(phi0+dphi);
-				x = -(d0+R)*sphi0+R*sphi;
-				y =  (d0+R)*cphi0-R*cphi;
-				z =  z0 + dphi*R*tl;
-				printf(" point closest to \n  (x,y,z)=(%.3e,%.3e,%.3e) is: \n", x,y,z);
-			}
+      {
+      	double dphi = 1e-8;
+      	double cphi = cos(phi0+dphi);
+      	double sphi = sin(phi0+dphi);
+      	x = -(d0+R)*sphi0+R*sphi;
+      	y =  (d0+R)*cphi0-R*cphi;
+      	z =  z0 + dphi*R*tl;
+      	printf(" point closest to \n  (x,y,z)=(%.3e,%.3e,%.3e) is: \n", x,y,z);
+      }
 
-			double tandphi = (x*cphi0+y*sphi0)/(x*sphi0-y*cphi0+D);
-			double dphi = atan( tandphi );
-			double phi = phi0+dphi;
-			double cphi = cos(phi0+dphi);
-			double sphi = sin(phi0+dphi);
+      double tandphi = (x*cphi0+y*sphi0)/(x*sphi0-y*cphi0+D);
+      double dphi = atan( tandphi );
+      double phi = phi0+dphi;
+      double cphi = cos(phi0+dphi);
+      double sphi = sin(phi0+dphi);
 
-			double x2 = -(d0+R)*sphi0+R*sphi;
-			double y2 =  (d0+R)*cphi0-R*cphi;
-			double z2 = z0 + dphi*R*tl;
-			printf("  (x,y,z)=(%.3e,%.3e,%.3e) with dphi=%.3e, phi=%.3e\n", x2,y2,z2, dphi, phi );
+      double x2 = -(d0+R)*sphi0+R*sphi;
+      double y2 =  (d0+R)*cphi0-R*cphi;
+      double z2 = z0 + dphi*R*tl;
+      printf("  (x,y,z)=(%.3e,%.3e,%.3e) with dphi=%.3e, phi=%.3e\n", x2,y2,z2, dphi, phi );
 
-			if (++ntrk>5) exit(0);
-			*/
+      if (++ntrk>5) exit(0);
+      */
 
-			KalTrk kvtrk( **iter );
-			kvtrks.push_back( kvtrk );
-			kvtrk.compute( kvtx );
-			kvtrk.update( kvtx );
-		}
+      KalTrk kvtrk( **iter );
+      kvtrks.push_back( kvtrk );
+      kvtrk.compute( kvtx );
+      kvtrk.update( kvtx );
+    }
 
-	}
-	printf("processed %d events.\n",nEvt);
+  }
+  printf("processed %d events.\n",nEvt);
 }

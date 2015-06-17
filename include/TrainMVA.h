@@ -11,55 +11,55 @@ class TTree;
 
 #include "TMVA/Types.h"
 
-namespace lcfiplus{
+namespace lcfiplus {
 
-	/**
-		Lcfiplus algorithm for training classifications using TMVA.
-		@author T. Tanabe, ICEPP, The University of Tokyo
-		@version $Id$
-	 */
-	class TrainMVA : public Algorithm {
-		public:
-			TrainMVA(){}
-			virtual ~TrainMVA(){}
+/**
+	Lcfiplus algorithm for training classifications using TMVA.
+	@author T. Tanabe, ICEPP, The University of Tokyo
+	@version $Id$
+ */
+class TrainMVA : public Algorithm {
+ public:
+  TrainMVA() {}
+  virtual ~TrainMVA() {}
 
-			void init(Parameters *param);
-			void process();
-			void end();
+  void init(Parameters* param);
+  void process();
+  void end();
 
-		private:
-			bool _verbose;
-			
-			struct InputFileInfo {
-				TString name;
-				TString fileName;
-				TString treeName;
-				TString presel;
-				TFile* file;
-				TTree* tree;
+ private:
+  bool _verbose;
 
-				InputFileInfo(){}
-				InputFileInfo( TString n, TString f, TString t, TString p ) :
-					name(n), fileName(f), treeName(t), presel(p), file(0), tree(0) {}
-			};
+  struct InputFileInfo {
+    TString name;
+    TString fileName;
+    TString treeName;
+    TString presel;
+    TFile* file;
+    TTree* tree;
+
+    InputFileInfo() {}
+    InputFileInfo( TString n, TString f, TString t, TString p ) :
+      name(n), fileName(f), treeName(t), presel(p), file(0), tree(0) {}
+  };
 
 
-			vector<InputFileInfo> _inputFileInfo;
-			void readInputFileInfo( Parameters* param, TString name );
+  vector<InputFileInfo> _inputFileInfo;
+  void readInputFileInfo( Parameters* param, TString name );
 
-			TString _outputDirectory;
-			TString _outputPrefix;
-			TString _treeName;
+  TString _outputDirectory;
+  TString _outputPrefix;
+  TString _treeName;
 
-			TMVA::Types::EMVA _tmvaBookType;
-			TString _tmvaBookName;
-			TString _tmvaBookOptions;
-			int _skipTrain;
+  TMVA::Types::EMVA _tmvaBookType;
+  TString _tmvaBookName;
+  TString _tmvaBookOptions;
+  int _skipTrain;
 
-			vector<FlavtagCategory> _categories;
+  vector<FlavtagCategory> _categories;
 
-			ClassDef(TrainMVA,1);
-	};
+  ClassDef(TrainMVA,1);
+};
 
 }
 

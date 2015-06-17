@@ -7,8 +7,8 @@
 #include "JetFinder.h"
 #include "TH1.h"
 
-namespace lcfiplus{
-namespace algoSigProb{
+namespace lcfiplus {
+namespace algoSigProb {
 
 extern bool trackSelectionForFlavorTag(const Track* trk, int nHitCut);
 
@@ -25,9 +25,10 @@ extern double trackProbD0(const Track* trk, const Vertex* pri);
 extern double trackProbZ0(const Track* trk, const Vertex* pri);
 extern double jointProbD0(const Jet* jet, const Vertex* pri, int minhitcut, double maxd0sigcut = 1e+300, bool useVertexTracks = true);
 extern double jointProbZ0(const Jet* jet, const Vertex* pri, int minhitcut, double maxz0sigcut = 1e+300, bool useVertexTracks = true);
-extern double jointProb2D0(const Jet* jet, const Vertex* pri, int minhitcut, double maxd0sigcut, bool useVertexTracks, const TH1 *jh1, const TH1 *jh2);
-extern double jointProb2Z0(const Jet* jet, const Vertex* pri, int minhitcut, double maxz0sigcut, bool useVertexTracks, const TH1 *jh1, const TH1 *jh2);
+extern double jointProb2D0(const Jet* jet, const Vertex* pri, int minhitcut, double maxd0sigcut, bool useVertexTracks, const TH1* jh1, const TH1* jh2);
+extern double jointProb2Z0(const Jet* jet, const Vertex* pri, int minhitcut, double maxz0sigcut, bool useVertexTracks, const TH1* jh1, const TH1* jh2);
 
-}}
+}
+}
 
 #endif

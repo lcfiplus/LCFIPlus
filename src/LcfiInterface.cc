@@ -20,213 +20,212 @@
 
 namespace lcfiplus {
 
-  LcfiInstance LcfiInstance::_instance;
+LcfiInstance LcfiInstance::_instance;
 
-  LcfiInstance::LcfiInstance() : _ipFitter(0), _zvres(0) {
+LcfiInstance::LcfiInstance() : _ipFitter(0), _zvres(0) {
+}
+
+LcfiInstance::~LcfiInstance() {
+  if (_ipFitter) delete _ipFitter;
+  if (_zvres) delete _zvres;
+}
+
+const vertex_lcfi::PerEventIPFitter* LcfiInstance::getIpFitter() {
+  if (!_ipFitter) {
+    _ipFitter = new vertex_lcfi::PerEventIPFitter();
+    _ipFitter->setDoubleParameter("ProbThreshold",0.01);
+    //_ipFitter->setDoubleParameter("ProbThreshold",0.005);
+    //_ipFitter->setDoubleParameter("ProbThreshold",-1);
   }
 
-  LcfiInstance::~LcfiInstance() {
-    if (_ipFitter) delete _ipFitter;
-    if (_zvres) delete _zvres;
+  return _ipFitter;
+}
+
+vertex_lcfi::ZVRES* LcfiInstance::getZVRES() {
+  if (!_zvres) {
+    _zvres = new vertex_lcfi::ZVRES();
+  }
+  return _zvres;
+}
+
+LcfiInterface::LcfiInterface(const Event* event, const Vertex* primaryVertex) : debug(false), _primaryVertex(0) {
+  if (primaryVertex) {
+    _primaryVertex = lcfiVertex(primaryVertex,true); // it's important that this is set first
+  }
+  _event = lcfiEvent(event);
+  vertex_lcfi::MemoryManager<vertex_lcfi::Event>::Event()->registerObject(_event);
+  //debug = true;
+}
+
+LcfiInterface::~LcfiInterface() {
+  vertex_lcfi::MetaMemoryManager::Event()->delAllObjects();
+}
+
+vertex_lcfi::Track*
+LcfiInterface::lcfiTrack(vertex_lcfi::Event* MyEvent, const Track* track) const {
+  HelixRep H;
+  H.d0()	= track->getD0();
+  H.z0()	= track->getZ0();
+  H.phi()	= track->getPhi();
+  H.invR()	= track->getOmega();
+  H.tanLambda()  = track->getTanLambda();
+
+  Vector3 Mom;
+  Mom.x() = track->Px();
+  Mom.y() = track->Py();
+  Mom.z() = track->Pz();
+
+  SymMatrix5x5 Cov;
+
+  // Classic order
+  const double* cov = track->getCovMatrix();
+  Cov(0,0)=cov[0]; // d0d0
+  Cov(3,0)=cov[6]; // d0z0
+  Cov(3,3)=cov[9]; // z0z0
+
+  Cov(1,0)=cov[1];
+  Cov(1,1)=cov[2];
+  Cov(0,2)=cov[3];
+  Cov(1,2)=cov[4];
+  Cov(2,2)=cov[5];
+  Cov(1,3)=cov[7];
+
+  Cov(2,3)=cov[8];
+  Cov(0,4)=cov[10];
+  Cov(1,4)=cov[11];
+  Cov(2,4)=cov[12];
+  Cov(3,4)=cov[13];
+  Cov(4,4)=cov[14];
+
+  double charge = H.invR() > 0 ? 1. : -1;
+
+  vector<int> dummy;
+  //for (int i=0; i<12; ++i) dummy.push_back(0);
+
+  vertex_lcfi::Track* MyTrack = new vertex_lcfi::Track(MyEvent, H, Mom, charge, Cov, dummy, (void*)track);
+  vertex_lcfi::MemoryManager<vertex_lcfi::Track>::Event()->registerObject(MyTrack);
+
+  return MyTrack;
+}
+
+vertex_lcfi::Event* LcfiInterface::lcfiEvent(const Event* event, vertex_lcfi::Vertex* ipVertex) const {
+  vertex_lcfi::Event* ret;
+
+  if (ipVertex) {
+    ret = new vertex_lcfi::Event(ipVertex);
+  } else {
+    Vector3 ipPos;
+    SymMatrix3x3 ipErr;
+    ipPos.x() = 0.;
+    ipPos.y() = 0.;
+    ipPos.z() = 0.;
+    ipErr(0,0) = 2.5e-04;
+    ipErr(1,0) = 0.;
+    ipErr(1,1) = 2.5e-04;
+    ipErr(2,0) = 0.;
+    ipErr(2,1) = 0.;
+    ipErr(2,2) = 0.004;
+
+    ret = new vertex_lcfi::Event(ipPos,ipErr);
   }
 
-  const vertex_lcfi::PerEventIPFitter* LcfiInstance::getIpFitter() {
-    if (!_ipFitter) {
-      _ipFitter = new vertex_lcfi::PerEventIPFitter();
-      _ipFitter->setDoubleParameter("ProbThreshold",0.01);
-      //_ipFitter->setDoubleParameter("ProbThreshold",0.005);
-      //_ipFitter->setDoubleParameter("ProbThreshold",-1);
+  if (event) {
+    if (debug) {
+      printf("lcfiEvent: converting %d tracks\n",(int)event->getTracks().size());
     }
-
-    return _ipFitter;
-  }
-
-  vertex_lcfi::ZVRES* LcfiInstance::getZVRES() {
-    if (!_zvres) {
-      _zvres = new vertex_lcfi::ZVRES();
+    for (TrackVecIte iter = event->getTracks().begin();
+         iter != event->getTracks().end(); ++iter) {
+      vertex_lcfi::Track* t = lcfiTrack(ret, *iter);
+      ret->addTrack(t);
     }
-    return _zvres;
   }
 
-  LcfiInterface::LcfiInterface(const Event* event, const Vertex* primaryVertex) : debug(false), _primaryVertex(0) {
-		if (primaryVertex) {
-			_primaryVertex = lcfiVertex(primaryVertex,true); // it's important that this is set first
-		}
-    _event = lcfiEvent(event);
-    vertex_lcfi::MemoryManager<vertex_lcfi::Event>::Event()->registerObject(_event);
-		//debug = true;
+  return ret;
+}
+
+////////
+
+Vertex*
+LcfiInterface::flavtagVertex(vertex_lcfi::Vertex* lcfiVertex) const {
+  Vertex* vertex = new Vertex();
+
+  vertex->_chi2 = lcfiVertex->chi2();
+  vertex->_prob = lcfiVertex->probability();
+  vertex->_x = lcfiVertex->position().x();
+  vertex->_y = lcfiVertex->position().y();
+  vertex->_z = lcfiVertex->position().z();
+  vertex->_cov[0] = lcfiVertex->positionError()(0,0);
+  vertex->_cov[1] = lcfiVertex->positionError()(1,0);
+  vertex->_cov[2] = lcfiVertex->positionError()(1,1);
+  vertex->_cov[3] = lcfiVertex->positionError()(2,0);
+  vertex->_cov[4] = lcfiVertex->positionError()(2,1);
+  vertex->_cov[5] = lcfiVertex->positionError()(2,2);
+
+  for (vector<vertex_lcfi::Track*>::const_iterator iter = lcfiVertex->tracks().begin();
+       iter < lcfiVertex->tracks().end(); ++iter) {
+    vertex->add( (Track*) (*iter)->trackingNum() );
   }
 
-  LcfiInterface::~LcfiInterface() {
-    vertex_lcfi::MetaMemoryManager::Event()->delAllObjects();
+  // make sure vertex contains at least two tracks
+  if (debug) fprintf(stderr,"returning flavtagVertex (%.2e,%.2e,%.2e) with ntrks=%d\n",
+                       vertex->_x, vertex->_y, vertex->_z, (int)vertex->getTracks().size());
+  assert( vertex->getTracks().size() >= 2 );
+  assert( vertex->getTracks().size() != 0 );
+  if (vertex->getTracks().size() == 0) {
+    fprintf(stderr,"error: vertex has no tracks!!\n");
+    fprintf(stderr," lcfiVertex->tracks().size()=%d\n",(int)lcfiVertex->tracks().size());
+    exit(1);
   }
 
-  vertex_lcfi::Track*
-  LcfiInterface::lcfiTrack(vertex_lcfi::Event* MyEvent, const Track* track) const {
-    HelixRep H;
-    H.d0()	= track->getD0();
-    H.z0()	= track->getZ0();
-    H.phi()	= track->getPhi();
-    H.invR()	= track->getOmega();
-    H.tanLambda()  = track->getTanLambda();
+  return vertex;
+}
 
-    Vector3 Mom;
-    Mom.x() = track->Px();
-    Mom.y() = track->Py();
-    Mom.z() = track->Pz();
+vertex_lcfi::Vertex*
+LcfiInterface::lcfiVertex(const Vertex* flavtagVertex, bool isPrimary) const {
 
-    SymMatrix5x5 Cov;
+  //Vertex(Event* Event, const std::vector<Track*> & Tracks, const Vector3 & Position, const SymMatrix3x3 & PosError, bool IsPrimary, double Chi2, double Probability, std::map<Track*,double> ChiTrack);
 
-    // Classic order
-    const double* cov = track->getCovMatrix();
-    Cov(0,0)=cov[0]; // d0d0
-    Cov(3,0)=cov[6]; // d0z0
-    Cov(3,3)=cov[9]; // z0z0
+  vector<vertex_lcfi::Track*> tracks;
+  Vector3 pos;
+  SymMatrix3x3 cov;
+  double chi2 = flavtagVertex->_chi2;
+  double prob = flavtagVertex->_prob;
 
-    Cov(1,0)=cov[1];
-    Cov(1,1)=cov[2];
-    Cov(0,2)=cov[3];
-    Cov(1,2)=cov[4];
-    Cov(2,2)=cov[5];
-    Cov(1,3)=cov[7];
+  pos.x() = flavtagVertex->_x;
+  pos.y() = flavtagVertex->_y;
+  pos.z() = flavtagVertex->_z;
 
-    Cov(2,3)=cov[8];
-    Cov(0,4)=cov[10];
-    Cov(1,4)=cov[11];
-    Cov(2,4)=cov[12];
-    Cov(3,4)=cov[13];
-    Cov(4,4)=cov[14];
+  cov(0,0) = flavtagVertex->_cov[0];
+  cov(1,0) = flavtagVertex->_cov[1];
+  cov(1,1) = flavtagVertex->_cov[2];
+  cov(2,0) = flavtagVertex->_cov[3];
+  cov(2,1) = flavtagVertex->_cov[4];
+  cov(2,2) = flavtagVertex->_cov[5];
 
-    double charge = H.invR() > 0 ? 1. : -1;
-
-    vector<int> dummy;
-    //for (int i=0; i<12; ++i) dummy.push_back(0);
-
-    vertex_lcfi::Track* MyTrack = new vertex_lcfi::Track(MyEvent, H, Mom, charge, Cov, dummy, (void*)track);
-    vertex_lcfi::MemoryManager<vertex_lcfi::Track>::Event()->registerObject(MyTrack);
-
-    return MyTrack;
+  for (TrackVecIte iter = flavtagVertex->getTracks().begin();
+       iter < flavtagVertex->getTracks().end(); ++iter) {
+    tracks.push_back( lcfiTrack(*iter) );
   }
 
-  vertex_lcfi::Event* LcfiInterface::lcfiEvent(const Event* event, vertex_lcfi::Vertex* ipVertex) const
-  {
-    vertex_lcfi::Event* ret;
+  vertex_lcfi::Vertex* vertex = new vertex_lcfi::Vertex(
+    _event, tracks, pos, cov, isPrimary, chi2, prob);
 
-		if (ipVertex) {
-			ret = new vertex_lcfi::Event(ipVertex);
-		} else {
-			Vector3 ipPos;
-			SymMatrix3x3 ipErr;
-			ipPos.x() = 0.;
-			ipPos.y() = 0.;
-			ipPos.z() = 0.;
-			ipErr(0,0) = 2.5e-04;
-			ipErr(1,0) = 0.;
-			ipErr(1,1) = 2.5e-04;
-			ipErr(2,0) = 0.;
-			ipErr(2,1) = 0.;
-			ipErr(2,2) = 0.004;
+  return vertex;
+}
 
-			ret = new vertex_lcfi::Event(ipPos,ipErr);
-		}
+vector<Vertex*>
+LcfiInterface::flavtagVertices(vertex_lcfi::DecayChain* chain) const {
+  vector<Vertex*> vtxList;
 
-		if(event){
-			if (debug) {
-	    	printf("lcfiEvent: converting %d tracks\n",(int)event->getTracks().size());
-			}
-	    for (TrackVecIte iter = event->getTracks().begin();
-	        iter != event->getTracks().end(); ++iter) {
-	      vertex_lcfi::Track* t = lcfiTrack(ret, *iter);
-	      ret->addTrack(t);
-	    }
-		}
-
-    return ret;
+  // skip the first (primary) vertex
+  assert(chain->vertices().size() > 0);
+  for (vector<vertex_lcfi::Vertex*>::const_iterator iter = ++(chain->vertices().begin());
+       iter < chain->vertices().end(); ++iter) {
+    vtxList.push_back(flavtagVertex(*iter));
   }
 
-  ////////
-
-  Vertex*
-  LcfiInterface::flavtagVertex(vertex_lcfi::Vertex* lcfiVertex) const {
-    Vertex* vertex = new Vertex();
-
-    vertex->_chi2 = lcfiVertex->chi2();
-    vertex->_prob = lcfiVertex->probability();
-    vertex->_x = lcfiVertex->position().x();
-    vertex->_y = lcfiVertex->position().y();
-    vertex->_z = lcfiVertex->position().z();
-    vertex->_cov[0] = lcfiVertex->positionError()(0,0);
-    vertex->_cov[1] = lcfiVertex->positionError()(1,0);
-    vertex->_cov[2] = lcfiVertex->positionError()(1,1);
-    vertex->_cov[3] = lcfiVertex->positionError()(2,0);
-    vertex->_cov[4] = lcfiVertex->positionError()(2,1);
-    vertex->_cov[5] = lcfiVertex->positionError()(2,2);
-
-    for (vector<vertex_lcfi::Track*>::const_iterator iter = lcfiVertex->tracks().begin();
-        iter < lcfiVertex->tracks().end(); ++iter) {
-      vertex->add( (Track*) (*iter)->trackingNum() );
-    }
-
-		// make sure vertex contains at least two tracks
-		if(debug) fprintf(stderr,"returning flavtagVertex (%.2e,%.2e,%.2e) with ntrks=%d\n",
-				vertex->_x, vertex->_y, vertex->_z, (int)vertex->getTracks().size());
-		assert( vertex->getTracks().size() >= 2 );
-		assert( vertex->getTracks().size() != 0 );
-		if (vertex->getTracks().size() == 0) {
-			fprintf(stderr,"error: vertex has no tracks!!\n");
-			fprintf(stderr," lcfiVertex->tracks().size()=%d\n",(int)lcfiVertex->tracks().size());
-			exit(1);
-		}
-
-    return vertex;
-  }
-
-	vertex_lcfi::Vertex*
-  LcfiInterface::lcfiVertex(const Vertex* flavtagVertex, bool isPrimary) const {
-
-		//Vertex(Event* Event, const std::vector<Track*> & Tracks, const Vector3 & Position, const SymMatrix3x3 & PosError, bool IsPrimary, double Chi2, double Probability, std::map<Track*,double> ChiTrack);
-
-		vector<vertex_lcfi::Track*> tracks;
-		Vector3 pos;
-		SymMatrix3x3 cov;
-		double chi2 = flavtagVertex->_chi2;
-		double prob = flavtagVertex->_prob;
-
-		pos.x() = flavtagVertex->_x;
-		pos.y() = flavtagVertex->_y;
-		pos.z() = flavtagVertex->_z;
-
-		cov(0,0) = flavtagVertex->_cov[0];
-		cov(1,0) = flavtagVertex->_cov[1];
-		cov(1,1) = flavtagVertex->_cov[2];
-		cov(2,0) = flavtagVertex->_cov[3];
-		cov(2,1) = flavtagVertex->_cov[4];
-		cov(2,2) = flavtagVertex->_cov[5];
-
-    for (TrackVecIte iter = flavtagVertex->getTracks().begin();
-        iter < flavtagVertex->getTracks().end(); ++iter) {
-			tracks.push_back( lcfiTrack(*iter) );
-    }
-
-		vertex_lcfi::Vertex* vertex = new vertex_lcfi::Vertex(
-				_event, tracks, pos, cov, isPrimary, chi2, prob);
-
-    return vertex;
-  }
-
-  vector<Vertex*>
-  LcfiInterface::flavtagVertices(vertex_lcfi::DecayChain* chain) const {
-    vector<Vertex*> vtxList;
-
-    // skip the first (primary) vertex
-    assert(chain->vertices().size() > 0);
-    for (vector<vertex_lcfi::Vertex*>::const_iterator iter = ++(chain->vertices().begin());
-        iter < chain->vertices().end();++iter) {
-      vtxList.push_back(flavtagVertex(*iter));
-    }
-
-    return vtxList;
-  }
+  return vtxList;
+}
 /*
   bool LcfiInterface::passesCut(const Track* trk, const SecondaryVertexConfig& cfg) {
     if (fabs(trk->getD0()) > cfg.maxD0) {
@@ -269,149 +268,148 @@ namespace lcfiplus {
     return false;
   }
 */
-  ///////////////////////
+///////////////////////
 #include <marlin/Global.h>
 #include <gear/BField.h>
 
-  Vertex*
-  LcfiInterface::findPrimaryVertex() {
-		if (debug) fprintf(stderr,"findPrimaryVertex()\n");
-    if (_primaryVertex) {
-			if (debug) fprintf(stderr,"returning cached primary vertex\n");
-      return flavtagVertex(_primaryVertex);
-    }
-
-    vertex_lcfi::Vertex* ipResult = LcfiInstance::getInstance().getIpFitter()->calculateFor(_event);
-    _primaryVertex = ipResult;
-
-    return flavtagVertex(ipResult);
+Vertex*
+LcfiInterface::findPrimaryVertex() {
+  if (debug) fprintf(stderr,"findPrimaryVertex()\n");
+  if (_primaryVertex) {
+    if (debug) fprintf(stderr,"returning cached primary vertex\n");
+    return flavtagVertex(_primaryVertex);
   }
 
-  /*
-  void LcfiInterface::probMap( map<Track*,float>& probMap ) {
-    vector<vertex_lcfi::TrackState*> TrackStates;
-    for (vector<vertex_lcfi::Track*>::const_iterator iTrack = _event->tracks().begin();
-        iTrack != _event->tracks().end(); ++iTrack)
-    {
-      TrackStates.push_back((*iTrack)->makeState());
-    }
+  vertex_lcfi::Vertex* ipResult = LcfiInstance::getInstance().getIpFitter()->calculateFor(_event);
+  _primaryVertex = ipResult;
 
-    vertex_lcfi::ZVTOP::VertexFitterKalman MyFitter;
-    vertex_lcfi::ZVTOP::CandidateVertex CVertex(TrackStates, 0, &MyFitter);
+  return flavtagVertex(ipResult);
+}
 
-    map<vertex_lcfi::TrackState*,double> tsProbMap;
-    CVertex.mapProb(tsProbMap);
-
-    for (map<vertex_lcfi::TrackState*,double>::iterator it = tsProbMap.begin(); it != tsProbMap.end(); ++it) {
-      if (it->first) {
-        probMap.insert( make_pair( (Track*)it->first->parentTrack()->trackingNum(), it->second ) );
-      }
-    }
-  }
-  */
-
-  vector<Vertex*>
-  LcfiInterface::findSecondaryVertices(const Jet* jet, const SecondaryVertexConfig& cfg) {
-    LcfiInstance::getInstance().getZVRES()->setDoubleParameter("TwoProngCut", cfg.TwoProngCut);
-    LcfiInstance::getInstance().getZVRES()->setDoubleParameter("TrackTrimCut", cfg.TrackTrimCut);
-		LcfiInstance::getInstance().getZVRES()->setDoubleParameter("ResolverCut",cfg.ResolverCut);
-
-    assert(_primaryVertex != 0);
-
-    vertex_lcfi::Jet* lcfiJet = new vertex_lcfi::Jet(_event, vector<vertex_lcfi::Track*>(),
-        jet->E(),Vector3(jet->Px(), jet->Py(), jet->Pz()),0);
-    vertex_lcfi::MemoryManager<vertex_lcfi::Jet>::Event()->registerObject(lcfiJet);
-
-    TrackVec & tracks = jet->getTracks();
-    //NeutralVec & neutrals = jet->getNeutrals();
-
-    int usedTracks(0);
-		TrackSelector trackSel;
-    for (TrackVecIte iter = tracks.begin(); iter != tracks.end(); ++iter) {
-      if (trackSel.passesCut(*iter,cfg.TrackQualityCuts)) {
-        lcfiJet->addTrack( lcfiTrack(_event, *iter) );
-        ++usedTracks;
-      }
-    }
-
-		if (debug) {
-			printf("finding secondary vertices for jet: (E=%.2e, px=%.2e, py=%.2e, pz=%.2e), ntrk=%d (%d passses cut)\n",
-					jet->E(),jet->Px(),jet->Py(),jet->Pz(),(int)tracks.size(),usedTracks);
-		}
-
-    // default _JetWeightingEnergyScaling = 5.0/40.0
-    LcfiInstance::getInstance().getZVRES()->setDoubleParameter("Kalpha", 0.125 * lcfiJet->energy());
-
-    vertex_lcfi::DecayChain* zvtopRes = LcfiInstance::getInstance().getZVRES()->calculateFor(lcfiJet);
-
-    vector<Vertex*> vtxList = flavtagVertices(zvtopRes);
-    return vtxList;
+/*
+void LcfiInterface::probMap( map<Track*,float>& probMap ) {
+  vector<vertex_lcfi::TrackState*> TrackStates;
+  for (vector<vertex_lcfi::Track*>::const_iterator iTrack = _event->tracks().begin();
+      iTrack != _event->tracks().end(); ++iTrack)
+  {
+    TrackStates.push_back((*iTrack)->makeState());
   }
 
-  vector<Vertex*>
-  LcfiInterface::forceZvtop(const Jet& jet) {
-    LcfiInstance::getInstance().getZVRES()->setDoubleParameter("TwoProngCut", 1e10);
-    LcfiInstance::getInstance().getZVRES()->setDoubleParameter("TrackTrimCut", 1e10);
-		//LcfiInstance::getInstance().getZVRES()->setDoubleParameter("ResolverCut",1e10);
-		LcfiInstance::getInstance().getZVRES()->setDoubleParameter("ResolverCut",0.6);
+  vertex_lcfi::ZVTOP::VertexFitterKalman MyFitter;
+  vertex_lcfi::ZVTOP::CandidateVertex CVertex(TrackStates, 0, &MyFitter);
 
-    vertex_lcfi::Jet* lcfiJet = new vertex_lcfi::Jet(_event, vector<vertex_lcfi::Track*>(),
-        jet.E(),Vector3(jet.Px(), jet.Py(), jet.Pz()),0);
-    vertex_lcfi::MemoryManager<vertex_lcfi::Jet>::Event()->registerObject(lcfiJet);
+  map<vertex_lcfi::TrackState*,double> tsProbMap;
+  CVertex.mapProb(tsProbMap);
 
-		TrackVec & tracks = jet.getTracks();
-    for (TrackVecIte iter = tracks.begin(); iter != tracks.end(); ++iter) {
-			lcfiJet->addTrack( lcfiTrack(_event, *iter) );
+  for (map<vertex_lcfi::TrackState*,double>::iterator it = tsProbMap.begin(); it != tsProbMap.end(); ++it) {
+    if (it->first) {
+      probMap.insert( make_pair( (Track*)it->first->parentTrack()->trackingNum(), it->second ) );
     }
+  }
+}
+*/
 
-    //printf("lcfiJet tracks: %d\n", usedTracks);
+vector<Vertex*>
+LcfiInterface::findSecondaryVertices(const Jet* jet, const SecondaryVertexConfig& cfg) {
+  LcfiInstance::getInstance().getZVRES()->setDoubleParameter("TwoProngCut", cfg.TwoProngCut);
+  LcfiInstance::getInstance().getZVRES()->setDoubleParameter("TrackTrimCut", cfg.TrackTrimCut);
+  LcfiInstance::getInstance().getZVRES()->setDoubleParameter("ResolverCut",cfg.ResolverCut);
 
-    // default _JetWeightingEnergyScaling = 5.0/40.0
-    //LcfiInstance::getInstance().getZVRES()->setDoubleParameter("Kalpha", 0.125 * lcfiJet->energy());
-    LcfiInstance::getInstance().getZVRES()->setDoubleParameter("Kalpha", 0);
+  assert(_primaryVertex != 0);
 
-    vertex_lcfi::DecayChain* zvtopRes = LcfiInstance::getInstance().getZVRES()->calculateFor(lcfiJet);
+  vertex_lcfi::Jet* lcfiJet = new vertex_lcfi::Jet(_event, vector<vertex_lcfi::Track*>(),
+      jet->E(),Vector3(jet->Px(), jet->Py(), jet->Pz()),0);
+  vertex_lcfi::MemoryManager<vertex_lcfi::Jet>::Event()->registerObject(lcfiJet);
 
-    vector<Vertex*> vtxList = flavtagVertices(zvtopRes);
-    return vtxList;
+  TrackVec& tracks = jet->getTracks();
+  //NeutralVec & neutrals = jet->getNeutrals();
+
+  int usedTracks(0);
+  TrackSelector trackSel;
+  for (TrackVecIte iter = tracks.begin(); iter != tracks.end(); ++iter) {
+    if (trackSel.passesCut(*iter,cfg.TrackQualityCuts)) {
+      lcfiJet->addTrack( lcfiTrack(_event, *iter) );
+      ++usedTracks;
+    }
   }
 
-	double LcfiInterface::getChi2TrackVtx(const Vertex *vtx, const Track *trk) const
-	{
-		vertex_lcfi::Track* ptr = lcfiTrack(trk);
-		vertex_lcfi::TrackState *pstate = ptr->makeState();
-		vertex_lcfi::TState state(pstate);
+  if (debug) {
+    printf("finding secondary vertices for jet: (E=%.2e, px=%.2e, py=%.2e, pz=%.2e), ntrk=%d (%d passses cut)\n",
+           jet->E(),jet->Px(),jet->Py(),jet->Pz(),(int)tracks.size(),usedTracks);
+  }
 
-		// extract vertex
-		//* v = [xyz], Cv=[Cxx,Cxy,Cyy,Cxz,Cyz,Czz]-covariance matrix
-		double v[3], Cv[6];
-		v[0] = vtx->getX(); v[1] = vtx->getY(); v[2] = vtx->getZ();
-		for(int i=0;i<6;i++)
-		{
-			Cv[i] = vtx->getCov()[i];
-		}
+  // default _JetWeightingEnergyScaling = 5.0/40.0
+  LcfiInstance::getInstance().getZVRES()->setDoubleParameter("Kalpha", 0.125 * lcfiJet->energy());
 
-		vertex_lcfi::ZVTOP::VertexFitterKalman kal;
-		double chi2 = kal.getDeviationFromVertex(&state, v, Cv);
+  vertex_lcfi::DecayChain* zvtopRes = LcfiInstance::getInstance().getZVRES()->calculateFor(lcfiJet);
 
-		return chi2;
-	}
+  vector<Vertex*> vtxList = flavtagVertices(zvtopRes);
+  return vtxList;
+}
 
-  double LcfiInterface::vertexMassPtCorrection( const Vertex* secondary, const Vertex* primary, const TVector3& momentum, float sigmax ) const
-	{
-		vertex_lcfi::Vector3 mom;
-		mom[0] = momentum.X();
-		mom[1] = momentum.Y();
-		mom[2] = momentum.Z();
+vector<Vertex*>
+LcfiInterface::forceZvtop(const Jet& jet) {
+  LcfiInstance::getInstance().getZVRES()->setDoubleParameter("TwoProngCut", 1e10);
+  LcfiInstance::getInstance().getZVRES()->setDoubleParameter("TrackTrimCut", 1e10);
+  //LcfiInstance::getInstance().getZVRES()->setDoubleParameter("ResolverCut",1e10);
+  LcfiInstance::getInstance().getZVRES()->setDoubleParameter("ResolverCut",0.6);
 
-		vertex_lcfi::Vertex* primary2 = lcfiVertex(primary,true);
-		vertex_lcfi::Vertex* secondary2 = lcfiVertex(secondary);
+  vertex_lcfi::Jet* lcfiJet = new vertex_lcfi::Jet(_event, vector<vertex_lcfi::Track*>(),
+      jet.E(),Vector3(jet.Px(), jet.Py(), jet.Pz()),0);
+  vertex_lcfi::MemoryManager<vertex_lcfi::Jet>::Event()->registerObject(lcfiJet);
 
-		vertex_lcfi::VertexMass vm;
+  TrackVec& tracks = jet.getTracks();
+  for (TrackVecIte iter = tracks.begin(); iter != tracks.end(); ++iter) {
+    lcfiJet->addTrack( lcfiTrack(_event, *iter) );
+  }
 
-		//VertexMass::Ptcalc(  Vertex* IPVertex  , Vertex*  TheVertex, Vector3* momentum , float sigmax  ) const
-		double pt = vm.Ptcalc(  primary2, secondary2, &mom, sigmax );
-		return pt;
-	}
+  //printf("lcfiJet tracks: %d\n", usedTracks);
+
+  // default _JetWeightingEnergyScaling = 5.0/40.0
+  //LcfiInstance::getInstance().getZVRES()->setDoubleParameter("Kalpha", 0.125 * lcfiJet->energy());
+  LcfiInstance::getInstance().getZVRES()->setDoubleParameter("Kalpha", 0);
+
+  vertex_lcfi::DecayChain* zvtopRes = LcfiInstance::getInstance().getZVRES()->calculateFor(lcfiJet);
+
+  vector<Vertex*> vtxList = flavtagVertices(zvtopRes);
+  return vtxList;
+}
+
+double LcfiInterface::getChi2TrackVtx(const Vertex* vtx, const Track* trk) const {
+  vertex_lcfi::Track* ptr = lcfiTrack(trk);
+  vertex_lcfi::TrackState* pstate = ptr->makeState();
+  vertex_lcfi::TState state(pstate);
+
+  // extract vertex
+  //* v = [xyz], Cv=[Cxx,Cxy,Cyy,Cxz,Cyz,Czz]-covariance matrix
+  double v[3], Cv[6];
+  v[0] = vtx->getX();
+  v[1] = vtx->getY();
+  v[2] = vtx->getZ();
+  for (int i=0; i<6; i++) {
+    Cv[i] = vtx->getCov()[i];
+  }
+
+  vertex_lcfi::ZVTOP::VertexFitterKalman kal;
+  double chi2 = kal.getDeviationFromVertex(&state, v, Cv);
+
+  return chi2;
+}
+
+double LcfiInterface::vertexMassPtCorrection( const Vertex* secondary, const Vertex* primary, const TVector3& momentum, float sigmax ) const {
+  vertex_lcfi::Vector3 mom;
+  mom[0] = momentum.X();
+  mom[1] = momentum.Y();
+  mom[2] = momentum.Z();
+
+  vertex_lcfi::Vertex* primary2 = lcfiVertex(primary,true);
+  vertex_lcfi::Vertex* secondary2 = lcfiVertex(secondary);
+
+  vertex_lcfi::VertexMass vm;
+
+  //VertexMass::Ptcalc(  Vertex* IPVertex  , Vertex*  TheVertex, Vector3* momentum , float sigmax  ) const
+  double pt = vm.Ptcalc(  primary2, secondary2, &mom, sigmax );
+  return pt;
+}
 
 }

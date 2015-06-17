@@ -7,43 +7,43 @@
 
 namespace lcfiplus {
 
-  class Event;
-	class LCIOStorer;
+class Event;
+class LCIOStorer;
 
-	/**
-		Event display for LCFIPlus.
+/**
+	Event display for LCFIPlus.
 
-		The graphics is based on the TEve framework for ROOT.
-		Adapted from the <a href="http://llr.in2p3.fr/~ruan/ILDDisplay/>Druid event display</a>.
+	The graphics is based on the TEve framework for ROOT.
+	Adapted from the <a href="http://llr.in2p3.fr/~ruan/ILDDisplay/>Druid event display</a>.
 
-		@author T. Tanabe, ICEPP, The University of Tokyo
-		@version $Id$
-		*/
-  class EventNavigator {
+	@author T. Tanabe, ICEPP, The University of Tokyo
+	@version $Id$
+	*/
+class EventNavigator {
 
-    public:
-			/**
-				Constructor.
+ public:
+  /**
+  	Constructor.
 
-				@param[in] input input file which contains events to inspect.
-				@param[in] start skips given number of events.
-				*/
-      EventNavigator(const char* input, int start=0);
-			~EventNavigator();
-			/**
-				Display next event.
-				*/
-      void Fwd();
-      void Bck();
-			/** 
-				Draws given event.
-				*/
-      void drawEvent(Event* event);
+  	@param[in] input input file which contains events to inspect.
+  	@param[in] start skips given number of events.
+  	*/
+  EventNavigator(const char* input, int start=0);
+  ~EventNavigator();
+  /**
+  	Display next event.
+  	*/
+  void Fwd();
+  void Bck();
+  /**
+  	Draws given event.
+  	*/
+  void drawEvent(Event* event);
 
-    private:
-			LCIOStorer* _ls;
-			int _start;
-  };
+ private:
+  LCIOStorer* _ls;
+  int _start;
+};
 }
 
 

@@ -6,131 +6,127 @@
 #include "lcfiplus.h"
 #include "VertexFinderSuehara.h"
 
-namespace lcfiplus{
-	struct TrackSelectorConfig;
+namespace lcfiplus {
+struct TrackSelectorConfig;
 
-	class PrimaryVertexFinder : public Algorithm
-	{
-	public:
-		PrimaryVertexFinder(){}
-		virtual ~PrimaryVertexFinder(){}
+class PrimaryVertexFinder : public Algorithm {
+ public:
+  PrimaryVertexFinder() {}
+  virtual ~PrimaryVertexFinder() {}
 
-		void init(Parameters *param);
-		void process();
-		void end();
+  void init(Parameters* param);
+  void process();
+  void end();
 
-		ClassDef(PrimaryVertexFinder,1);
+  ClassDef(PrimaryVertexFinder,1);
 
-	private:
-		vector<Vertex *> * _vertex;	//!
+ private:
+  vector<Vertex*>* _vertex;	//!
 
-		// parameters
-		double _chi2th;
-		bool _beamspotConstraint;
-		bool _beamspotSmearing;
+  // parameters
+  double _chi2th;
+  bool _beamspotConstraint;
+  bool _beamspotSmearing;
 
-		// track cut parameters
-		TrackSelectorConfig *_secVtxCfg; //!
-	};
+  // track cut parameters
+  TrackSelectorConfig* _secVtxCfg; //!
+};
 
-	class BuildUpVertex : public Algorithm
-	{
-	public:
-		BuildUpVertex() : _vertices(0) {}
-		virtual ~BuildUpVertex(){}
+class BuildUpVertex : public Algorithm {
+ public:
+  BuildUpVertex() : _vertices(0) {}
+  virtual ~BuildUpVertex() {}
 
-		void init(Parameters *param);
-		void process();
-		void end();
+  void init(Parameters* param);
+  void process();
+  void end();
 
-		ClassDef(BuildUpVertex,1);
+  ClassDef(BuildUpVertex,1);
 
-	private:
-		std::vector<Vertex *> * _vertices;	//!
-		std::vector<Vertex *> * _v0vertices;	//!
+ private:
+  std::vector<Vertex*>* _vertices;	//!
+  std::vector<Vertex*>* _v0vertices;	//!
 
-		// parameters
-		std::string _primvtxcolname;
+  // parameters
+  std::string _primvtxcolname;
 
-		// vertex formation limits
-		double _chi2thpri;
-		double _chi2thsec;
-		double _massth;
-		double _posth;
-		double _chi2orderinglimit;
-		int _v0sel;
+  // vertex formation limits
+  double _chi2thpri;
+  double _chi2thsec;
+  double _massth;
+  double _posth;
+  double _chi2orderinglimit;
+  int _v0sel;
 
-		// association parameters
-		bool _doassoc;
-		double _minimumdist;
-		double _chi2ratio;
+  // association parameters
+  bool _doassoc;
+  double _minimumdist;
+  double _chi2ratio;
 
-		// track cut parameters
-		TrackSelectorConfig *_secVtxCfg; //!
-	};
+  // track cut parameters
+  TrackSelectorConfig* _secVtxCfg; //!
+};
 
-	class JetClustering : public Algorithm
-	{
-	public:
-		JetClustering(){}
-		virtual ~JetClustering(){}
+class JetClustering : public Algorithm {
+ public:
+  JetClustering() {}
+  virtual ~JetClustering() {}
 
-		void init(Parameters *param);
-		void process();
-		void end();
+  void init(Parameters* param);
+  void process();
+  void end();
 
-		ClassDef(JetClustering,1);
+  ClassDef(JetClustering,1);
 
-	private:
-		VertexVec * _vertices; //!
-		map<double, vector<Jet *> * > _jetsmap; //!
-		map<double, vector<Vertex *> * > _jetvtxmap; //!
-		vector<int> _njets;
-		vector<double> _ycut;
-		int _useBeamJets;
-		double _rParameter;
-		bool _useMuonID;
-		double _vsMinDist;
-		double _vsMaxDist;
-		double _vsK0MassWidth;
-		bool _outputVertexStoresVertex;
-		string _vcolname;
-		int _maxYth;
+ private:
+  VertexVec* _vertices;  //!
+  map<double, vector<Jet*> * > _jetsmap;  //!
+  map<double, vector<Vertex*> * > _jetvtxmap;  //!
+  vector<int> _njets;
+  vector<double> _ycut;
+  int _useBeamJets;
+  double _rParameter;
+  bool _useMuonID;
+  double _vsMinDist;
+  double _vsMaxDist;
+  double _vsK0MassWidth;
+  bool _outputVertexStoresVertex;
+  string _vcolname;
+  int _maxYth;
 
-		double _yaddVV;
-		double _yaddVL;
-		double _yaddLL;
-	};
+  double _yaddVV;
+  double _yaddVL;
+  double _yaddLL;
+};
 
-	class JetVertexRefiner : public Algorithm
-	{
-	public:
-		JetVertexRefiner(){}
-		virtual ~JetVertexRefiner(){}
+class JetVertexRefiner : public Algorithm {
+ public:
+  JetVertexRefiner() {}
+  virtual ~JetVertexRefiner() {}
 
-		void init(Parameters *param);
-		void process();
-		void end();
+  void init(Parameters* param);
+  void process();
+  void end();
 
-		ClassDef(JetVertexRefiner,1);
+  ClassDef(JetVertexRefiner,1);
 
-	private:
-		VertexVec * _invertices; //!
-		VertexVec * _v0vertices; //!
-		vector<Vertex *> * _outvertices; //!
+ private:
+  VertexVec* _invertices;  //!
+  VertexVec* _v0vertices;  //!
+  vector<Vertex*>* _outvertices;   //!
 
-		JetVec * _inputJets;	//!
-		vector<Jet *> * _outputJets; //!
+  JetVec* _inputJets;	//!
+  vector<Jet*>* _outputJets;   //!
 
-		VertexFinderSuehara::VertexFinderSueharaConfig _cfg;
-		double _oneVtxProbTh;
-		double _maxCharmFlightLengthPerJetEnergy;
+  VertexFinderSuehara::VertexFinderSueharaConfig _cfg;
+  double _oneVtxProbTh;
+  double _maxCharmFlightLengthPerJetEnergy;
 
-		string _jincolname;
-		string _vincolname;
-		string _vv0colname;
-		string _vprimcolname;
-	};
+  string _jincolname;
+  string _vincolname;
+  string _vv0colname;
+  string _vprimcolname;
+};
 
 }
 

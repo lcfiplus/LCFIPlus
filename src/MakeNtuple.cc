@@ -12,16 +12,16 @@
 using namespace lcfiplus;
 
 namespace lcfiplus {
-	void MakeNtuple::init(Parameters *param) {
-		Algorithm::init(param);
+void MakeNtuple::init(Parameters* param) {
+  Algorithm::init(param);
 
-		string outputFilename = param->get("MakeNtuple.OutputRootFileName",string("flavtag.root"));
-		cout << "MakeNtuple: Ntuple file set to " << outputFilename << endl;
+  string outputFilename = param->get("MakeNtuple.OutputRootFileName",string("flavtag.root"));
+  cout << "MakeNtuple: Ntuple file set to " << outputFilename << endl;
 
-		FTManager::getInstance().openFile(outputFilename.c_str());
-	}
+  FTManager::getInstance().openFile(outputFilename.c_str());
+}
 
-	void MakeNtuple::end() {
-		FTManager::getInstance().closeFile();
-	}
+void MakeNtuple::end() {
+  FTManager::getInstance().closeFile();
+}
 }

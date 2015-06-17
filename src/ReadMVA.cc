@@ -29,98 +29,98 @@ using namespace lcfiplus;
 using namespace lcfiplus::algoSigProb;
 using namespace lcfiplus::algoEtc;
 
-void ReadMVA::init(Parameters *param) {
-	Algorithm::init(param);
-	
-	_verbose = false;
+void ReadMVA::init(Parameters* param) {
+  Algorithm::init(param);
 
-	// get FTManager for variable registration
-	int exportAllVars = param->get("FlavorTag.ExportAllVariables",0);
-	FTManager &mgr = FTManager::getInstance();
-	mgr.setEval(true, exportAllVars);
+  _verbose = false;
 
-	// read output directory & file names
-	_outputDirectory = param->get("FlavorTag.WeightsDirectory",TString("lcfiweights"));
-	_outputPrefix = param->get("FlavorTag.WeightsPrefix",TString("zpole_v00"));
-	_tmvaBookName = param->get("FlavorTag.BookName",TString("bdt"));
-	mgr.setParamName( param->get("FlavorTag.PIDAlgo",TString("lcfiplus")) );
+  // get FTManager for variable registration
+  int exportAllVars = param->get("FlavorTag.ExportAllVariables",0);
+  FTManager& mgr = FTManager::getInstance();
+  mgr.setEval(true, exportAllVars);
 
-	// process categories & variables
-	for (int i=1; ; ++i) {
-		FlavtagCategory c;
+  // read output directory & file names
+  _outputDirectory = param->get("FlavorTag.WeightsDirectory",TString("lcfiweights"));
+  _outputPrefix = param->get("FlavorTag.WeightsPrefix",TString("zpole_v00"));
+  _tmvaBookName = param->get("FlavorTag.BookName",TString("bdt"));
+  mgr.setParamName( param->get("FlavorTag.PIDAlgo",TString("lcfiplus")) );
 
-		stringstream catTag;
-		catTag << "FlavorTag.CategoryDefinition" << i;
-		c.definition = param->get(catTag.str().c_str(),string(""));
-		if (c.definition == "") {
-			cout << "definition for index " << i << " not found, skipping" << endl;
-			break;
-		}
+  // process categories & variables
+  for (int i=1; ; ++i) {
+    FlavtagCategory c;
 
-		stringstream psTag;
-		psTag << "FlavorTag.CategoryPreselection" << i;
-		c.preselection = param->get(psTag.str().c_str(),string(""));
+    stringstream catTag;
+    catTag << "FlavorTag.CategoryDefinition" << i;
+    c.definition = param->get(catTag.str().c_str(),string(""));
+    if (c.definition == "") {
+      cout << "definition for index " << i << " not found, skipping" << endl;
+      break;
+    }
 
-		// assumes space separated values
-		stringstream varTag;
-		varTag << "FlavorTag.CategoryVariables" << i;
-		param->fetchArray( varTag.str().c_str(), c.vars );
+    stringstream psTag;
+    psTag << "FlavorTag.CategoryPreselection" << i;
+    c.preselection = param->get(psTag.str().c_str(),string(""));
 
-		// read spectators
-		stringstream specTag;
-		specTag << "FlavorTag.CategorySpectators" << i;
-		param->fetchArray( specTag.str().c_str(), c.spec );
+    // assumes space separated values
+    stringstream varTag;
+    varTag << "FlavorTag.CategoryVariables" << i;
+    param->fetchArray( varTag.str().c_str(), c.vars );
 
-		if (_verbose) {
-			cout << "FlavorTag category: " << c.definition << endl;
-			cout << "FlavorTag preselection: " << c.preselection << endl;
-			for (unsigned int i=0; i<c.vars.size(); ++i)
-				cout << "FlavorTag variable: " << c.vars[i] << endl;
-		}
+    // read spectators
+    stringstream specTag;
+    specTag << "FlavorTag.CategorySpectators" << i;
+    param->fetchArray( specTag.str().c_str(), c.spec );
 
-		_categories.push_back(c);
-	}
+    if (_verbose) {
+      cout << "FlavorTag category: " << c.definition << endl;
+      cout << "FlavorTag preselection: " << c.preselection << endl;
+      for (unsigned int i=0; i<c.vars.size(); ++i)
+        cout << "FlavorTag variable: " << c.vars[i] << endl;
+    }
 
-	if (_categories.size() == 0) {
-		cout << "FlavorTag category definition was not found, aborting" << endl;
-		exit(1);
-	}
-	for (unsigned int icat=0; icat<_categories.size(); ++icat) {
-		const FlavtagCategory& c = _categories[icat];
+    _categories.push_back(c);
+  }
 
-		// specify output directory
-		TString prefix = _outputPrefix+(ULong_t)icat;
+  if (_categories.size() == 0) {
+    cout << "FlavorTag category definition was not found, aborting" << endl;
+    exit(1);
+  }
+  for (unsigned int icat=0; icat<_categories.size(); ++icat) {
+    const FlavtagCategory& c = _categories[icat];
 
-		TMVA::Reader* reader = new TMVA::Reader( "Color:Silent" );
+    // specify output directory
+    TString prefix = _outputPrefix+(ULong_t)icat;
 
-		// add variables
-		for (unsigned int iv=0; iv<c.vars.size(); ++iv) {
-			reader->AddVariable( c.vars[iv], mgr.getVarAddress( c.vars[iv] ) );
-			if (_verbose) std::cout << "  - Adding variable '" << c.vars[iv] << "'" << std::endl;
-		}
+    TMVA::Reader* reader = new TMVA::Reader( "Color:Silent" );
 
-		// add spectators
-		for (unsigned int is=0; is<c.spec.size(); ++is) {
-			reader->AddSpectator( c.spec[is], mgr.getVarAddress( c.spec[is] ) );
-			if (_verbose) std::cout << "  - Adding spectator '" << c.spec[is] << "'" << std::endl;
-		}
+    // add variables
+    for (unsigned int iv=0; iv<c.vars.size(); ++iv) {
+      reader->AddVariable( c.vars[iv], mgr.getVarAddress( c.vars[iv] ) );
+      if (_verbose) std::cout << "  - Adding variable '" << c.vars[iv] << "'" << std::endl;
+    }
 
-		TString wfile;
-		wfile += _outputDirectory + "/" + _outputPrefix + "_c";
-		wfile += icat;
-		wfile += "_";
-		wfile += _tmvaBookName;
-		wfile += ".weights.xml";
+    // add spectators
+    for (unsigned int is=0; is<c.spec.size(); ++is) {
+      reader->AddSpectator( c.spec[is], mgr.getVarAddress( c.spec[is] ) );
+      if (_verbose) std::cout << "  - Adding spectator '" << c.spec[is] << "'" << std::endl;
+    }
 
-		reader->BookMVA(_tmvaBookName, wfile);
+    TString wfile;
+    wfile += _outputDirectory + "/" + _outputPrefix + "_c";
+    wfile += icat;
+    wfile += "_";
+    wfile += _tmvaBookName;
+    wfile += ".weights.xml";
 
-		_readers.push_back(reader);
+    reader->BookMVA(_tmvaBookName, wfile);
 
-		mgr.addReader( reader, c );
+    _readers.push_back(reader);
 
-		mgr.openTree();
+    mgr.addReader( reader, c );
 
-	}
+    mgr.openTree();
+
+  }
 }
 
 void ReadMVA::process() {
