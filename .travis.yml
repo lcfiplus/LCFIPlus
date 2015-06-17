@@ -3,7 +3,7 @@ language: cpp
 compiler:
   - gcc
 
-script: make 
+script: make
 
 before_install:
   - echo $LANG
