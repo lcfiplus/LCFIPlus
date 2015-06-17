@@ -1,0 +1,25 @@
+language: cpp
+
+compiler:
+  - gcc
+
+script: make 
+
+before_install:
+  - echo $LANG
+  - echo $LC_ALL
+  - sudo apt-get install -y default-jre default-jdk libxpm-dev x11-common libx11-6 x11-utils libX11-dev libgsl0-dev gsl-bin libxft-dev g++ gfortran build-essential libjpeg-turbo8-dev libjpeg8-dev libjpeg8-dev libjpeg-dev libtiff4-dev libxml2-dev libssl-dev libgnutls-dev libgmp3-dev libpng12-dev libldap2-dev libkrb5-dev freeglut3-dev libfftw3-dev python-dev libmysqlclient-dev libgif-dev libiodbc2 libiodbc2-dev subversion libxext-dev libxmu-dev libimlib2 gccxml x11proto-gl-dev libglu1-mesa-dev
+  - export JDK_HOME=/usr
+  - wget ftp://ftp-lcd.slac.stanford.edu/ilc2/jstrube/ilcsoft.tar.bz2 -O /tmp/ilcsoft.tar.bz2
+  - tar xjf /tmp/ilcsoft.tar.bz2
+  - mv ilcsoft ${HOME}/build
+  - source ${HOME}/build/ilcsoft/v01-17-01-pre02/init_ilcsoft.sh
+
+before_script:
+  - mkdir build
+  - cd build
+  - cmake -C ${ILCSOFT}/ILCSoft.cmake ..
+
+os:
+  - linux
+
