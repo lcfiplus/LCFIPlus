@@ -19,7 +19,8 @@ before_install:
 before_script:
   - mkdir build
   - cd build
-  - cmake -C ${ILCSOFT}/ILCSoft.cmake -D INSTALL_DOC=OFF ..
+  - which cmake
+  - ${ILCSOFT}/CMake/3.2.3/bin/cmake -C ${ILCSOFT}/ILCSoft.cmake -D INSTALL_DOC=OFF ..
 
 os:
   - linux
