@@ -16,6 +16,7 @@ before_install:
   - source ${HOME}/build/ilcsoft/v01-17-07-pre/init_ilcsoft.sh
   - file $(which root)
   - gdb -ex "run -b -q" --batch $(which root)
+  - ldd $(which root)
 
 before_script:
   - mkdir build
