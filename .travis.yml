@@ -15,7 +15,6 @@ before_install:
   - find ${HOME}/build/ilcsoft -type f -exec sed -i 's#jstrube#travis/build#g' {} \;
   - source ${HOME}/build/ilcsoft/v01-17-07-pre/init_ilcsoft.sh
   - file $(which root)
-  - head $(which root)
   - gdb $(which root) << EOF
   - run -b -q
   - EOF
