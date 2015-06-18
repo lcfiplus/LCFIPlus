@@ -14,6 +14,7 @@ before_install:
   - mv ilcsoft ${HOME}/build
   - find ${HOME}/build/ilcsoft -type f -exec sed -i 's#jstrube#travis/build#g' {} \;
   - source ${HOME}/build/ilcsoft/v01-17-01-pre02/init_ilcsoft.sh
+  - root -b -q
 
 before_script:
   - mkdir build
