@@ -202,6 +202,7 @@ void JetClustering::init(Parameters* param) {
   param->fetchArray("JetClustering.OutputJetCollectionName",jcolnames);
   param->fetchArray("JetClustering.NJetsRequested",_njets);
   param->fetchArray("JetClustering.YCut",_ycut);
+  _algo = param->get("JetClustering.JetAlgorithm", string("DurhamVertex")); // DurhamVertex, Durham, KtVertex, Kt
   _useBeamJets = param->get("JetClustering.UseBeamJets", int(0));
   _rParameter = param->get("JetClustering.RParameter", double(1.0));
   _outputVertexStoresVertex = param->get("JetClustering.OutputJetStoresVertex",int(0));
@@ -284,6 +285,7 @@ void JetClustering::process() {
   JetConfig jetCfg;
   jetCfg.nJet = _njets[0];
   jetCfg.Ycut = _ycut[0];
+  jetCfg.algo = _algo;
   jetCfg.useBeamJets = _useBeamJets;
   jetCfg.rParameter = _rParameter;
   jetCfg.YaddVV = _yaddVV;

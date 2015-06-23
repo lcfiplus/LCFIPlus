@@ -26,6 +26,7 @@ double JetFinder::funcDurham(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg)
      (PL(1,I)*PL(1,J)+PL(2,I)*PL(2,J)+PL(3,I)*PL(3,J))/
      (PL(6,I)*PL(6,J))))
    */
+  if(Evis2 == 0)return 1e+300; // no clustering
 
   double e1 = jet1.E();
   double e2 = jet2.E();
@@ -116,6 +117,17 @@ double JetFinder::funcKtVertex(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cf
 
 }
 
+double JetFinder::funcDurhamBeamDistance(Jet& jet1, double Evis2, JetConfig& cfg) {
+  if(Evis2 == 0)return 1e+300; // no clustering
+  double e1 = jet1.E();
+  double costheta = fabs(jet1.CosTheta());
+  return 2*e1*e1*(1-costheta)/Evis2;
+}
+
+double JetFinder::funcKtBeamDistance(Jet& jet1, double Evis2, JetConfig& cfg) {
+  return jet1.Pt() * jet1.Pt();
+}
+
 double JetFinder::funcDurhamCheat(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg) {
   double e1 = jet1.E();
   double e2 = jet2.E();
@@ -155,12 +167,8 @@ double JetFinder::funcJadeE(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg) 
 }
 
 JetFinder::JetFinder(const JetConfig& cfg) : _cfg(cfg) {
-  if (cfg.useBeamJets) {
-    _Yfunc = JetFinder::funcKt;
-  } else {
-    _Yfunc = JetFinder::funcDurham;
-  }
 }
+
 void JetFinder::Configure(const JetConfig& cfg) {
   _cfg = cfg;
 }
@@ -203,7 +211,25 @@ vector<Jet*> JetFinder::prerun(TrackVec& tracks, NeutralVec& neutrals, VertexVec
   // angle to associate particles to vertex
   const double vertexassocangle = 0.2;
 
-  // this is actually not needed
+  // setting Y functions
+  if(_cfg.algo == "DurhamVertex"){
+    _Yfunc = JetFinder::funcDurhamVertex;
+    _YfuncBeam = JetFinder::funcDurhamBeamDistance;
+  }else if(_cfg.algo == "KtVertex"){
+    _Yfunc = JetFinder::funcKtVertex;
+    _YfuncBeam = JetFinder::funcKtBeamDistance;
+  }else if(_cfg.algo == "Durham"){
+    _Yfunc = JetFinder::funcDurham;
+    _YfuncBeam = JetFinder::funcDurhamBeamDistance;
+  }else if(_cfg.algo == "Kt"){
+    _Yfunc = JetFinder::funcKt;
+    _YfuncBeam = JetFinder::funcKtBeamDistance;
+  }else{
+    cout << "JetFinder: algorithm has not been properly set. Using default DurhamVertex." << endl;
+    _Yfunc = JetFinder::funcDurhamVertex;
+    _YfuncBeam = JetFinder::funcDurhamBeamDistance;
+  }
+
   // _Yfunc = JetFinder::funcDurhamVertex;
   // _Yfunc = JetFinder::funcKtVertex;
 
@@ -484,6 +510,7 @@ vector<Jet*> JetFinder::run(vector<Jet*> jets, double* pymin, int ynjetmax) {
     Evis += jet->E();
   }
   double Evis2 = Evis*Evis;
+  //cout << Evis2 << endl;
 
   int njet = nPartons;
 
@@ -497,6 +524,17 @@ vector<Jet*> JetFinder::run(vector<Jet*> jets, double* pymin, int ynjetmax) {
     }
   }
 
+  // calculate beam distances
+  vector<double> distBeam;
+  distBeam.resize(njet);
+
+  if (_cfg.useBeamJets){
+    for (int i=0; i<njet; ++i) {
+      distBeam[i] = (*_YfuncBeam)(*jets[i],Evis2,_cfg);
+    }
+  }
+
+#if 0
   // kt algorithm
   if (_cfg.useBeamJets) {
 
@@ -601,91 +639,123 @@ vector<Jet*> JetFinder::run(vector<Jet*> jets, double* pymin, int ynjetmax) {
 
     }
 
-    // original version: Durham
   } else {
+#endif
+  while ( njet > _cfg.nJet ) {
 
-    while ( njet > _cfg.nJet ) {
+    double Ymin = 1e8;
+    int imin=-1;
+    int jmin=-1;
+    int bmin=-1;
 
-      double Ymin = 1e8;
-      int imin=-1;
-      int jmin=-1;
-
-      /* compute upper-right triangle of matY
-       * for the values i2 > i1
-       */
-      for (int i1=0; i1<njet; ++i1) {
-        for (int i2=i1+1; i2<njet; ++i2) {
-          if (matY[i1][i2] < Ymin) {
-            Ymin = matY[i1][i2];
-            imin = i1;
-            jmin = i2;
-          }
+    /* compute upper-right triangle of matY
+     * for the values i2 > i1
+     */
+    for (int i1=0; i1<njet; ++i1) {
+      for (int i2=i1+1; i2<njet; ++i2) {
+        if (matY[i1][i2] < Ymin) {
+          Ymin = matY[i1][i2];
+          imin = i1;
+          jmin = i2;
         }
       }
 
-      if (imin == -1 || jmin == -1) {
-        printf("Further combination cannot be done. njet = %d\n", njet);
-        break;
+      // beamDist check
+      if (_cfg.useBeamJets && distBeam[i1] < Ymin) {
+        Ymin = distBeam[i1];
+        bmin = i1;
       }
-//      assert(imin != -1);
-//      assert(jmin != -1);
+    }
 
-      if (pymin && (ynjetmax >= njet))
-        pymin[njet-1] = Ymin;
+    if ((imin == -1 || jmin == -1) && bmin == -1) {
+      printf("Further combination cannot be done. njet = %d\n", njet);
+      break;
+    }
+//    assert(imin != -1);
+//    assert(jmin != -1);
 
-      // check Ymin against Ycut
-      if (_cfg.Ycut > 0 && Ymin > _cfg.Ycut) {
-        printf("Ycut reached: %e\n", Ymin);
-        break;
-      }
+    if (pymin && (ynjetmax >= njet))
+      pymin[njet-1] = Ymin;
 
+    // check Ymin against Ycut
+    if (_cfg.Ycut > 0 && Ymin > _cfg.Ycut) {
+      printf("Ycut reached: %e\n", Ymin);
+      break;
+    }
+
+    int idel = -1;
+    int irecalc2 = -1;
+
+    if(bmin != -1){
+      idel = bmin;
+      //printf("jet %d removed to beam with Y=%e, p=%f,%f,%f, E=%f\n", bmin, Ymin, jets[bmin]->Px(), jets[bmin]->Py(), jets[bmin]->Pz(), jets[bmin]->E());
+    }else{
       if (imin > jmin) {
         int tmp = jmin;
         jmin = imin;
         imin = tmp;
       }
+      //double val = (*_Yfunc)(*jets[imin],*jets[jmin],Evis2,_cfg);
+      //      printf("combining %d with %d, Y=%e,%e, p1=%f,%f,%f, E1=%f, p2=%f,%f,%f, E2=%f\n",imin,jmin,Ymin,val,
+      //	     jets[imin]->Px(), jets[imin]->Py(), jets[imin]->Pz(), jets[imin]->E(), jets[jmin]->Px(), jets[jmin]->Py(), jets[jmin]->Pz(), jets[jmin]->E());
 
       jets[imin]->add(*jets[jmin]);
-      delete jets[jmin];
+      idel = jmin;
+      irecalc2 = imin;
+    }
 
-      jets[jmin] = jets.back();
-      jets.pop_back();
+    if(idel == -1){
+      continue;
+    }
 
-      --njet;
+    delete jets[idel];
+    jets[idel] = jets.back();
+    jets.pop_back();
 
-      //printf("combining %d with %d, val=%e\n",imin,jmin,Ymin);
+    --njet;
 
-      // recompute matY (only the entries that changed from reordering)
-      for (int ii=0; ii<njet; ++ii) {
-        if (ii != imin) {
-          int i = min(ii,imin);
-          int j = max(ii,imin);
-          matY[i][j] = (*_Yfunc)(*jets[i],*jets[j],Evis2,_cfg);
+    int irecalc1 = idel;
+
+    // recalc irecalc1 and irecalc2
+
+    // recompute matY (only the entries that changed from reordering)
+    for (int ii=0; ii<njet; ++ii) {
+      if (irecalc1 < njet && ii != irecalc1) {
+        int i = min(ii,irecalc1);
+        int j = max(ii,irecalc1);
+        matY[i][j] = (*_Yfunc)(*jets[i],*jets[j],Evis2,_cfg);
+      }
+      if (ii != irecalc2 && irecalc2 != -1) {
+        int i = min(ii,irecalc2);
+        int j = max(ii,irecalc2);
+        matY[i][j] = (*_Yfunc)(*jets[i],*jets[j],Evis2,_cfg);
+      }
+      if(_cfg.useBeamJets){
+        if(ii == irecalc1){
+          distBeam[ii] = (*_YfuncBeam)(*jets[ii],Evis2,_cfg);
         }
-        if (ii != jmin) {
-          int i = min(ii,jmin);
-          int j = max(ii,jmin);
-          matY[i][j] = matY[ii][njet];
+        if(ii == irecalc2){
+          distBeam[ii] = (*_YfuncBeam)(*jets[ii],Evis2,_cfg);
         }
       }
     }
+  }
 
-  } // end if: use beam jets?
+//  } // end if: use beam jets?
 
   // order jets by largest energy first
   sort(jets.begin(),jets.end(),Jet::sort_by_energy);
 
   /*
 
-     char buf[100];
+  char buf[100];
   // debug printing
   for (int i=0; i<njet && i<10; ++i) {
-  double e = jets[i].getEnergy();
-  const double *p = jets[i].getTVector3();
-  snprintf(buf,100,"(%d) [%-.2f, %-.2f, %-.2f, %-.2f]\n",i,e,p[0],p[1],p[2]);
-  SLM << buf;
+  double e = jets[i]->E();
+  snprintf(buf,100,"(%d) [%-.2f, %-.2f, %-.2f, %-.2f]\n",i,e,jets[i]->Px(),jets[i]->Py(),jets[i]->Pz());
+  cout << buf << endl;
   }
-   */
+  */
 
   return jets;
 

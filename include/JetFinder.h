@@ -14,7 +14,7 @@ namespace lcfiplus {
 	*/
 struct JetConfig {
   string algo;
-  string algoY;
+  //string algoY;
   int nJet;
   double Ycut;
   int useBeamJets;
@@ -28,7 +28,7 @@ struct JetConfig {
   double YaddVV;
   double YaddVL;
   double YaddLL;
-  JetConfig() : nJet(0),Ycut(1),useBeamJets(0),rParameter(1.0),coneR(0),epsCut(0), coreThreshold(0),distCut(0),nIteration(5),YaddVV(100), YaddVL(100), YaddLL(100) {}
+  JetConfig() : algo("DurhamVertex"),nJet(0),Ycut(1),useBeamJets(0),rParameter(1.0),coneR(0),epsCut(0), coreThreshold(0),distCut(0),nIteration(5),YaddVV(100), YaddVL(100), YaddLL(100) {}
 };
 
 /**
@@ -52,10 +52,13 @@ class JetFinder {
   static double funcJade(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg);
   static double funcJadeE(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg);
   static double funcDurhamCheat(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg);
+
   static double funcDurhamVertex(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg);
+  static double funcDurhamBeamDistance(Jet& jet, double Evis2, JetConfig& cfg);
 
   static double funcKt(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg);
   static double funcKtVertex(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg);
+  static double funcKtBeamDistance(Jet& jet, double Evis2, JetConfig& cfg);
 
   /** Constructor.
   	@param[in] cfg specify the algorithm and the parameters
@@ -89,6 +92,7 @@ class JetFinder {
 
  private:
   double (*_Yfunc)(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg);
+  double (*_YfuncBeam)(Jet& jet1, double Evis2, JetConfig& cfg);
   JetConfig _cfg;
 };
 

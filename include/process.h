@@ -84,6 +84,7 @@ class JetClustering : public Algorithm {
   map<double, vector<Vertex*> * > _jetvtxmap;  //!
   vector<int> _njets;
   vector<double> _ycut;
+  string _algo;
   int _useBeamJets;
   double _rParameter;
   bool _useMuonID;
