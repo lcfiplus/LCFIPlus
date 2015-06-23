@@ -1,4 +1,9 @@
-Some documentation is available at
+[![Build Status](https://travis-ci.org/lcfiplus/LCFIPlus.svg?branch=master)](https://travis-ci.org/lcfiplus/LCFIPlus)
+
+Documentation
+-------------
+
+- Some documentation is available at
 https://confluence.slac.stanford.edu/display/ilc/LCFIPlus
 
 --------------
