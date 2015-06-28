@@ -78,6 +78,10 @@ class LCIOStorer : public TObject, public EventStoreObserver {
     _ignoreLackOfVertexRP = flag;
   }
 
+  void setParticleIDAlgorithmName(const char* algoName) {
+    _pidAlgoName = algoName;
+  }
+
   bool getReadSubdetectorEnergies()const {
     return _readSubdetectorEnergies;
   }
@@ -89,6 +93,10 @@ class LCIOStorer : public TObject, public EventStoreObserver {
   }
   bool getIgnoreLackOfVertexRP()const {
     return _ignoreLackOfVertexRP;
+  }
+
+  const char* getParticleIDAlgorithmName() {
+    return _pidAlgoName.c_str();
   }
 
   // callback function from EventStore
@@ -130,6 +138,7 @@ class LCIOStorer : public TObject, public EventStoreObserver {
   int _trackHitOrdering;
   bool _updateVertexRPDaughters;
   bool _ignoreLackOfVertexRP;
+  string _pidAlgoName;
 
   ClassDef(LCIOStorer,0);
 };

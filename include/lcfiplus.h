@@ -499,6 +499,19 @@ class Track : public TLorentzVector {//, protected TrackData {//, public EventPo
     return _flt;
   }
 
+  void setParticleIDProbability(string parName, double pidProbability) {
+    _pidProbability[parName] = pidProbability;
+  }
+
+  double getParticleIDProbability(const char* parName) {
+    string partName = parName;
+    double prob=0.0;
+    if (_pidProbability.find(partName) != _pidProbability.end()){
+      prob = _pidProbability[partName];
+    }
+    return prob;
+  }
+
   double getX() const;
   double getY() const;
   double getZ() const;
@@ -525,6 +538,9 @@ class Track : public TLorentzVector {//, protected TrackData {//, public EventPo
   double _rimh; // radius of innermost hit
   double _chi2; // from track fit
   int _ndf;
+
+  //ParticleID posterior probability
+  map<string, double> _pidProbability;
 
   ClassDef(lcfiplus::Track, 2);
 };

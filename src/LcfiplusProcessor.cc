@@ -53,11 +53,13 @@ LcfiplusProcessor::LcfiplusProcessor() : Processor("LcfiplusProcessor") {
   registerProcessorParameter("IgnoreLackOfVertexRP", "Keep running even if vertex RP collection is not present",
                              _ignoreLackOfVertexRP, int(0));
   registerProcessorParameter("PrintEventNumber", "Event number printing period in std output: 0 = no printing", _printPeriod, int(0));
+  registerProcessorParameter("PIDAlgorithmName", "ParticleID Algorithm Name", _pidAlgoName, string("LikelihoodPID"));
 
   registerOptionalParameter("MagneticField", "Manually set magnetic field, overriding the value from GEAR [T]", _magneticField, float(0.0));
   registerOptionalParameter("BeamSizeX", "Bunch size in the X direction [mm]", _beamSizeX, float(639e-6));
   registerOptionalParameter("BeamSizeY", "Bunch size in the Y direction [mm]", _beamSizeY, float(5.7e-6));
   registerOptionalParameter("BeamSizeZ", "Bunch size in the Z direction [mm]", _beamSizeZ, float(9.13e-2));
+  
 
   // ROOT object
   /*	int argc = 0;
@@ -138,6 +140,7 @@ void LcfiplusProcessor::init() {
       _lcio->setTrackHitOrdering(_trackHitOrdering);
       _lcio->setUpdateVertexRPDaughters(_updateVertexRPDaughters);
       _lcio->setIgnoreLackOfVertexRP(_ignoreLackOfVertexRP);
+      _lcio->setParticleIDAlgorithmName(_pidAlgoName.c_str());
 
       _lcioowner = true;
     } else {

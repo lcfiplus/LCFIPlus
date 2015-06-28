@@ -89,6 +89,7 @@ LCIOStorer::LCIOStorer(const char* inputfile, const char* outputfile, bool autor
   _autoread = autoread;
   _savePrefix = (outPrefix ? outPrefix : "");
 
+
   // register to EventStore
   Event::Instance()->RegisterObserver(this);
 
@@ -349,6 +350,7 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
   for (itPfoCol = _importPFOCols.begin(); itPfoCol != _importPFOCols.end(); itPfoCol ++) {
 
     LCCollection* colPFO = evt->getCollection(itPfoCol->first);
+    PIDHandler *PID = new PIDHandler(evt->getCollection(itPfoCol->first)); 
 
     // looking for LCRelation
     vector<lcio::LCRelationNavigator*> navs;
@@ -411,8 +413,38 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
 
         track->setId(trkIdCounter++); // start from 0. 110927 suehara
         track->setMcp(mcpf);
-        track->setPDG(pfo->getType());
-        /*
+
+	//PIDs
+	try{
+	  int pidAlgoID = PID->getAlgorithmID(_pidAlgoName);
+	    //pdg value
+	  track->setPDG(PID->getParticleID(pfo,pidAlgoID).getPDG());
+	  //posterior probabilities for each particle type hypothesis
+	  int vecsize = PID->getParticleID(pfo,pidAlgoID).getParameters().size();
+	  //electron hypothesis
+	  if(vecsize>0)
+	    track->setParticleIDProbability(PID->getParameterNames(pidAlgoID)[0],
+					    (double)PID->getParticleID(pfo,pidAlgoID).getParameters()[0]);
+	  //muon hypothesis
+	  if(vecsize>1)
+	    track->setParticleIDProbability(PID->getParameterNames(pidAlgoID)[1],
+					    (double)PID->getParticleID(pfo,pidAlgoID).getParameters()[1]);
+	  //pion hypothesis
+	  if(vecsize>2)
+	    track->setParticleIDProbability(PID->getParameterNames(pidAlgoID)[2],
+					    (double)PID->getParticleID(pfo,pidAlgoID).getParameters()[2]);
+	  //kaon hypothesis
+	  if(vecsize>3)
+	    track->setParticleIDProbability(PID->getParameterNames(pidAlgoID)[3],
+					    (double)PID->getParticleID(pfo,pidAlgoID).getParameters()[3]);
+	  //proton hypothesis
+	  if(vecsize>4)
+	    track->setParticleIDProbability(PID->getParameterNames(pidAlgoID)[4],
+					    (double)PID->getParticleID(pfo,pidAlgoID).getParameters()[4]);
+	}catch(UTIL::UnknownAlgorithm e){
+	}
+
+       /*
         vector<ParticleID*> idvec = pfo->getParticleIDs();
         if (idvec.size()>0) {
         	track->setPDG(idvec[0]->getPDG());

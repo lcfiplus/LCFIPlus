@@ -92,6 +92,9 @@ class LcfiplusProcessor : public Processor, public lcfiplus::EventStoreObserver 
   std::vector<int> _jetColNamesToWriteFlags;
 
   bool _inInit;
+
+  //Particle ID Algorithm Name
+  string _pidAlgoName;
 } ;
 
 #endif
