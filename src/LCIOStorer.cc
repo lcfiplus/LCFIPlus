@@ -417,33 +417,16 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
 	//PIDs
 	try{
 	  int pidAlgoID = PID->getAlgorithmID(_pidAlgoName);
-	    //pdg value
+	  //pdg value
 	  track->setPDG(PID->getParticleID(pfo,pidAlgoID).getPDG());
 	  //posterior probabilities for each particle type hypothesis
 	  int vecsize = PID->getParticleID(pfo,pidAlgoID).getParameters().size();
-	  //electron hypothesis
-	  if(vecsize>0)
-	    track->setParticleIDProbability(PID->getParameterNames(pidAlgoID)[0],
-					    (double)PID->getParticleID(pfo,pidAlgoID).getParameters()[0]);
-	  //muon hypothesis
-	  if(vecsize>1)
-	    track->setParticleIDProbability(PID->getParameterNames(pidAlgoID)[1],
-					    (double)PID->getParticleID(pfo,pidAlgoID).getParameters()[1]);
-	  //pion hypothesis
-	  if(vecsize>2)
-	    track->setParticleIDProbability(PID->getParameterNames(pidAlgoID)[2],
-					    (double)PID->getParticleID(pfo,pidAlgoID).getParameters()[2]);
-	  //kaon hypothesis
-	  if(vecsize>3)
-	    track->setParticleIDProbability(PID->getParameterNames(pidAlgoID)[3],
-					    (double)PID->getParticleID(pfo,pidAlgoID).getParameters()[3]);
-	  //proton hypothesis
-	  if(vecsize>4)
-	    track->setParticleIDProbability(PID->getParameterNames(pidAlgoID)[4],
-					    (double)PID->getParticleID(pfo,pidAlgoID).getParameters()[4]);
+	  for(int i=0;i<vecsize;i++) 
+	    track->setParticleIDProbability(PID->getParameterNames(pidAlgoID)[i],
+					    (double)PID->getParticleID(pfo,pidAlgoID).getParameters()[i]);	    
 	}catch(UTIL::UnknownAlgorithm e){
 	}
-
+	
        /*
         vector<ParticleID*> idvec = pfo->getParticleIDs();
         if (idvec.size()>0) {
