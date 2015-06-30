@@ -18,7 +18,9 @@ struct JetConfig {
   int nJet;
   double Ycut;
   int useBeamJets;
-  double rParameter;
+  double rParameter;     // for Kt
+  double alphaParameter; // for Durham
+  double betaParameter;  // for Valencia
   double coneR;
   double epsCut;
   string coreAlgo;
@@ -28,7 +30,7 @@ struct JetConfig {
   double YaddVV;
   double YaddVL;
   double YaddLL;
-  JetConfig() : algo("DurhamVertex"),nJet(0),Ycut(1),useBeamJets(0),rParameter(1.0),coneR(0),epsCut(0), coreThreshold(0),distCut(0),nIteration(5),YaddVV(100), YaddVL(100), YaddLL(100) {}
+  JetConfig() : algo("DurhamVertex"),nJet(0),Ycut(1),useBeamJets(0),rParameter(1.0),alphaParameter(1.0), betaParameter(1.0), coneR(0),epsCut(0), coreThreshold(0),distCut(0),nIteration(5),YaddVV(100), YaddVL(100), YaddLL(100) {}
 };
 
 /**
@@ -53,12 +55,20 @@ class JetFinder {
   static double funcJadeE(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg);
   static double funcDurhamCheat(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg);
 
-  static double funcDurhamVertex(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg);
-  static double funcDurhamBeamDistance(Jet& jet, double Evis2, JetConfig& cfg);
-
   static double funcKt(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg);
+  static double funcValencia(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg);
+
+  static double funcVertex(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg, double(*func)(Jet&, Jet&,double,JetConfig&));
+
+  // Vertex functions using above funcVertex()
+  // using template functions are more smart, but we maintain this for readability of non-experts
+  static double funcDurhamVertex(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg);
   static double funcKtVertex(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg);
+  static double funcValenciaVertex(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg);
+
+  static double funcDurhamBeamDistance(Jet& jet, double Evis2, JetConfig& cfg);
   static double funcKtBeamDistance(Jet& jet, double Evis2, JetConfig& cfg);
+  static double funcValenciaBeamDistance(Jet& jet, double Evis2, JetConfig& cfg);
 
   /** Constructor.
   	@param[in] cfg specify the algorithm and the parameters

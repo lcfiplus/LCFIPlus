@@ -87,6 +87,8 @@ class JetClustering : public Algorithm {
   string _algo;
   int _useBeamJets;
   double _rParameter;
+  double _alphaParameter;
+  double _betaParameter;
   bool _useMuonID;
   double _vsMinDist;
   double _vsMaxDist;

@@ -7,6 +7,12 @@ Documentation
 https://confluence.slac.stanford.edu/display/ilc/LCFIPlus
 
 --------------
+| v00-06-03 |
+--------------
+- Bugfix in JetFinder (default behaviour changed at v00-06-01)
+- Durham and Valencia jet algorithms with beam jets introduced
+
+--------------
 | v00-06-02 |
 --------------
 - Automatic creation of JointProbability histograms implemented
