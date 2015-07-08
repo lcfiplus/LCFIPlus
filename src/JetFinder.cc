@@ -47,8 +47,21 @@ double JetFinder::funcKt(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg) {
   return val;
 
 }
+double JetFinder::funcValencia(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg) {
+  // d_ij = min(Ei^2, Ej^2 )(1 - cos(theta_ij))/R^2
 
-double JetFinder::funcDurhamVertex(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg) {
+  double R_param = cfg.rParameter;
+  double beta = cfg.betaParameter;
+
+  double e1 = jet1.E();
+  double e2 = jet2.E();
+  TVector3 mom1 = jet1.Vect();
+  TVector3 mom2 = jet2.Vect();
+  double val = min(pow(e1, 2.*beta),pow(e2, 2.*beta))*max(0., 1-(mom1.Dot(mom2))/(mom1.Mag()*mom2.Mag())) / pow(R_param,2.);
+  return val;
+}
+
+double JetFinder::funcVertex(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg, double(*func)(Jet&, Jet&,double,JetConfig&)) {
   // do not combine vertex-oriented jets
   double add = 0.;
   if (jet1.getVertices().size() > 0 && jet2.getVertices().size() > 0) {
@@ -77,55 +90,33 @@ double JetFinder::funcDurhamVertex(Jet& jet1, Jet& jet2, double Evis2, JetConfig
     }
   }
 
-  return funcDurham(jet1, jet2, Evis2,cfg) + add;
+  return (*func)(jet1, jet2, Evis2, cfg) + add;
 }
 
-double JetFinder::funcKtVertex(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg) {
-
-  double add = 0;
-
-  if (jet1.getVertices().size() > 0 && jet2.getVertices().size() > 0) {
-
-    bool lepton1 = true;
-    bool lepton2 = true;
-
-    for (unsigned int n = 0; n < jet1.getVertices().size(); n++) {
-      if (jet1.getVertices()[n]->getTracks().size() >= 2) {
-        lepton1 = false;
-        break;
-      }
-    }
-
-    for (unsigned int n = 0; n < jet2.getVertices().size(); n++) {
-      if (jet2.getVertices()[n]->getTracks().size() >= 2) {
-        lepton2 = false;
-        break;
-      }
-    }
-
-    if (lepton1 && lepton2) {
-      add = cfg.YaddLL;
-    } else if (lepton1 || lepton2) {
-      add = cfg.YaddVL;
-    } else {
-      add = cfg.YaddVV;
-    }
-
-  }
-
-  return funcKt(jet1, jet2, Evis2, cfg) + add;
-
+double JetFinder::funcDurhamVertex(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg){
+  return funcVertex(jet1, jet2, Evis2, cfg, funcDurham);
+}
+  double JetFinder::funcKtVertex(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg){
+  return funcVertex(jet1, jet2, Evis2, cfg, funcKt);
+}
+double JetFinder::funcValenciaVertex(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg){
+  return funcVertex(jet1, jet2, Evis2, cfg, funcValencia);
 }
 
 double JetFinder::funcDurhamBeamDistance(Jet& jet1, double Evis2, JetConfig& cfg) {
-  if(Evis2 == 0)return 1e+300; // no clustering
+  double alpha = cfg.alphaParameter;
+
   double e1 = jet1.E();
   double costheta = fabs(jet1.CosTheta());
-  return 2*e1*e1*(1-costheta)/Evis2;
+  return 2*e1*e1*(1-costheta)/Evis2 * (alpha*alpha);
 }
 
 double JetFinder::funcKtBeamDistance(Jet& jet1, double Evis2, JetConfig& cfg) {
   return jet1.Pt() * jet1.Pt();
+}
+
+double JetFinder::funcValenciaBeamDistance(Jet& jet1, double Evis2, JetConfig& cfg) {
+  return pow(jet1.Pt(), 2. * cfg.betaParameter);
 }
 
 double JetFinder::funcDurhamCheat(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg) {
@@ -218,12 +209,18 @@ vector<Jet*> JetFinder::prerun(TrackVec& tracks, NeutralVec& neutrals, VertexVec
   }else if(_cfg.algo == "KtVertex"){
     _Yfunc = JetFinder::funcKtVertex;
     _YfuncBeam = JetFinder::funcKtBeamDistance;
+  }else if(_cfg.algo == "ValenciaVertex"){
+    _Yfunc = JetFinder::funcValenciaVertex;
+    _YfuncBeam = JetFinder::funcValenciaBeamDistance;
   }else if(_cfg.algo == "Durham"){
     _Yfunc = JetFinder::funcDurham;
     _YfuncBeam = JetFinder::funcDurhamBeamDistance;
   }else if(_cfg.algo == "Kt"){
     _Yfunc = JetFinder::funcKt;
     _YfuncBeam = JetFinder::funcKtBeamDistance;
+  }else if(_cfg.algo == "Valencia"){
+    _Yfunc = JetFinder::funcValencia;
+    _YfuncBeam = JetFinder::funcValenciaBeamDistance;
   }else{
     cout << "JetFinder: algorithm has not been properly set. Using default DurhamVertex." << endl;
     _Yfunc = JetFinder::funcDurhamVertex;
