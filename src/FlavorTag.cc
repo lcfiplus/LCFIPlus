@@ -857,6 +857,36 @@ class FtNElectron : public FTAlgo {
   bool _useVertexTracks;
 };
 
+class FtNElectronPID : public FTAlgo {
+ public:
+  FtNElectronPID(bool usevt) : FTAlgo(usevt ? "nelectronPIDall" : "nelectronPID") , _useVertexTracks(usevt) {}
+  void process(){
+    TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
+    _result = 0;
+    for(unsigned int n=0; n<tracks.size();n++){
+      if(tracks[n]->getPDG()==11 && tracks[n]->P()>=2.0)
+	_result += 1;
+    }
+  }
+ private:
+  bool _useVertexTracks;
+};
+  
+class FtNMuonPID : public FTAlgo {
+ public:
+  FtNMuonPID(bool usevt) : FTAlgo(usevt ? "nmuonPIDall" : "nmuonPID") , _useVertexTracks(usevt) {}
+  void process(){
+    TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
+    _result = 0;
+    for(unsigned int n=0; n<tracks.size();n++){
+      if(tracks[n]->getPDG()==13 && tracks[n]->P()>=5.0)
+	_result += 1;
+    }
+  }
+ private:
+  bool _useVertexTracks;
+};
+
 class FtMCNMuon : public FTAlgo {
  public:
   FtMCNMuon() : FTAlgo("MCnmuon") {}
@@ -1433,6 +1463,10 @@ void FTManager::initVars() {
   add( new FtNElectron(true) );
   add( new FtNMuon(false) );
   add( new FtNElectron(false) );
+  add( new FtNMuonPID(true) );
+  add( new FtNElectronPID(true) );
+  add( new FtNMuonPID(false) );
+  add( new FtNElectronPID(false) );
   add( new FtMCNMuon() );
   add( new FtMCNElectron() );
   add( new FtMCNB() );

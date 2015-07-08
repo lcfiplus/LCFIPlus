@@ -246,8 +246,12 @@ vector<Jet*> JetFinder::prerun(TrackVec& tracks, NeutralVec& neutrals, VertexVec
       const Track* tr = tracks[i];
 
       // track, d0sigth, z0sigth, posmax, mudepmin, edepmin, edepmax, hdepmin hdepmax
-      if (algoEtc::SimpleSecMuonFinder(tr, 5., 5., 5., 0.05, 0., 1., 1.5, 5.)) {
-        // treated as a vertex
+      //if (algoEtc::SimpleSecMuonFinder(tr, 5., 5., 5., 0.05, 0., 1., 1.5, 5.)) {
+      if (fabs(tr->getD0())/sqrt(tr->getCovMatrix()[tpar::d0d0])>5.0
+	  && fabs(tr->getZ0())/sqrt(tr->getCovMatrix()[tpar::z0z0])>5.0) {
+	if(tr->getPDG()!=13) continue;
+
+	// treated as a vertex
         double cov[6] = {0,0,0,0,0,0};
         Vertex* fakevtx = new Vertex(0,1,tr->Px()/tr->E(), tr->Py()/tr->E(), tr->Pz()/tr->E(), cov, false);
         fakevtx->add(tr);
