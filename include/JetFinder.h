@@ -30,8 +30,9 @@ struct JetConfig {
   double YaddVV;
   double YaddVL;
   double YaddLL;
-  double useMuonID;
-  double muonIDExternal;
+  int useMuonID;
+  int muonIDExternal;
+  double muonIDMinEnergy;
   double muonIDMinD0Sig;
   double muonIDMinZ0Sig;
   double muonIDMaxDist;
@@ -55,6 +56,7 @@ struct JetConfig {
       YaddLL(100),
       useMuonID(1),
       muonIDExternal(1),
+      muonIDMinEnergy(5.),
       muonIDMinD0Sig(5.),
       muonIDMinZ0Sig(5.),
       muonIDMaxDist(5.),

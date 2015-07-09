@@ -256,6 +256,7 @@ void JetClustering::init(Parameters* param) {
 
   _useMuonID = param->get("JetClustering.UseMuonID", int(1));
   _muonIDExternal = param->get("JetClustering.MuonIDExternal", int(1));
+  _muonIDMinEnergy = param->get("JetClustering.MuonIDMinimumEnergy", double(5.));
   _muonIDMinD0Sig = param->get("JetClustering.MuonIDMinimumD0Significance", double(5.));
   _muonIDMinZ0Sig = param->get("JetClustering.MuonIDMinimumZ0Significance", double(5.));
   _muonIDMaxDist = param->get("JetClustering.MuonIDMaximum3DImpactParameter", double(5.));
@@ -302,6 +303,7 @@ void JetClustering::process() {
   jetCfg.YaddLL = _yaddLL;
   jetCfg.useMuonID = _useMuonID;
   jetCfg.muonIDExternal = _muonIDExternal;
+  jetCfg.muonIDMinEnergy = _muonIDMinEnergy;
   jetCfg.muonIDMinD0Sig = _muonIDMinD0Sig;
   jetCfg.muonIDMinZ0Sig = _muonIDMinZ0Sig;
   jetCfg.muonIDMinProb = _muonIDMinProb;

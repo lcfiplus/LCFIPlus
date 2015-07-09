@@ -245,6 +245,8 @@ vector<Jet*> JetFinder::prerun(TrackVec& tracks, NeutralVec& neutrals, VertexVec
       // track, d0sigth, z0sigth, posmax, mudepmin, edepmin, edepmax, hdepmin hdepmax
       //if (algoEtc::SimpleSecMuonFinder(tr, 5., 5., 5., 0.05, 0., 1., 1.5, 5.)) {
 
+      if(tr->E() < _cfg.muonIDMinEnergy)continue;
+
       if(((!_cfg.muonIDExternal && algoEtc::SimpleSecMuonFinder(tr, 0., 0., 100., 0.05, 0., 1., 1.5, 5.))
 	 || (!_cfg.muonIDExternal && tr->getParticleIDProbability("muonProbability") > _cfg.muonIDMinProb))
 	 && (algoEtc::SimpleSecMuonFinder(tr, _cfg.muonIDMinD0Sig, _cfg.muonIDMinZ0Sig, _cfg.muonIDMaxDist, -1, -1, 10000, -1, 10000))){

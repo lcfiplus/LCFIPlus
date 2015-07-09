@@ -91,6 +91,7 @@ class JetClustering : public Algorithm {
   double _betaParameter;
   bool _useMuonID;
   bool _muonIDExternal;
+  double _muonIDMinEnergy;
   double _muonIDMinD0Sig;
   double _muonIDMinZ0Sig;
   double _muonIDMaxDist;
