@@ -503,11 +503,11 @@ class Track : public TLorentzVector {//, protected TrackData {//, public EventPo
     _pidProbability[parName] = pidProbability;
   }
 
-  double getParticleIDProbability(const char* parName) {
+  double getParticleIDProbability(const char* parName) const {
     string partName = parName;
     double prob=0.0;
     if (_pidProbability.find(partName) != _pidProbability.end()){
-      prob = _pidProbability[partName];
+      prob = _pidProbability.at(partName); // [] is not a const function
     }
     return prob;
   }

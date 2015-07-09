@@ -250,11 +250,16 @@ void JetClustering::init(Parameters* param) {
     sort(_ycut.begin(), _ycut.end(), std::less<double>());
   }
 
-  _useMuonID = param->get("JetClustering.UseMuonID", int(1));
   _yaddVV = param->get("JetClustering.YAddedForJetVertexVertex", double(100.));
   _yaddVL = param->get("JetClustering.YAddedForJetVertexLepton", double(100.));
   _yaddLL = param->get("JetClustering.YAddedForJetLeptonLepton", double(100.));
+
   _useMuonID = param->get("JetClustering.UseMuonID", int(1));
+  _muonIDExternal = param->get("JetClustering.MuonIDExternal", int(1));
+  _muonIDMinD0Sig = param->get("JetClustering.MuonIDMinimumD0Significance", double(5.));
+  _muonIDMinZ0Sig = param->get("JetClustering.MuonIDMinimumZ0Significance", double(5.));
+  _muonIDMaxDist = param->get("JetClustering.MuonIDMaximum3DImpactParameter", double(5.));
+  _muonIDMinProb = param->get("JetClustering.MuonIDMinimumProbability", double(0.5));
 
   _vsMinDist = param->get("JetClustering.VertexSelectionMinimumDistance", double(0.3));
   _vsMaxDist = param->get("JetClustering.VertexSelectionMaximumDistance", double(30.));
@@ -295,6 +300,12 @@ void JetClustering::process() {
   jetCfg.YaddVV = _yaddVV;
   jetCfg.YaddVL = _yaddVL;
   jetCfg.YaddLL = _yaddLL;
+  jetCfg.useMuonID = _useMuonID;
+  jetCfg.muonIDExternal = _muonIDExternal;
+  jetCfg.muonIDMinD0Sig = _muonIDMinD0Sig;
+  jetCfg.muonIDMinZ0Sig = _muonIDMinZ0Sig;
+  jetCfg.muonIDMinProb = _muonIDMinProb;
+  jetCfg.muonIDMaxDist = _muonIDMaxDist;
   JetFinder* jetFinder = new JetFinder(jetCfg);
 
   double* ymin = new double[_maxYth];
@@ -315,7 +326,7 @@ void JetClustering::process() {
   }
 
   int nVertexJets;
-  vector<Jet*> curjets = jetFinder->prerun(residualTracks, event->getNeutrals(), selectedVertices, _useMuonID, &nVertexJets);
+  vector<Jet*> curjets = jetFinder->prerun(residualTracks, event->getNeutrals(), selectedVertices, &nVertexJets);
   if (_njets.size() > 1) {
 
     for (unsigned int n=0; n<_njets.size(); n++) {
@@ -333,7 +344,7 @@ void JetClustering::process() {
         }
 
         // rerun prerun
-        curjets = jetFinder->prerun(residualTracks, event->getNeutrals(), selectedVertices, _useMuonID, &nVertexJets);
+        curjets = jetFinder->prerun(residualTracks, event->getNeutrals(), selectedVertices, &nVertexJets);
       }
 
       vector<Jet*>& jets = *(_jetsmap[_njets[n]]);
