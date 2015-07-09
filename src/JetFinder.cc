@@ -157,7 +157,7 @@ double JetFinder::funcJadeE(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg) 
   return val/Evis2;
 }
 
-JetFinder::JetFinder(const JetConfig& cfg) : _cfg(cfg) {
+  JetFinder::JetFinder(const JetConfig& cfg) : _cfg(cfg) {
 }
 
 void JetFinder::Configure(const JetConfig& cfg) {
@@ -248,7 +248,7 @@ vector<Jet*> JetFinder::prerun(TrackVec& tracks, NeutralVec& neutrals, VertexVec
       if(tr->E() < _cfg.muonIDMinEnergy)continue;
 
       if(((!_cfg.muonIDExternal && algoEtc::SimpleSecMuonFinder(tr, 0., 0., 100., 0.05, 0., 1., 1.5, 5.))
-	 || (!_cfg.muonIDExternal && tr->getParticleIDProbability("muonProbability") > _cfg.muonIDMinProb))
+	 || (_cfg.muonIDExternal && tr->getParticleIDProbability("muonProbability") > _cfg.muonIDMinProb))
 	 && (algoEtc::SimpleSecMuonFinder(tr, _cfg.muonIDMinD0Sig, _cfg.muonIDMinZ0Sig, _cfg.muonIDMaxDist, -1, -1, 10000, -1, 10000))){
 	 
 	// treated as a vertex
@@ -256,7 +256,23 @@ vector<Jet*> JetFinder::prerun(TrackVec& tracks, NeutralVec& neutrals, VertexVec
         Vertex* fakevtx = new Vertex(0,1,tr->Px()/tr->E(), tr->Py()/tr->E(), tr->Pz()/tr->E(), cov, false);
         fakevtx->add(tr);
 
-        //cout << "A fake vertex created by mu-candidate: " << tr->Px() << " " << tr->Py() << " " << tr->Pz() << " " << tr->E() << endl;
+	/*
+	if(tr->getMcp()){
+	  if(abs(tr->getMcp()->getPDG())!=13) cout << "MUID: Non muon" << endl;
+	  else if(tr->getMcp()->getSemiStableBParent()) cout << "MUID: b muon" << endl;
+	  else if(tr->getMcp()->getSemiStableCParent()) cout << "MUID: c muon" << endl;
+	  else cout << "MUID: non-bc muon" << endl;
+
+	  cout << "MUPDG: " << tr->getMcp()->getPDG() << " " << (tr->getMcp()->getSemiStableParent() ? tr->getMcp()->getSemiStableParent()->getPDG() : 0) << endl;
+	  const MCParticle *mcp = tr->getMcp();
+	  while(mcp){
+	    cout << mcp->getPDG() << " ";
+	    mcp = mcp->getParent();
+	  }
+	  cout << endl;
+	}
+	*/
+	//cout << "A fake vertex created by mu-candidate: " << tr->Px() << " " << tr->Py() << " " << tr->Pz() << " " << tr->E() << endl;
 
         vertices.push_back(fakevtx);
         usedTracks[i] = true;
