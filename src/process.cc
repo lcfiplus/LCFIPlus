@@ -255,7 +255,7 @@ void JetClustering::init(Parameters* param) {
   _yaddLL = param->get("JetClustering.YAddedForJetLeptonLepton", double(100.));
 
   _useMuonID = param->get("JetClustering.UseMuonID", int(1));
-  _muonIDExternal = param->get("JetClustering.MuonIDExternal", int(1));
+  _muonIDExternal = param->get("JetClustering.MuonIDExternal", int(0)); // default is internal, conservatively
   _muonIDMinEnergy = param->get("JetClustering.MuonIDMinimumEnergy", double(5.));
   _muonIDMinD0Sig = param->get("JetClustering.MuonIDMinimumD0Significance", double(5.));
   _muonIDMinZ0Sig = param->get("JetClustering.MuonIDMinimumZ0Significance", double(5.));
