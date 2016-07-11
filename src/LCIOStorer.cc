@@ -405,6 +405,14 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
 //			cerr << (pfo->getCharge() ? "[Track]" : "[Neutral]") << pfo->getEnergy() << ", " << (unsigned int)pfo << endl;
 
       // convert Track ////////////////////////////////////////////////////////////////////////////////
+      //pdg table
+      map<int, double> pmass;
+      pmass.insert(map<int, double>::value_type( 11, 0.000510998 ) );
+      pmass.insert(map<int, double>::value_type( 13, 0.105658 ) );
+      pmass.insert(map<int, double>::value_type( 211, 0.139570 ) );
+      pmass.insert(map<int, double>::value_type( 321, 0.493677 ) );
+      pmass.insert(map<int, double>::value_type( 2212, 0.938272 ) );
+      
       if (pfo->getCharge() != 0) {
         int trkSize = pfo->getTracks().size();
         assert(trkSize>0);
@@ -413,6 +421,12 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
 
         track->setId(trkIdCounter++); // start from 0. 110927 suehara
         track->setMcp(mcpf);
+
+        track->setCharge(pfo->getCharge());
+
+        track->SetE(pfo->getEnergy());
+        TVector3 pTrack(pfo->getMomentum());
+        track->SetVect(pTrack);
 
 	//PIDs
 	try{
@@ -423,21 +437,19 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
 	  int vecsize = PID->getParticleID(pfo,pidAlgoID).getParameters().size();
 	  for(int i=0;i<vecsize;i++) 
 	    track->setParticleIDProbability(PID->getParameterNames(pidAlgoID)[i],
-					    (double)PID->getParticleID(pfo,pidAlgoID).getParameters()[i]);	    
+					    (double)PID->getParticleID(pfo,pidAlgoID).getParameters()[i]);	
+
+	  //cal. corrected mass
+	  track->setCorrEnergy(pmass[PID->getParticleID(pfo,pidAlgoID).getPDG()]);
+	  track->swapEnergy();  //really temporal need flag...
 	}catch(UTIL::UnknownAlgorithm e){
 	}
 	
-       /*
-        vector<ParticleID*> idvec = pfo->getParticleIDs();
-        if (idvec.size()>0) {
-        	track->setPDG(idvec[0]->getPDG());
-        }
-        */
-        track->setCharge(pfo->getCharge());
-
-        track->SetE(pfo->getEnergy());
-        TVector3 pTrack(pfo->getMomentum());
-        track->SetVect(pTrack);
+	//tempolary
+        // vector<ParticleID*> idvec = pfo->getParticleIDs();
+        // if (idvec.size()>0) {
+	//   track->setPDG(idvec[3]->getPDG());
+        // }
 
         double pfoMom = pTrack.Mag();
 
@@ -552,6 +564,9 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
         itPfoCol->second.second->push_back(neut);
         _neutralLCIORel[neut] = pfo;
         _neutralLCIORel2[pfo] = neut;
+	
+	//set clustervec
+	neut->setClusters(clusters);
 
         if (clusters.size()==0) { // v0
           int abspdg = abs(pfo->getType());
@@ -622,6 +637,7 @@ void LCIOStorer::ReadVertices(const char* vtxname, vector<const Vertex*>* lcfico
       flavtx = new lcfiplus::Vertex(lciovtx->getChi2(), lciovtx->getProbability(),
                                     lciovtx->getPosition()[0], lciovtx->getPosition()[1], lciovtx->getPosition()[2], cov, lciovtx->isPrimary());
       flavtx->setId(n);
+      flavtx->setVertexingName(lciovtx->getAlgorithmType());
 
       lcio::ReconstructedParticle* lciorp = lciovtx->getAssociatedParticle();
       if (lciorp) {
@@ -836,7 +852,10 @@ void LCIOStorer::WriteVertices(VertexVec* pvvtx, const char* newName, const char
 
     // vertex initialization
     lciovtx->setPrimary(flavtx->isPrimary());
-    lciovtx->setAlgorithmType("lcfiplus");
+    if(!flavtx->isPrimary()){  //if secondary      
+      if(flavtx->getVertexingName() == "AVF") lciovtx->setAlgorithmType("lcfiplusAVF");
+      else lciovtx->setAlgorithmType("lcfiplus");
+    }
     lciovtx->setPosition(vpos);
     // lcio vertex needs floats, not doubles
     // using {} to limit scope of temporary
@@ -1042,7 +1061,7 @@ void LCIOStorer::WritePID(lcio::LCCollection* lciocol, lcio::ReconstructedPartic
   }
 
   //                         type, PDG, likelihood: as same as old LCFI
-  pidh.setParticleID(lciojet, 42, 9999, 0.0, algoID, outParamData);
+  pidh.setParticleID(lciojet, 42, 9999, 0.0, algoID, outParamData); 
 }
 
 
