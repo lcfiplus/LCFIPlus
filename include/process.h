@@ -6,6 +6,8 @@
 #include "lcfiplus.h"
 #include "VertexFinderSuehara.h"
 
+#include "TMVA/Reader.h"
+
 namespace lcfiplus {
 struct TrackSelectorConfig;
 
@@ -65,6 +67,11 @@ class BuildUpVertex : public Algorithm {
 
   // track cut parameters
   TrackSelectorConfig* _secVtxCfg; //!
+
+  //AVF parameters
+  bool _avf; //flag AVF/chi2
+  double _temperature;  //AVF parameter
+
 };
 
 class JetClustering : public Algorithm {
@@ -129,6 +136,13 @@ class JetVertexRefiner : public Algorithm {
   string _vincolname;
   string _vv0colname;
   string _vprimcolname;
+
+  //BNess tagger
+  TMVA::Reader *_bness;
+  float _var[8];
+  string _bnessbookname;
+  string _bnessbookname1;
+  
 };
 
 }
