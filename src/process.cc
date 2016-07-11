@@ -134,6 +134,11 @@ void BuildUpVertex::init(Parameters* param) {
   _minimumdist = param->get("BuildUpVertex.AssocIPTracksMinDist", 0.);
   _chi2ratio = param->get("BuildUpVertex.AssocIPTracksChi2RatioSecToPri", 2.0);
   _v0sel = param->get("BuildUpVertex.UseV0Selection", 1);
+
+  //flag of AVF/chi2
+  _avf = param->get("BuildUpVertex.UseAVF", true);
+  //AVF parameter
+  _temperature = param->get("BuildUpVertex.AVFTemperature", 5.0);
 }
 
 void BuildUpVertex::process() {
@@ -171,13 +176,20 @@ void BuildUpVertex::process() {
   cfg.minimumdistIP = _minimumdist;
   cfg.chi2ratioIP = _chi2ratio;
 
+  //flag AVF/chi2
+  cfg.avf=_avf;
+  cfg.temperature=_temperature;
+
   // build up vertexing
   vector<Vertex*> v0tmp;
   VertexFinderSuehara::buildUp(passedTracks, *_vertices, (_v0vertices ? *_v0vertices : v0tmp), _chi2thpri, cfg, primvtx);
   // TODO: deletion of v0tmp
 
-  if (_doassoc)
-    VertexFinderSuehara::associateIPTracks(*_vertices,primvtx, cfg);
+  if (_doassoc){
+    //VertexFinderSuehara::associateIPTracks(*_vertices,primvtx, cfg);
+    if(!_avf) VertexFinderSuehara::associateIPTracks(*_vertices,primvtx, cfg);
+    else VertexFinderSuehara::associateIPTracksAVF(*_vertices,primvtx, cfg);
+  }
 
   /*
   for(unsigned int n=0;n<_vertices->size();n++){
@@ -462,10 +474,35 @@ void JetVertexRefiner::init(Parameters* param) {
   _oneVtxProbTh = param->get("JetVertexRefiner.OneVertexProbThreshold", double(0.001));
   _maxCharmFlightLengthPerJetEnergy = param->get("JetVertexRefiner.MaxCharmFlightLengthPerJetEnergy", double(0.1));
 
-
   _invertices = 0;
   _v0vertices = 0;
   _inputJets = 0;
+
+  //bness setup
+  //_cfg.useBNess = param->get("JetVertexRefiner.useBNess", bool(true)); 
+  _cfg.cutBNess = param->get("JetVertexRefiner.BNessCut", double(-0.80));
+  _cfg.cutBNessE1 = param->get("JetVertexRefiner.BNessCutE1", double(-0.15));
+
+  //if(_cfg.useBNess){
+  string bnessname = param->get("JetVertexRefiner.BNessWeightFileName", string("lcfiweights/TMVAClassification_BDTG_bnesstagger_bjet_noPID.weights.xml"));
+  string bnessname1 = param->get("JetVertexRefiner.BNessWeightFileNameE1", string("lcfiweights/TMVAClassification_BDTG_bnesstagger_E1_bjet_noPID.weights.xml"));
+  _bnessbookname = param->get("JetVertexRefiner.BNessBookName", string("BDTG_bnesstagger_bjet"));
+  _bnessbookname1 = param->get("JetVertexRefiner.BNessBookNameE1", string("BDTG_bnesstagger_E1_bjet"));
+  _bness=new TMVA::Reader( "!Color:Silent" );
+  
+  _bness->AddVariable( "trke/jete", &_var[0]);
+  _bness->AddVariable( "trkjttheta", &_var[1]);
+  _bness->AddVariable( "trkptrel", &_var[2]);
+  _bness->AddVariable( "D0sig", &_var[3]);
+  _bness->AddVariable( "Z0sig", &_var[4]);
+  _bness->AddVariable( "D0", &_var[5]);
+  _bness->AddVariable( "Z0", &_var[6]);
+  //_bness->AddVariable( "parttype", &_var[7]);
+  _bness->BookMVA( _bnessbookname.c_str(), bnessname.c_str() ); 
+  _bness->BookMVA( _bnessbookname1.c_str(), bnessname1.c_str() ); 
+  //_bness->BookMVA( "BDTG_bnesstagger_bcjet", "lcfiweights/TMVAClassification_BDTG_bnesstagger_bcjet_noPID.weights.xml" ); 
+  //_bness->BookMVA( "BDTG_bnesstagger_E1_bcjet", "lcfiweights/TMVAClassification_BDTG_bnesstagger_E1_bcjet_noPID.weights.xml" ); 
+  //}
 }
 
 void JetVertexRefiner::process() {
@@ -475,6 +512,7 @@ void JetVertexRefiner::process() {
     event->Get(_vincolname.c_str(), _invertices);
     if (!_invertices)throw(Exception("JetVertexRefiner: input vertex collection is invalid."));
   }
+
   if (!_v0vertices) {
     event->Get(_vv0colname.c_str(), _v0vertices);
     if (!_v0vertices)throw(Exception("JetVertexRefiner: input V0 vertex collection is invalid."));
@@ -484,6 +522,19 @@ void JetVertexRefiner::process() {
     if (!_inputJets)throw(Exception("JetVertexRefiner: input jet collection is invalid."));
   }
 
+  //check should use BNess
+  _cfg.useBNess = false; 
+  if((*_invertices).size()>0){
+    for(unsigned int i=0;i<(*_invertices).size();i++){
+      string vname = (*_invertices)[i]->getVertexingName();
+      //cout << "vertexingname: " << vname.c_str() << endl;
+      if(vname.find("AVF")==string::npos) _cfg.useBNess = false;
+      else{ 
+	_cfg.useBNess = true; 
+	break;
+      }
+    }
+  }
 
   /*
   		// clearing old jets : but should be done in EventStore
@@ -514,8 +565,41 @@ void JetVertexRefiner::process() {
     // new jet creation
     Jet* nj = new Jet(*(*_inputJets)[j], true);
 
+    if(_cfg.useBNess){   //flag for BNess tagger
+      for(unsigned int ntr =0; ntr<nj->getTracks().size();ntr++){
+	double bness=-1.0;   //,cness=-1.0;  for future use
+	if(nj->getTracks()[ntr]->E()>=0.0){
+	  //evaluate BNess of each track
+	  //make sign 
+	  double sign=1.0;
+	  if(TMath::Cos(nj->Vect().Angle(nj->getTracks()[ntr]->getPos()))<0.0) sign=-1.0;
+	  
+	  _var[0]=nj->getTracks()[ntr]->E()/nj->E();
+	  _var[1]=nj->Vect().Angle(nj->getTracks()[ntr]->Vect());
+	  _var[2]=nj->getTracks()[ntr]->P()*TMath::Sin(_var[1]);
+	  _var[3]=sign*fabs(nj->getTracks()[ntr]->getD0())/sqrt(nj->getTracks()[ntr]->getCovMatrix()[tpar::d0d0]);
+	  _var[4]=sign*fabs(nj->getTracks()[ntr]->getZ0())/sqrt(nj->getTracks()[ntr]->getCovMatrix()[tpar::z0z0]);
+	  _var[5]=sign*fabs(nj->getTracks()[ntr]->getD0());
+	  _var[6]=sign*fabs(nj->getTracks()[ntr]->getZ0());
+	  //_var[7]=tracks[ntr]->getPID();
+	  if(nj->getTracks()[ntr]->E()>=1.0) bness=_bness->EvaluateMVA(_bnessbookname.c_str()); 
+	  else bness=_bness->EvaluateMVA(_bnessbookname1.c_str()); 
+
+	  //cness for future use
+	  //if(nj->getTracks()[ntr]->E()>=1.0) cness=_bness->EvaluateMVA("BDTG_bnesstagger_bcjet"); 
+	  //else cness=_bness->EvaluateMVA("BDTG_bnesstagger_E1_bcjet"); 
+	}      
+	
+	const_cast<Track*> (nj->getTracks()[ntr])->setBNess(bness); 
+	//for future use
+	//const_cast<Track*> (nj->getTracks()[ntr])->setCNess(cness); 
+	//cout << "bness: " << nj->getTracks()[ntr]->getBNess() << endl;; 
+      }
+    }
+
     vector<Vertex*> singleVtcs = VertexFinderSuehara::makeSingleTrackVertices(constVector(jetVertices[j]), jetResidualTracks[j], *_v0vertices, ip, _cfg);
-    VertexFinderSuehara::recombineVertices(jetVertices[j], singleVtcs);
+    if(!_cfg.useBNess) VertexFinderSuehara::recombineVertices(jetVertices[j], singleVtcs);
+    else VertexFinderSuehara::recombineVertices(jetVertices[j], singleVtcs, _cfg);
 
     // final v0 selection
     VertexSelector()(jetVertices[j], _cfg.v0selVertex);
@@ -532,6 +616,51 @@ void JetVertexRefiner::process() {
         jetVertices[j].clear();
         jetVertices[j].push_back(single);
       } else {
+	if(_cfg.useBNess){
+	  //check bness
+	  vector<const Track*> tracklist = jetVertices[j][0]->getTracks();
+	  vector<const Track*> newlist;
+	  int hbtr=-1;
+	  double okbness=-1.0;
+	  
+	  for(unsigned int ntr=0;ntr<tracklist.size();ntr++){
+	    if(tracklist[ntr]->getBNess()>okbness){
+	      okbness =tracklist[ntr]->getBNess();
+	      hbtr=ntr;
+	    }
+
+	    if(tracklist[ntr]->E()>=1.0 && tracklist[ntr]->getBNess()<_cfg.cutBNess) continue; 
+	    if(tracklist[ntr]->E()<1.0 && tracklist[ntr]->getBNess()<_cfg.cutBNessE1) continue; 
+
+	    newlist.push_back(tracklist[ntr]);
+	  }
+
+	  Vertex* vtx=NULL;
+	  if(newlist.size()>1){
+	    vtx = VertexFitterSimple_V()(newlist.begin(),newlist.end());
+	  }else{  //make 2 track vertex using highest score track
+	    double okchi2=1.0e+100;
+	    for(unsigned int ntr=0;ntr<tracklist.size();ntr++){
+	      newlist.clear();
+	      if((int)ntr==hbtr) continue;
+	      newlist.push_back(tracklist[hbtr]);
+	      newlist.push_back(tracklist[ntr]);
+	      Vertex *tmpvtx = VertexFitterSimple_V()(newlist.begin(),newlist.end());
+	      double tmpmaxchi2 = max(tmpvtx->getChi2Track(newlist[0]), tmpvtx->getChi2Track(newlist[1]));
+	      if(okchi2>tmpmaxchi2){
+		okchi2 = tmpmaxchi2;
+		if(vtx!=NULL) delete vtx;
+		vtx = tmpvtx;
+	      }else delete tmpvtx;   
+	    }
+	  }
+
+	  if(vtx != NULL){
+	    delete jetVertices[j][0];
+	    jetVertices[j][0] = vtx;
+	  }
+	} //bness check done.
+
         // caching single vertex probability
         Parameters para;
         para.add("SingleVertexProbability", (double)single->getProb());
@@ -554,10 +683,12 @@ void JetVertexRefiner::process() {
     // TODO: split vertices with low probability single vertex
 
     // set vertex to jets
+
     if (jetVertices[j].size() > 0) {
       nj->add(jetVertices[j][0]);
       _outvertices->push_back(jetVertices[j][0]);
     }
+
     if (jetVertices[j].size() > 1) {
       nj->add(jetVertices[j][1]);
       _outvertices->push_back(jetVertices[j][1]);
@@ -573,6 +704,7 @@ void JetVertexRefiner::process() {
 
 void JetVertexRefiner::end() {
   //cout << "ENDO" << endl;
+  if(_bness!=NULL) delete _bness;
 }
 
 
