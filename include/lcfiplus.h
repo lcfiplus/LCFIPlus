@@ -12,6 +12,7 @@
 #include "TVector3.h"
 
 #include "EventStore.h"
+#include "EVENT/Cluster.h"
 
 #include <typeinfo>
 
@@ -512,6 +513,38 @@ class Track : public TLorentzVector {//, protected TrackData {//, public EventPo
     return prob;
   }
 
+  //for track energy correction
+  void setCorrEnergy(double mass) {
+    _correnergy = sqrt(this->P()*this->P() + mass * mass);
+  }
+  
+  double getCorrEnergy() {
+    return _correnergy;
+  }
+
+  void swapEnergy() {
+    double tmpe = this->E();
+    this->SetE(_correnergy);
+    _correnergy = tmpe;
+  }
+
+  //for storing BNess
+  void setBNess(double bness) {
+    _bness = bness;
+  }
+
+  double getBNess() const {
+    return _bness;
+  }
+
+  double getCNess() const {
+    return _cness;
+  }
+
+  //for storing CNess
+  void setCNess(double cness) {
+    _cness = cness;
+  }
   double getX() const;
   double getY() const;
   double getZ() const;
@@ -541,6 +574,10 @@ class Track : public TLorentzVector {//, protected TrackData {//, public EventPo
 
   //ParticleID posterior probability
   map<string, double> _pidProbability;
+  double _correnergy;
+
+  //BNess
+  double _bness, _cness;
 
   ClassDef(lcfiplus::Track, 2);
 };
@@ -586,6 +623,9 @@ class Neutral : public TLorentzVector { // : public LorentzVector, protected Neu
     _isV0 = isV0;
   }
 
+  void setClusters(EVENT::ClusterVec clu) { _clstr = clu; }
+  EVENT::ClusterVec getClusters() const { return _clstr; }
+  
  private:
   int _id;
   int _pdg;
@@ -593,6 +633,8 @@ class Neutral : public TLorentzVector { // : public LorentzVector, protected Neu
   const lcfiplus::MCParticle* _mcp;
 
   double _calo[tpar::caloN];
+
+  EVENT::ClusterVec _clstr;
 
   ClassDef(lcfiplus::Neutral, 3);
 };
@@ -810,6 +852,24 @@ class Vertex {
   bool passesV0selection(const Vertex* primary=0) const;
   TLorentzVector getFourMomentum() const;
 
+  //for AVF
+  void setVertexingName(string vtxname){ _vertexingname = vtxname;}
+  string getVertexingName() const { return _vertexingname;}
+  ////////////////
+
+  //for vertex mass recovery
+  double getRecoveredVertexMass() const {return _rvtxmass;}
+  TLorentzVector getRecoveredFourMomentum() const {return _rvtxmom;}
+  TLorentzVector getPi0sFourMomentum() const {return _pi0mom;}
+  int getNPi0() const {return _npi0;}
+  
+  void setRecoveredVertexMass(double rvtxmass){_rvtxmass = rvtxmass;}
+  void setRecoveredVertexMass() {_rvtxmass = _rvtxmom.M();}
+  void setRecoveredFourMomentum(TLorentzVector rvtxmom) {_rvtxmom = rvtxmom;}
+  void setPi0sFourMomentum(TLorentzVector pi0mom) {_pi0mom = pi0mom;}
+  void setNPi0(int npi0) {_npi0 = npi0;}
+  ////////////////
+
   void Print()const;
   static int dist_sort(const Vertex* a, const Vertex* b);
   bool covIsGood() const;
@@ -828,6 +888,17 @@ class Vertex {
 
   vector<const lcfiplus::Track*> _tracks;
   map<const Track*, double> _chi2Tracks;
+
+
+  //for AVF
+  string _vertexingname;
+
+  //for vertex mass recovery
+  TLorentzVector _rvtxmom;
+  TLorentzVector _pi0mom;
+  double _rvtxmass;
+  int _npi0;
+  ////////////
 
   ClassDefNV(Vertex, 1);
 };
