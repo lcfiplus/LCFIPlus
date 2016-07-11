@@ -70,6 +70,15 @@ class VertexFinderSueharaConfig {
   double mind0SigSingle;
   double minz0SigSingle;
 
+  //flg for AVF/chi2 algorithm
+  bool avf;
+  double temperature;   //parameter for avf
+
+  //flg for BNess tagger fake rejection
+  bool useBNess;
+  double cutBNess;  //parameter for BNess
+  double cutBNessE1;  //parameter for BNess
+
   // default values
   VertexFinderSueharaConfig() {
     v0selTrack.setV0Tight();
@@ -98,6 +107,13 @@ class VertexFinderSueharaConfig {
     maxSeparationPerPosSingle = 0.1;
     mind0SigSingle = 5.;
     minz0SigSingle = 5.;
+
+    avf = false;   //default: use chi2 algorithm
+    temperature = 5.0;
+
+    useBNess = false; //default: do not use BNess
+    cutBNess = -0.80;
+    cutBNessE1 = -0.15;
   }
 };
 
@@ -107,6 +123,8 @@ void GetVertexList(list<const Track*>& tracks, const Vertex* ip, vector<Vertex*>
 // associating tracks to an existing vertex
 lcfiplus::Vertex* associateTracks(Vertex* vertex, const VertexVec& v0vtx, list<const Track*>& tracks, VertexFinderSueharaConfig& cfg, list<const Track*>* residualTracks = 0);
 void associateIPTracks(vector<Vertex*>& vertices, Vertex* ip, VertexFinderSueharaConfig& cfg);
+//using AVF method
+void associateIPTracksAVF(vector<Vertex*>& vertices, Vertex* ip, VertexFinderSueharaConfig& cfg);
 
 void buildUp(TrackVec& tracks, vector<Vertex*>& vtx, vector<Vertex*>& v0vtx, double chi2thpri, VertexFinderSueharaConfig& cfg, Vertex* ip = 0);
 void buildUpForJetClustering(TrackVec& tracks, vector<Vertex*>& vtx);
@@ -117,6 +135,10 @@ vector<Vertex*> makeSingleTrackVertices
 (Jet* jet, TrackVec& tracks, VertexVec& v0vtx, const Vertex* ip, VertexFinderSueharaConfig& cfg);
 
 void recombineVertices(vector<Vertex*>& vertices,vector<Vertex*>& singleVertices);
+
+//new function for BNess tagger
+void recombineVertices(vector<Vertex*>& vertices, vector<Vertex*>& singleVertices, VertexFinderSueharaConfig& cfg );
+
 void optimizeTwoVertices(Vertex*& v1, Vertex*& v2, int nvr);
 
 }
