@@ -30,7 +30,38 @@ struct JetConfig {
   double YaddVV;
   double YaddVL;
   double YaddLL;
-  JetConfig() : algo("DurhamVertex"),nJet(0),Ycut(1),useBeamJets(0),rParameter(1.0),alphaParameter(1.0), betaParameter(1.0), coneR(0),epsCut(0), coreThreshold(0),distCut(0),nIteration(5),YaddVV(100), YaddVL(100), YaddLL(100) {}
+  int useMuonID;
+  int muonIDExternal;
+  double muonIDMinEnergy;
+  double muonIDMinD0Sig;
+  double muonIDMinZ0Sig;
+  double muonIDMaxDist;
+  double muonIDMinProb;
+
+  JetConfig() : 
+    algo("DurhamVertex"),
+      nJet(0),
+      Ycut(1),
+      useBeamJets(0),
+      rParameter(1.0),
+      alphaParameter(1.0),
+      betaParameter(1.0),
+      coneR(0),
+      epsCut(0), 
+      coreThreshold(0),
+      distCut(0),
+      nIteration(5),
+      YaddVV(100), 
+      YaddVL(100), 
+      YaddLL(100),
+      useMuonID(1),
+      muonIDExternal(1),
+      muonIDMinEnergy(5.),
+      muonIDMinD0Sig(5.),
+      muonIDMinZ0Sig(5.),
+      muonIDMaxDist(5.),
+      muonIDMinProb(.5)
+      {}
 };
 
 /**
@@ -90,11 +121,11 @@ class JetFinder {
   	Perform jet clustering using charged tracks and neutral particles
   	with the contraint that the given vertices are not merged.
   	*/
-  vector<Jet*> run(TrackVec& tracks, NeutralVec& neutrals, VertexVec& vertices, double* pymin = 0, bool findmu = false, int ynjetmax = 10);
+  vector<Jet*> run(TrackVec& tracks, NeutralVec& neutrals, VertexVec& vertices, double* pymin = 0, int ynjetmax = 10);
   /**
   	Lepton finder and vertex isolator/combiner, called from run() with vertices
   	*/
-  vector<Jet*> prerun(TrackVec& tracks, NeutralVec& neutrals, VertexVec& vertices, bool findmu = false, int* pnVertexJets = 0);
+  vector<Jet*> prerun(TrackVec& tracks, NeutralVec& neutrals, VertexVec& vertices, int* pnVertexJets = 0);
   /**
   	Main function of jet clustering, called from other run() functions.
   	*/

@@ -211,20 +211,25 @@ FtIPProbHolder::FtIPProbHolder(const char* d0probfile, const char* z0probfile) {
   _hd0ip[1] = dynamic_cast<TH1F*>(_fd0->Get("hcip"));
   _hd0ip[2] = dynamic_cast<TH1F*>(_fd0->Get("hqip"));
 
-  double norm;
-  norm = _hd0ip[2]->Integral(_hd0ip[2]->FindBin(-0.5), _hd0ip[2]->FindBin(0.5));
-  _normd0ip[0] = _hd0ip[0]->Integral(_hd0ip[0]->FindBin(-0.5), _hd0ip[0]->FindBin(0.5)) / norm;
-  _normd0ip[1] = _hd0ip[1]->Integral(_hd0ip[1]->FindBin(-0.5), _hd0ip[1]->FindBin(0.5)) / norm;
+  if (_hd0ip[0] && _hd0ip[1] && _hd0ip[2]){
+    double norm;
+    norm = _hd0ip[2]->Integral(_hd0ip[2]->FindBin(-0.5), _hd0ip[2]->FindBin(0.5));
+    _normd0ip[0] = _hd0ip[0]->Integral(_hd0ip[0]->FindBin(-0.5), _hd0ip[0]->FindBin(0.5)) / norm;
+    _normd0ip[1] = _hd0ip[1]->Integral(_hd0ip[1]->FindBin(-0.5), _hd0ip[1]->FindBin(0.5)) / norm;
 
-  cout << "normd0ip[0] = " << _normd0ip[0] << " normd0ip[1] = " << _normd0ip[1] << endl;
+    cout << "normd0ip[0] = " << _normd0ip[0] << " normd0ip[1] = " << _normd0ip[1] << endl;
+  }else{
+    _hd0ip[0] = 0;
+    cout << "Near-IP histogram not included in the D0 probability file. d0Xprobip is not usable." << endl;
+  }
+  //if (!(_hd0ip[0] && _hd0ip[1] && _hd0ip[2]))throw(Exception("FlavorTag: D0 probability near-IP histogram open error!"));
 
   _hd0jprob = dynamic_cast<TH1F*>(_fd0->Get("hjprob"));
   _hd0jprob2 = dynamic_cast<TH1F*>(_fd0->Get("hjprob2"));
   if (!(_hd0jprob && _hd0jprob2))cout << "Joint probability not included in the D0 probability file. jprobr2 is not usable." << endl;
 
-  /////////////////////////////// Z0
 
-  if (!(_hd0ip[0] && _hd0ip[1] && _hd0ip[2]))throw(Exception("FlavorTag: D0 probability near-IP histogram open error!"));
+  /////////////////////////////// Z0
 
   _hz0[0] = dynamic_cast<TH1F*>(_fz0->Get("hb"));
   _hz0[1] = dynamic_cast<TH1F*>(_fz0->Get("hc"));
@@ -236,13 +241,17 @@ FtIPProbHolder::FtIPProbHolder(const char* d0probfile, const char* z0probfile) {
   _hz0ip[1] = dynamic_cast<TH1F*>(_fz0->Get("hcip"));
   _hz0ip[2] = dynamic_cast<TH1F*>(_fz0->Get("hqip"));
 
-  norm = _hz0ip[2]->Integral(_hz0ip[2]->FindBin(-0.5), _hz0ip[2]->FindBin(0.5));
-  _normz0ip[0] = _hz0ip[0]->Integral(_hz0ip[0]->FindBin(-0.5), _hz0ip[0]->FindBin(0.5)) / norm;
-  _normz0ip[1] = _hz0ip[1]->Integral(_hz0ip[1]->FindBin(-0.5), _hz0ip[1]->FindBin(0.5)) / norm;
+  if (_hz0ip[0] && _hz0ip[1] && _hz0ip[2]){
+    double norm = _hz0ip[2]->Integral(_hz0ip[2]->FindBin(-0.5), _hz0ip[2]->FindBin(0.5));
+    _normz0ip[0] = _hz0ip[0]->Integral(_hz0ip[0]->FindBin(-0.5), _hz0ip[0]->FindBin(0.5)) / norm;
+    _normz0ip[1] = _hz0ip[1]->Integral(_hz0ip[1]->FindBin(-0.5), _hz0ip[1]->FindBin(0.5)) / norm;
 
-  cout << "normz0ip[0] = " << _normz0ip[0] << " normz0ip[1] = " << _normz0ip[1] << endl;
-
-  if (!(_hz0ip[0] && _hz0ip[1] && _hz0ip[2]))throw(Exception("FlavorTag: Z0 probability near-IP histogram open error!"));
+    cout << "normz0ip[0] = " << _normz0ip[0] << " normz0ip[1] = " << _normz0ip[1] << endl;
+  }else{
+    _hz0ip[0] = 0;
+    cout << "Near-IP histogram not included in the Z0 probability file. z0Xprobip is not usable." << endl;
+  }
+  //if (!(_hz0ip[0] && _hz0ip[1] && _hz0ip[2]))throw(Exception("FlavorTag: Z0 probability near-IP histogram open error!"));
 
   _hz0jprob = dynamic_cast<TH1F*>(_fz0->Get("hjprob"));
   _hz0jprob2 = dynamic_cast<TH1F*>(_fz0->Get("hjprob2"));

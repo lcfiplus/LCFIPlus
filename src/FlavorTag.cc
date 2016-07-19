@@ -647,7 +647,8 @@ class FtJProbR2 : public FTAlgo {
   FtJProbR2() : FTAlgo("jprobr2") {}
   void process() {
     const FtIPProbHolder* holder = FTManager::getInstance().getIPProbHolder();
-    _result = jointProb2D0(_jet,_privtx,_nhitsJointProbD0, 200, true, holder->_hd0jprob, holder->_hd0jprob2);
+    if(holder->_hd0jprob && holder->_hd0jprob2)
+      _result = jointProb2D0(_jet,_privtx,_nhitsJointProbD0, 200, true, holder->_hd0jprob, holder->_hd0jprob2);
   }
 };
 
@@ -656,7 +657,8 @@ class FtJProbZ2 : public FTAlgo {
   FtJProbZ2() : FTAlgo("jprobz2") {}
   void process() {
     const FtIPProbHolder* holder = FTManager::getInstance().getIPProbHolder();
-    _result = jointProb2Z0(_jet,_privtx,_nhitsJointProbZ0, 200, true, holder->_hz0jprob, holder->_hz0jprob2);
+    if(holder->_hz0jprob && holder->_hz0jprob2)
+      _result = jointProb2Z0(_jet,_privtx,_nhitsJointProbZ0, 200, true, holder->_hz0jprob, holder->_hz0jprob2);
   }
 };
 
@@ -665,7 +667,8 @@ class FtJProbR25Sigma : public FTAlgo {
   FtJProbR25Sigma(bool usevt) : FTAlgo(usevt ? "jprobr25sigma" : "jprobr25sigmanv"), _useVertexTracks(usevt) {}
   void process() {
     const FtIPProbHolder* holder = FTManager::getInstance().getIPProbHolder();
-    _result = jointProb2D0(_jet,_privtx,_nhitsJointProbD0,5., _useVertexTracks, holder->_hd0jprob, holder->_hd0jprob2);
+    if(holder->_hd0jprob && holder->_hd0jprob2)
+      _result = jointProb2D0(_jet,_privtx,_nhitsJointProbD0,5., _useVertexTracks, holder->_hd0jprob, holder->_hd0jprob2);
   }
  private:
   bool _useVertexTracks;
@@ -676,7 +679,8 @@ class FtJProbZ25Sigma : public FTAlgo {
   FtJProbZ25Sigma(bool usevt) : FTAlgo(usevt ? "jprobz25sigma" : "jprobz25sigmanv"), _useVertexTracks(usevt) {}
   void process() {
     const FtIPProbHolder* holder = FTManager::getInstance().getIPProbHolder();
-    _result = jointProb2Z0(_jet,_privtx,_nhitsJointProbZ0,5., _useVertexTracks, holder->_hz0jprob, holder->_hz0jprob2);
+    if(holder->_hz0jprob && holder->_hz0jprob2)
+      _result = jointProb2Z0(_jet,_privtx,_nhitsJointProbZ0,5., _useVertexTracks, holder->_hz0jprob, holder->_hz0jprob2);
   }
   bool _useVertexTracks;
 };
@@ -1241,6 +1245,7 @@ class FtD0bProbIP : public FTAlgo {
  public:
   FtD0bProbIP() : FTAlgo("d0nonbprobip") {}
   void process() {
+    if(!FTManager::getInstance().getIPProbHolder()->_hd0ip[0])return;
     double prob = 1.;
     TrackVec tracks = _jet->getAllTracks(true);
     for (unsigned int n=0; n<tracks.size(); n++) {
@@ -1261,6 +1266,7 @@ class FtD0cProbIP : public FTAlgo {
  public:
   FtD0cProbIP() : FTAlgo("d0noncprobip") {}
   void process() {
+    if(!FTManager::getInstance().getIPProbHolder()->_hd0ip[0])return;
     double prob = 1.;
     TrackVec tracks = _jet->getAllTracks(true);
     for (unsigned int n=0; n<tracks.size(); n++) {
@@ -1349,6 +1355,7 @@ class FtZ0bProbIP : public FTAlgo {
  public:
   FtZ0bProbIP() : FTAlgo("z0nonbprobip") {}
   void process() {
+    if(!FTManager::getInstance().getIPProbHolder()->_hd0ip[0])return;
     double prob = 1.;
     TrackVec tracks = _jet->getAllTracks(true);
     for (unsigned int n=0; n<tracks.size(); n++) {
@@ -1368,6 +1375,7 @@ class FtZ0cProbIP : public FTAlgo {
  public:
   FtZ0cProbIP() : FTAlgo("z0noncprobip") {}
   void process() {
+    if(!FTManager::getInstance().getIPProbHolder()->_hd0ip[0])return;
     double prob = 1.;
     TrackVec tracks = _jet->getAllTracks(true);
     for (unsigned int n=0; n<tracks.size(); n++) {
