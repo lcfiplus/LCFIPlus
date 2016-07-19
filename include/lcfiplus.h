@@ -518,7 +518,7 @@ class Track : public TLorentzVector {//, protected TrackData {//, public EventPo
     _correnergy = sqrt(this->P()*this->P() + mass * mass);
   }
   
-  double getCorrEnergy() {
+  double getCorrEnergy() const {
     return _correnergy;
   }
 
