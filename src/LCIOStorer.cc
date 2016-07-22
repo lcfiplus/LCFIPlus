@@ -305,11 +305,10 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
       if (mcp->getParents().size()>0) {
         map<lcio::MCParticle*,lcfiplus::MCParticle*>::iterator iter = _mcpLCIORel2.find(mcp->getParents()[0]);
 
-        if ( iter == _mcpLCIORel2.end() )	throw(new lcfiplus::Exception("parent not found in association map"));
-
-        parent = iter->second;
+        if ( iter == _mcpLCIORel2.end() ) cout << "LCIOStorer::MCPconversion: parent not found in association map" << endl;
+        else parent = iter->second;
       }
-
+      
       // fix against weird 1e-308 numbers
       const double* vtmp = mcp->getVertex();
       double v[3] = { 0., 0., 0.};
@@ -331,7 +330,8 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
       if (mcp->getParents().size()>1) {
         for (unsigned int i=1; i<mcp->getParents().size(); i++) {
           map<lcio::MCParticle*,lcfiplus::MCParticle*>::iterator iter = _mcpLCIORel2.find(mcp->getParents()[i]);
-          iter->second->addDaughter(mcpNew);
+	  if ( iter == _mcpLCIORel2.end() ) cout << "LCIOStorer::MCPconversion: parent " << i << " not found in association map" << endl;
+          else iter->second->addDaughter(mcpNew);
         }
       }
 
