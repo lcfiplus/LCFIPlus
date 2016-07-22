@@ -293,7 +293,38 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
 
     LCCollection* colMC = evt->getCollection(itMcpCol->first);
 
+    // 160722 Separate parent-daughter connection from the main loop to avoid crash with overlaid particles which have opposite order
     int id;
+    for (id = 0; id < colMC->getNumberOfElements(); ++id) {
+      lcio::MCParticle* mcp = dynamic_cast<lcio::MCParticle*>( colMC->getElementAt(id) );
+      assert(mcp != 0);
+      //if (mcp->isBackscatter()) continue;
+
+      // fix against weird 1e-308 numbers
+      const double* vtmp = mcp->getVertex();
+      double v[3] = { 0., 0., 0.};
+      if (vtmp) {
+        memcpy(v, vtmp, sizeof(v));
+      }
+      //printf("%d [%e,%e,%e]\n",mcp->getPDG(),v[0],v[1],v[2]);
+      if (v[0]*v[0]+v[1]*v[1]+v[2]*v[2] < 1e-100) {
+        v[0] = 0;
+        v[1] = 0;
+        v[2] = 0;
+      }
+
+      // convert into MCParticle: parent is empty at this point
+      lcfiplus::MCParticle* mcpNew = new MCParticle(id, mcp->getPDG(), 0, mcp->getCharge(),
+          TLorentzVector(TVector3(mcp->getMomentum()),mcp->getEnergy()), TVector3(v));
+
+      // add to MCP list
+      itMcpCol->second->push_back(mcpNew);
+
+      // LCIO relation
+      _mcpLCIORel[mcpNew] = mcp;
+      _mcpLCIORel2[mcp] = mcpNew;
+    }
+    // second loop for parent daughter connection
     for (id = 0; id < colMC->getNumberOfElements(); ++id) {
       lcio::MCParticle* mcp = dynamic_cast<lcio::MCParticle*>( colMC->getElementAt(id) );
       assert(mcp != 0);
@@ -308,23 +339,9 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
         if ( iter == _mcpLCIORel2.end() ) cout << "LCIOStorer::MCPconversion: parent not found in association map" << endl;
         else parent = iter->second;
       }
-      
-      // fix against weird 1e-308 numbers
-      const double* vtmp = mcp->getVertex();
-      double v[3] = { 0., 0., 0.};
-      if (vtmp) {
-        memcpy(v, vtmp, sizeof(v));
-      }
-      //printf("%d [%e,%e,%e]\n",mcp->getPDG(),v[0],v[1],v[2]);
-      if (v[0]*v[0]+v[1]*v[1]+v[2]*v[2] < 1e-100) {
-        v[0] = 0;
-        v[1] = 0;
-        v[2] = 0;
-      }
 
-      // convert into MCParticle
-      lcfiplus::MCParticle* mcpNew = new MCParticle(id, mcp->getPDG(), parent, mcp->getCharge(),
-          TLorentzVector(TVector3(mcp->getMomentum()),mcp->getEnergy()), TVector3(v));
+      lcfiplus::MCParticle *mcpNew = _mcpLCIORel2[mcp];
+      mcpNew->setParent(parent);
 
       // add daughters to other MCPs
       if (mcp->getParents().size()>1) {
@@ -334,14 +351,8 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
           else iter->second->addDaughter(mcpNew);
         }
       }
-
-      // add to MCP list
-      itMcpCol->second->push_back(mcpNew);
-
-      // LCIO relation
-      _mcpLCIORel[mcpNew] = mcp;
-      _mcpLCIORel2[mcp] = mcpNew;
     }
+    
     SetColorSinglets(*(itMcpCol->second), *(_importMCCSCols[itMcpCol->first]));
   }
 
