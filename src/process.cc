@@ -492,30 +492,30 @@ void JetVertexRefiner::init(Parameters* param) {
   _inputJets = 0;
 
   //bness setup
-  //_cfg.useBNess = param->get("JetVertexRefiner.useBNess", bool(true)); 
+  _cfg.useBNess = param->get("JetVertexRefiner.useBNess", bool(0)); 
   _cfg.cutBNess = param->get("JetVertexRefiner.BNessCut", double(-0.80));
   _cfg.cutBNessE1 = param->get("JetVertexRefiner.BNessCutE1", double(-0.15));
 
-  //if(_cfg.useBNess){
-  string bnessname = param->get("JetVertexRefiner.BNessWeightFileName", string("lcfiweights/TMVAClassification_BDTG_bnesstagger_bjet_noPID.weights.xml"));
-  string bnessname1 = param->get("JetVertexRefiner.BNessWeightFileNameE1", string("lcfiweights/TMVAClassification_BDTG_bnesstagger_E1_bjet_noPID.weights.xml"));
-  _bnessbookname = param->get("JetVertexRefiner.BNessBookName", string("BDTG_bnesstagger_bjet"));
-  _bnessbookname1 = param->get("JetVertexRefiner.BNessBookNameE1", string("BDTG_bnesstagger_E1_bjet"));
-  _bness=new TMVA::Reader( "!Color:Silent" );
-  
-  _bness->AddVariable( "trke/jete", &_var[0]);
-  _bness->AddVariable( "trkjttheta", &_var[1]);
-  _bness->AddVariable( "trkptrel", &_var[2]);
-  _bness->AddVariable( "D0sig", &_var[3]);
-  _bness->AddVariable( "Z0sig", &_var[4]);
-  _bness->AddVariable( "D0", &_var[5]);
-  _bness->AddVariable( "Z0", &_var[6]);
-  //_bness->AddVariable( "parttype", &_var[7]);
-  _bness->BookMVA( _bnessbookname.c_str(), bnessname.c_str() ); 
-  _bness->BookMVA( _bnessbookname1.c_str(), bnessname1.c_str() ); 
-  //_bness->BookMVA( "BDTG_bnesstagger_bcjet", "lcfiweights/TMVAClassification_BDTG_bnesstagger_bcjet_noPID.weights.xml" ); 
-  //_bness->BookMVA( "BDTG_bnesstagger_E1_bcjet", "lcfiweights/TMVAClassification_BDTG_bnesstagger_E1_bcjet_noPID.weights.xml" ); 
-  //}
+  if(_cfg.useBNess){
+    string bnessname = param->get("JetVertexRefiner.BNessWeightFileName", string("lcfiweights/TMVAClassification_BDTG_bnesstagger_bjet_noPID.weights.xml"));
+    string bnessname1 = param->get("JetVertexRefiner.BNessWeightFileNameE1", string("lcfiweights/TMVAClassification_BDTG_bnesstagger_E1_bjet_noPID.weights.xml"));
+    _bnessbookname = param->get("JetVertexRefiner.BNessBookName", string("BDTG_bnesstagger_bjet"));
+    _bnessbookname1 = param->get("JetVertexRefiner.BNessBookNameE1", string("BDTG_bnesstagger_E1_bjet"));
+    _bness=new TMVA::Reader( "!Color:Silent" );
+    
+    _bness->AddVariable( "trke/jete", &_var[0]);
+    _bness->AddVariable( "trkjttheta", &_var[1]);
+    _bness->AddVariable( "trkptrel", &_var[2]);
+    _bness->AddVariable( "D0sig", &_var[3]);
+    _bness->AddVariable( "Z0sig", &_var[4]);
+    _bness->AddVariable( "D0", &_var[5]);
+    _bness->AddVariable( "Z0", &_var[6]);
+    //_bness->AddVariable( "parttype", &_var[7]);
+    _bness->BookMVA( _bnessbookname.c_str(), bnessname.c_str() ); 
+    _bness->BookMVA( _bnessbookname1.c_str(), bnessname1.c_str() ); 
+    //_bness->BookMVA( "BDTG_bnesstagger_bcjet", "lcfiweights/TMVAClassification_BDTG_bnesstagger_bcjet_noPID.weights.xml" ); 
+    //_bness->BookMVA( "BDTG_bnesstagger_E1_bcjet", "lcfiweights/TMVAClassification_BDTG_bnesstagger_E1_bcjet_noPID.weights.xml" ); 
+  }
 }
 
 void JetVertexRefiner::process() {
@@ -536,18 +536,18 @@ void JetVertexRefiner::process() {
   }
 
   //check should use BNess
-  _cfg.useBNess = false; 
-  if((*_invertices).size()>0){
-    for(unsigned int i=0;i<(*_invertices).size();i++){
-      string vname = (*_invertices)[i]->getVertexingName();
-      //cout << "vertexingname: " << vname.c_str() << endl;
-      if(vname.find("AVF")==string::npos) _cfg.useBNess = false;
-      else{ 
-	_cfg.useBNess = true; 
-	break;
-      }
-    }
-  }
+  // _cfg.useBNess = false; 
+  // if((*_invertices).size()>0){
+  //   for(unsigned int i=0;i<(*_invertices).size();i++){
+  //     string vname = (*_invertices)[i]->getVertexingName();
+  //     //cout << "vertexingname: " << vname.c_str() << endl;
+  //     if(vname.find("AVF")==string::npos) _cfg.useBNess = false;
+  //     else{ 
+  // 	_cfg.useBNess = true; 
+  // 	break;
+  //     }
+  //   }
+  // }
 
   /*
   		// clearing old jets : but should be done in EventStore
