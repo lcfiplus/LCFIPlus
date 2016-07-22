@@ -536,18 +536,21 @@ void JetVertexRefiner::process() {
   }
 
   //check should use BNess
-  // _cfg.useBNess = false; 
-  // if((*_invertices).size()>0){
-  //   for(unsigned int i=0;i<(*_invertices).size();i++){
-  //     string vname = (*_invertices)[i]->getVertexingName();
-  //     //cout << "vertexingname: " << vname.c_str() << endl;
-  //     if(vname.find("AVF")==string::npos) _cfg.useBNess = false;
-  //     else{ 
-  // 	_cfg.useBNess = true; 
-  // 	break;
-  //     }
-  //   }
-  // }
+  bool tmpub = _cfg.useBNess;
+  if(_cfg.useBNess){
+    _cfg.useBNess = false; 
+    if((*_invertices).size()>0){
+      for(unsigned int i=0;i<(*_invertices).size();i++){
+	string vname = (*_invertices)[i]->getVertexingName();
+	//cout << "vertexingname: " << vname.c_str() << endl;
+	if(vname.find("AVF")==string::npos) _cfg.useBNess = false;
+	else{ 
+	  _cfg.useBNess = true; 
+	  break;
+	}
+      }
+    }
+  }
 
   /*
   		// clearing old jets : but should be done in EventStore
@@ -629,57 +632,65 @@ void JetVertexRefiner::process() {
         jetVertices[j].clear();
         jetVertices[j].push_back(single);
       } else {
-	if(_cfg.useBNess){
-	  //check bness
-	  vector<const Track*> tracklist = jetVertices[j][0]->getTracks();
-	  vector<const Track*> newlist;
-	  int hbtr=-1;
-	  double okbness=-1.0;
-	  
-	  for(unsigned int ntr=0;ntr<tracklist.size();ntr++){
-	    if(tracklist[ntr]->getBNess()>okbness){
-	      okbness =tracklist[ntr]->getBNess();
-	      hbtr=ntr;
-	    }
-
-	    if(tracklist[ntr]->E()>=1.0 && tracklist[ntr]->getBNess()<_cfg.cutBNess) continue; 
-	    if(tracklist[ntr]->E()<1.0 && tracklist[ntr]->getBNess()<_cfg.cutBNessE1) continue; 
-
-	    newlist.push_back(tracklist[ntr]);
-	  }
-
-	  Vertex* vtx=NULL;
-	  if(newlist.size()>1){
-	    vtx = VertexFitterSimple_V()(newlist.begin(),newlist.end());
-	  }else{  //make 2 track vertex using highest score track
-	    double okchi2=1.0e+100;
-	    for(unsigned int ntr=0;ntr<tracklist.size();ntr++){
-	      newlist.clear();
-	      if((int)ntr==hbtr) continue;
-	      newlist.push_back(tracklist[hbtr]);
-	      newlist.push_back(tracklist[ntr]);
-	      Vertex *tmpvtx = VertexFitterSimple_V()(newlist.begin(),newlist.end());
-	      double tmpmaxchi2 = max(tmpvtx->getChi2Track(newlist[0]), tmpvtx->getChi2Track(newlist[1]));
-	      if(okchi2>tmpmaxchi2){
-		okchi2 = tmpmaxchi2;
-		if(vtx!=NULL) delete vtx;
-		vtx = tmpvtx;
-	      }else delete tmpvtx;   
-	    }
-	  }
-
-	  if(vtx != NULL){
-	    delete jetVertices[j][0];
-	    jetVertices[j][0] = vtx;
-	  }
-	} //bness check done.
-
         // caching single vertex probability
         Parameters para;
         para.add("SingleVertexProbability", (double)single->getProb());
         nj->addParam("RefinedVertex", para);
 
         delete single;
+      }
+    }else if(jetVertices[j].size() == 1){  
+      if(_cfg.useBNess){
+	//check bness
+	vector<const Track*> tracklist = jetVertices[j][0]->getTracks();
+	vector<const Track*> newlist;
+	int hbtr=-1;
+	double okbness=-1.0;
+	
+	for(unsigned int ntr=0;ntr<tracklist.size();ntr++){
+	  if(tracklist[ntr]->getBNess()>okbness){
+	    okbness = tracklist[ntr]->getBNess();
+	    hbtr=ntr;
+	  }
+	  
+	  if(tracklist[ntr]->E()>=1.0 && tracklist[ntr]->getBNess()<_cfg.cutBNess) continue; 
+	  if(tracklist[ntr]->E()<1.0 && tracklist[ntr]->getBNess()<_cfg.cutBNessE1) continue; 
+	  
+	  newlist.push_back(tracklist[ntr]);
+	}
+	
+	Vertex* vtx=NULL;
+	if(newlist.size()>1){
+	  vtx = VertexFitterSimple_V()(newlist.begin(),newlist.end());
+	}
+	/*else{  //make 2 track vertex using highest score track
+	  double okchi2=1.0e+100;
+	  for(unsigned int ntr=0;ntr<tracklist.size();ntr++){
+	    newlist.clear();
+	    if((int)ntr==hbtr) continue;
+	    newlist.push_back(tracklist[hbtr]);
+	    newlist.push_back(tracklist[ntr]);
+	    // if(tracklist.size()>2){
+	    //   if(1.0*((*newlist[0])+(*newlist[1])).M() >min(newlist[0]->E(), newlist[1]->E())) continue;
+	    // }
+	    
+	    Vertex *tmpvtx = VertexFitterSimple_V()(newlist.begin(),newlist.end());
+	    double tmpmaxchi2 = max(tmpvtx->getChi2Track(newlist[0]), tmpvtx->getChi2Track(newlist[1]));
+	    if(okchi2>tmpmaxchi2){
+	      okchi2 = tmpmaxchi2;
+	      if(vtx!=NULL) delete vtx;
+	      vtx = tmpvtx;
+	    }else delete tmpvtx;   
+	    }
+	}*/
+	
+	if(vtx != NULL){
+	  delete jetVertices[j][0];
+	  jetVertices[j][0] = vtx;
+	}else{
+	  delete jetVertices[j][0];
+	  jetVertices[j].resize(0);
+	}
       }
     }
 
@@ -712,7 +723,7 @@ void JetVertexRefiner::process() {
 
   //for(unsigned int n=0;n<_outputJets->size();n++){ (*_outputJets)[n]->Print(); }
 
-
+  _cfg.useBNess = tmpub;
 }
 
 void JetVertexRefiner::end() {
