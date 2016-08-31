@@ -194,6 +194,9 @@ void LcfiplusProcessor::init() {
   } catch (lcfiplus::Exception& e) {
     streamlog_out(ERROR) << e.what() << endl;
     throw (marlin::StopProcessingException(this));
+  } catch (lcfiplus::Exception *& e) {
+    streamlog_out(ERROR) << e->what() << endl;
+    throw (marlin::StopProcessingException(this));
   }
 }
 
@@ -248,6 +251,9 @@ void LcfiplusProcessor::processEvent( LCEvent* evt ) {
     _nEvt ++ ;
   } catch (lcfiplus::Exception& e) {
     streamlog_out(ERROR) << e.what() << endl;
+    throw (marlin::StopProcessingException(this));
+  } catch (lcfiplus::Exception *& e) {
+    streamlog_out(ERROR) << e->what() << endl;
     throw (marlin::StopProcessingException(this));
   }
 }
