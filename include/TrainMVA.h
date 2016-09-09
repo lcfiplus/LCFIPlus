@@ -27,8 +27,6 @@ class TrainMVA : public Algorithm {
   void process();
   void end();
 
- private:
-  bool _verbose;
 
   struct InputFileInfo {
     TString name;
@@ -44,6 +42,8 @@ class TrainMVA : public Algorithm {
   };
 
 
+ private:
+  bool _verbose;
   vector<InputFileInfo> _inputFileInfo;
   void readInputFileInfo( Parameters* param, TString name );
 

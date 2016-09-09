@@ -1,3 +1,6 @@
+#ifndef PI0FINDER_H
+#define PI0FINDER_H
+
 #include <vector>
 #include <string>
 
@@ -12,6 +15,7 @@
 
 #include "lcfiplus.h"
 
+namespace lcfiplus {
 class Pi0Finder{
 public:
   Pi0Finder(string pi0pdfname, string pi0pdfname2d);
@@ -64,3 +68,5 @@ private:
   vector<string> _booknames;
   vector<double> _opp;
 };
+}
+#endif

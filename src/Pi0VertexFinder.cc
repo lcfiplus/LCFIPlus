@@ -1,6 +1,7 @@
 #include "Pi0VertexFinder.h"
 
 using namespace std;
+using namespace lcfiplus;
 
 /*string itos(int i)  
 {

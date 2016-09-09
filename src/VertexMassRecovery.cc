@@ -1,5 +1,6 @@
 #include <map>
 
+#include "Pi0VertexFinder.h"
 #include "VertexMassRecovery.h"
 
 using namespace lcfiplus;

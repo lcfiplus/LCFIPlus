@@ -40,6 +40,7 @@
 #pragma link C++ class lcfiplus::TrainMVA;
 #pragma link C++ class lcfiplus::ReadMVA;
 #pragma link C++ class lcfiplus::TrackNtuple;
+#pragma link C++ class lcfiplus::VertexMassRecovery+;
 
 #pragma link C++ class lcfiplus::ZHHAlgo;
 #pragma link C++ class lcfiplus::TestAlgo;

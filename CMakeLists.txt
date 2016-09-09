@@ -53,6 +53,7 @@ SET( ROOT_DICT_INPUT_HEADERS
 		${PROJECT_SOURCE_DIR}/include/ReadMVA.h
 		${PROJECT_SOURCE_DIR}/include/testproc.h
 		${PROJECT_SOURCE_DIR}/include/TrackNtuple.h
+		${PROJECT_SOURCE_DIR}/include/VertexMassRecovery.h
 		${PROJECT_SOURCE_DIR}/include/LinkDef.h
 )
 SET( ROOT_DICT_INCLUDE_DIRS ${Marlin_INCLUDE_DIRS} )
@@ -75,7 +76,7 @@ ENDIF()
 INCLUDE_DIRECTORIES( "./include" )
 
 # definitions to pass to the compiler
-ADD_DEFINITIONS( "-Wall -ansi -pedantic" )
+ADD_DEFINITIONS( "-Wall -std=c++11 -pedantic" )
 ADD_DEFINITIONS( "-Wno-long-long" )
 ADD_DEFINITIONS( "-Wno-strict-aliasing" ) # avoid warnings in dict.cc
 # shut up warnings in boost
@@ -87,7 +88,7 @@ AUX_SOURCE_DIRECTORY( ./src library_sources )
 LIST( REMOVE_ITEM library_sources ${binary_sources} )
 ADD_SHARED_LIBRARY( ${libname} ${library_sources} )
 INSTALL_SHARED_LIBRARY( ${libname} DESTINATION lib )
-TARGET_LINK_LIBRARIES( ${libname} ${Marlin_LIBRARIES} ${MarlinUtil_LIBRARIES} ${LCFIVertex_LIBRARIES} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} )
+TARGET_LINK_LIBRARIES( ${libname} ${Marlin_LIBRARIES} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${MarlinUtil_LIBRARIES} ${LCFIVertex_LIBRARIES} )
 
 ### EXECUTABLE MODE ########################################################
 
