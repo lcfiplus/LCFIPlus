@@ -644,13 +644,13 @@ void JetVertexRefiner::process() {
 	//check bness
 	vector<const Track*> tracklist = jetVertices[j][0]->getTracks();
 	vector<const Track*> newlist;
-	int hbtr=-1;
+	//int hbtr=-1;
 	double okbness=-1.0;
 	
 	for(unsigned int ntr=0;ntr<tracklist.size();ntr++){
 	  if(tracklist[ntr]->getBNess()>okbness){
 	    okbness = tracklist[ntr]->getBNess();
-	    hbtr=ntr;
+	    //hbtr=ntr;
 	  }
 	  
 	  if(tracklist[ntr]->E()>=1.0 && tracklist[ntr]->getBNess()<_cfg.cutBNess) continue; 

@@ -335,7 +335,7 @@ double jointProbZ0(const Jet* jet, const Vertex* pri, int minhitcut, double maxz
 }
 
 
-double prob1D2(double sig, double maxsig, const TH1* jh1, const TH1* jh2) {
+double prob1D2(double sig, double /*maxsig*/, const TH1* jh1, const TH1* jh2) {
   //double prob = -jh2->GetBinContent(jh2->FindFixBin(maxsig));
   double prob = 0; // to avoid negative probability
   if (sig < 5)prob += jh1->GetBinContent(jh1->FindFixBin(sig));

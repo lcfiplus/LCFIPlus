@@ -595,7 +595,7 @@ void Pi0VertexFinder::Make_GammaVector(const lcfiplus::Neutral* neut){
   return;
 }
 
-void Pi0VertexFinder::Make_Pi0Vector(TVector3 vtx, TVector3 vtxdir){
+void Pi0VertexFinder::Make_Pi0Vector(TVector3 vtx, TVector3 /*vtxdir*/){
 
   //define matrix
   dm.ResizeTo(ng,ng);

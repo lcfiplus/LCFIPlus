@@ -19,8 +19,8 @@ class EventStoreObserver {
   EventStoreObserver() {}
   virtual ~EventStoreObserver() {}
 
-  virtual void GetCallback(const char* name, const char* classname) {}
-  virtual void RegisterCallback(const char* name, const char* classname, int flags) {}
+  virtual void GetCallback(const char* /*name*/, const char* /*classname*/) {}
+  virtual void RegisterCallback(const char* /*name*/, const char* /*classname*/, int /*flags*/) {}
 
   ClassDef(EventStoreObserver,1)
 };

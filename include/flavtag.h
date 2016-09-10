@@ -18,7 +18,7 @@ struct FlavtagCategory {
   TString preselection;
   std::vector<std::string> vars;
   std::vector<std::string> spec;
-  void AddVariable(std::string s, char c) {
+  void AddVariable(std::string s, char /*c*/) {
     vars.push_back(s);
   }
   void AddSpectator(std::string s) {

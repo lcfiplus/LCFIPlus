@@ -76,7 +76,7 @@ ENDIF()
 INCLUDE_DIRECTORIES( "./include" )
 
 # definitions to pass to the compiler
-ADD_DEFINITIONS( "-Wall -std=c++11 -pedantic" )
+ADD_DEFINITIONS( "-Wall -std=c++11 -pedantic -Wno-effc++ -Wno-shadow" )
 ADD_DEFINITIONS( "-Wno-long-long" )
 ADD_DEFINITIONS( "-Wno-strict-aliasing" ) # avoid warnings in dict.cc
 # shut up warnings in boost
