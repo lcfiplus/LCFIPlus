@@ -91,6 +91,12 @@ void TrainMVA::init(Parameters* param) {
       _tmvaBookOptions = "!H:!V:NeuronType=tanh:NCycles=1000:HiddenLayers=N+5,5:TestRate=5:EstimatorType=MSE";
   }
 
+
+  if (_tmvaBookType == TMVA::Types::kBDT){
+    // update book option with "SkipNormalization"
+    _tmvaBookOptions += ":SkipNormalization";
+  }
+
   cout << "book type: " << _tmvaBookType << endl;
   cout << "book name: " << _tmvaBookName << endl;
   cout << "book opts: " << _tmvaBookOptions << endl;
