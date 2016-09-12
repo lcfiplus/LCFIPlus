@@ -85,7 +85,7 @@ void TrainMVA::init(Parameters* param) {
 
   if (_tmvaBookOptions == "") {
     if (_tmvaBookType == TMVA::Types::kBDT)
-      // parameters updated to the latest TMVA parameter names
+      // parameters updated to TMVA 4.2 parameter names
       _tmvaBookOptions = "!H:!V:NTrees=1000:BoostType=Grad:Shrinkage=0.10:UseBaggedBoost:NegWeightTreatment=IgnoreNegWeightsInTraining:BaggedSampleFraction=0.50:nCuts=20:MaxDepth=3";
     else if (_tmvaBookType == TMVA::Types::kMLP)
       _tmvaBookOptions = "!H:!V:NeuronType=tanh:NCycles=1000:HiddenLayers=N+5,5:TestRate=5:EstimatorType=MSE";
