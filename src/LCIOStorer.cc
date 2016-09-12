@@ -200,7 +200,7 @@ void LCIOStorer::InitJetCollection(const char* lcioName, const char* flavtagName
 */
 
 // to be used in standalone; not from LcfiplusProcessor
-bool LCIOStorer::Next(bool autovertex, bool autojet) {
+bool LCIOStorer::Next(bool /*autovertex*/, bool /*autojet*/) {
   lcio::LCEvent* evt = _reader->readNextEvent();
   if (!evt)return false;
   /*
@@ -425,8 +425,7 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
       pmass.insert(map<int, double>::value_type( 2212, 0.938272 ) );
       
       if (pfo->getCharge() != 0) {
-        int trkSize = pfo->getTracks().size();
-        assert(trkSize>0);
+        assert(not pfo->getTracks().empty());
 
         lcfiplus::Track* track = new lcfiplus::Track;
 

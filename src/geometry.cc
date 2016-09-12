@@ -352,7 +352,7 @@ double Helix::LogLikelihood(const TVector3& p, double& tmin)const {
 
 // estimate how the NLL changes as p changes (compute partial derivative)
 // by using the tangent line at the current flight length (t)
-void Helix::LogLikelihoodDeriv(const TVector3& p, double* output)const {
+void Helix::LogLikelihoodDeriv(const TVector3& /*p*/, double* /*output*/)const {
 
   /*
   // difference between my and given positions
@@ -1120,7 +1120,7 @@ double VertexLine::LogLikelihood(const TVector3& p, double& tmin)const {
   return -variance;
 }
 
-void VertexLine::LogLikelihoodDeriv(const TVector3& p, double* output)const {
+void VertexLine::LogLikelihoodDeriv(const TVector3& /*p*/, double* /*output*/)const {
 
 }
 

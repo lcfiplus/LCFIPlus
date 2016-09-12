@@ -964,24 +964,25 @@ void VertexFinderSuehara::associateIPTracksAVF(vector<Vertex *> &vertices, Verte
       //primary weight                                                                                                                          
       double pip = TMath::Exp(-chi2ip/(2.0*T))/(TMath::Exp(-cfg.chi2th/(2.0*T))+core);
       double pmax1=0.0,pmax2=0.0;
-      int maxi1=0,maxi2=0;
-      double vangle=3.14;
+      int maxi1=0;
+      //int maxi2=0;
+      //double vangle=3.14;
       for(unsigned int i=0;i<vertices.size();i++){
 	double tmpp = TMath::Exp(-chi2s[i]/(2.0*T))/(TMath::Exp(-cfg.chi2th/(2.0*T))+core);
 	if(tmpp>pmax1){
 	  pmax2=pmax1;
-	  maxi2=maxi1;
+	  //maxi2=maxi1;
 
 	  pmax1=tmpp;
 	  maxi1=i;
 	}else if(tmpp<pmax1 && tmpp>pmax2){
 	  pmax2=tmpp;
-	  maxi2=i;
+	  //maxi2=i;
 	}
       }
  
       //calculate angle between vertices                                                                                                        
-      if(maxi1!=maxi2) vangle=vertices[maxi1]->getPos().Angle(vertices[maxi2]->getPos());
+      //if(maxi1!=maxi2) vangle=vertices[maxi1]->getPos().Angle(vertices[maxi2]->getPos());
 
       // if((((*it)->getChi2() > chi2s[maxi1] && chi2s[maxi1]>0.0) || (*it)->getChi2() < 0.0) && chi2s[maxi1] < 1.0e+20)
       // 	const_cast<Track*> (*it)->setChi2(chi2s[maxi1]);

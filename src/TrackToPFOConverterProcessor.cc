@@ -43,7 +43,7 @@ void TrackToPFOConverterProcessor::init() {
   printParameters() ;
 }
 
-void TrackToPFOConverterProcessor::processRunHeader( LCRunHeader* run) {
+void TrackToPFOConverterProcessor::processRunHeader( LCRunHeader* /*run*/) {
 }
 
 void TrackToPFOConverterProcessor::processEvent( LCEvent* evt ) {
@@ -91,7 +91,7 @@ void TrackToPFOConverterProcessor::processEvent( LCEvent* evt ) {
   evt->addCollection( outCol, _outputPFOCollectionName.c_str() );
 }
 
-void TrackToPFOConverterProcessor::check( LCEvent* evt ) {
+void TrackToPFOConverterProcessor::check( LCEvent* /*evt*/ ) {
   // nothing to check here - could be used to fill checkplots in reconstruction processor
 }
 

@@ -20,7 +20,7 @@ using namespace std;
 namespace lcfiplus {
 
 /* Jet resolution functions */
-double JetFinder::funcDurham(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg) {
+double JetFinder::funcDurham(Jet& jet1, Jet& jet2, double Evis2, JetConfig& /*cfg*/) {
   /*
      D(I,J) = 2.*MIN(PL(4,I)*PL(4,I),PL(4,J)*PL(4,J))*MAX(0.,(1.-
      (PL(1,I)*PL(1,J)+PL(2,I)*PL(2,J)+PL(3,I)*PL(3,J))/
@@ -36,7 +36,7 @@ double JetFinder::funcDurham(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg)
   return val/Evis2;
 }
 
-double JetFinder::funcKt(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg) {
+double JetFinder::funcKt(Jet& jet1, Jet& jet2, double /*Evis2*/, JetConfig& cfg) {
 
   double R_param = cfg.rParameter;
 
@@ -47,7 +47,7 @@ double JetFinder::funcKt(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg) {
   return val;
 
 }
-double JetFinder::funcValencia(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg) {
+double JetFinder::funcValencia(Jet& jet1, Jet& jet2, double /*Evis2*/, JetConfig& cfg) {
   // d_ij = min(Ei^2, Ej^2 )(1 - cos(theta_ij))/R^2
 
   double R_param = cfg.rParameter;
@@ -111,15 +111,15 @@ double JetFinder::funcDurhamBeamDistance(Jet& jet1, double Evis2, JetConfig& cfg
   return 2*e1*e1*(1-costheta)/Evis2 * (alpha*alpha);
 }
 
-double JetFinder::funcKtBeamDistance(Jet& jet1, double Evis2, JetConfig& cfg) {
+double JetFinder::funcKtBeamDistance(Jet& jet1, double /*Evis2*/, JetConfig& /*cfg*/) {
   return jet1.Pt() * jet1.Pt();
 }
 
-double JetFinder::funcValenciaBeamDistance(Jet& jet1, double Evis2, JetConfig& cfg) {
+double JetFinder::funcValenciaBeamDistance(Jet& jet1, double /*Evis2*/, JetConfig& cfg) {
   return pow(jet1.Pt(), 2. * cfg.betaParameter);
 }
 
-double JetFinder::funcDurhamCheat(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg) {
+double JetFinder::funcDurhamCheat(Jet& jet1, Jet& jet2, double Evis2, JetConfig& /*cfg*/) {
   double e1 = jet1.E();
   double e2 = jet2.E();
   TVector3 mom1 = jet1.Vect();
@@ -128,7 +128,7 @@ double JetFinder::funcDurhamCheat(Jet& jet1, Jet& jet2, double Evis2, JetConfig&
   return val/Evis2;
 }
 
-double JetFinder::funcJade(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg) {
+double JetFinder::funcJade(Jet& jet1, Jet& jet2, double Evis2, JetConfig& /*cfg*/) {
   /*
      JADE(I,J) = 2.*PL(4,I)*PL(4,J)*MAX(0.,(1.-
      (PL(1,I)*PL(1,J)+PL(2,I)*PL(2,J)+PL(3,I)*PL(3,J))/
@@ -143,7 +143,7 @@ double JetFinder::funcJade(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg) {
   return val/Evis2;
 }
 
-double JetFinder::funcJadeE(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg) {
+double JetFinder::funcJadeE(Jet& jet1, Jet& jet2, double Evis2, JetConfig& /*cfg*/) {
   /*
      E(I,J) = MAX(0.,(PL(4,I)+PL(4,J))**2-(PL(1,I)+PL(1,J))**2-
      (PL(2,I)+PL(2,J))**2-(PL(3,I)+PL(3,J))**2)

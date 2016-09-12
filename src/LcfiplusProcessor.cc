@@ -200,7 +200,7 @@ void LcfiplusProcessor::init() {
   }
 }
 
-void LcfiplusProcessor::processRunHeader( LCRunHeader* run) {
+void LcfiplusProcessor::processRunHeader( LCRunHeader* /*run*/) {
 
   _nRun++ ;
 }
@@ -259,7 +259,7 @@ void LcfiplusProcessor::processEvent( LCEvent* evt ) {
 }
 
 
-void LcfiplusProcessor::check( LCEvent* evt ) {
+void LcfiplusProcessor::check( LCEvent* /*evt*/ ) {
   // nothing to check here - could be used to fill checkplots in reconstruction processor
 }
 

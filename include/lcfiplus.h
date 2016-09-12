@@ -89,8 +89,9 @@ typedef vector<const Jet*>::const_iterator JetVecIte;
 
 class Exception : std::exception {
  public:
-  Exception(const char* message) {
-    _message = message;
+  Exception(const char* message) 
+  : _message(message)
+  {
   }
   virtual ~Exception()throw() {}
 
@@ -150,16 +151,20 @@ class Globals {
 // generic parameter class
 class Parameters {
  public:
-  Parameters(bool as = true) : _allowstring(as) {}
+  Parameters(bool as = true) 
+    : _map()
+    , _allowstring(as) 
+  {}
 
   // destructor for destroying objects in the map
   ~Parameters() {
     clear();
   }
   // copy operator/constructor
-  Parameters(const Parameters& ref) {
-    _allowstring = ref._allowstring;
-
+  Parameters(const Parameters& ref)
+  : _map(ref._map)
+  , _allowstring(ref._allowstring)
+  {
     *this = ref;
   }
   Parameters& operator =(const Parameters& ref);  // in lcfiplus.cc
@@ -263,8 +268,7 @@ class Parameters {
 
 class Algorithm {
  public:
-  Algorithm() {
-    _param = 0;
+  Algorithm() : _param(0) {
   }
   virtual ~Algorithm() {}
 
@@ -380,7 +384,7 @@ class Event : public EventStore {
 class Track : public TLorentzVector {//, protected TrackData {//, public EventPointer {
  public:
   // constructor
-  Track() {}
+  // Track() {}
 //      Track(const TrackData& d);
   ~Track() {}
 
@@ -586,7 +590,7 @@ class Neutral : public TLorentzVector { // : public LorentzVector, protected Neu
  public:
   // constructor
 //      Neutral(const NeutralData& d);
-  Neutral() : _id(0), _pdg(0), _isV0(false), _mcp(0) {}
+  Neutral() : _id(0), _pdg(0), _isV0(false), _mcp(0), _clstr() {}
   ~Neutral() {}
 
   int getId() const {
@@ -619,8 +623,8 @@ class Neutral : public TLorentzVector { // : public LorentzVector, protected Neu
   bool isV0() const {
     return _isV0;
   }
-  void setV0(bool isV0=true) {
-    _isV0 = isV0;
+  void setV0(bool v0=true) {
+    _isV0 = v0;
   }
 
   void setClusters(EVENT::ClusterVec clu) { _clstr = clu; }
@@ -770,9 +774,9 @@ class Vertex {
  public:
   enum vtx { xx=0, xy, yy, xz, yz, zz };
 
-  Vertex() : _chi2(0), _prob(0), _x(0), _y(0), _z(0), _isPrimary(false) {}
-  Vertex(const double chi2, const double prob, const double x, const double y, const double z, const double cov[6], bool isPrimary)
-    : _id(-1), _chi2(chi2), _prob(prob), _x(x), _y(y), _z(z), _isPrimary(isPrimary) {
+  Vertex() : _id(-1), _chi2(0), _prob(0), _x(0), _y(0), _z(0), _isPrimary(false), _tracks(), _chi2Tracks(), _vertexingname(), _rvtxmom(), _pi0mom(), _rvtxmass(-1), _npi0(-1) {}
+  Vertex(const double chi2, const double prob, const double x, const double y, const double z, const double cov[6], bool isPrim)
+    : _id(-1), _chi2(chi2), _prob(prob), _x(x), _y(y), _z(z), _isPrimary(isPrim), _tracks(), _chi2Tracks(), _vertexingname(), _rvtxmom(), _pi0mom(), _rvtxmass(-1), _npi0(-1) {
     if (cov == 0) {
       memset(_cov,0, sizeof(_cov));
     } else {
@@ -781,10 +785,8 @@ class Vertex {
   }
 
   // id is not copied
-  Vertex(const Vertex& from) : _id(-1), _chi2(from._chi2), _prob(from._prob), _x(from._x), _y(from._y), _z(from._z), _isPrimary(from._isPrimary) {
+  Vertex(const Vertex& from) : _id(-1), _chi2(from._chi2), _prob(from._prob), _x(from._x), _y(from._y), _z(from._z), _isPrimary(from._isPrimary), _tracks(from._tracks), _chi2Tracks(from._chi2Tracks), _vertexingname(from._vertexingname), _rvtxmom(from._rvtxmom), _pi0mom(from._pi0mom), _rvtxmass(from._rvtxmass), _npi0(from._npi0) {
     memcpy(_cov, from._cov, sizeof(_cov));
-    _tracks = from._tracks;
-    _chi2Tracks = from._chi2Tracks;
   }
 
   ~Vertex() {};
@@ -838,8 +840,8 @@ class Vertex {
   bool isPrimary()const {
     return _isPrimary;
   }
-  void setPrimary(bool isPrimary) {
-    _isPrimary = isPrimary;
+  void setPrimary(bool isPrim) {
+    _isPrimary = isPrim;
   }
 
   double getPparallel(const TVector3& axis)const;
