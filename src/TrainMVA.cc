@@ -25,6 +25,9 @@
 #include "TMVA/Tools.h"
 #include "TMVA/Reader.h"
 #include "TMVA/Config.h"
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,8,0)
+#include "TMVA/DataLoader.h"
+#endif
 
 using namespace lcfiplus;
 using namespace lcfiplus::algoSigProb;
@@ -178,31 +181,40 @@ void TrainMVA::end() {
     TMVA::Factory* factory = new TMVA::Factory(prefix,outputFile,
         "!V:!Silent:Color:!DrawProgressBar:Transformations=I;D;P;G,D:AnalysisType=multiclass" );
     //"!V:!Silent:Color:DrawProgressBar:Transformations=I;D;P;G,D:AnalysisType=multiclass" );
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,8,0)
+    TMVA::DataLoader* dataloader = new TMVA::DataLoader("lcfiplus_dataset");
+#else
+    TMVA::Factory* dataloader = factory;
+#endif
 
     // define signal and background trees
 
     for (vector<InputFileInfo>::iterator iter = _inputFileInfo.begin();
          iter != _inputFileInfo.end(); ++iter) {
-      factory->AddTree(
+      dataloader->AddTree(
         iter->tree, TString("jet")+iter->name, 1.,
         TCut(iter->presel)+TCut(c.definition)+TCut(c.preselection) );
     }
 
     // add variables
     for (unsigned int iv=0; iv<c.vars.size(); ++iv) {
-      factory->AddVariable( c.vars[iv], 'F' );
+      dataloader->AddVariable( c.vars[iv], 'F' );
       if (_verbose) std::cout << "  - Adding variable '" << c.vars[iv] << "'" << std::endl;
     }
 
     // add spectators
     for (unsigned int is=0; is<c.spec.size(); ++is) {
-      factory->AddSpectator( c.spec[is] );
+      dataloader->AddSpectator( c.spec[is] );
       if (_verbose) std::cout << "  - Adding spectator '" << c.spec[is] << "'" << std::endl;
     }
 
 
-    factory->PrepareTrainingAndTestTree( "", "SplitMode=Random:NormMode=NumEvents:!V" );
+    dataloader->PrepareTrainingAndTestTree( "", "SplitMode=Random:NormMode=NumEvents:!V" );
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,8,0)
+    factory->BookMethod( dataloader, _tmvaBookType, _tmvaBookName, _tmvaBookOptions );
+#else
     factory->BookMethod( _tmvaBookType, _tmvaBookName, _tmvaBookOptions );
+#endif
     factory->TrainAllMethods();
     factory->TestAllMethods();
     factory->EvaluateAllMethods();
