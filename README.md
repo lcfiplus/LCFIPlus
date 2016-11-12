@@ -7,12 +7,16 @@ Documentation
 https://confluence.slac.stanford.edu/display/ilc/LCFIPlus
 
 --------------
+| v00-06-05 |
+--------------
+- Deal with TMVA API changes in ROOT 6.08
+
+--------------
 | v00-06-04 |
 --------------
 - Cope with newer version of TMVA: need a patch commited to ROOT on 16 Sep 2016.
   Use ROOT version newer than above date.
 - Suppress warnings with c++11.
-- Deal with TMVA API changes in ROOT 6.08
 
 --------------
 | v00-06-03 |
