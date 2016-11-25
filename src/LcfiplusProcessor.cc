@@ -210,7 +210,7 @@ void LcfiplusProcessor::processEvent( LCEvent* evt ) {
   if (_printPeriod && _nEvt % _printPeriod == 0)
     cout << "processEvent: event # " << _nEvt << endl;
 
-  if (_lcio == false) return;
+  if (not _lcio) return;
 
   try {
 
