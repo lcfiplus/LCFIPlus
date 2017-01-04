@@ -1391,6 +1391,247 @@ class FtZ0cProbIP : public FTAlgo {
   }
 };
 
+//Variables from VertexMassRecovery
+class FtCorrVtxMass1 : public FTAlgo {
+ public:
+  FtCorrVtxMass1() : FTAlgo("corrvtxmass1"){}
+  void process(){
+    VertexVec &vertices = _jet->getVertices(); // do not use vertexed tracks
+    _result = 0;
+    if (vertices.size()>0) _result = vertices[0]->getRecoveredVertexMass();
+  }
+};
+
+class FtCorrVtxMass2 : public FTAlgo {
+ public:
+  FtCorrVtxMass2() : FTAlgo("corrvtxmass2"){}
+  void process(){
+    VertexVec &vertices = _jet->getVertices(); // do not use vertexed tracks
+    _result = 0;
+    if (vertices.size()>1) _result = vertices[1]->getRecoveredVertexMass();
+  }
+};
+
+
+class FtCorrVtxMassAll : public FTAlgo {
+ public:
+  FtCorrVtxMassAll() : FTAlgo("corrvtxmassall"){}
+  void process(){
+    VertexVec &vertices = _jet->getVertices(); // do not use vertexed tracks
+    _result = 0;
+    TLorentzVector pall;
+    for(unsigned int i=0;i<vertices.size();i++){
+      pall+=vertices[i]->getRecoveredFourMomentum();
+    }
+    
+    _result = pall.M();
+  }
+};
+
+class FtCorrVtxMomentum1 : public FTAlgo {
+ public:
+  FtCorrVtxMomentum1() : FTAlgo("corrvtxmomentum1"){}
+  void process(){
+    VertexVec &vertices = _jet->getVertices(); // do not use vertexed tracks
+    _result = 0;
+    if (vertices.size()>0) _result = vertices[0]->getRecoveredFourMomentum().P();
+  }
+};
+
+class FtCorrVtxMomentum2 : public FTAlgo {
+ public:
+  FtCorrVtxMomentum2() : FTAlgo("corrvtxmomentum2"){}
+  void process(){
+    VertexVec &vertices = _jet->getVertices(); // do not use vertexed tracks
+    _result = 0;
+    if (vertices.size()>1) _result = vertices[1]->getRecoveredFourMomentum().P();
+  }
+};
+
+class FtCorrVtxMomentumAll : public FTAlgo {
+ public:
+  FtCorrVtxMomentumAll() : FTAlgo("corrvtxmomentummll"){}
+  void process(){
+    VertexVec &vertices = _jet->getVertices(); // do not use vertexed tracks
+    _result = 0;
+    TLorentzVector pall;
+    for(unsigned int i=0;i<vertices.size();i++){
+      pall+=vertices[i]->getRecoveredFourMomentum();
+    }
+    
+    _result = pall.P();
+  }
+};
+
+class FtPi0Momentum1 : public FTAlgo {
+ public:
+  FtPi0Momentum1() : FTAlgo("pi0momentum1"){}
+  void process(){
+    VertexVec &vertices = _jet->getVertices(); // do not use vertexed tracks
+    _result = 0;
+    if (vertices.size()>0) _result = vertices[0]->getPi0sFourMomentum().P();				
+  }
+};
+
+class FtPi0Momentum2 : public FTAlgo {
+ public:
+  FtPi0Momentum2() : FTAlgo("pi0momentum2"){}
+  void process(){
+    VertexVec &vertices = _jet->getVertices(); // do not use vertexed tracks
+    _result = 0;
+    if (vertices.size()>1) _result = vertices[1]->getPi0sFourMomentum().P();				
+  }
+};
+
+class FtPi0MomentumAll : public FTAlgo {
+ public:
+  FtPi0MomentumAll() : FTAlgo("pi0momentumAll"){}
+  void process(){
+    VertexVec &vertices = _jet->getVertices(); // do not use vertexed tracks
+    _result = 0;
+    TLorentzVector pall;
+    for(unsigned int i=0;i<vertices.size();i++){
+      pall+=vertices[i]->getPi0sFourMomentum();
+    }
+    
+    _result = pall.P();
+  }
+};
+
+//num. of Pi0s attached - do not use for flavor separation!
+class FtNPi0s1 : public FTAlgo {
+ public:
+  FtNPi0s1() : FTAlgo("npi0s1"){}
+  void process(){
+    VertexVec &vertices = _jet->getVertices(); // do not use vertexed tracks
+    _result = 0;
+    if (vertices.size()>0) _result = vertices[0]->getNPi0();				
+  }
+};
+
+class FtNPi0s2 : public FTAlgo {
+ public:
+  FtNPi0s2() : FTAlgo("npi0s2"){}
+  void process(){
+    VertexVec &vertices = _jet->getVertices(); // do not use vertexed tracks
+    _result = 0;
+    if (vertices.size()>1) _result = vertices[1]->getNPi0();				
+  }
+};
+
+//BNess
+class FtBNess0 : public FTAlgo {
+ public:
+  FtBNess0() : FTAlgo("bness0"){}
+  void process(){
+    TrackVec &tracks = _jet->getTracks(); // do not use vertexed tracks
+    _result = -1.0;
+    std::vector<double> bness;
+    if(tracks.size()>0){
+      for(unsigned int i=0;i<tracks.size();i++){
+	bness.push_back(tracks[i]->getBNess());
+ 	//bness.push_back(0.5*tracks[i]->getBNess()+0.5*tracks[i]->getCNess());
+      }
+      
+      std::sort(bness.begin(), bness.end());
+      
+      _result = bness[tracks.size()-1];
+    }
+
+  }
+};
+
+class FtBNess1 : public FTAlgo {
+ public:
+  FtBNess1() : FTAlgo("bness1"){}
+  void process(){
+    TrackVec &tracks = _jet->getTracks(); // do not use vertexed tracks
+    _result = -1.0;
+    std::vector<double> bness;
+    if(tracks.size()>1){
+      for(unsigned int i=0;i<tracks.size();i++){
+	bness.push_back(tracks[i]->getBNess());
+ 	//bness.push_back(0.5*tracks[i]->getBNess()+0.5*tracks[i]->getCNess());
+      }
+      
+      std::sort(bness.begin(), bness.end());
+      
+      _result = bness[tracks.size()-2];
+    }
+	
+  }
+};
+
+class FtBNess2 : public FTAlgo {
+ public:
+  FtBNess2() : FTAlgo("bness2"){}
+  void process(){
+    TrackVec &tracks = _jet->getTracks(); // do not use vertexed tracks
+    _result = -1.0;
+    std::vector<double> bness;
+    if(tracks.size()>2){
+      for(unsigned int i=0;i<tracks.size();i++){
+	bness.push_back(tracks[i]->getBNess());
+ 	//bness.push_back(0.5*tracks[i]->getBNess()+0.5*tracks[i]->getCNess());
+      }
+      
+      std::sort(bness.begin(), bness.end());
+      
+      _result = bness[tracks.size()-3];
+    }
+	
+  }
+};
+
+class FtBNess3 : public FTAlgo {
+ public:
+  FtBNess3() : FTAlgo("bness3"){}
+  void process(){
+    TrackVec &tracks = _jet->getTracks(); // do not use vertexed tracks
+    _result = -1.0;
+    std::vector<double> bness;
+    if(tracks.size()>3){
+      for(unsigned int i=0;i<tracks.size();i++){
+	bness.push_back(tracks[i]->getBNess());
+ 	//bness.push_back(0.5*tracks[i]->getBNess()+0.5*tracks[i]->getCNess());
+      }
+      
+      std::sort(bness.begin(), bness.end());
+      
+      _result = bness[tracks.size()-4];
+    }
+	
+  }
+};
+
+class FtBNessMass : public FTAlgo {
+ public:
+  FtBNessMass() : FTAlgo("bnessmass"){}
+  void process(){
+    TrackVec &tracks = _jet->getTracks(); // do not use vertexed tracks
+    _result = 0;
+    TLorentzVector bnessvec;
+    for(unsigned int i=0;i<tracks.size();i++){
+      if(tracks[i]->getBNess()>=0.5) bnessvec += (*tracks[i]);
+    }
+
+    _result = bnessvec.M();
+  }
+};
+
+class FtNBNess : public FTAlgo {
+ public:
+  FtNBNess() : FTAlgo("nbness"){}
+  void process(){
+    TrackVec &tracks = _jet->getTracks(); // do not use vertexed tracks
+    _result = 0;
+    for(unsigned int i=0;i<tracks.size();i++){
+      if(tracks[i]->getBNess()>=0.5) _result ++;
+    }
+       
+  }
+};
+
 void FTManager::initVars() {
   if (_initialized)return;
   _initialized = true;
@@ -1502,6 +1743,27 @@ void FTManager::initVars() {
   add( new FtZ0qProb(false));
   add( new FtZ0bProbIP());
   add( new FtZ0cProbIP());
+
+  //vertex mass recovery
+  add( new FtCorrVtxMass1() ); 
+  add( new FtCorrVtxMass2() ); 
+  add( new FtCorrVtxMassAll() ); 
+  add( new FtCorrVtxMomentum1() ); 
+  add( new FtCorrVtxMomentum2() ); 
+  add( new FtCorrVtxMomentumAll() ); 
+  add( new FtPi0Momentum1() ); 
+  add( new FtPi0Momentum2() ); 
+  add( new FtPi0MomentumAll() ); 
+  add( new FtNPi0s1() ); 
+  add( new FtNPi0s2() ); 
+
+  //bness
+  add( new FtBNess0() ); 
+  add( new FtBNess1() ); 
+  add( new FtBNess2() ); 
+  add( new FtBNess3() ); 
+  add( new FtBNessMass() ); 
+  add( new FtNBNess() ); 
 }
 
 void FlavorTag::init(Parameters* param) {
