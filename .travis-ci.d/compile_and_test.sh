@@ -1,12 +1,12 @@
 #!/bin/bash
 
-export GCC_VERSION="4.8.5"
-export BUILD_TYPE="opt"
+ILCSOFT=/cvmfs/clicdp.cern.ch/iLCSoft/builds/current/CI_${COMPILER}
+source $ILCSOFT/init_ilcsoft.sh
 
-source /LCFIPlus/.travis-ci.d/init_x86_64.sh
-
-cd /LCFIPlus
+cd /Package
 mkdir build
 cd build
-cmake -GNinja -C $ILCSOFT/ILCSoft.cmake ..
-ninja
+cmake -GNinja -C $ILCSOFT/ILCSoft.cmake -DCMAKE_CXX_FLAGS="-fdiagnostics-color=always" -DINSTALL_DOC=OFF .. && \
+ninja && \
+ninja install && \
+ctest --output-on-failure
