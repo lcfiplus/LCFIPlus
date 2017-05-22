@@ -145,7 +145,7 @@ class JetVertexRefiner : public Algorithm {
   string _vprimcolname;
 
   //BNess tagger
-  TMVA::Reader *_bness;
+  TMVA::Reader *_bness=nullptr;
   float _var[8];
   string _bnessbookname;
   string _bnessbookname1;
