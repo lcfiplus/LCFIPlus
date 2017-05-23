@@ -1279,7 +1279,7 @@ vector<const Vertex*> Jet::getVerticesForFT() const {
 // under construction
 void Parameters::remove(const string& key, bool delmap) {
   if (_map.find(key) == _map.end())throw(Exception("Parameters::remove: key not found."));
-  else if (_map[key].first == &typeid(double))deleteData<double>(key);
+  else if (_map[key].first == &typeid(float))deleteData<float>(key);
   else if (_map[key].first == &typeid(double))deleteData<double>(key);
   else if (_map[key].first == &typeid(long))deleteData<long>(key);
   else if (_map[key].first == &typeid(int))deleteData<int>(key);
