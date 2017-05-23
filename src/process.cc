@@ -728,7 +728,7 @@ void JetVertexRefiner::process() {
 
 void JetVertexRefiner::end() {
   //cout << "ENDO" << endl;
-  if(_bness!=NULL) delete _bness;
+  delete _bness;
 }
 
 

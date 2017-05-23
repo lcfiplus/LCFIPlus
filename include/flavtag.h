@@ -1,7 +1,6 @@
 #ifndef flavtag_h
 #define flavtag_h 1
 
-#include "flavtag.h"
 #include "JetFinder.h"
 
 #include "TMVA/Reader.h"
