@@ -58,6 +58,7 @@ SET( ROOT_DICT_INPUT_HEADERS
 )
 SET( ROOT_DICT_INCLUDE_DIRS ${Marlin_INCLUDE_DIRS} )
 GEN_ROOT_DICT_SOURCES( dict.cc )
+INSTALL(FILES ${ROOT_DICT_OUTPUT_DIR}/dict_rdict.pcm DESTINATION lib)
 LIST(APPEND library_sources ${ROOT_DICT_OUTPUT_SOURCES} )
 
 SET( binary_sources ./src/Driver.cc ./src/EventNavigator.cc )
