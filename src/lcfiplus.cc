@@ -1318,7 +1318,7 @@ Parameters& Parameters::operator =(const Parameters& ref) {
 
     // built-in types
     if (type == &typeid(double))add(key,*(double*)data);
-    else if (type == &typeid(double))add(key,*(double*)data);
+    else if (type == &typeid(float))add(key,*(float*)data);
     else if (type == &typeid(long))add(key,*(long*)data);
     else if (type == &typeid(int))add(key,*(int*)data);
     else if (type == &typeid(bool))add(key,*(bool*)data);
