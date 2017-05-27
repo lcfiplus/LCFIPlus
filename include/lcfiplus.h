@@ -162,9 +162,10 @@ class Parameters {
   }
   // copy operator/constructor
   Parameters(const Parameters& ref)
-  : _map(ref._map)
+    : _map() //do not copy the map! shallow copy of pointers!
   , _allowstring(ref._allowstring)
   {
+    // calling assingment operator, which will do deep copy
     *this = ref;
   }
   Parameters& operator =(const Parameters& ref);  // in lcfiplus.cc
