@@ -158,10 +158,15 @@ void BuildUpVertex::process() {
   Vertex* primvtx;
 
   try {
-    primvtx = new Vertex(*event->getPrimaryVertex(_primvtxcolname.c_str()));
+    const Vertex *primVertex = event->getPrimaryVertex(_primvtxcolname.c_str());
+    if (primVertex) {
+      primvtx = new Vertex(*primVertex);
+    } else {
+      throw lcfiplus::Exception("No primary Vertex");
+    }
   } catch (lcfiplus::Exception& e) {
     cout << "BuildUpVertex::process(): primary vertex not found - invoking primary vertex finder internally." << endl;
-    primvtx = 0;
+    primvtx = nullptr;
   }
 
   VertexFinderSuehara::VertexFinderSueharaConfig cfg;
