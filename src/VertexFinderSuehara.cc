@@ -1039,12 +1039,12 @@ void VertexFinderSuehara::associateIPTracksAVF(vector<Vertex *> &vertices, Verte
 void VertexFinderSuehara::buildUp(TrackVec& tracks, vector<Vertex*>& vtx, vector<Vertex*>& v0vtx, double chi2thpri, VertexFinderSueharaConfig& cfg, Vertex* ip) {
 
   // obtain primary vertex
-  Vertex* nip = 0;
+  std::unique_ptr<Vertex> nip;
   if (!ip) {
     ip = findPrimaryVertex(tracks, chi2thpri);
 //		vtx.push_back(ip);
   } else {
-    nip = new Vertex(ip->getChi2(), ip->getProb(), ip->getX(), ip->getY(), ip->getZ(), ip->getCov(), true);
+    nip = std::unique_ptr<Vertex>(new Vertex(ip->getChi2(), ip->getProb(), ip->getX(), ip->getY(), ip->getZ(), ip->getCov(), true));
 //		vtx.push_back(nip);
   }
 
