@@ -85,8 +85,12 @@ const Vertex* Event::getPrimaryVertex(const char* privtxname) const {
   const char* classname = "vector<lcfiplus::Vertex*>";
 
 //		if(!IsExist(privtxname,classname))throw(Exception("Event::getPrimaryVertex(): collection not found."));
-
-  return (*(vector<const lcfiplus::Vertex*>*)GetObject(privtxname,classname))[0];
+  auto const& primaryVertices = (*(vector<const lcfiplus::Vertex*>*)GetObject(privtxname,classname));
+  if(primaryVertices.size() > 0 ){
+    return primaryVertices[0];
+  } else {
+    return nullptr;
+  }
 }
 
 const vector<const Vertex*>& Event::getSecondaryVertices(const char* secvtxname) const {
