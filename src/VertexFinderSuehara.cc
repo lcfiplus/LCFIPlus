@@ -882,7 +882,7 @@ void VertexFinderSuehara::associateIPTracksAVF(vector<Vertex *> &vertices, Verte
       if(loopiptracks.size()==0) loopiptracks.push_back(*it);
       else{
 	vector<const Track *>::iterator it3=loopiptracks.begin();
-	while(ip->getChi2Track(*it)<ip->getChi2Track(*it3) && it3 != loopiptracks.end()){
+	while(it3 != loopiptracks.end() && ip->getChi2Track(*it)<ip->getChi2Track(*it3) ){
 	  it3++;
 	}
 	if(it3 == loopiptracks.end()) loopiptracks.push_back(*it);
