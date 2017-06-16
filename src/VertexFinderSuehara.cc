@@ -882,7 +882,7 @@ void VertexFinderSuehara::associateIPTracksAVF(vector<Vertex *> &vertices, Verte
       if(loopiptracks.size()==0) loopiptracks.push_back(*it);
       else{
 	vector<const Track *>::iterator it3=loopiptracks.begin();
-	while(ip->getChi2Track(*it)<ip->getChi2Track(*it3) && it3 != loopiptracks.end()){
+	while(it3 != loopiptracks.end() && ip->getChi2Track(*it)<ip->getChi2Track(*it3) ){
 	  it3++;
 	}
 	if(it3 == loopiptracks.end()) loopiptracks.push_back(*it);
@@ -1036,15 +1036,16 @@ void VertexFinderSuehara::associateIPTracksAVF(vector<Vertex *> &vertices, Verte
   return;
 }
 
-void VertexFinderSuehara::buildUp(TrackVec& tracks, vector<Vertex*>& vtx, vector<Vertex*>& v0vtx, double chi2thpri, VertexFinderSueharaConfig& cfg, Vertex* ip) {
+void VertexFinderSuehara::buildUp(TrackVec& tracks, vector<Vertex*>& vtx, vector<Vertex*>& v0vtx, double chi2thpri, VertexFinderSueharaConfig& cfg, Vertex** pIP) {
 
   // obtain primary vertex
-  Vertex* nip = 0;
+  std::unique_ptr<Vertex> nip;
+  Vertex*& ip = *pIP;
   if (!ip) {
     ip = findPrimaryVertex(tracks, chi2thpri);
 //		vtx.push_back(ip);
   } else {
-    nip = new Vertex(ip->getChi2(), ip->getProb(), ip->getX(), ip->getY(), ip->getZ(), ip->getCov(), true);
+    nip = std::unique_ptr<Vertex>(new Vertex(ip->getChi2(), ip->getProb(), ip->getX(), ip->getY(), ip->getZ(), ip->getCov(), true));
 //		vtx.push_back(nip);
   }
 

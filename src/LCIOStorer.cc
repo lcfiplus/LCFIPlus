@@ -810,6 +810,7 @@ void LCIOStorer::WriteVertices(VertexVec* pvvtx, const char* newName, const char
   for (unsigned int n=0; n<pvvtx->size(); n++) {
     // set ID to the lcfiplus::Vertex
     const lcfiplus::Vertex* flavtx = (*pvvtx)[n];
+    if( not flavtx ) continue;
     flavtx->setId(n);
 
     // It seems that multiple entries in LCIO collection are not allowed: currently make independent entries

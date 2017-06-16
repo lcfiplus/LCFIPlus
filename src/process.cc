@@ -156,12 +156,18 @@ void BuildUpVertex::process() {
   //cout << "BuildUpVertex / track selection: " << passedTracks.size() << "/" << tracks.size() << " accepted." << endl;
 
   Vertex* primvtx;
-
+  bool haveToGetNewVertex = false;
   try {
-    primvtx = new Vertex(*event->getPrimaryVertex(_primvtxcolname.c_str()));
+    const Vertex *primVertex = event->getPrimaryVertex(_primvtxcolname.c_str());
+    if (primVertex) {
+      primvtx = new Vertex(*primVertex);
+    } else {
+      throw lcfiplus::Exception("No primary Vertex");
+    }
   } catch (lcfiplus::Exception& e) {
     cout << "BuildUpVertex::process(): primary vertex not found - invoking primary vertex finder internally." << endl;
-    primvtx = 0;
+    haveToGetNewVertex = true;
+    primvtx = nullptr;
   }
 
   VertexFinderSuehara::VertexFinderSueharaConfig cfg;
@@ -182,7 +188,17 @@ void BuildUpVertex::process() {
 
   // build up vertexing
   vector<Vertex*> v0tmp;
-  VertexFinderSuehara::buildUp(passedTracks, *_vertices, (_v0vertices ? *_v0vertices : v0tmp), _chi2thpri, cfg, primvtx);
+  VertexFinderSuehara::buildUp(passedTracks, *_vertices, (_v0vertices ? *_v0vertices : v0tmp), _chi2thpri, cfg, &primvtx);
+  if(haveToGetNewVertex) {
+    const vector<const Vertex*>* _vertex=nullptr;
+    Event::Instance()->Get(_primvtxcolname.c_str(), _vertex);
+    vector<const Vertex*>* _tmpVertex = const_cast<vector<const Vertex*>*> (_vertex);
+    if(_vertex && _vertex->size() == 1 && const_cast<Vertex*>((*_vertex)[0]) == nullptr) {
+      (*_tmpVertex)[0] =  primvtx ;
+    }
+
+  }
+
   // TODO: deletion of v0tmp
 
   if (_doassoc){

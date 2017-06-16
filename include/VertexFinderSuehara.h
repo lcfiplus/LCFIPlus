@@ -126,7 +126,7 @@ void associateIPTracks(vector<Vertex*>& vertices, Vertex* ip, VertexFinderSuehar
 //using AVF method
 void associateIPTracksAVF(vector<Vertex*>& vertices, Vertex* ip, VertexFinderSueharaConfig& cfg);
 
-void buildUp(TrackVec& tracks, vector<Vertex*>& vtx, vector<Vertex*>& v0vtx, double chi2thpri, VertexFinderSueharaConfig& cfg, Vertex* ip = 0);
+void buildUp(TrackVec& tracks, vector<Vertex*>& vtx, vector<Vertex*>& v0vtx, double chi2thpri, VertexFinderSueharaConfig& cfg, Vertex** ip = 0);
 void buildUpForJetClustering(TrackVec& tracks, vector<Vertex*>& vtx);
 
 vector<Vertex*> makeSingleTrackVertices
