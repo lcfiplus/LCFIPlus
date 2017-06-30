@@ -6,6 +6,14 @@ Documentation
 - Some documentation is available at
 https://confluence.slac.stanford.edu/display/ilc/LCFIPlus
 
+
+
+--------------
+| v00-06-06 |
+--------------
+
+- adapt to changes in Marlin (https://github.com/iLCSoft/Marlin/pull/16)
+
 --------------
 | v00-06-05 |
 --------------
