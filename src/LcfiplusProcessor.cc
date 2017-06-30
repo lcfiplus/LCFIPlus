@@ -16,6 +16,8 @@
 #include "TROOT.h"
 #include "TApplication.h"
 
+#include <memory>
+
 using namespace std;
 using namespace lcio ;
 using namespace marlin ;
@@ -90,7 +92,7 @@ void LcfiplusProcessor::init() {
     // usually a good idea to
     printParameters() ;
 
-    StringParameters* parameter = parameters();
+    std::shared_ptr<StringParameters> parameter = parameters();
     /*
     		// obtain algorithm name
     		if(!parameter->isParameterSet("algorithm")){
