@@ -90,7 +90,7 @@ void LcfiplusProcessor::init() {
     // usually a good idea to
     printParameters() ;
 
-    StringParameters* parameter = parameters();
+    std::shared_ptr<StringParameters> parameter = parameters();
     /*
     		// obtain algorithm name
     		if(!parameter->isParameterSet("algorithm")){
