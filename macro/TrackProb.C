@@ -185,7 +185,7 @@ void TrackProb(const char *bbfile, const char *ccfile, const char *qqfile, const
 	ntqq->Project("hjprob", "abs(sz0sig)","jprobcut>0");
 	ntqq->Project("hjprob2", "abs(sz0sig)","jprobcut>0");
 
-	double integ = hjprobz0->Integral(0,50) + hjprob2z0->Integral(0,195);
+	integ = hjprobz0->Integral(0,50) + hjprob2z0->Integral(0,195);
 	hjprobz0->Scale(1./integ);
 	hjprob2z0->Scale(1./integ);
 
