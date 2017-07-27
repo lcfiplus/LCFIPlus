@@ -52,7 +52,6 @@ double JetFinder::funcValencia(Jet& jet1, Jet& jet2, double /*Evis2*/, JetConfig
 
   double R_param = cfg.rParameter;
   double beta = cfg.betaParameter;
-  double gamma = cfg.gammaParameter;
 
   double e1 = jet1.E();
   double e2 = jet2.E();
