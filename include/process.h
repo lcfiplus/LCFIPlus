@@ -96,6 +96,7 @@ class JetClustering : public Algorithm {
   double _rParameter;
   double _alphaParameter;
   double _betaParameter;
+  double _gammaParameter;
   bool _useMuonID;
   bool _muonIDExternal;
   double _muonIDMinEnergy;
