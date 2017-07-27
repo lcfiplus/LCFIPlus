@@ -48,16 +48,17 @@ double JetFinder::funcKt(Jet& jet1, Jet& jet2, double /*Evis2*/, JetConfig& cfg)
 
 }
 double JetFinder::funcValencia(Jet& jet1, Jet& jet2, double /*Evis2*/, JetConfig& cfg) {
-  // d_ij = min(Ei^2, Ej^2 )(1 - cos(theta_ij))/R^2
+  // d_ij = 2min(Ei^2, Ej^2 )(1 - cos(theta_ij))/R^2
 
   double R_param = cfg.rParameter;
   double beta = cfg.betaParameter;
+  double gamma = cfg.gammaParameter;
 
   double e1 = jet1.E();
   double e2 = jet2.E();
   TVector3 mom1 = jet1.Vect();
   TVector3 mom2 = jet2.Vect();
-  double val = min(pow(e1, 2.*beta),pow(e2, 2.*beta))*max(0., 1-(mom1.Dot(mom2))/(mom1.Mag()*mom2.Mag())) / pow(R_param,2.);
+  double val = 2*min(pow(e1, 2.*beta),pow(e2, 2.*beta))*max(0., 1-(mom1.Dot(mom2))/(mom1.Mag()*mom2.Mag())) / pow(R_param,2.);
   return val;
 }
 
@@ -116,7 +117,8 @@ double JetFinder::funcKtBeamDistance(Jet& jet1, double /*Evis2*/, JetConfig& /*c
 }
 
 double JetFinder::funcValenciaBeamDistance(Jet& jet1, double /*Evis2*/, JetConfig& cfg) {
-  return pow(jet1.Pt(), 2. * cfg.betaParameter);
+  // d_iB = Ei^2beta*sin(theta_iB)^2gamma
+  return pow(jet1.E(), 2. * cfg.betaParameter)*pow(jet1.Pt()/jet1.E(), 2. * cfg.gammaParameter);
 }
 
 double JetFinder::funcDurhamCheat(Jet& jet1, Jet& jet2, double Evis2, JetConfig& /*cfg*/) {
