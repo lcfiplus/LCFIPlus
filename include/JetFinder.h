@@ -21,6 +21,7 @@ struct JetConfig {
   double rParameter;     // for Kt
   double alphaParameter; // for Durham
   double betaParameter;  // for Valencia
+  double gammaParameter;  // for Valencia
   double coneR;
   double epsCut;
   string coreAlgo;
@@ -46,6 +47,7 @@ struct JetConfig {
       rParameter(1.0),
       alphaParameter(1.0),
       betaParameter(1.0),
+      gammaParameter(1.0),
       coneR(0),
       epsCut(0), 
       coreThreshold(0),
