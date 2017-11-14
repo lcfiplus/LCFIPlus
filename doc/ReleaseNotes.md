@@ -1,3 +1,26 @@
+
+* 2017-06-16 Andre Sailer ([PR#23](https://github.com/lcfiplus/LCFIPlus/pull/23))
+  - Fix crash when BeamspotContraint is false
+  - Fix memory leak in VertexFinderSuehara
+
+* 2017-11-14 Frank Gaede ([PR#32](https://github.com/lcfiplus/LCFIPlus/pull/32))
+  - move release notes to ./doc/ReleaseNotes.md
+  - add Licence (GPLv3)
+  - update to v00-06-06 and add release notes for this
+      - only documentation, release originally made on iLCSoft fork
+
+* 2017-11-14 Frank Gaede ([PR#31](https://github.com/lcfiplus/LCFIPlus/pull/31))
+  - replace Gear w/ DD4hep
+       - only used for accessing the B-field
+       - dependency on DD4hep only implicitly through MarlinUtil
+
+* 2017-07-28 Dan Protopopescu ([PR#27](https://github.com/lcfiplus/LCFIPlus/pull/27))
+  Removed redefinition of 'integ'
+
+* 2017-05-27 Andre Sailer ([PR#21](https://github.com/lcfiplus/LCFIPlus/pull/21))
+  - lcfiplus::Parameters: fix implementation of the copy constructor, fixes lcfiplus/LCFIPlus#19
+
+
 # v00-06-06
 
 * 2017-07-02 Andre Sailer ([PR#24](https://github.com/lcfiplus/LCFIPlus/pull/24))
