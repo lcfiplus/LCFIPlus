@@ -1,10 +1,21 @@
-[![Build Status](https://travis-ci.org/lcfiplus/LCFIPlus.svg?branch=master)](https://travis-ci.org/lcfiplus/LCFIPlus)
+# LCFIPlus
+[![Build Status](https://travis-ci.org/iLCSoft/LCFIPlus.svg?branch=master)](https://travis-ci.org/iLCSoft/LCFIPlus)
+[![Build Status](https://scan.coverity.com/projects/13064/badge.svg)](https://scan.coverity.com/projects/ilcsoft-lcfiplus)
 
-# Documentation
+Flavor tagging code for ILC detectors, for documentation consult confluence at [https://confluence.slac.stanford.edu/display/ilc/LCFIPlus](https://confluence.slac.stanford.edu/display/ilc/LCFIPlus)
 
-- For more documentation see:
+LCFIPlus is distributed under the [GPLv3 License](http://www.gnu.org/licenses/gpl-3.0.en.html)
 
-  https://confluence.slac.stanford.edu/display/ilc/LCFIPlus
+[![License](https://www.gnu.org/graphics/gplv3-127x51.png)](https://www.gnu.org/licenses/gpl-3.0.en.html)
+
+## License and Copyright
+Copyright (C) 2005-2017, LCFIPlus Authors
+
+LCFIPlus is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License long with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 ## Release notes
