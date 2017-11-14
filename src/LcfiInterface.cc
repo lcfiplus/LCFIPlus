@@ -270,7 +270,6 @@ LcfiInterface::flavtagVertices(vertex_lcfi::DecayChain* chain) const {
 */
 ///////////////////////
 #include <marlin/Global.h>
-#include <gear/BField.h>
 
 Vertex*
 LcfiInterface::findPrimaryVertex() {

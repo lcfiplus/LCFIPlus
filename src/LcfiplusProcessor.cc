@@ -10,8 +10,8 @@
 #include <marlin/Global.h>
 #include <marlin/Exceptions.h>
 
-// GEAR
-#include <gear/BField.h>
+// geometry utils from MarlinUtil
+#include <GeometryUtil.h>
 
 #include "TROOT.h"
 #include "TApplication.h"
@@ -55,7 +55,7 @@ LcfiplusProcessor::LcfiplusProcessor() : Processor("LcfiplusProcessor") {
   registerProcessorParameter("PrintEventNumber", "Event number printing period in std output: 0 = no printing", _printPeriod, int(0));
   registerProcessorParameter("PIDAlgorithmName", "ParticleID Algorithm Name", _pidAlgoName, string("LikelihoodPID"));
 
-  registerOptionalParameter("MagneticField", "Manually set magnetic field, overriding the value from GEAR [T]", _magneticField, float(0.0));
+  registerOptionalParameter("MagneticField", "Manually set magnetic field, overriding the value from DD4hep [T]", _magneticField, float(0.0));
   registerOptionalParameter("BeamSizeX", "Bunch size in the X direction [mm]", _beamSizeX, float(639e-6));
   registerOptionalParameter("BeamSizeY", "Bunch size in the Y direction [mm]", _beamSizeY, float(5.7e-6));
   registerOptionalParameter("BeamSizeZ", "Bunch size in the Z direction [mm]", _beamSizeZ, float(9.13e-2));
@@ -109,10 +109,16 @@ void LcfiplusProcessor::init() {
     }
 
     // set globals
-    if (_magneticField != 0)
+    if (_magneticField != 0){
+
       Globals::Instance()->setBField(_magneticField);
-    else
-      Globals::Instance()->setBField( marlin::Global::GEAR->getBField().at(gear::Vector3D(0.,0.,0.)).z() );
+
+      streamlog_out( WARNING ) << " overriding the B-field at the origin (" << MarlinUtil::getBzAtOrigin()
+			       << ") with parameter MagneticField : " << _magneticField << std::endl ;
+    } else {
+
+      Globals::Instance()->setBField( MarlinUtil::getBzAtOrigin() );
+    }
 
     Globals::Instance()->setBeamSizeX(_beamSizeX);
     Globals::Instance()->setBeamSizeY(_beamSizeY);
