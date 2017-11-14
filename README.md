@@ -6,6 +6,12 @@ Documentation
 - Some documentation is available at
 https://confluence.slac.stanford.edu/display/ilc/LCFIPlus
 
+ ------------
+| v00-06-06 |
+ -----------
+* 2017-07-02 Andre Sailer ([PR#24](https://github.com/lcfiplus/LCFIPlus/pull/24))
+  - Processor parameters are now a shared_ptr
+
 --------------
 | v00-06-05 |
 --------------
