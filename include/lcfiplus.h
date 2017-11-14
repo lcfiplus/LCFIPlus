@@ -137,7 +137,7 @@ class Globals {
   }
 
  private:
-  // value of b field to be read from GEAR
+  // value of b field to be read from DD4hep
   double _bField;
   double _beamSizeX;
   double _beamSizeY;
