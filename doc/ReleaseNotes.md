@@ -1,3 +1,5 @@
+# v00-06-07
+
 
 * 2017-06-16 Andre Sailer ([PR#23](https://github.com/lcfiplus/LCFIPlus/pull/23))
   - Fix crash when BeamspotContraint is false
