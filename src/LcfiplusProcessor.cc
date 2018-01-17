@@ -47,7 +47,7 @@ LcfiplusProcessor::LcfiplusProcessor() : Processor("LcfiplusProcessor") {
 
   registerProcessorParameter("Algorithms", "LCFIPlus algorithms to run", _algonames, vector<string>());
   registerProcessorParameter("ReadSubdetectorEnergies", "Read subdetector energies (ILD)", _readSubdetectorEnergies, int(1));
-  registerProcessorParameter("TrackHitOrdering", "Track hit ordering: 0=ILD-LOI (default), 1=ILD-DBD", _trackHitOrdering, int(0));
+  registerProcessorParameter("TrackHitOrdering", "Track hit ordering: 0=ILD-LOI (default), 1=ILD-DBD, 2=CLICdet", _trackHitOrdering, int(0));
   registerProcessorParameter("UpdateVertexRPDaughters", "Writing back obtained vertices to input RP collections (which must be writable)",
                              _updateVertexRPDaughters, int(1));
   registerProcessorParameter("IgnoreLackOfVertexRP", "Keep running even if vertex RP collection is not present",
