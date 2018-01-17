@@ -526,6 +526,17 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
           for (int i=0; i<lcfiplus::tpar::hitN; ++i) {
             nhits[i] = trk->getSubdetectorHitNumbers()[i];
           }
+        } else if (_trackHitOrdering == 2) {
+          // CLICdet format
+          const vector<int>& vec = trk->getSubdetectorHitNumbers();
+          int offset = 2; // 2=fit, 1=patrec
+          nhits[tpar::VTX] = vec[2 * 1 - offset]; // vtx barrel
+          nhits[tpar::FTD] = vec[2 * 2 - offset]; // vtx endcap
+          nhits[tpar::SIT] = 0;
+          // inner barrel and endcap, and outer barrel and endcap
+          nhits[tpar::TPC] = vec[2 * 3 - offset] + vec[2 * 4 - offset] + vec[2 * 5 - offset] + vec[2 * 6 - offset];
+          nhits[tpar::SET] = 0;
+          nhits[tpar::ETD] = 0;
         } else {
           // ILD DBD format
           const vector<int>& vec = trk->getSubdetectorHitNumbers();
