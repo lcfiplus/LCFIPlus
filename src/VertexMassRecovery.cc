@@ -106,8 +106,24 @@ namespace lcfiplus{
 	vtxdir = JetVertices[1]->getPos() - JetVertices[0]->getPos();
 	//get vertex momentum and particle types on the vertex
 	//vertex momentum
-	vtxvect = JetVertices[1]->getFourMomentum();
+	//first: track energy correction
 	const vector <const Track*> & vtxtrk = JetVertices[1]->getTracks();
+	bool isswap = true;
+	for(unsigned int i=0;i<vtxtrk.size();i++){
+	  Track* tmptrk = const_cast<Track*> (vtxtrk[i]);
+	  //double eres = tmptrk->E();
+	  tmptrk->swapEnergy();
+
+	  if(!(tmptrk->E()*tmptrk->E()-tmptrk->P()*tmptrk->P()>0.0
+	       && tmptrk->E()*tmptrk->E()-tmptrk->P()*tmptrk->P()<1.0)){  //go back
+	    tmptrk->swapEnergy();
+	    isswap = false;
+	  }
+	}
+
+	//second: get vtx 4-momentum
+	vtxvect = JetVertices[1]->getFourMomentum();
+
 	//particle type
 	for(unsigned int i=0;i<6;i++) nparts[i]=0;
 	for(unsigned int i=0;i<vtxtrk.size();i++){
@@ -147,6 +163,13 @@ namespace lcfiplus{
 	//num. of pi0s attached
 	JetVertices[1]->setNPi0(pi0vtxfinder->Get_nPi0());
 	
+	if(isswap){  //go back energy
+	  for(unsigned int i=0;i<vtxtrk.size();i++){
+	    Track* tmptrk = const_cast<Track*> (vtxtrk[i]);
+	    tmptrk->swapEnergy();
+	  }
+	}
+
 	//cout << "third vertex done." << endl;
 	
 	//-------------- recover secondary vertex ----------------
@@ -155,8 +178,22 @@ namespace lcfiplus{
 	vtxdir = JetVertices[0]->getPos() - ip->getPos();
 	//get vertex momentum and particle types on the vertex
 	//vertex momentum
-	vtxvect = JetVertices[0]->getFourMomentum();
+	//first: track energy correction
 	const vector <const Track*> & vtxtrk2 = JetVertices[0]->getTracks();
+	isswap=true;
+	for(unsigned int i=0;i<vtxtrk2.size();i++){
+	  Track* tmptrk = const_cast<Track*> (vtxtrk2[i]);
+	  //double eres = tmptrk->E();
+	  tmptrk->swapEnergy();
+	  if(!(tmptrk->E()*tmptrk->E()-tmptrk->P()*tmptrk->P()>0.0
+	       && tmptrk->E()*tmptrk->E()-tmptrk->P()*tmptrk->P()<1.0)){  //go back
+	    tmptrk->swapEnergy();
+	    isswap=false;
+	  }
+	}
+	//second: get vtx 4-momentum
+	vtxvect = JetVertices[0]->getFourMomentum();
+
 	//particle type
 	for(unsigned int i=0;i<6;i++) nparts[i]=0;
 	for(unsigned int i=0;i<vtxtrk2.size();i++){
@@ -193,6 +230,14 @@ namespace lcfiplus{
 	_outvertices->push_back(JetVertices[1]);
 	_outputJets->push_back(nj);
 
+	
+	if(isswap){  //go back energy
+	  for(unsigned int i=0;i<vtxtrk2.size();i++){
+	    Track* tmptrk = const_cast<Track*> (vtxtrk2[i]);
+	    tmptrk->swapEnergy();
+	  }
+	}
+
 	//cout << "secondary vertex done." << endl;
       }else if(JetVertices.size()==1){  //just 1 vtx in the jet
 	//-------------- recover secondary vertex ----------------
@@ -201,8 +246,21 @@ namespace lcfiplus{
 	vtxdir = JetVertices[0]->getPos() - ip->getPos();
 	//get vertex momentum and particle types on the vertex
 	//vertex momentum
-	vtxvect = JetVertices[0]->getFourMomentum();
+	//first: track energy correction
 	const vector <const Track*> & vtxtrk = JetVertices[0]->getTracks();
+	bool isswap=true;
+	for(unsigned int i=0;i<vtxtrk.size();i++){
+	  Track* tmptrk = const_cast<Track*> (vtxtrk[i]);
+	  //double eres = tmptrk->E();
+	  tmptrk->swapEnergy();
+	  if(!(tmptrk->E()*tmptrk->E()-tmptrk->P()*tmptrk->P()>0.0
+	       && tmptrk->E()*tmptrk->E()-tmptrk->P()*tmptrk->P()<1.0)){  //go back
+	    tmptrk->swapEnergy();
+	    isswap=false;
+	  }
+	}
+	//second: get vtx 4-momentum
+	vtxvect = JetVertices[0]->getFourMomentum();
 	//particle type
 	for(unsigned int i=0;i<6;i++) nparts[i]=0;
 	for(unsigned int i=0;i<vtxtrk.size();i++){
@@ -248,6 +306,13 @@ namespace lcfiplus{
 	nj->add(JetVertices[0]);
 	_outvertices->push_back(JetVertices[0]);
 	_outputJets->push_back(nj);
+
+	if(isswap){  //go back energy
+	  for(unsigned int i=0;i<vtxtrk.size();i++){
+	    Track* tmptrk = const_cast<Track*> (vtxtrk[i]);
+	    tmptrk->swapEnergy();
+	  }
+	}
       }else if(JetVertices.size()==0){   //do nothing. just add jet
 	Jet *nj= new Jet(*(*_inputJets)[k], true);
 	_outputJets->push_back(nj);	
