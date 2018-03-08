@@ -17,7 +17,7 @@ namespace lcfiplus {
 void TrackNtuple::init(Parameters* param) {
   Algorithm::init(param);
 
-  _primvtxcolname = param->get("PrimaryVertexCollectionName",string("PrimaryVertex"));
+  _primvtxcolname = param->get("TrackNtuple.PrimaryVertexCollectionName",string("PrimaryVertex"));
   _jetcolname = param->get("TrackNtuple.JetCollectionName",string("VertexJets"));
   Event::Instance()->setDefaultPrimaryVertex(_primvtxcolname.c_str()); // backward compatibility
   _hitcutJprob = param->get("TrackNtuple.HitsCountForJointProbability",int(4));
