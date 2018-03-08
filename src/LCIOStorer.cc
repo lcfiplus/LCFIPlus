@@ -451,7 +451,7 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
 
 	  //cal. corrected mass
 	  track->setCorrEnergy(pmass[PID->getParticleID(pfo,pidAlgoID).getPDG()]);
-	  track->swapEnergy();  //really temporal need flag...
+	  //track->swapEnergy();  //really temporal need flag...
 	}catch(UTIL::UnknownAlgorithm e){
 	}
 	
