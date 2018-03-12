@@ -29,7 +29,7 @@
 #include <math.h>
 #include <fstream>
 
-//using namespace lcio;
+using namespace lcio;
 
 namespace lcfiplus {
 
