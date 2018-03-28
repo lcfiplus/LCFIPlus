@@ -1,3 +1,18 @@
+# v00-06-08
+
+* 2018-03-08 Ryo Yonamine ([PR#36](https://github.com/lcfiplus/LCFIPlus/pull/36))
+  - Fix vertex mass distribution problem. 
+        - The corresponding line has been moved to VertexMassRecovery.cc.
+
+* 2018-03-08 Ryo Yonamine ([PR#36](https://github.com/lcfiplus/LCFIPlus/pull/36))
+  /
+
+* 2018-01-30 Andre Sailer ([PR#34](https://github.com/lcfiplus/LCFIPlus/pull/34))
+  - Add TrackHitOrdering=2 for LCFIPlusProcessor which conforms to the CLIC detector
+
+* 2018-03-12 Marko Petric ([PR#37](https://github.com/lcfiplus/LCFIPlus/pull/37))
+  -  Fix for iLCSoft/LCIO#35
+
 # v00-06-07
 
 
