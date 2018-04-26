@@ -342,6 +342,7 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
 
       lcfiplus::MCParticle *mcpNew = _mcpLCIORel2[mcp];
       mcpNew->setParent(parent);
+      if (parent) parent->addDaughter(mcpNew);   
 
       // add daughters to other MCPs
       if (mcp->getParents().size()>1) {
