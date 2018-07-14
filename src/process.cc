@@ -79,7 +79,8 @@ void PrimaryVertexFinder::process() {
 
   // primary vertex finder
   Vertex* vtx = findPrimaryVertex(passedTracks,_chi2th,_beamspotConstraint,_beamspotSmearing);
-  _vertex->push_back(vtx);
+  if (vtx) _vertex->push_back(vtx);
+  else cout << "PrimaryVertexFinder: No primary vertex found." << endl; 
   if (verbose)
     cout << "PrimaryVertexFinder: " << vtx->getTracks().size() << " tracks associated to the primary vertex." << endl;
 }
