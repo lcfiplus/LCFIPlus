@@ -36,7 +36,7 @@ class LCIOStorer : public TObject, public EventStoreObserver {
 
   // initialize misc collections
   void InitVertexCollection(const char* lcioName, const char* flavtagName, bool readnow = true);
-  void InitJetCollection(const char* lcioName, const char* flavtagName, bool readnow = true, bool readvtx = true, const char* vtxname = 0);
+  void InitJetCollection(const char* lcioName, const char* flavtagName, bool readnow = true, bool readvtx = false, const char* vtxname = 0);
 
   /*
   			// register every LCIO collections: used only in standalone
