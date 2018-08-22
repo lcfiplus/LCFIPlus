@@ -1,3 +1,12 @@
+# v00-06-09
+
+* 2018-05-14 Ryo Yonamine ([PR#38](https://github.com/lcfiplus/LCFIPlus/pull/38))
+  Add daughter relation in lcfiplus::MCPartilce. This change does not affect usual reconstruction where no MCParticle is used.
+
+* 2018-07-14 Ryo Yonamine ([PR#39](https://github.com/lcfiplus/LCFIPlus/pull/39))
+  Cope with events having no vertex track candidates.
+  - It tried to add a vertex even if it is a null pointer. This is confusing and caused a problem later processes in some cases.
+
 # v00-06-08
 
 * 2018-03-08 Ryo Yonamine ([PR#36](https://github.com/lcfiplus/LCFIPlus/pull/36))
