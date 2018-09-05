@@ -316,11 +316,16 @@ double Helix::LogLikelihood(const TVector3& p, double& tmin)const {
 
   min.SetPrintLevel(0);
   // TODO: primary vertex finder sometimes fails
-  double tllimit = -1. / r;
-  double tulimit = 1000. / r;
+  //double tllimit = -1. / r;
+  //double tulimit = 1000. / r;
+  double tllimit = t - TMath::Pi();
+  double tulimit = t + TMath::Pi();
+  double step = 1e-4*(tulimit-tllimit); // 1e-3 and 1e-5 also seem to work.
 
   // todo: t<0 treatment
-  min.SetLimitedVariable(0,"t",t, 1e-6,tllimit, tulimit);
+  //min.SetLimitedVariable(0,"t",t, 1e-6,tllimit, tulimit);
+  min.SetLimitedVariable(0,"t",t, step, tllimit, tulimit);
+
 //		min.SetVariable(0,"t",t, 1e-7);
 
 //		min.SetLimitedVariable(0,"t",t, 1e-6,tllimit, tulimit);
