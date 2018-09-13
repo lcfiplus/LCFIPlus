@@ -61,7 +61,8 @@ GeometryHandler::~GeometryHandler() {
 
 // initialization ///////////////////////////////////////////////////////////
 
-Point::Point(const Vertex* vtx) {
+//Point::Point(const Vertex* vtx) {
+Point::Point(const Vertex* vtx, FITFLAG flag) : PointBase(flag) {
   _pos = SVector3(vtx->getX(), vtx->getY(), vtx->getZ());
   _err(0,0) = vtx->getCov()[Vertex::xx];
   _err(0,1) = vtx->getCov()[Vertex::xy];
@@ -316,15 +317,24 @@ double Helix::LogLikelihood(const TVector3& p, double& tmin)const {
 
   min.SetPrintLevel(0);
   // TODO: primary vertex finder sometimes fails
-  //double tllimit = -1. / r;
-  //double tulimit = 1000. / r;
-  double tllimit = t - TMath::Pi();
-  double tulimit = t + TMath::Pi();
-  double step = 1e-4*(tulimit-tllimit); // 1e-3 and 1e-5 also seem to work.
+  if (GetFlag()==SECVTX) {
+    //std::cerr << "This is for secondary vertex fitting." << std::endl;
+    double tllimit = -1. / r;
+    double tulimit = 1000. / r;
+    min.SetLimitedVariable(0,"t",t, 1e-6,tllimit, tulimit);
+    // todo: t<0 treatment
+  } else if (GetFlag()==PRIVTX) {
+    //std::cerr << "This is for primary vertex fitting." << std::endl;
+    // This range may be unnecessarily large, but better than the one for secondary vertex fitting case.
+    double tllimit = t - TMath::Pi();
+    double tulimit = t + TMath::Pi();
+    double step = 1e-4*(tulimit-tllimit); // 1e-3 and 1e-5 also seem to work.
+    min.SetLimitedVariable(0,"t",t, step, tllimit, tulimit);
+  } else {
+    std::cerr << "!!! ERROR Helix::LogLikelihood(). This helix has no flag. GetFlag() = " << GetFlag() << std::endl; 
+    return -1e10;
+  }
 
-  // todo: t<0 treatment
-  //min.SetLimitedVariable(0,"t",t, 1e-6,tllimit, tulimit);
-  min.SetLimitedVariable(0,"t",t, step, tllimit, tulimit);
 
 //		min.SetVariable(0,"t",t, 1e-7);
 
@@ -384,7 +394,7 @@ void Helix::LogLikelihoodDeriv(const TVector3& /*p*/, double* /*output*/)const {
 }
 
 
-Helix::Helix(const Track* trk) {
+Helix::Helix(const Track* trk, FITFLAG flag) : PointBase(flag) {
   _hel(id0) = trk->getD0();
   _hel(iz0) = trk->getZ0();
   _hel(iph) = trk->getPhi();
@@ -1133,7 +1143,7 @@ double Helix::LongitudinalDeviation(const Vertex* primary, const Vertex* seconda
   GeometryHandler* geo = GeometryHandler::Instance();
 
   vector<PointBase*> points;
-  VertexLine line(primary, secondary);
+  VertexLine line(primary, secondary, SECVTX);
 
   points.push_back(this);
   points.push_back(&line);
@@ -1141,7 +1151,7 @@ double Helix::LongitudinalDeviation(const Vertex* primary, const Vertex* seconda
   double dist;
   TVector3 initial = ClosePoint(line, &dist);
 
-  Point result;
+  Point result(NOTUSED);
   double variance = geo->PointFit(points, initial, &result);
 
   double ret = (secondary->getPos() - result.GetPos()).Mag();
