@@ -837,8 +837,8 @@ class FtNMuon : public FTAlgo {
     TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
     _result = 0;
     for (unsigned int n=0; n<tracks.size(); n++) {
-      if (algoEtc::SimpleSecMuonFinder(tracks[n], 5., 5., 5., -0.1, 0.2, 0.8, 1.5, 4., 0.5)
-          || algoEtc::SimpleSecMuonFinder(tracks[n], 5., 5., 5., 0.05, 0., 10., 0., 10., 10.))
+      if (algoEtc::SimpleSecMuonFinder(tracks[n], 5., 5., 5., -0.1, 0.2, 0.8, 1.5, 4., 0.5, _privtx)
+          || algoEtc::SimpleSecMuonFinder(tracks[n], 5., 5., 5., 0.05, 0., 10., 0., 10., 10., _privtx))
         _result += 1;
     }
   }
@@ -853,7 +853,7 @@ class FtNElectron : public FTAlgo {
     TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
     _result = 0;
     for (unsigned int n=0; n<tracks.size(); n++) {
-      if (algoEtc::SimpleSecElectronFinder(tracks[n], 5., 5., 5., 5., 0.98, 0.9, 1.15))
+      if (algoEtc::SimpleSecElectronFinder(tracks[n], 5., 5., 5., 5., 0.98, 0.9, 1.15, _privtx))
         _result += 1;
     }
   }

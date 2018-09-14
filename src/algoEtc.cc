@@ -332,11 +332,13 @@ double calcThrust( vector<TVector3>& list, TVector3& taxis ) {
 }
 
 bool SimpleSecMuonFinder(const Track* tr, double d0sigth, double z0sigth, double maxpos, double mudepmin,
-                         double ecaldepmin, double ecaldepmax, double hcaldepmin, double hcaldepmax, double maxclusterpertrackenergy) {
+                         double ecaldepmin, double ecaldepmax, double hcaldepmin, double hcaldepmax, double maxclusterpertrackenergy,
+                         const Vertex* ip) {
 
-  double dist = sqrt(tr->getD0() *tr->getD0() + tr->getZ0() * tr->getZ0());
+  double z0 = fabs(tr->getZ0()-ip->getZ()); 
+  double dist = sqrt(tr->getD0() *tr->getD0() + z0 * z0);
   double sigd0 = fabs(tr->getD0()) / sqrt(tr->getCovMatrix()[tpar::d0d0]);
-  double sigz0 = fabs(tr->getZ0()) / sqrt(tr->getCovMatrix()[tpar::z0z0]);
+  double sigz0 = z0 / sqrt(tr->getCovMatrix()[tpar::z0z0]);
   double mudep = tr->getCaloEdep()[tpar::yoke];
   double ecaldep = tr->getCaloEdep()[tpar::ecal];
   double hcaldep = tr->getCaloEdep()[tpar::hcal];
@@ -352,11 +354,13 @@ bool SimpleSecMuonFinder(const Track* tr, double d0sigth, double z0sigth, double
 }
 
 bool SimpleSecElectronFinder(const Track* tr, double d0sigth, double z0sigth, double maxpos, double emin,
-                             double minfracecal, double minecalpertrackenergy, double maxecalpertrackenergy) {
+                             double minfracecal, double minecalpertrackenergy, double maxecalpertrackenergy,
+                             const Vertex* ip) {
 
-  double dist = sqrt(tr->getD0() *tr->getD0() + tr->getZ0() * tr->getZ0());
+  double z0 = fabs(tr->getZ0()-ip->getZ()); 
+  double dist = sqrt(tr->getD0() *tr->getD0() + z0 * z0);
   double sigd0 = fabs(tr->getD0()) / sqrt(tr->getCovMatrix()[tpar::d0d0]);
-  double sigz0 = fabs(tr->getZ0()) / sqrt(tr->getCovMatrix()[tpar::z0z0]);
+  double sigz0 = z0 / sqrt(tr->getCovMatrix()[tpar::z0z0]);
   double ecaldep = tr->getCaloEdep()[tpar::ecal];
   double hcaldep = tr->getCaloEdep()[tpar::hcal];
   double fracecal = ecaldep / (ecaldep + hcaldep);

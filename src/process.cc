@@ -223,8 +223,9 @@ void BuildUpVertex::end() {
 void JetClustering::init(Parameters* param) {
   Algorithm::init(param);
 
-  _vcolname = param->get("JetClustering.InputVertexCollectionName",string("BuildUpVertex"));
-  Event::Instance()->Get(_vcolname.c_str(), _vertices);
+  _vpricolname = param->get("JetClustering.PrimaryVertexCollectionName",string("PrimaryVertex"));
+  _vseccolname = param->get("JetClustering.InputVertexCollectionName",string("BuildUpVertex"));
+  Event::Instance()->Get(_vseccolname.c_str(), _vertices);
   if (!_vertices)
     cout << "JetClustering::init: vertex collection not found; will try later." << endl;
 
@@ -312,7 +313,7 @@ void JetClustering::process() {
 
   if (!_vertices) {
     // retry
-    Event::Instance()->Get(_vcolname.c_str(), _vertices);
+    Event::Instance()->Get(_vseccolname.c_str(), _vertices);
     if (!_vertices) {
       cout << "JetClustering::Process: Vertex not found, clustering without vertices..." << endl;
     } else
@@ -340,7 +341,11 @@ void JetClustering::process() {
   jetCfg.muonIDMinZ0Sig = _muonIDMinZ0Sig;
   jetCfg.muonIDMinProb = _muonIDMinProb;
   jetCfg.muonIDMaxDist = _muonIDMaxDist;
-  JetFinder* jetFinder = new JetFinder(jetCfg);
+
+  // obtain jetvertices
+  const Vertex* ip = event->getPrimaryVertex(_vpricolname.c_str());
+
+  JetFinder* jetFinder = new JetFinder(jetCfg,ip);
 
   double* ymin = new double[_maxYth];
   memset(ymin, 0, sizeof(double) * _maxYth);
