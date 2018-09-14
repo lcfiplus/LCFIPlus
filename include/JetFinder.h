@@ -106,7 +106,7 @@ class JetFinder {
   /** Constructor.
   	@param[in] cfg specify the algorithm and the parameters
   	*/
-  JetFinder(const JetConfig& cfg);
+  JetFinder(const JetConfig& cfg, const Vertex* ip = 0);
   /** Destructor. */
   ~JetFinder() {};
   /** Replace JetConfig.
@@ -137,6 +137,7 @@ class JetFinder {
   double (*_Yfunc)(Jet& jet1, Jet& jet2, double Evis2, JetConfig& cfg);
   double (*_YfuncBeam)(Jet& jet1, double Evis2, JetConfig& cfg);
   JetConfig _cfg;
+  const Vertex* _privtx;
 };
 
 /*
