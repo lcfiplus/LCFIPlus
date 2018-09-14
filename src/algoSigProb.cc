@@ -48,11 +48,12 @@ bool trackSelectionForFlavorTag(const Track* trk, int nHitCut) {
 double trackD0Significance(const Track* trk, const Vertex* pri) {
   // take primary vertex error before minimization
   // because this is what LCFI does
-  trk->setFlightLength(0);
+  //trk->setFlightLength(0);
   //double x0 = trk->getX();
   //double y0 = trk->getY();
   //double priErr = ( pri->getCov()[Vertex::xx]*x0*x0 + 2.0*pri->getCov()[Vertex::xy]*x0*y0 + pri->getCov()[Vertex::yy]*y0*y0 ) / (x0*x0+y0*y0);
-  double priErr = 0;
+  //double priErr = 0;
+  double priErr = pri->getCov()[Vertex::xx] + pri->getCov()[Vertex::yy];
 
   /*
   printf("pri ntrk = %d\n",(int)pri->getAllTracks().size());
@@ -79,6 +80,7 @@ double trackD0Significance(const Track* trk, const Vertex* pri) {
   double y = trk->getY();
 
   //cout << "x:" << x << ",y:" << y << endl;
+
 
   //double d0 = trk->par[Track::d0];
   double d0 = sqrt( pow(x-pri->getX(),2)+pow(y-pri->getY(),2) );
@@ -113,8 +115,8 @@ double trackD0Significance(const Track* trk, const Vertex* pri) {
 // z0 significance at the poca taken in the x-y plane
 double trackZ0Significance(const Track* trk, const Vertex* pri) {
   trk->setFlightLength(0);
-  //double priErr = pri->getCov()[Vertex::zz];
-  double priErr = 0;
+  double priErr = pri->getCov()[Vertex::zz];
+  //double priErr = 0;
 
   // include error from primary vertex
   TrackPocaXY pocaXY(trk,pri);
@@ -137,12 +139,14 @@ double signedD0Significance(const Track* trk, const Jet* jet, const Vertex* pri,
   // take primary vertex error before minimization because this is what LCFI does
   //double x0 = trk->getX();
   //double y0 = trk->getY();
-  double priErr = 0.;
+  //double priErr = 0.;
   /*
   double priErr = ( pri->getCov()[Vertex::xx]*x0*x0
   		+ 2.0*pri->getCov()[Vertex::xy]*x0*y0
   		+ pri->getCov()[Vertex::yy]*y0*y0 ) / (x0*x0+y0*y0);
-  		*/
+  */
+  double priErr = pri->getCov()[Vertex::xx] + pri->getCov()[Vertex::yy];
+  
 
   if (updateFlt) {
     TrackPocaXY pocaXY(trk,pri);
@@ -187,22 +191,24 @@ double signedD0(const Track* trk, const Jet* jet, const Vertex* pri, bool update
 }
 
 double signedZ0Significance(const Track* trk, const Jet* jet, const Vertex* pri, bool updateFlt) {
-  TVector3 jetz( 0, 0, jet->Vect().Z() );
+  //TVector3 jetz( 0, 0, jet->Vect().Z() );
 
-  if (updateFlt) {
-    TrackPocaXY pocaXY(trk,pri);
-    trk->setFlightLength( pocaXY.getFlightLength() );
-  }
+  //if (updateFlt) {
+  //  TrackPocaXY pocaXY(trk,pri);
+  //  trk->setFlightLength( pocaXY.getFlightLength() );
+  //}
 
-  // determine sign of significance relative to jet direction
-  TVector3 pca( -trk->getD0()*sin(trk->getPhi()),
-                trk->getD0()*cos(trk->getPhi()), trk->getZ0() );
-  double signz0(1);
-  if (pca.Dot(jetz) < 0) signz0 = -1;
-  double z0 = trk->getZ0() - pri->getZ();
-  //double z0errsq = trk->getCovMatrix()[tpar::z0z0] + pri->getCov()[Vertex::zz];
-  double z0errsq = trk->getCovMatrix()[tpar::z0z0];
-  double z0sig = sqrt( z0*z0/z0errsq )*signz0;
+  //// determine sign of significance relative to jet direction
+  //TVector3 pca( -trk->getD0()*sin(trk->getPhi()),
+  //              trk->getD0()*cos(trk->getPhi()), trk->getZ0() );
+  //double signz0(1);
+  //if (pca.Dot(jetz) < 0) signz0 = -1;
+  //double z0 = trk->getZ0() - pri->getZ();
+  double signedz0 = signedZ0(trk,jet,pri,updateFlt);
+  double z0errsq = trk->getCovMatrix()[tpar::z0z0] + pri->getCov()[Vertex::zz];
+  //double z0errsq = trk->getCovMatrix()[tpar::z0z0];
+  //double z0sig = sqrt( z0*z0/z0errsq )*signz0;
+  double z0sig = signedz0 / sqrt( z0errsq );
   return z0sig;
 }
 
@@ -216,11 +222,12 @@ double signedZ0(const Track* trk, const Jet* jet, const Vertex* pri, bool update
 
   // determine sign of significance relative to jet direction
   TVector3 pca( -trk->getD0()*sin(trk->getPhi()),
-                trk->getD0()*cos(trk->getPhi()), trk->getZ0() );
-  double signz0(1);
-  if (pca.Dot(jetz) < 0) signz0 = -1;
-  double z0 = trk->getZ0() - pri->getZ();
-  return signz0 * z0;
+                trk->getD0()*cos(trk->getPhi()), trk->getZ0() - pri->getZ() );
+  //double signz0(1);
+  //if (pca.Dot(jetz) < 0) signz0 = -1;
+  //double z0 = trk->getZ0() - pri->getZ();
+  //return signz0 * z0;
+  return jetz.Unit().Dot(pca);
 }
 
 /////////////////////////////////////////////////
