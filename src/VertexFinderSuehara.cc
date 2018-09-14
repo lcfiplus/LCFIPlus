@@ -1103,7 +1103,7 @@ vector<Vertex*> VertexFinderSuehara::makeSingleTrackVertices
     // d0/z0 cut
     double d0 = track->getD0();
     double d0err = sqrt(track->getCovMatrix()[tpar::d0d0]);
-    double z0 = track->getZ0();
+    double z0 = (ip ? track->getZ0() - ip->getZ() : track->getZ0());
     double z0err = sqrt(track->getCovMatrix()[tpar::z0z0]);
 
     if (!cfg.useBNess && fabs(d0/d0err)<cfg.mind0SigSingle && fabs(z0/z0err)<cfg.minz0SigSingle) continue;
