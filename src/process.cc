@@ -619,9 +619,9 @@ void JetVertexRefiner::process() {
 	  _var[1]=nj->Vect().Angle(nj->getTracks()[ntr]->Vect());
 	  _var[2]=nj->getTracks()[ntr]->P()*TMath::Sin(_var[1]);
 	  _var[3]=sign*fabs(nj->getTracks()[ntr]->getD0())/sqrt(nj->getTracks()[ntr]->getCovMatrix()[tpar::d0d0]);
-	  _var[4]=sign*fabs(nj->getTracks()[ntr]->getZ0())/sqrt(nj->getTracks()[ntr]->getCovMatrix()[tpar::z0z0]);
+	  _var[4]=sign*fabs(nj->getTracks()[ntr]->getZ0() - ip->getZ())/sqrt(nj->getTracks()[ntr]->getCovMatrix()[tpar::z0z0]);
 	  _var[5]=sign*fabs(nj->getTracks()[ntr]->getD0());
-	  _var[6]=sign*fabs(nj->getTracks()[ntr]->getZ0());
+	  _var[6]=sign*fabs(nj->getTracks()[ntr]->getZ0() - ip->getZ());
 	  //_var[7]=tracks[ntr]->getPID();
 	  if(nj->getTracks()[ntr]->E()>=1.0) bness=_bness->EvaluateMVA(_bnessbookname.c_str()); 
 	  else bness=_bness->EvaluateMVA(_bnessbookname1.c_str()); 
