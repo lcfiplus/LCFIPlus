@@ -38,7 +38,7 @@ void PrimaryVertexFinder::init(Parameters* param) {
   Event::Instance()->setDefaultPrimaryVertex(vcolname.c_str());
 
   // parameters...(should be exported)
-  _secVtxCfg = new TrackSelectorConfig;
+  _priVtxCfg = new TrackSelectorConfig;
 
   /*
   _secVtxCfg->maxD0 = 50.;
@@ -47,13 +47,13 @@ void PrimaryVertexFinder::init(Parameters* param) {
   _secVtxCfg->minVtxPlusFtdHits = 3;
   */
 
-  _secVtxCfg->maxD0 = param->get("PrimaryVertexFinder.TrackMaxD0", 20.);
-  _secVtxCfg->maxZ0 = param->get("PrimaryVertexFinder.TrackMaxZ0", 20.);
-  _secVtxCfg->minVtxPlusFtdHits = param->get("PrimaryVertexFinder.TrackMinVtxFtdHits", 1);
-  _secVtxCfg->minTpcHits = param->get("PrimaryVertexFinder.TrackMinTpcHits", 999999);
-  _secVtxCfg->minTpcHitsMinPt = param->get("PrimaryVertexFinder.TrackMinTpcHitsMinPt", 999999);
-  _secVtxCfg->minFtdHits = param->get("PrimaryVertexFinder.TrackMinFtdHits", 999999);
-  _secVtxCfg->minVtxHits = param->get("PrimaryVertexFinder.TrackMinVxdHits", 999999);
+  _priVtxCfg->maxD0 = param->get("PrimaryVertexFinder.TrackMaxD0", 20.);
+  _priVtxCfg->maxZ0 = param->get("PrimaryVertexFinder.TrackMaxZ0", 20.);
+  _priVtxCfg->minVtxPlusFtdHits = param->get("PrimaryVertexFinder.TrackMinVtxFtdHits", 1);
+  _priVtxCfg->minTpcHits = param->get("PrimaryVertexFinder.TrackMinTpcHits", 999999);
+  _priVtxCfg->minTpcHitsMinPt = param->get("PrimaryVertexFinder.TrackMinTpcHitsMinPt", 999999);
+  _priVtxCfg->minFtdHits = param->get("PrimaryVertexFinder.TrackMinFtdHits", 999999);
+  _priVtxCfg->minVtxHits = param->get("PrimaryVertexFinder.TrackMinVxdHits", 999999);
 
   _chi2th = param->get("PrimaryVertexFinder.Chi2Threshold", 25.);
 
@@ -73,7 +73,7 @@ void PrimaryVertexFinder::process() {
 
   // cut bad tracks
   TrackVec& tracks = event->getTracks();
-  TrackVec passedTracks = TrackSelector() (tracks, *_secVtxCfg);
+  TrackVec passedTracks = TrackSelector() (tracks, *_priVtxCfg);
   if (verbose)
     cout << "PrimaryVertexFinder / track selection: " << passedTracks.size() << "/" << tracks.size() << " accepted." << endl;
 
@@ -86,7 +86,7 @@ void PrimaryVertexFinder::process() {
 }
 
 void PrimaryVertexFinder::end() {
-  delete _secVtxCfg;
+  delete _priVtxCfg;
 }
 
 

@@ -31,7 +31,7 @@ class PrimaryVertexFinder : public Algorithm {
   bool _beamspotSmearing;
 
   // track cut parameters
-  TrackSelectorConfig* _secVtxCfg; //!
+  TrackSelectorConfig* _priVtxCfg; //!
 };
 
 class BuildUpVertex : public Algorithm {
