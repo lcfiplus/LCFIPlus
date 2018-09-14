@@ -1293,7 +1293,7 @@ class FtZ0bProb : public FTAlgo {
     for (unsigned int n=0; n<tracks.size(); n++) {
       double z0sig = trackZ0Significance(tracks[n], _privtx);
       if ( z0sig > 5) {
-        double lz0 = log10(fabs(tracks[n]->getZ0()));
+        double lz0 = log10(fabs(tracks[n]->getZ0() - _privtx->getZ()));
 
         prob *= FTManager::getInstance().getIPProbHolder()->_hz0[0]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hz0[0]->FindBin(lz0)) * 3.; // 3 = b,c,q, averaging effect
       }
@@ -1316,7 +1316,7 @@ class FtZ0cProb : public FTAlgo {
     for (unsigned int n=0; n<tracks.size(); n++) {
       double z0sig = trackZ0Significance(tracks[n], _privtx);
       if ( z0sig > 5) {
-        double lz0 = log10(fabs(tracks[n]->getZ0()));
+        double lz0 = log10(fabs(tracks[n]->getZ0() - _privtx->getZ()));
 
         prob *= FTManager::getInstance().getIPProbHolder()->_hz0[1]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hz0[1]->FindBin(lz0)) * 3.; // 3 = b,c,q, averaging effect
       }
@@ -1339,7 +1339,7 @@ class FtZ0qProb : public FTAlgo {
     for (unsigned int n=0; n<tracks.size(); n++) {
       double z0sig = trackZ0Significance(tracks[n], _privtx);
       if ( z0sig > 5) {
-        double lz0 = log10(fabs(tracks[n]->getZ0()));
+        double lz0 = log10(fabs(tracks[n]->getZ0() - _privtx->getZ()));
 
         prob *= FTManager::getInstance().getIPProbHolder()->_hz0[2]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hz0[2]->FindBin(lz0)) * 3.; // 3 = b,c,q, averaging effect
       }
