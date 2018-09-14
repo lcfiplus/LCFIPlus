@@ -150,10 +150,6 @@ void BuildUpVertex::process() {
     delete (*_vertices)[n];
   _vertices->clear();
 
-  // cut bad tracks
-  TrackVec& tracks = event->getTracks();
-  TrackVec passedTracks = TrackSelector() (tracks, *_secVtxCfg);
-
   //cout << "BuildUpVertex / track selection: " << passedTracks.size() << "/" << tracks.size() << " accepted." << endl;
 
   Vertex* primvtx;
@@ -170,6 +166,11 @@ void BuildUpVertex::process() {
     haveToGetNewVertex = true;
     primvtx = nullptr;
   }
+
+  // cut bad tracks
+  TrackVec& tracks = event->getTracks();
+  TrackVec passedTracks = TrackSelector() (tracks, *_secVtxCfg, primvtx);
+
 
   VertexFinderSuehara::VertexFinderSueharaConfig cfg;
   cfg.chi2th = _chi2thsec;
