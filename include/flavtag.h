@@ -157,6 +157,13 @@ class FtJProbZ2;
 class FtJProbR25Sigma;
 class FtJProbZ25Sigma;
 
+class FtD0bProb2;
+class FtD0cProb2;
+class FtD0qProb2;
+class FtZ0bProb2;
+class FtZ0cProb2;
+class FtZ0qProb2;
+
 class FtIPProbHolder {
   friend class FtD0bProb;
   friend class FtD0cProb;
@@ -176,6 +183,12 @@ class FtIPProbHolder {
   friend class FtJProbR25Sigma;
   friend class FtJProbZ25Sigma;
 
+  friend class FtD0bProb2;
+  friend class FtD0cProb2;
+  friend class FtD0qProb2;
+  friend class FtZ0bProb2;
+  friend class FtZ0cProb2;
+  friend class FtZ0qProb2;
  public:
   FtIPProbHolder(const char* d0probfile, const char* z0probfile);
   ~FtIPProbHolder();
