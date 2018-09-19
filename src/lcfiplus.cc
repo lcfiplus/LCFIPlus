@@ -309,7 +309,7 @@ void Track::setCovMatrix(double* mycov) {
 //   }
 
 TVector3 Track::momentumAtVertex( const Vertex* vtx ) const {
-  Helix hel(this);
+  Helix hel(this,PointBase::SECVTX);
   double tmin;
   hel.LogLikelihood( vtx->getPos(), tmin );
   TVector3 ret = hel.GetPosDerivT( tmin );
@@ -999,7 +999,9 @@ TLorentzVector Vertex::getFourMomentum() const {
 double Vertex::getChi2TrackFit(const Track* tr, int mode)const {
   VertexFitterSimple_V fitter;
   //cout << "getChi2TrackFit " << getCov()[0] << " " << getCov()[2] << " " << getCov()[5] << " " << tr->getCovMatrix()[tpar::d0d0] << " " << tr->getCovMatrix()[tpar::z0z0] << " " << tr->getCovMatrix()[tpar::omom] << " " << tr->getCovMatrix() [tpar::phph] << " " << tr->getCovMatrix()[tpar::tdtd] << " " << fitter.getChi2(this,tr) << endl;
-  return fitter.getChi2(this,tr,mode);
+  //return fitter.getChi2(this,tr,mode);
+  if (isPrimary()) return fitter.getChi2(this,tr,mode,PointBase::PRIVTX);
+  else             return fitter.getChi2(this,tr,mode,PointBase::SECVTX);
 }
 
 TrackPocaXY::TrackPocaXY(const Track* trk, const Vertex* vtx) :

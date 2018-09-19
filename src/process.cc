@@ -38,7 +38,7 @@ void PrimaryVertexFinder::init(Parameters* param) {
   Event::Instance()->setDefaultPrimaryVertex(vcolname.c_str());
 
   // parameters...(should be exported)
-  _secVtxCfg = new TrackSelectorConfig;
+  _priVtxCfg = new TrackSelectorConfig;
 
   /*
   _secVtxCfg->maxD0 = 50.;
@@ -47,13 +47,13 @@ void PrimaryVertexFinder::init(Parameters* param) {
   _secVtxCfg->minVtxPlusFtdHits = 3;
   */
 
-  _secVtxCfg->maxD0 = param->get("PrimaryVertexFinder.TrackMaxD0", 20.);
-  _secVtxCfg->maxZ0 = param->get("PrimaryVertexFinder.TrackMaxZ0", 20.);
-  _secVtxCfg->minVtxPlusFtdHits = param->get("PrimaryVertexFinder.TrackMinVtxFtdHits", 1);
-  _secVtxCfg->minTpcHits = param->get("PrimaryVertexFinder.TrackMinTpcHits", 999999);
-  _secVtxCfg->minTpcHitsMinPt = param->get("PrimaryVertexFinder.TrackMinTpcHitsMinPt", 999999);
-  _secVtxCfg->minFtdHits = param->get("PrimaryVertexFinder.TrackMinFtdHits", 999999);
-  _secVtxCfg->minVtxHits = param->get("PrimaryVertexFinder.TrackMinVxdHits", 999999);
+  _priVtxCfg->maxD0 = param->get("PrimaryVertexFinder.TrackMaxD0", 20.);
+  _priVtxCfg->maxZ0 = param->get("PrimaryVertexFinder.TrackMaxZ0", 20.);
+  _priVtxCfg->minVtxPlusFtdHits = param->get("PrimaryVertexFinder.TrackMinVtxFtdHits", 1);
+  _priVtxCfg->minTpcHits = param->get("PrimaryVertexFinder.TrackMinTpcHits", 999999);
+  _priVtxCfg->minTpcHitsMinPt = param->get("PrimaryVertexFinder.TrackMinTpcHitsMinPt", 999999);
+  _priVtxCfg->minFtdHits = param->get("PrimaryVertexFinder.TrackMinFtdHits", 999999);
+  _priVtxCfg->minVtxHits = param->get("PrimaryVertexFinder.TrackMinVxdHits", 999999);
 
   _chi2th = param->get("PrimaryVertexFinder.Chi2Threshold", 25.);
 
@@ -73,7 +73,7 @@ void PrimaryVertexFinder::process() {
 
   // cut bad tracks
   TrackVec& tracks = event->getTracks();
-  TrackVec passedTracks = TrackSelector() (tracks, *_secVtxCfg);
+  TrackVec passedTracks = TrackSelector() (tracks, *_priVtxCfg);
   if (verbose)
     cout << "PrimaryVertexFinder / track selection: " << passedTracks.size() << "/" << tracks.size() << " accepted." << endl;
 
@@ -86,7 +86,7 @@ void PrimaryVertexFinder::process() {
 }
 
 void PrimaryVertexFinder::end() {
-  delete _secVtxCfg;
+  delete _priVtxCfg;
 }
 
 
@@ -150,10 +150,6 @@ void BuildUpVertex::process() {
     delete (*_vertices)[n];
   _vertices->clear();
 
-  // cut bad tracks
-  TrackVec& tracks = event->getTracks();
-  TrackVec passedTracks = TrackSelector() (tracks, *_secVtxCfg);
-
   //cout << "BuildUpVertex / track selection: " << passedTracks.size() << "/" << tracks.size() << " accepted." << endl;
 
   Vertex* primvtx;
@@ -170,6 +166,11 @@ void BuildUpVertex::process() {
     haveToGetNewVertex = true;
     primvtx = nullptr;
   }
+
+  // cut bad tracks
+  TrackVec& tracks = event->getTracks();
+  TrackVec passedTracks = TrackSelector() (tracks, *_secVtxCfg, primvtx);
+
 
   VertexFinderSuehara::VertexFinderSueharaConfig cfg;
   cfg.chi2th = _chi2thsec;
@@ -222,8 +223,9 @@ void BuildUpVertex::end() {
 void JetClustering::init(Parameters* param) {
   Algorithm::init(param);
 
-  _vcolname = param->get("JetClustering.InputVertexCollectionName",string("BuildUpVertex"));
-  Event::Instance()->Get(_vcolname.c_str(), _vertices);
+  _vpricolname = param->get("JetClustering.PrimaryVertexCollectionName",string("PrimaryVertex"));
+  _vseccolname = param->get("JetClustering.InputVertexCollectionName",string("BuildUpVertex"));
+  Event::Instance()->Get(_vseccolname.c_str(), _vertices);
   if (!_vertices)
     cout << "JetClustering::init: vertex collection not found; will try later." << endl;
 
@@ -311,7 +313,7 @@ void JetClustering::process() {
 
   if (!_vertices) {
     // retry
-    Event::Instance()->Get(_vcolname.c_str(), _vertices);
+    Event::Instance()->Get(_vseccolname.c_str(), _vertices);
     if (!_vertices) {
       cout << "JetClustering::Process: Vertex not found, clustering without vertices..." << endl;
     } else
@@ -339,7 +341,11 @@ void JetClustering::process() {
   jetCfg.muonIDMinZ0Sig = _muonIDMinZ0Sig;
   jetCfg.muonIDMinProb = _muonIDMinProb;
   jetCfg.muonIDMaxDist = _muonIDMaxDist;
-  JetFinder* jetFinder = new JetFinder(jetCfg);
+
+  // obtain jetvertices
+  const Vertex* ip = event->getPrimaryVertex(_vpricolname.c_str());
+
+  JetFinder* jetFinder = new JetFinder(jetCfg,ip);
 
   double* ymin = new double[_maxYth];
   memset(ymin, 0, sizeof(double) * _maxYth);
@@ -613,9 +619,9 @@ void JetVertexRefiner::process() {
 	  _var[1]=nj->Vect().Angle(nj->getTracks()[ntr]->Vect());
 	  _var[2]=nj->getTracks()[ntr]->P()*TMath::Sin(_var[1]);
 	  _var[3]=sign*fabs(nj->getTracks()[ntr]->getD0())/sqrt(nj->getTracks()[ntr]->getCovMatrix()[tpar::d0d0]);
-	  _var[4]=sign*fabs(nj->getTracks()[ntr]->getZ0())/sqrt(nj->getTracks()[ntr]->getCovMatrix()[tpar::z0z0]);
+	  _var[4]=sign*fabs(nj->getTracks()[ntr]->getZ0() - ip->getZ())/sqrt(nj->getTracks()[ntr]->getCovMatrix()[tpar::z0z0]);
 	  _var[5]=sign*fabs(nj->getTracks()[ntr]->getD0());
-	  _var[6]=sign*fabs(nj->getTracks()[ntr]->getZ0());
+	  _var[6]=sign*fabs(nj->getTracks()[ntr]->getZ0() - ip->getZ());
 	  //_var[7]=tracks[ntr]->getPID();
 	  if(nj->getTracks()[ntr]->E()>=1.0) bness=_bness->EvaluateMVA(_bnessbookname.c_str()); 
 	  else bness=_bness->EvaluateMVA(_bnessbookname1.c_str()); 
@@ -663,13 +669,13 @@ void JetVertexRefiner::process() {
 	//check bness
 	vector<const Track*> tracklist = jetVertices[j][0]->getTracks();
 	vector<const Track*> newlist;
-	int hbtr=-1;
+	//int hbtr=-1;
 	double okbness=-1.0;
 	
 	for(unsigned int ntr=0;ntr<tracklist.size();ntr++){
 	  if(tracklist[ntr]->getBNess()>okbness){
 	    okbness = tracklist[ntr]->getBNess();
-	    hbtr=ntr;
+	    //hbtr=ntr;
 	  }
 	  
 	  if(tracklist[ntr]->E()>=1.0 && tracklist[ntr]->getBNess()<_cfg.cutBNess) continue; 

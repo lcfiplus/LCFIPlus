@@ -741,9 +741,9 @@ Vertex* VertexFinderSuehara::associateTracks(Vertex* vertex, const VertexVec& v0
 
       if(cfg.avf){
 	//cal. distance between vertex and helix track
-	Helix hel(*trkit1);
+	Helix hel(*trkit1,PointBase::SECVTX);
 	
-	VertexLine line(TVector3(0.,0.,0.), vertex->getPos());
+	VertexLine line(TVector3(0.,0.,0.), vertex->getPos(),PointBase::SECVTX);
 	double linedist = 0;
 	TVector3 pos = hel.ClosePoint(line, &linedist);
 	TVector3 dist=pos-vertex->getPos();
@@ -834,7 +834,7 @@ void VertexFinderSuehara::associateIPTracks(vector<Vertex*>& vertices, Vertex* i
       			double chi2new = vtx->getChi2Track(*it);*/
 
       VertexFitterSimple_V vf;
-      double chi2new = vf.getChi2(vertices[i], *it, 0/*chi2mode*/);
+      double chi2new = vf.getChi2(vertices[i], *it, 0/*chi2mode*/, PointBase::SECVTX);
 
       if (chi2ip > chi2new * cfg.chi2ratioIP) {
         // invoke vertex fitter
@@ -917,9 +917,9 @@ void VertexFinderSuehara::associateIPTracksAVF(vector<Vertex *> &vertices, Verte
 	TLorentzVector v2 = **it;
 
 	//cal. distance between vertex and helix track                                                                                          
-	Helix hel(*it);
+	Helix hel(*it,PointBase::SECVTX);
 
-	VertexLine line(ip->getPos(), vertices[i]->getPos());
+	VertexLine line(ip->getPos(), vertices[i]->getPos(),PointBase::SECVTX);
 	double linedist = 0;
 	TVector3 pos = hel.ClosePoint(line, &linedist);
 	TVector3 dist=pos-vertices[i]->getPos();
@@ -1037,7 +1037,6 @@ void VertexFinderSuehara::associateIPTracksAVF(vector<Vertex *> &vertices, Verte
 }
 
 void VertexFinderSuehara::buildUp(TrackVec& tracks, vector<Vertex*>& vtx, vector<Vertex*>& v0vtx, double chi2thpri, VertexFinderSueharaConfig& cfg, Vertex** pIP) {
-
   // obtain primary vertex
   std::unique_ptr<Vertex> nip;
   Vertex*& ip = *pIP;
@@ -1104,13 +1103,13 @@ vector<Vertex*> VertexFinderSuehara::makeSingleTrackVertices
     // d0/z0 cut
     double d0 = track->getD0();
     double d0err = sqrt(track->getCovMatrix()[tpar::d0d0]);
-    double z0 = track->getZ0();
+    double z0 = (ip ? track->getZ0() - ip->getZ() : track->getZ0());
     double z0err = sqrt(track->getCovMatrix()[tpar::z0z0]);
 
     if (!cfg.useBNess && fabs(d0/d0err)<cfg.mind0SigSingle && fabs(z0/z0err)<cfg.minz0SigSingle) continue;
     if (cfg.useBNess && fabs(d0/d0err)<2.0 && fabs(z0/z0err)<2.0) continue;
 
-    Helix hel(track);
+    Helix hel(track,PointBase::SECVTX);
 
     for (unsigned int nvtcs = 0; nvtcs < vtcs.size(); nvtcs ++) {
       const Vertex* vtx = vtcs[nvtcs];
@@ -1123,7 +1122,7 @@ vector<Vertex*> VertexFinderSuehara::makeSingleTrackVertices
       if (angle > cfg.maxAngleSingle)continue;
 
       // calculate closest point
-      VertexLine line(ip->getPos(), vtx->getPos());
+      VertexLine line(ip->getPos(), vtx->getPos(), PointBase::SECVTX);
       double linedist = 0;
       TVector3 pos = hel.ClosePoint(line, &linedist);
 

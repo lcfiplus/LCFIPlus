@@ -158,7 +158,7 @@ double JetFinder::funcJadeE(Jet& jet1, Jet& jet2, double Evis2, JetConfig& /*cfg
   return val/Evis2;
 }
 
-  JetFinder::JetFinder(const JetConfig& cfg) : _cfg(cfg) {
+  JetFinder::JetFinder(const JetConfig& cfg, const Vertex* ip) : _cfg(cfg), _privtx(ip) {
 }
 
 void JetFinder::Configure(const JetConfig& cfg) {
@@ -248,9 +248,9 @@ vector<Jet*> JetFinder::prerun(TrackVec& tracks, NeutralVec& neutrals, VertexVec
 
       if(tr->E() < _cfg.muonIDMinEnergy)continue;
 
-      if(((!_cfg.muonIDExternal && algoEtc::SimpleSecMuonFinder(tr, 0., 0., 100., 0.05, 0., 1., 1.5, 5.))
+      if(((!_cfg.muonIDExternal && algoEtc::SimpleSecMuonFinder(tr, 0., 0., 100., 0.05, 0., 1., 1.5, 5., 10., _privtx))
 	 || (_cfg.muonIDExternal && tr->getParticleIDProbability("muonProbability") > _cfg.muonIDMinProb))
-	 && (algoEtc::SimpleSecMuonFinder(tr, _cfg.muonIDMinD0Sig, _cfg.muonIDMinZ0Sig, _cfg.muonIDMaxDist, -1, -1, 10000, -1, 10000))){
+	 && (algoEtc::SimpleSecMuonFinder(tr, _cfg.muonIDMinD0Sig, _cfg.muonIDMinZ0Sig, _cfg.muonIDMaxDist, -1, -1, 10000, -1, 10000, 10., _privtx))){
 	 
 	// treated as a vertex
         double cov[6] = {0,0,0,0,0,0};

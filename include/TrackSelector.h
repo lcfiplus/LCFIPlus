@@ -66,33 +66,34 @@ class TrackSelectorConfig {
 
 class TrackSelector {
  public:
-  vector<const Track*> operator () (const vector<const Track*>& tracks, TrackSelectorConfig& config) {
+  vector<const Track*> operator () (const vector<const Track*>& tracks, TrackSelectorConfig& config, const Vertex* ip = 0) {
     vector<const Track*> ret;
 
     for (unsigned int i=0; i<tracks.size(); i++) {
-      if (passesCut(tracks[i], config))
+      if (passesCut(tracks[i], config, ip))
         ret.push_back(tracks[i]);
     }
 
     return ret;
   }
 
-  bool passesCut(const Track* trk, const TrackSelectorConfig& cfg) {
+  bool passesCut(const Track* trk, const TrackSelectorConfig& cfg, const Vertex* ip = 0) {
     // AND cuts
 
     if (fabs(trk->getD0()) < cfg.minD0) return false;
     if (fabs(trk->getD0()) > cfg.maxD0) return false;
-    if (trk->getCovMatrix()[tpar::d0d0] < cfg.minD0Err) return false;
-    if (trk->getCovMatrix()[tpar::d0d0] > cfg.maxD0Err) return false;
+    if (sqrt(trk->getCovMatrix()[tpar::d0d0]) < cfg.minD0Err) return false;
+    if (sqrt(trk->getCovMatrix()[tpar::d0d0]) > cfg.maxD0Err) return false;
     double d0sig = fabs(trk->getD0()) / sqrt(trk->getCovMatrix()[tpar::d0d0]);
     if ( d0sig < cfg.minD0Sig) return false;
     if ( d0sig > cfg.maxD0Sig) return false;
 
-    if (fabs(trk->getZ0()) < cfg.minZ0) return false;
-    if (fabs(trk->getZ0()) > cfg.maxZ0) return false;
-    if (trk->getCovMatrix()[tpar::z0z0] < cfg.minZ0Err) return false;
-    if (trk->getCovMatrix()[tpar::z0z0] > cfg.maxZ0Err) return false;
-    double z0sig = fabs(trk->getZ0()) / sqrt(trk->getCovMatrix()[tpar::z0z0]);
+    double z0 = (ip ? fabs(trk->getZ0() - ip->getZ()) : fabs(trk->getZ0()) );
+    if (z0 < cfg.minZ0) return false;
+    if (z0 > cfg.maxZ0) return false;
+    if (sqrt(trk->getCovMatrix()[tpar::z0z0]) < cfg.minZ0Err) return false;
+    if (sqrt(trk->getCovMatrix()[tpar::z0z0]) > cfg.maxZ0Err) return false;
+    double z0sig = z0 / sqrt(trk->getCovMatrix()[tpar::z0z0]);
     if ( z0sig < cfg.minZ0Sig) return false;
     if ( z0sig > cfg.maxZ0Sig) return false;
 

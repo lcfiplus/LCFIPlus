@@ -704,7 +704,7 @@ class FtTrkMass : public FTAlgo {
     trsel.minZ0Sig = 5.;
     trsel.maxD0 = 2.;
     trsel.maxZ0 = 3.;
-    vector<const Track*> usedTracks = TrackSelector()(tracks, trsel);
+    vector<const Track*> usedTracks = TrackSelector()(tracks, trsel, _privtx);
 
     if (usedTracks.size() < 2)_result = 0.;
     else {
@@ -742,7 +742,7 @@ class FtTrkMass2 : public FTAlgo {
     trsel.minD0Z0Sig = 7.;
     trsel.maxD0 = 2.;
     trsel.maxZ0 = 3.;
-    vector<const Track*> usedTracks = TrackSelector()(tracks, trsel);
+    vector<const Track*> usedTracks = TrackSelector()(tracks, trsel, _privtx);
 
     if (usedTracks.size() < 2)_result = 0.;
     else {
@@ -786,7 +786,7 @@ class FtNSecTracks : public FTAlgo {
     trsel.minZ0Sig = 5.;
     trsel.maxD0 = 2.;
     trsel.maxZ0 = 3.;
-    vector<const Track*> usedTracks = TrackSelector()(tracks, trsel);
+    vector<const Track*> usedTracks = TrackSelector()(tracks, trsel,_privtx);
 
     _result = usedTracks.size();
   }
@@ -816,7 +816,7 @@ class FtVtxLongitudinalDeviation : public FTAlgo {
         //  bpdg = (mcp->getSemiStableBParent() ? mcp->getSemiStableBParent()->getPDG() : 0);
         //}
 
-        Helix hel(tr);
+        Helix hel(tr,PointBase::SECVTX);
         double dev = hel.LongitudinalDeviation(_privtx,vtx);
         //cout << "LongitudinalDeviation: track " << i << ", cpdg " << cpdg << ", bpdg " << bpdg << ", dev " << dev << endl;
         devall += dev;
@@ -837,8 +837,8 @@ class FtNMuon : public FTAlgo {
     TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
     _result = 0;
     for (unsigned int n=0; n<tracks.size(); n++) {
-      if (algoEtc::SimpleSecMuonFinder(tracks[n], 5., 5., 5., -0.1, 0.2, 0.8, 1.5, 4., 0.5)
-          || algoEtc::SimpleSecMuonFinder(tracks[n], 5., 5., 5., 0.05, 0., 10., 0., 10., 10.))
+      if (algoEtc::SimpleSecMuonFinder(tracks[n], 5., 5., 5., -0.1, 0.2, 0.8, 1.5, 4., 0.5, _privtx)
+          || algoEtc::SimpleSecMuonFinder(tracks[n], 5., 5., 5., 0.05, 0., 10., 0., 10., 10., _privtx))
         _result += 1;
     }
   }
@@ -853,7 +853,7 @@ class FtNElectron : public FTAlgo {
     TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
     _result = 0;
     for (unsigned int n=0; n<tracks.size(); n++) {
-      if (algoEtc::SimpleSecElectronFinder(tracks[n], 5., 5., 5., 5., 0.98, 0.9, 1.15))
+      if (algoEtc::SimpleSecElectronFinder(tracks[n], 5., 5., 5., 5., 0.98, 0.9, 1.15, _privtx))
         _result += 1;
     }
   }
@@ -1116,6 +1116,23 @@ class FtD0bProb : public FTAlgo {
   }
 };
 
+class FtD0bProb2 : public FTAlgo {
+ public:
+  FtD0bProb2() : FTAlgo("d0bprob2") {}
+  void process() {
+    double oneMinusP = 1.;
+    TrackVec tracks = _jet->getAllTracks(true);
+    for (unsigned int n=0; n<tracks.size(); n++) {
+      double d0sig = trackD0Significance(tracks[n], _privtx);
+      if ( d0sig > 5) {
+        double ld0 = log10(fabs(tracks[n]->getD0()));
+        oneMinusP *= (1.-FTManager::getInstance().getIPProbHolder()->_hd0[0]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hd0[0]->FindBin(ld0))); 
+      }
+    }
+    _result = 1. - oneMinusP;
+  }
+};
+
 class FtD0cProb : public FTAlgo {
  public:
   FtD0cProb() : FTAlgo("d0cprob") {}
@@ -1132,6 +1149,23 @@ class FtD0cProb : public FTAlgo {
     }
 
     _result = prob;
+  }
+};
+
+class FtD0cProb2 : public FTAlgo {
+ public:
+  FtD0cProb2() : FTAlgo("d0cprob2") {}
+  void process() {
+    double oneMinusP = 1.;
+    TrackVec tracks = _jet->getAllTracks(true);
+    for (unsigned int n=0; n<tracks.size(); n++) {
+      double d0sig = trackD0Significance(tracks[n], _privtx);
+      if ( d0sig > 5) {
+        double ld0 = log10(fabs(tracks[n]->getD0()));
+        oneMinusP *= (1.-FTManager::getInstance().getIPProbHolder()->_hd0[1]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hd0[1]->FindBin(ld0))); 
+      }
+    }
+    _result = 1. - oneMinusP;
   }
 };
 
@@ -1156,6 +1190,24 @@ class FtD0qProb : public FTAlgo {
     _result = prob;
   }
 };
+
+class FtD0qProb2 : public FTAlgo {
+ public:
+  FtD0qProb2() : FTAlgo("d0qprob2") {}
+  void process() {
+    double oneMinusP = 1.;
+    TrackVec tracks = _jet->getAllTracks(true);
+    for (unsigned int n=0; n<tracks.size(); n++) {
+      double d0sig = trackD0Significance(tracks[n], _privtx);
+      if ( d0sig > 5) {
+        double ld0 = log10(fabs(tracks[n]->getD0()));
+        oneMinusP *= (1.-FTManager::getInstance().getIPProbHolder()->_hd0[2]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hd0[2]->FindBin(ld0))); 
+      }
+    }
+    _result = 1. - oneMinusP;
+  }
+};
+
 
 class FtD0bProbSigned : public FTAlgo {
  public:
@@ -1293,13 +1345,34 @@ class FtZ0bProb : public FTAlgo {
     for (unsigned int n=0; n<tracks.size(); n++) {
       double z0sig = trackZ0Significance(tracks[n], _privtx);
       if ( z0sig > 5) {
-        double lz0 = log10(fabs(tracks[n]->getZ0()));
+        double lz0 = log10(fabs(tracks[n]->getZ0() - _privtx->getZ()));
 
         prob *= FTManager::getInstance().getIPProbHolder()->_hz0[0]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hz0[0]->FindBin(lz0)) * 3.; // 3 = b,c,q, averaging effect
       }
     }
 
     _result = prob;
+  }
+ private:
+  bool _useVertexTracks;
+};
+
+class FtZ0bProb2 : public FTAlgo {
+ public:
+  FtZ0bProb2(bool usevtxtracks = true) : FTAlgo(usevtxtracks ? "z0bprob2" : "z0bprobnv2") {
+    _useVertexTracks = usevtxtracks;
+  }
+  void process() {
+    double oneMinusP = 1.;
+    TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
+    for (unsigned int n=0; n<tracks.size(); n++) {
+      double z0sig = trackZ0Significance(tracks[n], _privtx);
+      if ( z0sig > 5) {
+        double lz0 = log10(fabs(tracks[n]->getZ0() - _privtx->getZ()));
+        oneMinusP *= (1.-FTManager::getInstance().getIPProbHolder()->_hz0[0]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hz0[0]->FindBin(lz0))); 
+      }
+    }
+    _result = 1. - oneMinusP;
   }
  private:
   bool _useVertexTracks;
@@ -1316,13 +1389,34 @@ class FtZ0cProb : public FTAlgo {
     for (unsigned int n=0; n<tracks.size(); n++) {
       double z0sig = trackZ0Significance(tracks[n], _privtx);
       if ( z0sig > 5) {
-        double lz0 = log10(fabs(tracks[n]->getZ0()));
+        double lz0 = log10(fabs(tracks[n]->getZ0() - _privtx->getZ()));
 
         prob *= FTManager::getInstance().getIPProbHolder()->_hz0[1]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hz0[1]->FindBin(lz0)) * 3.; // 3 = b,c,q, averaging effect
       }
     }
 
     _result = prob;
+  }
+ private:
+  bool _useVertexTracks;
+};
+
+class FtZ0cProb2 : public FTAlgo {
+ public:
+  FtZ0cProb2(bool usevtxtracks = true) : FTAlgo(usevtxtracks ? "z0cprob2" : "z0cprobnv2") {
+    _useVertexTracks = usevtxtracks;
+  }
+  void process() {
+    double oneMinusP = 1.;
+    TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
+    for (unsigned int n=0; n<tracks.size(); n++) {
+      double z0sig = trackZ0Significance(tracks[n], _privtx);
+      if ( z0sig > 5) {
+        double lz0 = log10(fabs(tracks[n]->getZ0() - _privtx->getZ()));
+        oneMinusP *= (1.-FTManager::getInstance().getIPProbHolder()->_hz0[1]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hz0[1]->FindBin(lz0))); 
+      }
+    }
+    _result = 1. - oneMinusP;
   }
  private:
   bool _useVertexTracks;
@@ -1339,7 +1433,7 @@ class FtZ0qProb : public FTAlgo {
     for (unsigned int n=0; n<tracks.size(); n++) {
       double z0sig = trackZ0Significance(tracks[n], _privtx);
       if ( z0sig > 5) {
-        double lz0 = log10(fabs(tracks[n]->getZ0()));
+        double lz0 = log10(fabs(tracks[n]->getZ0() - _privtx->getZ()));
 
         prob *= FTManager::getInstance().getIPProbHolder()->_hz0[2]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hz0[2]->FindBin(lz0)) * 3.; // 3 = b,c,q, averaging effect
       }
@@ -1350,6 +1444,28 @@ class FtZ0qProb : public FTAlgo {
  private:
   bool _useVertexTracks;
 };
+
+class FtZ0qProb2 : public FTAlgo {
+ public:
+  FtZ0qProb2(bool usevtxtracks = true) : FTAlgo(usevtxtracks ? "z0qprob2" : "z0qprobnv2") {
+    _useVertexTracks = usevtxtracks;
+  }
+  void process() {
+    double oneMinusP = 1.;
+    TrackVec tracks = (_useVertexTracks ? _jet->getAllTracks(true) : _jet->getTracks());
+    for (unsigned int n=0; n<tracks.size(); n++) {
+      double z0sig = trackZ0Significance(tracks[n], _privtx);
+      if ( z0sig > 5) {
+        double lz0 = log10(fabs(tracks[n]->getZ0() - _privtx->getZ()));
+        oneMinusP *= (1.-FTManager::getInstance().getIPProbHolder()->_hz0[2]->GetBinContent(FTManager::getInstance().getIPProbHolder()->_hz0[2]->FindBin(lz0))); 
+      }
+    }
+    _result = 1. - oneMinusP;
+  }
+ private:
+  bool _useVertexTracks;
+};
+
 
 class FtZ0bProbIP : public FTAlgo {
  public:
@@ -1743,6 +1859,16 @@ void FTManager::initVars() {
   add( new FtZ0qProb(false));
   add( new FtZ0bProbIP());
   add( new FtZ0cProbIP());
+
+  add( new FtD0bProb2());
+  add( new FtD0cProb2());
+  add( new FtD0qProb2());
+  add( new FtZ0bProb2(true));
+  add( new FtZ0cProb2(true));
+  add( new FtZ0qProb2(true));
+  add( new FtZ0bProb2(false));
+  add( new FtZ0cProb2(false));
+  add( new FtZ0qProb2(false));
 
   //vertex mass recovery
   add( new FtCorrVtxMass1() ); 

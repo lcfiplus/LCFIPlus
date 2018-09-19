@@ -31,7 +31,7 @@ class PrimaryVertexFinder : public Algorithm {
   bool _beamspotSmearing;
 
   // track cut parameters
-  TrackSelectorConfig* _secVtxCfg; //!
+  TrackSelectorConfig* _priVtxCfg; //!
 };
 
 class BuildUpVertex : public Algorithm {
@@ -109,7 +109,8 @@ class JetClustering : public Algorithm {
   double _vsMaxDist;
   double _vsK0MassWidth;
   bool _outputVertexStoresVertex;
-  string _vcolname;
+  string _vpricolname;
+  string _vseccolname;
   int _maxYth;
 
   double _yaddVV;
