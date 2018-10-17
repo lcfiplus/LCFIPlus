@@ -178,10 +178,10 @@ class Parameters {
     } else if (_map.find(key)->second.first == &typeid(T))ret = *(T*)(_map.find(key)->second.second);
     else if (_allowstring && _map.find(key)->second.first == &typeid(string)) {
       istringstream str(*(string*)_map.find(key)->second.second);
-      str >> ret;
+      str >> boolalpha >> ret;
     } else if (_allowstring && _map.find(key)->second.first == &typeid(vector<string>)) {
       istringstream str((*(const vector<string>*)_map.find(key)->second.second)[0]);
-      str >> ret;
+      str >> boolalpha >> ret;
     } else {
       cout << "Parameter type invalid: key = " << key << ", type = " << _map.find(key)->second.first->name() << " vs " << typeid(T).name() << endl;
       throw (Exception("Parameter type invalid."));
