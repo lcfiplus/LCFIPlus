@@ -274,7 +274,9 @@ void LcfiplusProcessor::end() {
 
   for (unsigned int i=0; i<_algos.size(); i++) {
     _algos[i]->end();
+    delete _algos[i];
   }
+  _algos.clear();
 
   Event::Instance()->ClearObjects();
 
@@ -282,6 +284,7 @@ void LcfiplusProcessor::end() {
             << " processed " << _nEvt << " events in " << _nRun << " runs "
             << std::endl ;
 
+  delete _param;
 }
 
 void LcfiplusProcessor::RegisterCallback(const char* name, const char* classname, int flags) {
