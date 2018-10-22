@@ -362,7 +362,7 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
   for (itPfoCol = _importPFOCols.begin(); itPfoCol != _importPFOCols.end(); itPfoCol ++) {
 
     LCCollection* colPFO = evt->getCollection(itPfoCol->first);
-    PIDHandler *PID = new PIDHandler(evt->getCollection(itPfoCol->first)); 
+    PIDHandler PID(evt->getCollection(itPfoCol->first));
 
     // looking for LCRelation
     vector<lcio::LCRelationNavigator*> navs;
@@ -441,17 +441,17 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
 
 	//PIDs
 	try{
-	  int pidAlgoID = PID->getAlgorithmID(_pidAlgoName);
+	  int pidAlgoID = PID.getAlgorithmID(_pidAlgoName);
 	  //pdg value
-	  track->setPDG(PID->getParticleID(pfo,pidAlgoID).getPDG());
+	  track->setPDG(PID.getParticleID(pfo,pidAlgoID).getPDG());
 	  //posterior probabilities for each particle type hypothesis
-	  int vecsize = PID->getParticleID(pfo,pidAlgoID).getParameters().size();
+	  int vecsize = PID.getParticleID(pfo,pidAlgoID).getParameters().size();
 	  for(int i=0;i<vecsize;i++) 
-	    track->setParticleIDProbability(PID->getParameterNames(pidAlgoID)[i],
-					    (double)PID->getParticleID(pfo,pidAlgoID).getParameters()[i]);	
+	    track->setParticleIDProbability(PID.getParameterNames(pidAlgoID)[i],
+					    (double)PID.getParticleID(pfo,pidAlgoID).getParameters()[i]);
 
 	  //cal. corrected mass
-	  track->setCorrEnergy(pmass[PID->getParticleID(pfo,pidAlgoID).getPDG()]);
+	  track->setCorrEnergy(pmass[PID.getParticleID(pfo,pidAlgoID).getPDG()]);
 	  //track->swapEnergy();  //really temporal need flag...
 	}catch(UTIL::UnknownAlgorithm e){
 	}
