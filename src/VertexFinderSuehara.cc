@@ -1122,7 +1122,7 @@ vector<Vertex*> VertexFinderSuehara::makeSingleTrackVertices
       if (angle > cfg.maxAngleSingle)continue;
 
       // calculate closest point
-      VertexLine line(ip->getPos(), vtx->getPos(), PointBase::SECVTX);
+      VertexLine line( (ip ? ip->getPos() : TVector3(0,0,0) ), vtx->getPos(), PointBase::SECVTX);
       double linedist = 0;
       TVector3 pos = hel.ClosePoint(line, &linedist);
 

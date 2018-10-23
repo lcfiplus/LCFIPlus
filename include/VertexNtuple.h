@@ -19,7 +19,8 @@ namespace lcfiplus {
 
 class VertexNtuple : public Algorithm {
  public:
-  VertexNtuple() {}
+  VertexNtuple() : _file(0),
+                   _tree(0) {}
   virtual ~VertexNtuple() {}
 
   void init(Parameters* param);
