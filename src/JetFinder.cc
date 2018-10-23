@@ -158,7 +158,9 @@ double JetFinder::funcJadeE(Jet& jet1, Jet& jet2, double Evis2, JetConfig& /*cfg
   return val/Evis2;
 }
 
-  JetFinder::JetFinder(const JetConfig& cfg, const Vertex* ip) : _cfg(cfg), _privtx(ip) {
+  JetFinder::JetFinder(const JetConfig& cfg, const Vertex* ip) : _Yfunc(JetFinder::funcDurhamVertex),
+                                                                 _YfuncBeam(JetFinder::funcDurhamBeamDistance),
+                                                                 _cfg(cfg), _privtx(ip) {
 }
 
 void JetFinder::Configure(const JetConfig& cfg) {
