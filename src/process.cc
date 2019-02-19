@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <string>
+#include <memory>
 
 #include "EventStore.h"
 #include "TrackSelector.h"
@@ -345,7 +346,7 @@ void JetClustering::process() {
   // obtain jetvertices
   const Vertex* ip = event->getPrimaryVertex(_vpricolname.c_str());
 
-  JetFinder* jetFinder = new JetFinder(jetCfg,ip);
+  std::shared_ptr<JetFinder> jetFinder = std::make_shared<JetFinder>(jetCfg,ip);
 
   std::vector<double> ymin(_maxYth, 0.0);
 
