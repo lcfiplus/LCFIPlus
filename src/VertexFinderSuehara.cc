@@ -895,15 +895,9 @@ void VertexFinderSuehara::associateIPTracksAVF(vector<Vertex *> &vertices, Verte
       //get ip chisquare of this track                                                                                                          
       double chi2ip = ip->getChi2Track(*it);
 
-
-      double *chi2s= new double[vertices.size()];
-      double *maxchi2s= new double[vertices.size()];
-
       //initialize                                                                                                                              
-      for(unsigned int i=0;i<vertices.size();i++){
-	chi2s[i]=1.0e+10;
-	maxchi2s[i]=0.0;
-      }
+      std::vector<double> chi2s(vertices.size(), 1.0e+10);
+      std::vector<double> maxchi2s(vertices.size(), 0.0);
 
       for(unsigned int i=0;i<vertices.size();i++){    //loop over vertices                                                                      
 	//vertex quality cut                                                                                                                    
@@ -1015,8 +1009,6 @@ void VertexFinderSuehara::associateIPTracksAVF(vector<Vertex *> &vertices, Verte
     
       lflg=false;
 
-      delete chi2s;
-      delete maxchi2s;
     }
 
     if(iptracks.size() < ip->getTracks().size()){
