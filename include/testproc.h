@@ -250,6 +250,7 @@ class VertexAnalysis : public Algorithm {
 
   string _privtxname;
   string _secvtxname;
+  string _jetname;
 };
 
 class FlavtagReader : public Algorithm {

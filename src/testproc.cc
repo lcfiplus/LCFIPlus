@@ -1416,9 +1416,10 @@ void VertexAnalysis::init(Parameters* param) {
   _privtxname = param->get("PrimaryVertexCollectionName",string("PrimaryVertex"));
 
   string filename = param->get("VertexAnalysis.FileName",string("VertexAnalysis.root"));
-  _secvtxname = param->get("VertexAnalysis.SecondaryVertexCollectionName",string("BuildUpVertex"));
+  _secvtxname = param->get("VertexAnalysis.SecondaryVertexCollectionName",string("RefinedVertex"));
+  _jetname = param->get("VertexAnalysis.JetCollectionName",string("RefinedJets"));
   _file = new TFile(filename.c_str(),"RECREATE");
-  _nt = new TNtupleD("vtxtree","vtxtree","track:invtx:d0:d0err:z0:z0err:e:pt:chi2:ndf:vtxftdhits");
+  _nt = new TNtupleD("vtxtree","vtxtree","track:invtx:d0:d0err:z0:z0err:e:pt:chi2:ndf:vtxftdhits:parent:bhadron:bvtxdist:blepton:chadron:cvtxdist:clepton:recvtxdist:recvtxdist2");
 }
 
 void VertexAnalysis::process() {
@@ -1429,45 +1430,145 @@ void VertexAnalysis::process() {
   if (_secvtxname != "")
     Event::Instance()->Get(_secvtxname.c_str(), psecvtx);
 
+  JetVec *pjet = 0;
+  if (_jetname != "")
+    Event::Instance()->Get(_jetname.c_str(), pjet);
+
   if (mcps.size() == 0) {
     cout << "MCParticle collection not specified. We need the MCParticle collection for vertex analysis." << endl;
     return;
   }
 
+
+  if(pjet){
+    for(unsigned int j=0;j<pjet->size();j++){
+      const Jet *jet = (*pjet)[j];
+      VertexVec &v = jet->getVertices();
+      cout << "Jet " << j << " has " << v.size() << " vertices. Direction (" << jet->Px() << ", " << jet->Py() << ", " << jet->Pz() << ")" << endl;
+      
+      for(unsigned int k=0;k<v.size();k++){
+	TrackVec &vtrs = v[k]->getTracks();
+	cout << "Vertex " << k << " has " << vtrs.size() << " tracks. position (" << v[k]->getX() << ", " << v[k]->getY() << ", " << v[k]->getZ() << ")" << endl;
+	
+	for(unsigned int l=0;l<vtrs.size();l++){
+	  const Track *vtr = vtrs[l];
+	  const MCParticle *vmcp = vtr->getMcp();
+	  if(!vmcp){
+	    cout << "Track " << l << " cannot be associated with MCP. Energy = " << vtr->E() << endl;
+	  }else{
+	    const MCParticle *parb, *parc, *par;
+	    parb = vmcp->getSemiStableBParent();
+	    parc = vmcp->getSemiStableCParent();
+	    par = vmcp->getSemiStableParent();
+	    cout << "Track " << l << ": PDG " << vmcp->getPDG() << ", B parent " << (parb ? parb->getPDG() : 0)
+		 << ", C parent " << (parc ? parc->getPDG() : 0) << ", parent " << (par ? par->getPDG() : 0) << endl;
+	    cout << "Start point (" << vmcp->getVertex().x() << ", " << vmcp->getVertex().y() << ", " << vmcp->getVertex().z() << ")" << endl;
+	  } 
+	}
+      }
+    }
+  }
+  
+
   for (unsigned int i=0; i < tracks.size(); ++i) {
     const Track* tr = tracks[i];
     const MCParticle* mcp = tr->getMcp();
 
-    double trackseed, invtx, d0, d0err, z0, z0err, e, pt, chi2, ndf, vtxftdhits;
+    struct {
+      double trackseed;
+      double invtx;
+      double d0;
+      double d0err;
+      double z0;
+      double z0err;
+      double e;
+      double pt;
+      double chi2;
+      double ndf;
+      double vtxftdhits;
+      double parent;
+      double bhadron;
+      double bvtxdist;
+      double blepton;
+      double chadron;
+      double cvtxdist;
+      double clepton;
+      double recvtxdist;
+      double recvtxdist2;
+    } d;
 
-    if (mcp->getSemiStableParent() == 0) trackseed = 0.;
-    else if (mcp->getSemiStableBParent() != 0) trackseed = 1.;
-    else if (mcp->getSemiStableCParent() != 0) trackseed = 2.;
-    else trackseed = 3.;
+    memset(&d,0,sizeof(d));
 
-    invtx = (find(privtx->getTracks().begin(), privtx->getTracks().end(), tr) != privtx->getTracks().end());
-    if (invtx == 0. && psecvtx) {
+    if(pjet){
+      bool found = false;
+      for(unsigned int j=0;j<pjet->size();j++){
+        TrackVec& vtr = (*pjet)[j]->getAllTracks();
+        if (find(vtr.begin(), vtr.end(), tr) != vtr.end()){
+	  const Jet *jet = (*pjet)[j];
+	  TVector3 pospri = privtx->getPos();
+	  if(jet->getVertices().size() > 0){
+	    TVector3 posvtx = jet->getVertices()[0]->getPos();
+	    d.recvtxdist = (posvtx - pospri).Mag();
+	    //cout << "privtx " << pospri.Mag() << " sec " << posvtx.Mag() << " dist " << d.recvtxdist << endl;
+	  }
+	  if(jet->getVertices().size() > 1){
+	    TVector3 posvtx = jet->getVertices()[1]->getPos();
+	    d.recvtxdist2 = (posvtx - pospri).Mag();
+	  }
+	  found = true;
+	  break;
+	}
+      }
+      if(!found)continue;
+    }
+
+
+    const MCParticle *mcd;
+    //    if (mcp->getSemiStableParent() == 0) d.trackseed = 0.;
+    if (mcp->getSemiStableParent() == 0 || (mcp->getVertex().x() == 0 && mcp->getVertex().y() == 0)) d.trackseed = 0.;
+    else{
+      d.parent = mcp->getSemiStableParent()->getPDG();
+      d.trackseed = 3.;
+      if ((mcd = mcp->getSemiStableBParent()) != 0){
+	d.trackseed = 1.;
+	d.bhadron = mcd->getPDG();
+	d.bvtxdist = mcd->decayDistance();
+	const MCParticle *mcdl = mcd->semileptonicDecay();
+	d.blepton = (mcdl ? mcdl->getPDG() : 0);
+      }
+      if ((mcd = mcp->getSemiStableCParent()) != 0){
+	d.trackseed = 2.;
+	d.chadron = mcd->getPDG();
+	d.cvtxdist = mcd->decayDistance();
+	const MCParticle *mcdl = mcd->semileptonicDecay();
+	d.clepton = (mcdl ? mcdl->getPDG() : 0);
+      }
+    }
+
+    d.invtx = (find(privtx->getTracks().begin(), privtx->getTracks().end(), tr) != privtx->getTracks().end());
+    if (d.invtx == 0. && psecvtx) {
       // looking for secondary vertices
       for (unsigned int j=0; j<psecvtx->size(); j++) {
         TrackVec& vtr = (*psecvtx)[j]->getTracks();
         if (find(vtr.begin(), vtr.end(), tr) != vtr.end())
-          invtx = 2.;
+          d.invtx = 2.;
       }
     }
 
-    d0 = tr->getD0();
-    d0err = sqrt(tr->getCovMatrix()[tpar::d0d0]);
-    z0 = tr->getZ0();
-    z0err = sqrt(tr->getCovMatrix()[tpar::z0z0]);
+    d.d0 = tr->getD0();
+    d.d0err = sqrt(tr->getCovMatrix()[tpar::d0d0]);
+    d.z0 = tr->getZ0();
+    d.z0err = sqrt(tr->getCovMatrix()[tpar::z0z0]);
 
-    e = tr->E();
-    pt = tr->Pt();
+    d.e = tr->E();
+    d.pt = tr->Pt();
 
-    chi2 = tr->getChi2();
-    ndf = tr->getNdf();
-    vtxftdhits = tr->getVtxHits() + tr->getFtdHits();
+    d.chi2 = tr->getChi2();
+    d.ndf = tr->getNdf();
+    d.vtxftdhits = tr->getVtxHits() + tr->getFtdHits();
 
-    _nt->Fill(trackseed, invtx, d0, d0err, z0, z0err, e, pt, chi2, ndf, vtxftdhits);
+    _nt->Fill((double *)&d);
+
   }
 }
 
