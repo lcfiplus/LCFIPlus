@@ -367,7 +367,19 @@ vector<Jet*> JetFinder::prerun(TrackVec& tracks, NeutralVec& neutrals, VertexVec
     }
 
     if (jetToAssoc) {
-      jetToAssoc->add(tracks[i]);
+      bool veto_track=false;
+      for (unsigned int k=0; k<jetToAssoc->getVertices().size(); k++) {
+	const Vertex* vtx = jetToAssoc->getVertices()[k];
+	for (unsigned int n=0;n<vtx->getTracks().size();n++){
+	  if(vtx->getTracks()[n]->Angle(tracks[i]->Vect())==0){
+	    veto_track=true;
+	    break;
+	  }
+	}
+      }
+      if(!veto_track){
+	jetToAssoc->add(tracks[i]);
+      }
       usedTracks[i] = true;
     }
   }
