@@ -8,6 +8,7 @@
 //#include "VertexFitterSimple.h"
 #include <list>
 #include <vector>
+#include <functional>
 
 #include "algoSigProb.h"
 #include "VertexSelector.h"
