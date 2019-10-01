@@ -22,5 +22,6 @@ You should have received a copy of the GNU General Public License long with this
 
 see: [./doc/ReleaseNotes.md](./doc/ReleaseNotes.md)
 
+Primary Vertices are built out of Tracks, then secondary vertices are found, in a further step vertices and jets are matched to each other to find classification probabilities that the jet originates from a b-quark, or a c-quark, or a light flavor quark
 
 JetFinderFix Version of the code evaluates methods which mix slightly different input collection for vertexing and jet clustering. The original code expected the inputs to be the same, thus it had to be modified to avoid double counting of inputs.
