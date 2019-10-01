@@ -21,3 +21,6 @@ You should have received a copy of the GNU General Public License long with this
 ## Release notes
 
 see: [./doc/ReleaseNotes.md](./doc/ReleaseNotes.md)
+
+
+JetFinderFix Version of the code evaluates methods which mix slightly different input collection for vertexing and jet clustering. The original code expected the inputs to be the same, thus it had to be modified to avoid double counting of inputs.
