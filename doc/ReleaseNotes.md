@@ -1,3 +1,21 @@
+# v00-08
+
+* 2019-09-04 Andre Sailer ([PR#51](https://github.com/LCFIPlus/LCFIPlus/pull/51))
+  - Placeholder: add <functional> for gcc7/8, llvm5
+
+* 2019-09-04 Frank Gaede ([PR#50](https://github.com/LCFIPlus/LCFIPlus/pull/50))
+  - make compatible w/ c++17
+         - replace std::bind2nd w/ std::bind
+            and std::placeholders::_1 in VertexSelector.h
+
+* 2019-03-05 Andre Sailer ([PR#46](https://github.com/LCFIPlus/LCFIPlus/pull/46))
+  - LCIOStorer: fix memory leak of PIDHandler
+  - LCFIPlusProcessor: clean algos and params after the end() of algos, fix memory leaks
+  - Process: fix memory leak of `double *ymin`, use `std::vector<double>`
+  - Process: use shared_ptr for JetFinder, fixes memory leak
+  - VertexFitterSimple: fix memory leak for IP: only create it if it is used
+  - VertexFinderSuehara: fix mismatch between new[] and delete (w/o []), use std::vector<double>
+
 # v00-07
 
 * 2018-10-30 Ryo Yonamine ([PR#45](https://github.com/lcfiplus/LCFIPlus/pull/45))
