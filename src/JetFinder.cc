@@ -682,8 +682,10 @@ vector<Jet*> JetFinder::run(vector<Jet*> jets, double* pymin, int ynjetmax) {
           jmin = i2;
         }
       }
+    }
 
-      // beamDist check
+    // beamDist check
+    for (int i1=0; i1<njet; ++i1) {
       if (_cfg.useBeamJets && distBeam[i1] < Ymin) {
         Ymin = distBeam[i1];
         bmin = i1;
