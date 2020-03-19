@@ -6,6 +6,7 @@
 #include "lcfiplus.h"
 #include <vector>
 #include <cmath>
+#include <functional>
 
 using namespace std;
 using namespace lcfiplus;
@@ -90,7 +91,7 @@ class VertexSelector {
         if (!addTracks) {
           // TODO: possible use of STL algorithm set_difference - but need to sort
           for (TrackVecIte itt = vertices[i]->getTracks().begin(); itt != vertices[i]->getTracks().end(); itt++) {
-            vector<const Track*>::iterator itt2 = remove_if(residualTracks.begin(), residualTracks.end(), bind2nd(equal_to<const Track*>(), *itt));
+            vector<const Track*>::iterator itt2 = remove_if(residualTracks.begin(), residualTracks.end(), bind(equal_to<const Track*>(), std::placeholders::_1, *itt));
             residualTracks.erase(itt2, residualTracks.end());
           }
         }
@@ -111,7 +112,7 @@ class VertexSelector {
         if (!addTracks) {
           // TODO: possible use of STL algorithm set_difference - but need to sort
           for (TrackVecIte itt = vertices[i]->getTracks().begin(); itt != vertices[i]->getTracks().end(); itt++) {
-            vector<const Track*>::iterator itt2 = remove_if(residualTracks.begin(), residualTracks.end(), bind2nd(equal_to<const Track*>(), *itt));
+            vector<const Track*>::iterator itt2 = remove_if(residualTracks.begin(), residualTracks.end(), bind(equal_to<const Track*>(), std::placeholders::_1, *itt));
             residualTracks.erase(itt2, residualTracks.end());
           }
         }

@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <string>
+#include <memory>
 
 #include "EventStore.h"
 #include "TrackSelector.h"
@@ -345,10 +346,9 @@ void JetClustering::process() {
   // obtain jetvertices
   const Vertex* ip = event->getPrimaryVertex(_vpricolname.c_str());
 
-  JetFinder* jetFinder = new JetFinder(jetCfg,ip);
+  std::shared_ptr<JetFinder> jetFinder = std::make_shared<JetFinder>(jetCfg,ip);
 
-  double* ymin = new double[_maxYth];
-  memset(ymin, 0, sizeof(double) * _maxYth);
+  std::vector<double> ymin(_maxYth, 0.0);
 
   // select vertices
   vector<const Vertex*> selectedVertices;
@@ -387,7 +387,7 @@ void JetClustering::process() {
       }
 
       vector<Jet*>& jets = *(_jetsmap[_njets[n]]);
-      jets = jetFinder->run(curjets, ymin, _maxYth);
+      jets = jetFinder->run(curjets, &ymin[0], _maxYth);
       curjets.clear();
 
       // copy jets to curjets
@@ -418,7 +418,7 @@ void JetClustering::process() {
       jetFinder->Configure(jetCfg);
 
       vector<Jet*>& jets = *(_jetsmap[_ycut[n]]);
-      jets = jetFinder->run(curjets, ymin, _maxYth);
+      jets = jetFinder->run(curjets, &ymin[0], _maxYth);
       curjets.clear();
 
       // copy jets to curjets
@@ -454,7 +454,7 @@ void JetClustering::process() {
   jetCfg.Ycut = 0;
   jetFinder->Configure(jetCfg);
 
-  vector<Jet*> jets = jetFinder->run(curjets, ymin, _maxYth);
+  vector<Jet*> jets = jetFinder->run(curjets, &ymin[0], _maxYth);
   // delete jets
   for (unsigned int i=0; i<jets.size(); i++)
     delete jets[i];
