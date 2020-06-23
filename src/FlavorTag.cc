@@ -1906,9 +1906,9 @@ void FlavorTag::init(Parameters* param) {
 
   _holder = new FtIPProbHolder(d0probfilename.c_str(), z0probfilename.c_str());
 
-  _nhitsJointProbD0 = param->get("FlavourTag.NVTXhitsJointProbD0", int(4));
-  _nhitsJointProbZ0 = param->get("FlavourTag.NVTXhitsJointProbZ0", int(4));
-  _nhitsMostSignificantTrack = param->get("FlavourTag.NhitsMostSignificantTrack", int(4));
+  _nhitsJointProbD0 = param->get("FlavorTag.NVTXhitsJointProbD0", int(4));
+  _nhitsJointProbZ0 = param->get("FlavorTag.NVTXhitsJointProbZ0", int(4));
+  _nhitsMostSignificantTrack = param->get("FlavorTag.NhitsMostSignificantTrack", int(4));
 
   //string outputFilename = param->get("TrainNtupleFile",string("lcfiplus.root"));
   //_nJet = (int)param->get("TrainNJet",float(2));
