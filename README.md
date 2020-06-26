@@ -1,6 +1,8 @@
 # LCFIPlus
 [![Build Status](https://travis-ci.org/lcfiplus/LCFIPlus.svg?branch=master)](https://travis-ci.org/lcfiplus/LCFIPlus)
 [![Build Status](https://scan.coverity.com/projects/14336/badge.svg)](https://scan.coverity.com/projects/lcfiplus-lcfiplus)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3909786.svg)](https://doi.org/10.5281/zenodo.3909786)
+
 
 Flavor tagging code for ILC detectors, for documentation consult confluence at [https://confluence.slac.stanford.edu/display/ilc/LCFIPlus](https://confluence.slac.stanford.edu/display/ilc/LCFIPlus)
 
