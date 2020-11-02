@@ -30,6 +30,7 @@ FIND_PACKAGE( MarlinUtil REQUIRED )
 FIND_PACKAGE( ROOT REQUIRED COMPONENTS Minuit2 TMVA TreePlayer Gui Geom Eve Minuit XMLIO RGL Ged EG MLP )
 FIND_PACKAGE( LCFIVertex REQUIRED )
 
+
 INCLUDE_DIRECTORIES( SYSTEM ${Marlin_INCLUDE_DIRS} )
 ADD_DEFINITIONS ( ${Marlin_DEFINITIONS} )
 INCLUDE_DIRECTORIES( SYSTEM ${MarlinUtil_INCLUDE_DIRS} )
@@ -41,6 +42,16 @@ INCLUDE_DIRECTORIES( SYSTEM ${LCFIVertex_ROOT}/vertex_lcfi ${LCFIVertex_ROOT}/bo
 
 #INCLUDE( ${ROOT_DICT_MACROS_FILE} )
 INCLUDE( "${ILCUTIL_ROOT}/cmakemodules/MacroRootDict.cmake" )
+
+#==========================================================================#
+# add tensorflow by Goto
+#SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+SET(CMAKE_MODULE_PATH /home/goto/ILC/LCFIPlus/cmake)
+FIND_PACKAGE( Tensorflow REQUIRED )
+FIND_PACKAGE( Eigen3 REQUIRED )
+INCLUDE_DIRECTORIES( ${Tensorflow_INCLUDE_DIRS} )
+INCLUDE_DIRECTORIES( ${EIGEN3_INCLUDE_DIRS} )
+#==========================================================================#
 
 SET( ROOT_DICT_INPUT_HEADERS
 		${PROJECT_SOURCE_DIR}/include/lcfiplus.h
@@ -92,7 +103,12 @@ AUX_SOURCE_DIRECTORY( ./src library_sources )
 LIST( REMOVE_ITEM library_sources ${binary_sources} )
 ADD_SHARED_LIBRARY( ${libname} ${library_sources} )
 INSTALL_SHARED_LIBRARY( ${libname} DESTINATION lib )
-TARGET_LINK_LIBRARIES( ${libname} ${Marlin_LIBRARIES} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${MarlinUtil_LIBRARIES} ${LCFIVertex_LIBRARIES} )
+
+#==========================================================================#
+# add tensorflow by Goto
+#TARGET_LINK_LIBRARIES( ${libname} ${Marlin_LIBRARIES} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${MarlinUtil_LIBRARIES} ${LCFIVertex_LIBRARIES} )
+TARGET_LINK_LIBRARIES( ${libname} ${Marlin_LIBRARIES} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${MarlinUtil_LIBRARIES} ${LCFIVertex_LIBRARIES} ${Tensorflow_LIBRARIES} )
+#==========================================================================#
 
 ### EXECUTABLE MODE ########################################################
 
