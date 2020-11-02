@@ -3,10 +3,9 @@
 #include <algorithm>
 
 #include "lcfiplus.h"
-#include "VertexFinderSuehara.h"
 #include "VertexFinderwithDL.h"
-#include "VertexFinderTearDown.h"
 #include "LcfiInterface.h"
+#include "VertexFitterSimple.h"
 
 #include <tensorflow/cc/saved_model/loader.h>
 #include <tensorflow/cc/saved_model/tag_constants.h>
@@ -14,8 +13,6 @@
 
 using namespace lcfiplus;
 using namespace lcfiplus::VertexFinderwithDL;
-
-
 
 
 std::vector<std::vector<double> > VertexFinderwithDL::SliceN2DVector(std::vector<std::vector<double> > vec, int rowstart, int rowend, int colstart, int colend){
@@ -186,7 +183,7 @@ void VertexFinderwithDL::GetPairsEncoderDecoderTracks(TrackVec& tracks, int NTra
                                                  std::vector<std::vector<double> >& encoder_tracks, 
 						 std::vector<std::vector<double> >& decoder_tracks){
   
-  std::vector<double> tmpzero_track(NTrackVariable);
+  std::vector<double> tmpzero_track(NTrackVariable+1);
 
   // One track
   for(int i=0; i<tracks.size(); i++){
@@ -273,7 +270,6 @@ std::vector<std::vector<double> > VertexFinderwithDL::GetRemainDecoderTracks(std
   std::vector<std::vector<double> > remain_decoder_tracks;
   for(int i=0; i<decoder_tracks.size(); i++){
     if(std::find(track_list.begin(), track_list.end(), i) != track_list.end()){
-      //std::cout << "add track num " << i << std::endl;
       remain_decoder_tracks.push_back(decoder_tracks.at(i));
     }
   }
@@ -316,13 +312,13 @@ void VertexFinderwithDL::PrimaryVertexFinder(bool debug, int MaxPrimaryVertexLoo
     }
   }
 
-  std::vector<std::vector<double> > primary_pairs = SliceN2DVector(primary_event_data, 0, MaxPrimaryVertexLoop, 3, 47);
+  std::vector<std::vector<double> > primary_pairs = VertexFinderwithDL::SliceN2DVector(primary_event_data, 0, MaxPrimaryVertexLoop, 3, 47);
   std::vector<std::vector<std::vector<double> > > primary_encoder_tracks(primary_pairs.size(), encoder_tracks);
   std::vector<std::vector<std::vector<double> > > primary_decoder_tracks(primary_pairs.size(), decoder_tracks);
 
-  tensorflow::Tensor tprimary_pairs = N2DVector2Tensor(primary_pairs);
-  tensorflow::Tensor tprimary_encoder_tracks = N3DVector2Tensor(primary_encoder_tracks);
-  tensorflow::Tensor tprimary_decoder_tracks = N3DVector2Tensor(primary_decoder_tracks);
+  tensorflow::Tensor tprimary_pairs = VertexFinderwithDL::N2DVector2Tensor(primary_pairs);
+  tensorflow::Tensor tprimary_encoder_tracks = VertexFinderwithDL::N3DVector2Tensor(primary_encoder_tracks);
+  tensorflow::Tensor tprimary_decoder_tracks = VertexFinderwithDL::N3DVector2Tensor(primary_decoder_tracks);
 
   std::vector<tensorflow::Tensor> tmpprimary_outputs;
   tensorflow::Status runStatus = lstm_model_bundle.GetSession()->Run({{"serving_default_Decoder_Input:0", tprimary_decoder_tracks},
@@ -331,7 +327,7 @@ void VertexFinderwithDL::PrimaryVertexFinder(bool debug, int MaxPrimaryVertexLoo
                                                                      {"StatefulPartitionedCall:0"},
 							     	     {}, &tmpprimary_outputs);
 
-  primary_scores = Tensor2N3DVector(tmpprimary_outputs[0]);
+  primary_scores = VertexFinderwithDL::Tensor2N3DVector(tmpprimary_outputs[0]);
   for(int i=0; i<primary_scores.size(); i++){
     for(int j=0; j<primary_scores.at(0).size(); j++){
       if(primary_scores.at(i).at(j).at(0) > ThresholdPrimaryScore){
@@ -376,15 +372,15 @@ void VertexFinderwithDL::SecondaryVertexFinder(double ThresholdSecondaryScore, s
       std::cout << "seed: " << track1 << " " << track2 << std::endl;
     }
 
-    std::vector<std::vector<double> > remain_decoder_tracks = GetRemainDecoderTracks(decoder_tracks, track_list);
+    std::vector<std::vector<double> > remain_decoder_tracks = VertexFinderwithDL::GetRemainDecoderTracks(decoder_tracks, track_list);
 
-    std::vector<std::vector<double> > secondary_pair = SliceN2DVector(secondary_event_data, i, i+1, 3, 47);
+    std::vector<std::vector<double> > secondary_pair = VertexFinderwithDL::SliceN2DVector(secondary_event_data, i, i+1, 3, 47);
     std::vector<std::vector<std::vector<double> > > secondary_encoder_tracks(1, encoder_tracks);
     std::vector<std::vector<std::vector<double> > > secondary_remain_decoder_tracks(1, remain_decoder_tracks);
 
-    tensorflow::Tensor tsecondary_pair = N2DVector2Tensor(secondary_pair);
-    tensorflow::Tensor tsecondary_encoder_tracks = N3DVector2Tensor(secondary_encoder_tracks);
-    tensorflow::Tensor tsecondary_remain_decoder_tracks = N3DVector2Tensor(secondary_remain_decoder_tracks);
+    tensorflow::Tensor tsecondary_pair = VertexFinderwithDL::N2DVector2Tensor(secondary_pair);
+    tensorflow::Tensor tsecondary_encoder_tracks = VertexFinderwithDL::N3DVector2Tensor(secondary_encoder_tracks);
+    tensorflow::Tensor tsecondary_remain_decoder_tracks = VertexFinderwithDL::N3DVector2Tensor(secondary_remain_decoder_tracks);
 
     std::vector<tensorflow::Tensor> tmpsecondary_outputs;
     tensorflow::Status runStatus = slstm_model_bundle.GetSession()->Run({{"serving_default_Decoder_Input:0", tsecondary_remain_decoder_tracks},
@@ -392,8 +388,9 @@ void VertexFinderwithDL::SecondaryVertexFinder(double ThresholdSecondaryScore, s
 						                         {"serving_default_Pair_Input:0", tsecondary_pair}},
 				          	  	                {"StatefulPartitionedCall:0"},
 									{}, &tmpsecondary_outputs);
-    std::vector<std::vector<std::vector<double> > > secondary_scores = Tensor2N3DVector(tmpsecondary_outputs[0]);
-    if(debug==true) DebugPrintVLSTMPrediction(secondary_scores);
+
+    std::vector<std::vector<std::vector<double> > > secondary_scores = VertexFinderwithDL::Tensor2N3DVector(tmpsecondary_outputs[0]);
+    if(debug==true) VertexFinderwithDL::DebugPrintVLSTMPrediction(secondary_scores);
 
     std::vector<int> tmpsecondary_track_list, tmptrack_list = track_list;
     for(int j=0; j<track_list.size(); j++){

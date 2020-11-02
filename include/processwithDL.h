@@ -35,7 +35,7 @@ class VertexFinderLSTM : public Algorithm {
   tensorflow::ConfigProto config;
 
   int NTrackVariable;
-  int MaxSample, MaxEvent, MaxTrack, MaxNpyVariable, NPairVariable, NTrackVariable;
+  int MaxTrack;
   int MaxPrimaryVertexLoop;
   double ThresholdPairSecondaryScoreBBCC, ThresholdPairSecondaryScore, ThresholdPairPosScore;
   double ThresholdPrimaryScore, ThresholdSecondaryScore;

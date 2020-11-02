@@ -19,46 +19,6 @@ namespace lcfiplus {
 
 namespace VertexFinderwithDL {
 
-class VertexFinderwithDLConfig {
- public:
-  // main parameters
-  int MaxSample, MaxEvent, MaxTrack, MaxNpyVariable, NPairVariable, NTrackVariable;
-  int MaxPrimaryVertexLoop;
-  double ThresholdPairSecondaryScoreBBCC, ThresholdPairSecondaryScore, ThresholdPairPosScore;
-  double ThresholdPrimaryScore, ThresholdSecondaryScore;
-  bool debug;
-
-  tensorflow::string pair_path, pair_pos_path, lstm_path, slstm_path;
-
-
-  // default values
-  VertexFinderwithDL(){
-    MaxSample = 100000;
-    MaxEvent = 100;
-    MaxTrack = 53;
-    MaxNpyVariable = 59;
-    NPairVariable = 44;
-    NTrackVariable=22;
-    MaxPrimaryVertexLoop = 3;
-
-    ThresholdPairSecondaryScoreBBCC = 0.6;
-    ThresholdPairSecondaryScore = 0.8;
-    ThresholdPairPosScore = 5;
-    ThresholdPrimaryScore = 0.5;
-    ThresholdSecondaryScore = 0.8;
-  
-    debug = false;
-
-    pair_path = "/home/goto/ILC/Deep_Learning/model/Pair_Model_vfdnn04_1Msamples_2500epochs";
-    pair_pos_path = "/home/goto/ILC/Deep_Learning/model/Pair_Pos_Model_vfdnn04_1Msamples_2500epochs";
-    lstm_path = "/home/goto/ILC/Deep_Learning/model/Attention_Bidirectional_VLSTM_Model_vfdnn06_50000samples_100epochs";
-    slstm_path = "/home/goto/ILC/Deep_Learning/model/Attention_Bidirectional_VLSTM_Model_vfdnn06_50000samples_100epochs_ps_100epochs_s";
-
-  }
-};
-
-std::vector<std::vector<double> > GetEventTrackPair(std::vector<lcfiplus::Vertex>& vtx, VertexFinderwithDLConfig& cfg);
-
 std::vector<std::vector<double> > SliceN2DVector(std::vector<std::vector<double> > vec, int rowstart, int rowend, int colstart, int colend);
 std::vector<std::vector<double> > ConcatN2DVector(std::vector<std::vector<double> > vec1, std::vector<std::vector<double> > vec2);
 

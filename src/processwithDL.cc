@@ -45,11 +45,7 @@ void VertexFinderLSTM::init(Parameters* param) {
   // default setting
   Event::Instance()->setDefaultPrimaryVertex(vcolname.c_str());
 
-  MaxSample = 100000;
-  MaxEvent = 100;
   MaxTrack = 53;
-  MaxNpyVariable = 59;
-  NPairVariable = 44;
   NTrackVariable=22;
   MaxPrimaryVertexLoop = 3;
 
