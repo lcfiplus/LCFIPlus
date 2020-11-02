@@ -43,6 +43,8 @@
 #pragma link C++ class lcfiplus::VertexMassRecovery+;
 #pragma link C++ class lcfiplus::VertexNtuple;
 
+#pragma link C++ class lcfiplus::VertexFinderLSTM;
+
 #pragma link C++ class lcfiplus::ZHHAlgo;
 #pragma link C++ class lcfiplus::TestAlgo;
 #pragma link C++ class lcfiplus::FlavtagReader;
