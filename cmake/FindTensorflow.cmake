@@ -3,10 +3,12 @@
 include(FindPackageHandleStandardArgs)
 unset(TENSORFLOW_FOUND)
 
+
 find_path(Tensorflow_INCLUDE_DIR
 	NAMES
-	tensorflow/core
-	tensorflow/cc
+	#tensorflow/core
+	#tensorflow/cc
+	tensorflow
 	third_party
 	HINTS
 	/home/goto/local/include/tf
@@ -30,6 +32,7 @@ if(TENSORFLOW_FOUND)
 	set(Tensorflow_LIBRARIES ${Tensorflow_LIBRARY})
 	set(Tensorflow_INCLUDE_DIRS ${Tensorflow_INCLUDE_DIR})
 endif()
+
 
 # hide locals from GUI
 mark_as_advanced(Tensorflow_INCLUDE_DIR Tensorflow_LIBRARY)
