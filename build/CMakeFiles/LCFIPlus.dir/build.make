@@ -444,9 +444,22 @@ CMakeFiles/LCFIPlus.dir/src/processwithDL.cc.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/LCFIPlus.dir/src/processwithDL.cc.s"
 	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/goto/ILC/LCFIPlus/src/processwithDL.cc -o CMakeFiles/LCFIPlus.dir/src/processwithDL.cc.s
 
+CMakeFiles/LCFIPlus.dir/src/test.cc.o: CMakeFiles/LCFIPlus.dir/flags.make
+CMakeFiles/LCFIPlus.dir/src/test.cc.o: ../src/test.cc
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/goto/ILC/LCFIPlus/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building CXX object CMakeFiles/LCFIPlus.dir/src/test.cc.o"
+	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/LCFIPlus.dir/src/test.cc.o -c /home/goto/ILC/LCFIPlus/src/test.cc
+
+CMakeFiles/LCFIPlus.dir/src/test.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/LCFIPlus.dir/src/test.cc.i"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/goto/ILC/LCFIPlus/src/test.cc > CMakeFiles/LCFIPlus.dir/src/test.cc.i
+
+CMakeFiles/LCFIPlus.dir/src/test.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/LCFIPlus.dir/src/test.cc.s"
+	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/goto/ILC/LCFIPlus/src/test.cc -o CMakeFiles/LCFIPlus.dir/src/test.cc.s
+
 CMakeFiles/LCFIPlus.dir/src/testproc.cc.o: CMakeFiles/LCFIPlus.dir/flags.make
 CMakeFiles/LCFIPlus.dir/src/testproc.cc.o: ../src/testproc.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/goto/ILC/LCFIPlus/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building CXX object CMakeFiles/LCFIPlus.dir/src/testproc.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/goto/ILC/LCFIPlus/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building CXX object CMakeFiles/LCFIPlus.dir/src/testproc.cc.o"
 	/usr/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/LCFIPlus.dir/src/testproc.cc.o -c /home/goto/ILC/LCFIPlus/src/testproc.cc
 
 CMakeFiles/LCFIPlus.dir/src/testproc.cc.i: cmake_force
@@ -487,6 +500,7 @@ LCFIPlus_OBJECTS = \
 "CMakeFiles/LCFIPlus.dir/src/lcfiplus.cc.o" \
 "CMakeFiles/LCFIPlus.dir/src/process.cc.o" \
 "CMakeFiles/LCFIPlus.dir/src/processwithDL.cc.o" \
+"CMakeFiles/LCFIPlus.dir/src/test.cc.o" \
 "CMakeFiles/LCFIPlus.dir/src/testproc.cc.o"
 
 # External object files for target LCFIPlus
@@ -520,6 +534,7 @@ lib/libLCFIPlus.so.0.8.0: CMakeFiles/LCFIPlus.dir/src/geometry.cc.o
 lib/libLCFIPlus.so.0.8.0: CMakeFiles/LCFIPlus.dir/src/lcfiplus.cc.o
 lib/libLCFIPlus.so.0.8.0: CMakeFiles/LCFIPlus.dir/src/process.cc.o
 lib/libLCFIPlus.so.0.8.0: CMakeFiles/LCFIPlus.dir/src/processwithDL.cc.o
+lib/libLCFIPlus.so.0.8.0: CMakeFiles/LCFIPlus.dir/src/test.cc.o
 lib/libLCFIPlus.so.0.8.0: CMakeFiles/LCFIPlus.dir/src/testproc.cc.o
 lib/libLCFIPlus.so.0.8.0: CMakeFiles/LCFIPlus.dir/build.make
 lib/libLCFIPlus.so.0.8.0: /gluster/data/ilc/ilcsoft/v02-02/Marlin/v01-17-01/lib/libMarlin.so
@@ -584,6 +599,7 @@ lib/libLCFIPlus.so.0.8.0: /gluster/data/ilc/ilcsoft/v02-02/root/6.18.04/lib/libT
 lib/libLCFIPlus.so.0.8.0: /gluster/data/ilc/ilcsoft/v02-02/root/6.18.04/lib/libMultiProc.so
 lib/libLCFIPlus.so.0.8.0: /gluster/data/ilc/ilcsoft/v02-02/LCFIVertex/v00-08/lib/libLCFIVertex.so
 lib/libLCFIPlus.so.0.8.0: /home/goto/local/lib/libtensorflow_cc.so
+lib/libLCFIPlus.so.0.8.0: /home/goto/local/lib/libtensorflow_framework.so.2
 lib/libLCFIPlus.so.0.8.0: /gluster/data/ilc/ilcsoft/v02-02/external_packages/ilcutil/v01-06-01/lib/libstreamlog.so
 lib/libLCFIPlus.so.0.8.0: /gluster/data/ilc/ilcsoft/v02-02/root/6.18.04/lib/libMinuit2.so
 lib/libLCFIPlus.so.0.8.0: /gluster/data/ilc/ilcsoft/v02-02/root/6.18.04/lib/libTMVA.so
@@ -601,6 +617,7 @@ lib/libLCFIPlus.so.0.8.0: /gluster/data/ilc/ilcsoft/v02-02/MarlinUtil/v01-15-01/
 lib/libLCFIPlus.so.0.8.0: /gluster/data/ilc/ilcsoft/v02-02/external_packages/CED/v01-09-03/lib/libCED.so
 lib/libLCFIPlus.so.0.8.0: /gluster/data/ilc/ilcsoft/v02-02/LCFIVertex/v00-08/lib/libLCFIVertex.so
 lib/libLCFIPlus.so.0.8.0: /home/goto/local/lib/libtensorflow_cc.so
+lib/libLCFIPlus.so.0.8.0: /home/goto/local/lib/libtensorflow_framework.so.2
 lib/libLCFIPlus.so.0.8.0: /gluster/data/ilc/ilcsoft/v02-02/DD4hep/v01-11-02/lib/libDDParsers.so.1.11
 lib/libLCFIPlus.so.0.8.0: /gluster/data/ilc/ilcsoft/v02-02/root/6.18.04/lib/libRint.so
 lib/libLCFIPlus.so.0.8.0: /gluster/data/ilc/ilcsoft/v02-02/root/6.18.04/lib/libTree.so
@@ -615,7 +632,7 @@ lib/libLCFIPlus.so.0.8.0: /gluster/data/ilc/ilcsoft/v02-02/root/6.18.04/lib/libI
 lib/libLCFIPlus.so.0.8.0: /gluster/data/ilc/ilcsoft/v02-02/root/6.18.04/lib/libThread.so
 lib/libLCFIPlus.so.0.8.0: /gluster/data/ilc/ilcsoft/v02-02/root/6.18.04/lib/libCore.so
 lib/libLCFIPlus.so.0.8.0: CMakeFiles/LCFIPlus.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/goto/ILC/LCFIPlus/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Linking CXX shared library lib/libLCFIPlus.so"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/goto/ILC/LCFIPlus/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Linking CXX shared library lib/libLCFIPlus.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/LCFIPlus.dir/link.txt --verbose=$(VERBOSE)
 	$(CMAKE_COMMAND) -E cmake_symlink_library lib/libLCFIPlus.so.0.8.0 lib/libLCFIPlus.so.0.8 lib/libLCFIPlus.so
 

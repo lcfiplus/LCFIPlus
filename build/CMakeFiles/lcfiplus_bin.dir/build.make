@@ -165,6 +165,7 @@ bin/lcfiplus: /gluster/data/ilc/ilcsoft/v02-02/root/6.18.04/lib/libGed.so
 bin/lcfiplus: /gluster/data/ilc/ilcsoft/v02-02/root/6.18.04/lib/libEG.so
 bin/lcfiplus: /gluster/data/ilc/ilcsoft/v02-02/root/6.18.04/lib/libMLP.so
 bin/lcfiplus: /home/goto/local/lib/libtensorflow_cc.so
+bin/lcfiplus: /home/goto/local/lib/libtensorflow_framework.so.2
 bin/lcfiplus: /gluster/data/ilc/ilcsoft/v02-02/Marlin/v01-17-01/lib/libMarlin.so
 bin/lcfiplus: /gluster/data/ilc/ilcsoft/v02-02/Marlin/v01-17-01/lib/libMarlinXML.so
 bin/lcfiplus: /gluster/data/ilc/ilcsoft/v02-02/lcio/v02-15-01/lib/liblcio.so
@@ -226,6 +227,7 @@ bin/lcfiplus: /gluster/data/ilc/ilcsoft/v02-02/root/6.18.04/lib/libThread.so
 bin/lcfiplus: /gluster/data/ilc/ilcsoft/v02-02/root/6.18.04/lib/libCore.so
 bin/lcfiplus: /gluster/data/ilc/ilcsoft/v02-02/LCFIVertex/v00-08/lib/libLCFIVertex.so
 bin/lcfiplus: /home/goto/local/lib/libtensorflow_cc.so
+bin/lcfiplus: /home/goto/local/lib/libtensorflow_framework.so.2
 bin/lcfiplus: CMakeFiles/lcfiplus_bin.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/goto/ILC/LCFIPlus/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable bin/lcfiplus"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/lcfiplus_bin.dir/link.txt --verbose=$(VERBOSE)

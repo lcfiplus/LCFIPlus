@@ -1433,6 +1433,33 @@ src/processwithDL.cc.s:
 	$(MAKE) -f CMakeFiles/LCFIPlus.dir/build.make CMakeFiles/LCFIPlus.dir/src/processwithDL.cc.s
 .PHONY : src/processwithDL.cc.s
 
+src/test.o: src/test.cc.o
+
+.PHONY : src/test.o
+
+# target to build an object file
+src/test.cc.o:
+	$(MAKE) -f CMakeFiles/LCFIPlus.dir/build.make CMakeFiles/LCFIPlus.dir/src/test.cc.o
+.PHONY : src/test.cc.o
+
+src/test.i: src/test.cc.i
+
+.PHONY : src/test.i
+
+# target to preprocess a source file
+src/test.cc.i:
+	$(MAKE) -f CMakeFiles/LCFIPlus.dir/build.make CMakeFiles/LCFIPlus.dir/src/test.cc.i
+.PHONY : src/test.cc.i
+
+src/test.s: src/test.cc.s
+
+.PHONY : src/test.s
+
+# target to generate assembly for a file
+src/test.cc.s:
+	$(MAKE) -f CMakeFiles/LCFIPlus.dir/build.make CMakeFiles/LCFIPlus.dir/src/test.cc.s
+.PHONY : src/test.cc.s
+
 src/testproc.o: src/testproc.cc.o
 
 .PHONY : src/testproc.o
@@ -1599,6 +1626,9 @@ help:
 	@echo "... src/processwithDL.o"
 	@echo "... src/processwithDL.i"
 	@echo "... src/processwithDL.s"
+	@echo "... src/test.o"
+	@echo "... src/test.i"
+	@echo "... src/test.s"
 	@echo "... src/testproc.o"
 	@echo "... src/testproc.i"
 	@echo "... src/testproc.s"

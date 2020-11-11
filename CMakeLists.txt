@@ -33,8 +33,6 @@ FIND_PACKAGE( LCFIVertex REQUIRED )
 
 #==========================================================================#
 # add tensorflow by Goto
-SET(GCC_COVERAGE_COMPILE_FLAGS "-fprofile-arcs -ftest-coverage")
-SET(GCC_COVERAGE_LINK_FLAGS    "-lgcov")
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 FIND_PACKAGE( Tensorflow REQUIRED )
 FIND_PACKAGE( Protobuf REQUIRED )
@@ -105,12 +103,6 @@ ADD_DEFINITIONS( "-Wno-strict-aliasing" ) # avoid warnings in dict.cc
 # shut up warnings in boost
 #ADD_DEFINITIONS( "-Wno-unused-local-typedefs" )
 
-#==========================================================================#
-# add tensorflow by Goto
-SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
-SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}")
-#==========================================================================#
-
 
 # add library
 SET( libname ${PROJECT_NAME} )
@@ -122,7 +114,7 @@ INSTALL_SHARED_LIBRARY( ${libname} DESTINATION lib )
 #==========================================================================#
 # add tensorflow by Goto
 #TARGET_LINK_LIBRARIES( ${libname} ${Marlin_LIBRARIES} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${MarlinUtil_LIBRARIES} ${LCFIVertex_LIBRARIES} )
-TARGET_LINK_LIBRARIES( ${libname} ${Marlin_LIBRARIES} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${MarlinUtil_LIBRARIES} ${LCFIVertex_LIBRARIES} ${Tensorflow_LIBRARIES} )
+TARGET_LINK_LIBRARIES( ${libname} ${Marlin_LIBRARIES} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${MarlinUtil_LIBRARIES} ${LCFIVertex_LIBRARIES} ${Tensorflow_LIBRARIES} /home/goto/local/lib/libtensorflow_framework.so.2)
 #==========================================================================#
 
 ### EXECUTABLE MODE ########################################################
@@ -141,7 +133,7 @@ SET_TARGET_PROPERTIES( lcfiplus_bin PROPERTIES COMPILE_FLAGS "-DBUILD_EVE" OUTPU
 #==========================================================================#
 # add tensorflow by Goto
 #TARGET_LINK_LIBRARIES( lcfiplus_bin ${libname} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} )
-TARGET_LINK_LIBRARIES( lcfiplus_bin ${libname} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${Tensorflow_LIBRARIES})
+TARGET_LINK_LIBRARIES( lcfiplus_bin ${libname} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${Tensorflow_LIBRARIES} /home/goto/local/lib/libtensorflow_framework.so.2)
 #==========================================================================#
 
 # display some variables and write them to cache

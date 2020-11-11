@@ -28,6 +28,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/LCFIPlus.dir/src/lcfiplus.cc.o"
   "CMakeFiles/LCFIPlus.dir/src/process.cc.o"
   "CMakeFiles/LCFIPlus.dir/src/processwithDL.cc.o"
+  "CMakeFiles/LCFIPlus.dir/src/test.cc.o"
   "CMakeFiles/LCFIPlus.dir/src/testproc.cc.o"
   "lib/libLCFIPlus.pdb"
   "lib/libLCFIPlus.so"
