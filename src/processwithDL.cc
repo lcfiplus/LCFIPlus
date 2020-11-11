@@ -123,9 +123,11 @@ void VertexFindingwithDL::process() {
 		                            slstm_model_bundle, primary_track_list, secondary_track_lists);
   if(verbose==true) VertexFinderwithDL::PrintResults(primary_track_list, secondary_track_lists);
 
+  std::vector<std::vector<int> > merge_secondary_track_lists = MergeSingleTrack(tracks, secondary_track_lists);
+
   Vertex* primary_vertex = 0;
   std::vector<Vertex*> secondary_vertices;
-  VertexFinderwithDL::PrimarySecondaryVertices(tracks, primary_track_list, secondary_track_lists, *primary_vertex, secondary_vertices);
+  VertexFinderwithDL::PrimarySecondaryVertices(tracks, primary_track_list, merge_secondary_track_lists, *primary_vertex, secondary_vertices);
   if(primary_vertex) _primary_vertex->push_back(primary_vertex);
   else std::cout << "PrimaryVertexFinder: No primary vertex found." << std::endl; 
   if(verbose==true) std::cout << "PrimaryVertexFinder: " << primary_vertex->getTracks().size() << " tracks associated to the primary vertex." << std::endl;

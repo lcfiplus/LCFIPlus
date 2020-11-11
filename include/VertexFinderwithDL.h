@@ -58,6 +58,8 @@ void SecondaryVertexFinder(bool debug, double ThresholdSecondaryScore, std::vect
                            tensorflow::SavedModelBundleLite& slstm_model_bundle, 
 			   std::vector<int>& primary_track_list, std::vector<std::vector<int> >& secondary_track_lists);
 
+std::vector<std::vector<int> > MergeSingleTrack(TrackVec& tracks, std::vector<std::vector<int> > secondary_track_lists);
+
 void PrimarySecondaryVertices(TrackVec& tracks, std::vector<int> primary_track_list, std::vector<std::vector<int> > secondary_track_lists,
 		              Vertex& vtx, std::vector<Vertex*>& vtces);
 

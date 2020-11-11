@@ -410,6 +410,48 @@ void VertexFinderwithDL::SecondaryVertexFinder(bool debug, double ThresholdSecon
   }
 }
 
+std::vector<std::vector<int> > VertexFinderwithDL::MergeSingleTrack(TrackVec& tracks, std::vector<std::vector<int> > secondary_track_lists){
+  std::vector<std::vector<int> > merge_secondary_track_lists, tmp_secondary_track_lists = secondary_track_lists;
+  std::vector<int> tmp_single_track_list, tmp_not_single_track_list;
+  std::vector<const Track*> tmp_tracks(2);
+  double chi;
+  int merge_track_num;
+
+  for(std::size_t i=0; i<secondary_track_lists.size(); i++){
+    if(secondary_track_lists.at(i).size()==1){
+      tmp_single_track_list.push_back(secondary_track_lists.at(i).at(0));
+      tmp_secondary_track_lists.erase(std::remove(tmp_secondary_track_lists.begin(), tmp_secondary_track_lists.end(), secondary_track_lists.at(i)), tmp_secondary_track_lists.end());
+    }
+    else{
+      for(std::size_t j=0; j<secondary_track_lists.at(i).size(); j++){
+        tmp_not_single_track_list.push_back(secondary_track_lists.at(i).at(j));
+      }
+    }
+  }
+  for(std::size_t i=0; i<tmp_single_track_list.size(); i++){
+    tmp_tracks.at(0) = tracks.at(tmp_single_track_list.at(i));
+    for(std::size_t j=0; j<tmp_not_single_track_list.size(); j++){
+      tmp_tracks.at(1) = tracks.at(tmp_not_single_track_list.at(j));
+      Vertex* vtx = VertexFitterSimple_V()(tmp_tracks.begin(), tmp_tracks.end());
+      if(j==0){
+        chi = vtx->getChi2();
+	merge_track_num = tmp_not_single_track_list.at(j);
+      } 
+      else if(chi>vtx->getChi2()){
+        chi = vtx->getChi2();
+	merge_track_num = tmp_not_single_track_list.at(j);
+      }
+    }
+    for(std::size_t j=0; j<tmp_secondary_track_lists.size(); j++){
+      if(std::find(tmp_secondary_track_lists.at(j).begin(), tmp_secondary_track_lists.at(j).end(), merge_track_num) != tmp_secondary_track_lists.at(j).end()){
+        tmp_secondary_track_lists.at(j).push_back(tmp_single_track_list.at(i));
+      }
+    }
+  }
+  merge_secondary_track_lists = tmp_secondary_track_lists;
+  return merge_secondary_track_lists;
+}
+
 void VertexFinderwithDL::PrimarySecondaryVertices(TrackVec& tracks, std::vector<int> primary_track_list, std::vector<std::vector<int> > secondary_track_lists,
 		                                  Vertex& vtx, std::vector<Vertex*>& vtces){
   //TrackVec& primary_tracks;
