@@ -33,6 +33,8 @@ FIND_PACKAGE( LCFIVertex REQUIRED )
 
 #==========================================================================#
 # add tensorflow by Goto
+SET(GCC_COVERAGE_COMPILE_FLAGS "-fprofile-arcs -ftest-coverage")
+SET(GCC_COVERAGE_LINK_FLAGS    "-lgcov")
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 FIND_PACKAGE( Tensorflow REQUIRED )
 FIND_PACKAGE( Protobuf REQUIRED )
@@ -103,6 +105,13 @@ ADD_DEFINITIONS( "-Wno-strict-aliasing" ) # avoid warnings in dict.cc
 # shut up warnings in boost
 #ADD_DEFINITIONS( "-Wno-unused-local-typedefs" )
 
+#==========================================================================#
+# add tensorflow by Goto
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
+SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}")
+#==========================================================================#
+
+
 # add library
 SET( libname ${PROJECT_NAME} )
 AUX_SOURCE_DIRECTORY( ./src library_sources )
@@ -129,8 +138,11 @@ LIST(APPEND binary_sources ${ROOT_DICT_OUTPUT_SOURCES} )
 ADD_EXECUTABLE( lcfiplus_bin EXCLUDE_FROM_ALL ${binary_sources} )
 
 SET_TARGET_PROPERTIES( lcfiplus_bin PROPERTIES COMPILE_FLAGS "-DBUILD_EVE" OUTPUT_NAME lcfiplus )
+#==========================================================================#
+# add tensorflow by Goto
 #TARGET_LINK_LIBRARIES( lcfiplus_bin ${libname} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} )
 TARGET_LINK_LIBRARIES( lcfiplus_bin ${libname} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${Tensorflow_LIBRARIES})
+#==========================================================================#
 
 # display some variables and write them to cache
 DISPLAY_STD_VARIABLES()

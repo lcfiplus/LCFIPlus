@@ -32,7 +32,7 @@ std::vector<std::vector<double> > VertexFinderwithDL::ConcatN2DVector(std::vecto
     exit(1);
   }
   std::vector<std::vector<double> > new_vec = vec1;
-  for(int i=0; i<new_vec.size(); i++){
+  for(std::size_t i=0; i<new_vec.size(); i++){
     new_vec.at(i).insert(new_vec.at(i).end(), vec2.at(i).begin(), vec2.at(i).end());
   }
   return new_vec;
@@ -92,21 +92,6 @@ std::vector<std::vector<std::vector<double> > > VertexFinderwithDL::Tensor2N3DVe
   return vec;
 }
 
-void VertexFinderwithDL::DebugPrintPairPrediction(std::vector<std::vector<double> > data, std::vector<tensorflow::Tensor> tmppair_outputs, 
-		                                  std::vector<std::vector<double> > labels){
-  std::cout << "Predict Vertex Finder Shape: " << tmppair_outputs.size() << std::endl;
-  std::cout << "Num Elements: " << std::to_string(tmppair_outputs[0].NumElements())
-	    << " Num Elements Dims 0: " << std::to_string(tmppair_outputs[0].dim_size(0))
-	    << " Num Elements Dims 0: " << std::to_string(tmppair_outputs[0].dim_size(1)) << std::endl;
-
-  std::cout << "Pair Prediction Checking ..." << std::endl;
-  for(int i=0; i<10; i++){
-    std::cout << "Predicted Scores: " << labels.at(i).at(0) << " " << labels.at(i).at(1) << " "
-	                              << labels.at(i).at(2) << " " << labels.at(i).at(3) << " " << labels.at(i).at(4)
-	      << " ;; True Label: " << data.at(i).at(57) << std::endl;
-  }
-}
-
 void VertexFinderwithDL::DebugPrintGetEventData(std::vector<std::vector<double> > event_data, int ncomb, int NCombination){
   std::cout << "Event Data Size Checking ... : " << event_data.size() << " = " << ncomb << " = " << NCombination << std::endl;
 }
@@ -132,9 +117,9 @@ void VertexFinderwithDL::DebugPrintPrimarySort(std::vector<std::vector<double> >
 void VertexFinderwithDL::DebugPrintGetTracks(std::vector<std::vector<double> > tracks){
   std::cout << "Track Shape Check ;; NTracks: " << tracks.size() << " NVariables: " << tracks.at(0).size() << std::endl;
   std::cout << "Track Variables Check" << std::endl;
-  for(int i=0; i<tracks.size(); i++){
+  for(std::size_t i=0; i<tracks.size(); i++){
     std::cout << "Track " << i << std::endl;
-    for(int j=0; j<tracks.at(0).size(); j++){
+    for(std::size_t j=0; j<tracks.at(0).size(); j++){
       std::cout << j << ": " <<  tracks.at(i).at(j) << "  ";
       if((j+1)%10==0) std::cout << std::endl;
     }
@@ -148,7 +133,7 @@ void VertexFinderwithDL::DebugPrintVLSTMPrediction(std::vector<std::vector<std::
   if(scores.size()>5) MaxLoop = 5;
   for(int i=0; i<MaxLoop; i++){
     std::cout << "Predicted Scores" << std::endl;
-    for(int j=0; j<scores.at(0).size(); j++){
+    for(std::size_t j=0; j<scores.at(0).size(); j++){
       std::cout << "Track " << j << ": " << std::setprecision(4) << scores.at(i).at(j).at(0) << " ";
       if((j+1)%5==0) std::cout << std::endl;
     }
@@ -160,16 +145,16 @@ void VertexFinderwithDL::PrintResults(std::vector<int> primary_track_list, std::
   std::cout << "Finish !!" << std::endl;
 
   std::cout << "Primary Track List" << std::endl;
-  for(int i=0; i<primary_track_list.size(); i++){
+  for(std::size_t i=0; i<primary_track_list.size(); i++){
     std::cout << primary_track_list.at(i) << " ";
   }
   std::cout << std::endl;
   std::cout << std::endl;
 
   std::cout << "Secondary Track Lists" << std::endl;
-  for(int i=0; i<secondary_track_lists.size(); i++){
+  for(std::size_t i=0; i<secondary_track_lists.size(); i++){
     std::cout << "List " << i << std::endl;
-    for(int j=0; j<secondary_track_lists.at(i).size(); j++){
+    for(std::size_t j=0; j<secondary_track_lists.at(i).size(); j++){
       std::cout << secondary_track_lists.at(i).at(j) << " ";
     }
     std::cout << std::endl;
@@ -186,50 +171,65 @@ void VertexFinderwithDL::GetPairsEncoderDecoderTracks(TrackVec& tracks, int NTra
   std::vector<double> tmpzero_track(NTrackVariable+1);
 
   // One track
-  for(int i=0; i<tracks.size(); i++){
-    Track* track = tracks.at(i);
+  for(std::size_t i=0; i<tracks.size(); i++){
+    const Track* track = tracks.at(i);
     std::vector<double> tmptrack;
     std::vector<double> tmppair;
+    double tr1d0 = tanh(track->getD0());
+    double tr1z0 = tanh(track->getZ0());
+    double tr1phi = (1.0/M_PI) * track->getPhi();
+    double tr1omega = tanh(200 * track->getOmega());
+    double tr1tanlam = tanh(0.3 * track->getTanLambda());
+    double tr1charge = track->getCharge();
     
     tmptrack.push_back(1);
-    tmptrack.push_back(track->getD0());
-    tmptrack.push_back(track->getZ0());
-    tmptrack.push_back(track->getPhi());
-    tmptrack.push_back(track->getOmega());
-    tmptrack.push_back(track->getTanLambda());
-    tmptrack.push_back(track->getCharge());
-    tmppair.push_back(track->getD0());
-    tmppair.push_back(track->getZ0());
-    tmppair.push_back(track->getPhi());
-    tmppair.push_back(track->getOmega());
-    tmppair.push_back(track->getTanLambda());
-    tmppair.push_back(track->getCharge());
+    tmptrack.push_back(tr1d0);
+    tmptrack.push_back(tr1z0);
+    tmptrack.push_back(tr1phi);
+    tmptrack.push_back(tr1omega);
+    tmptrack.push_back(tr1tanlam);
+    tmptrack.push_back(tr1charge);
+    tmppair.push_back(tr1d0);
+    tmppair.push_back(tr1z0);
+    tmppair.push_back(tr1phi);
+    tmppair.push_back(tr1omega);
+    tmppair.push_back(tr1tanlam);
+    tmppair.push_back(tr1charge);
 
     TLorentzVector tlv = *track;
-    tmptrack.push_back(tlv.E());
-    tmppair.push_back(tlv.E());
+    double tr1energy = tanh(0.5 * (tlv.E() - 5.0));
+    tmptrack.push_back(tr1energy);
+    tmppair.push_back(tr1energy);
 
     const double* cov = track->getCovMatrix();
     for(int c=0; c<15; c++){
-      tmptrack.push_back(cov[c]);
+      tmptrack.push_back(tanh(8000 * (cov[c] + 0.0005)));
+      tmppair.push_back(tanh(8000 * (cov[c] + 0.0005)));
     }
 
     // The other track
-    for(int j=0; j<i; j++){
-      Track* other_track = tracks.at(j);
-      tmppair.push_back(other_track->getD0());
-      tmppair.push_back(other_track->getZ0());
-      tmppair.push_back(other_track->getPhi());
-      tmppair.push_back(other_track->getOmega());
-      tmppair.push_back(other_track->getTanLambda());
-      tmppair.push_back(other_track->getCharge());
+    for(std::size_t j=0; j<i; j++){
+      const Track* other_track = tracks.at(j);
+      double tr2d0 = tanh(other_track->getD0());
+      double tr2z0 = tanh(other_track->getZ0());
+      double tr2phi = (1.0/M_PI) * other_track->getPhi();
+      double tr2omega = tanh(200 * other_track->getOmega());
+      double tr2tanlam = tanh(0.3 * other_track->getTanLambda());
+      double tr2charge = other_track->getCharge();
+      tmppair.push_back(tr2d0);
+      tmppair.push_back(tr2z0);
+      tmppair.push_back(tr2phi);
+      tmppair.push_back(tr2omega);
+      tmppair.push_back(tr2tanlam);
+      tmppair.push_back(tr2charge);
 
       TLorentzVector other_tlv = *other_track;
-      tmptrack.push_back(other_tlv.E());
+      double tr2energy = tanh(0.5 * (other_tlv.E() - 5.0));
+      tmptrack.push_back(tr2energy);
 
       const double* other_cov = other_track->getCovMatrix();
       for(int c=0; c<15; c++){
-        tmptrack.push_back(other_cov[c]);
+        tmptrack.push_back(tanh(8000 * (other_cov[c] + 0.0005)));
       }
     }
     // One track
@@ -242,18 +242,15 @@ void VertexFinderwithDL::GetPairsEncoderDecoderTracks(TrackVec& tracks, int NTra
   }
 }
 
-std::vector<std::vector<double> > VertexFinderwithDL::GetEventData(bool debug, std::vector<std::vector<double> > variables,
+std::vector<std::vector<double> > VertexFinderwithDL::GetEventData(std::vector<std::vector<double> > variables,
                                                                    tensorflow::SavedModelBundleLite& pair_model_bundle,
 								   tensorflow::SavedModelBundleLite& pair_pos_model_bundle){
-
   tensorflow::Tensor tvariables = VertexFinderwithDL::N2DVector2Tensor(variables);
   std::vector<tensorflow::Tensor> tmppair_outputs;
   tensorflow::Status pair_runStatus = pair_model_bundle.GetSession()->Run({{"serving_default_input_1:0", tvariables}},
 				          		                  {"StatefulPartitionedCall:0"},
 						                          {}, &tmppair_outputs);
   std::vector<std::vector<double> > _labels = VertexFinderwithDL::Tensor2N2DVector(tmppair_outputs[0]);
-
-  if(debug==true) VertexFinderwithDL::DebugPrintPairPrediction(data, tmppair_outputs, labels);
 
   std::vector<tensorflow::Tensor> tmppair_pos_outputs;
   tensorflow::Status pair_pos_runStatus = pair_pos_model_bundle.GetSession()->Run({{"serving_default_input_1:0", tvariables}},
@@ -268,7 +265,7 @@ std::vector<std::vector<double> > VertexFinderwithDL::GetEventData(bool debug, s
 
 std::vector<std::vector<double> > VertexFinderwithDL::GetRemainDecoderTracks(std::vector<std::vector<double> > decoder_tracks, std::vector<int> track_list){
   std::vector<std::vector<double> > remain_decoder_tracks;
-  for(int i=0; i<decoder_tracks.size(); i++){
+  for(std::size_t i=0; i<decoder_tracks.size(); i++){
     if(std::find(track_list.begin(), track_list.end(), i) != track_list.end()){
       remain_decoder_tracks.push_back(decoder_tracks.at(i));
     }
@@ -276,10 +273,9 @@ std::vector<std::vector<double> > VertexFinderwithDL::GetRemainDecoderTracks(std
   return remain_decoder_tracks;
 }
 
-std::vector<std::vector<double> > VertexFinderwithDL::SecondarySeedSelection(std::vector<std::vector<double> > event_data,
-		                                         int ThresholdPairSecondaryScoreBBCC, int ThresholdPairSecondaryScore, int ThresholdPairPosScore){
+std::vector<std::vector<double> > VertexFinderwithDL::SecondarySeedSelection(std::vector<std::vector<double> > event_data, int ThresholdPairSecondaryScore, int ThresholdPairPosScore){
   std::vector<std::vector<double> > secondary_event_data;
-  for(int i; i<event_data.size(); i++){
+  for(std::size_t i=0; i<event_data.size(); i++){
     double tmp_secondary_score = event_data.at(i).at(46) + event_data.at(i).at(47) + event_data.at(i).at(48);
     if((event_data.at(i).at(44) > event_data.at(i).at(45) and event_data.at(i).at(44) > event_data.at(i).at(46) and
 	event_data.at(i).at(44) > event_data.at(i).at(47) and event_data.at(i).at(44) > event_data.at(i).at(48)) or
@@ -300,7 +296,7 @@ void VertexFinderwithDL::PrimaryVertexFinder(bool debug, int MaxPrimaryVertexLoo
 		         std::vector<std::vector<double> > encoder_tracks, std::vector<std::vector<double> > decoder_tracks,
                          tensorflow::SavedModelBundleLite& lstm_model_bundle,
 			 std::vector<int>& primary_track_list, std::vector<std::vector<std::vector<double> > >& primary_scores, 
-			 std::vector<double>& primary_scores){
+			 std::vector<double>& bigger_primary_scores){
   std::vector<std::vector<double> > primary_event_data = event_data;
   sort(primary_event_data.begin(), primary_event_data.end(), [](const std::vector<double> &alpha, const std::vector<double> &beta){
     return alpha.at(60) > beta.at(60);
@@ -328,8 +324,8 @@ void VertexFinderwithDL::PrimaryVertexFinder(bool debug, int MaxPrimaryVertexLoo
 							     	     {}, &tmpprimary_outputs);
 
   primary_scores = VertexFinderwithDL::Tensor2N3DVector(tmpprimary_outputs[0]);
-  for(int i=0; i<primary_scores.size(); i++){
-    for(int j=0; j<primary_scores.at(0).size(); j++){
+  for(std::size_t i=0; i<primary_scores.size(); i++){
+    for(std::size_t j=0; j<primary_scores.at(0).size(); j++){
       if(primary_scores.at(i).at(j).at(0) > ThresholdPrimaryScore){
 	if(debug==true) std::cout << "Track " << j << " Primary Score: " << primary_scores.at(i).at(j).at(0) << std::endl;
 	primary_track_list.push_back(j);
@@ -339,7 +335,7 @@ void VertexFinderwithDL::PrimaryVertexFinder(bool debug, int MaxPrimaryVertexLoo
   std::sort(primary_track_list.begin(), primary_track_list.end());
   primary_track_list.erase(std::unique(primary_track_list.begin(), primary_track_list.end()), primary_track_list.end());
   
-  for(int i=0; i<NTrack; i++){
+  for(std::size_t i=0; i<encoder_tracks.size(); i++){
     double tmpbigger_primary_scores = 0;
     for(int j=0; j<MaxPrimaryVertexLoop; j++){
       if(tmpbigger_primary_scores < primary_scores.at(j).at(i).at(0)) tmpbigger_primary_scores = primary_scores.at(j).at(i).at(0);
@@ -349,22 +345,20 @@ void VertexFinderwithDL::PrimaryVertexFinder(bool debug, int MaxPrimaryVertexLoo
 }
 
 
-void VertexFinderwithDL::SecondaryVertexFinder(double ThresholdSecondaryScore, std::vector<double> primary_scores,
+void VertexFinderwithDL::SecondaryVertexFinder(bool debug, double ThresholdSecondaryScore, std::vector<double> primary_scores,
 		           std::vector<std::vector<double> > secondary_event_data,
 		           std::vector<std::vector<double> > encoder_tracks, std::vector<std::vector<double> > decoder_tracks,
-			   bool debug,
                            tensorflow::SavedModelBundleLite& slstm_model_bundle,
 			   std::vector<int>& primary_track_list, std::vector<std::vector<int> >& secondary_track_lists){
   std::vector<int> track_list(decoder_tracks.size());
   std::iota(track_list.begin(), track_list.end(), 0);
-  for(int i=0; i<secondary_event_data.size(); i++){
+  for(std::size_t i=0; i<secondary_event_data.size(); i++){
     int track1 = secondary_event_data.at(i).at(1), track2 = secondary_event_data.at(i).at(2);
     if(std::find(primary_track_list.begin(), primary_track_list.end(), track1) != primary_track_list.end() or
        std::find(primary_track_list.begin(), primary_track_list.end(), track2) != primary_track_list.end()) continue;
-
     if(debug==true){
       std::cout << "Track List" << std::endl;
-      for(int i=0; i<track_list.size(); i++){
+      for(std::size_t i=0; i<track_list.size(); i++){
         std::cout << track_list.at(i) << " ";
       }
       std::cout << std::endl;
@@ -393,7 +387,7 @@ void VertexFinderwithDL::SecondaryVertexFinder(double ThresholdSecondaryScore, s
     if(debug==true) VertexFinderwithDL::DebugPrintVLSTMPrediction(secondary_scores);
 
     std::vector<int> tmpsecondary_track_list, tmptrack_list = track_list;
-    for(int j=0; j<track_list.size(); j++){
+    for(std::size_t j=0; j<track_list.size(); j++){
       if(secondary_scores.at(0).at(j).at(0) > ThresholdSecondaryScore){
         if(std::find(primary_track_list.begin(), primary_track_list.end(), track_list.at(j)) == primary_track_list.end()){
           tmpsecondary_track_list.push_back(track_list.at(j));
@@ -418,18 +412,20 @@ void VertexFinderwithDL::SecondaryVertexFinder(double ThresholdSecondaryScore, s
 
 void VertexFinderwithDL::PrimarySecondaryVertices(TrackVec& tracks, std::vector<int> primary_track_list, std::vector<std::vector<int> > secondary_track_lists,
 		                                  Vertex& vtx, std::vector<Vertex*>& vtces){
-  TrackVec& primary_tracks;
-  for(int i=0; i<primary_track_list.size(); i++){
+  //TrackVec& primary_tracks;
+  std::vector<const Track*> primary_tracks;
+  for(std::size_t i=0; i<primary_track_list.size(); i++){
     primary_tracks.push_back(tracks.at(primary_track_list.at(i)));
   }
-  vtx = VertexFitterSimple(primary_tracks.begin(), primary_tracks.end());
-  for(int i=0; i<secondary_track_lists.size(); i++){
-    TrackVec& tmpsecondary_tracks;
-    Vertex* tmpsecondary_vtx
-    for(int j=0; j<secondary_track_lists.at(i); j++){
+  Vertex* tmpvtx = VertexFitterSimple_V()(primary_tracks.begin(), primary_tracks.end());
+  vtx = *tmpvtx;
+  for(std::size_t i=0; i<secondary_track_lists.size(); i++){
+    //TrackVec& tmpsecondary_tracks;
+    std::vector<const Track*> tmpsecondary_tracks;
+    for(std::size_t j=0; j<secondary_track_lists.at(i).size(); j++){
       tmpsecondary_tracks.push_back(tracks.at(secondary_track_lists.at(i).at(j)));
     }
-    tmpsecondary_vtx = VertexFitterSimple(tmpsecondary_tracks.begin(), tmpsecondary_tracks.end());
+    Vertex* tmpsecondary_vtx = VertexFitterSimple_V()(tmpsecondary_tracks.begin(), tmpsecondary_tracks.end());
     vtces.push_back(tmpsecondary_vtx);
   }
 }
