@@ -41,7 +41,7 @@ void VertexFindingwithDL::init(Parameters* param) {
   _primary_vertex = 0;
 
   std::string vpricolname = param->get("VertexFindingwithDL.PrimaryVertexCollectionName",string("PrimaryVertex"));
-  std::string vseccolname = param->get("VertexFindingwithDL.SecondaryVerticesCollectionName",string("SecondaryVertices"));
+  std::string vseccolname = param->get("VertexFindingwithDL.SecondaryVerticesCollectionName",string("BuildUpVertex"));
   Event::Instance()->Register(vpricolname.c_str(), _primary_vertex, EventStore::PERSIST);
   Event::Instance()->Register(vseccolname.c_str(), _secondary_vertices, EventStore::PERSIST);
 
@@ -76,7 +76,7 @@ void VertexFindingwithDL::init(Parameters* param) {
 }
 
 void VertexFindingwithDL::process() {
-  bool verbose = false;
+  bool verbose = true;
   Event* event = Event::Instance();
 
   // clearing old vertices
@@ -89,10 +89,12 @@ void VertexFindingwithDL::process() {
   _secondary_vertices->clear();
 
   TrackVec& tracks = event->getTracks();
-  std::vector<std::vector<double> > pairs, encoder_tracks, decoder_tracks;
-  VertexFinderwithDL::GetPairsEncoderDecoderTracks(tracks, NTrackVariable, MaxTrack, pairs, encoder_tracks, decoder_tracks);
+  std::vector<std::vector<double> > index, pairs, encoder_tracks, decoder_tracks;
+  VertexFinderwithDL::GetPairsEncoderDecoderTracks(tracks, NTrackVariable, MaxTrack, index, pairs, encoder_tracks, decoder_tracks);
+  if(debug==true) VertexFinderwithDL::DebugPrintVariableSize(pairs, encoder_tracks, decoder_tracks);
 
-  std::vector<std::vector<double> > event_data = VertexFinderwithDL::GetEventData(pairs, pair_model_bundle, pair_pos_model_bundle);
+  if(verbose==true) std::cout << "Get Event Data ..." << std::endl;
+  std::vector<std::vector<double> > event_data = VertexFinderwithDL::GetEventData(debug, index, pairs, pair_model_bundle, pair_pos_model_bundle);
   if(debug==true) VertexFinderwithDL::DebugPrintGetTracks(encoder_tracks);
 
   // Secondary Seed Selection
@@ -123,15 +125,14 @@ void VertexFindingwithDL::process() {
 		                            slstm_model_bundle, primary_track_list, secondary_track_lists);
   if(verbose==true) VertexFinderwithDL::PrintResults(primary_track_list, secondary_track_lists);
 
+  if(verbose==true) std::cout << "Merge Single Track ..." << std::endl;
   std::vector<std::vector<int> > merge_secondary_track_lists = VertexFinderwithDL::MergeSingleTrack(tracks, secondary_track_lists);
+  if(verbose==true) VertexFinderwithDL::PrintResults(primary_track_list, merge_secondary_track_lists);
 
-  Vertex* primary_vertex = 0;
-  std::vector<Vertex*> secondary_vertices;
-  VertexFinderwithDL::PrimarySecondaryVertices(tracks, primary_track_list, merge_secondary_track_lists, *primary_vertex, secondary_vertices);
-  if(primary_vertex) _primary_vertex->push_back(primary_vertex);
-  else std::cout << "PrimaryVertexFinder: No primary vertex found." << std::endl; 
-  if(verbose==true) std::cout << "PrimaryVertexFinder: " << primary_vertex->getTracks().size() << " tracks associated to the primary vertex." << std::endl;
-  *_secondary_vertices = secondary_vertices;
+  if(verbose==true) std::cout << "Vertex Making ..." << std::endl;
+  VertexFinderwithDL::PrimarySecondaryVertices(tracks, primary_track_list, merge_secondary_track_lists, _primary_vertex, _secondary_vertices);
+  if(!_primary_vertex->at(0)) std::cout << "PrimaryVertexFinder: No primary vertex found." << std::endl; 
+  if(verbose==true) std::cout << "PrimaryVertexFinder: " << _primary_vertex->at(0)->getTracks().size() << " tracks associated to the primary vertex." << std::endl;
 }
 
 void VertexFindingwithDL::end() {

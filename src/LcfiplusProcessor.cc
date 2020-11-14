@@ -113,8 +113,8 @@ void LcfiplusProcessor::init() {
 
       Globals::Instance()->setBField(_magneticField);
 
-      streamlog_out( WARNING ) << " overriding the B-field at the origin (" << MarlinUtil::getBzAtOrigin()
-			       << ") with parameter MagneticField : " << _magneticField << std::endl ;
+      //streamlog_out( WARNING ) << " overriding the B-field at the origin (" << MarlinUtil::getBzAtOrigin()
+      //			       << ") with parameter MagneticField : " << _magneticField << std::endl ;
     } else {
 
       Globals::Instance()->setBField( MarlinUtil::getBzAtOrigin() );

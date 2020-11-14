@@ -64,7 +64,6 @@ SET( ROOT_DICT_INPUT_HEADERS
 		${PROJECT_SOURCE_DIR}/include/TreeStorer.h
 		${PROJECT_SOURCE_DIR}/include/JetFinder.h
 		${PROJECT_SOURCE_DIR}/include/process.h
-		${PROJECT_SOURCE_DIR}/include/processwithDL.h
 		${PROJECT_SOURCE_DIR}/include/FlavorTag.h
 		${PROJECT_SOURCE_DIR}/include/MakeNtuple.h
 		${PROJECT_SOURCE_DIR}/include/TrainMVA.h
@@ -73,6 +72,10 @@ SET( ROOT_DICT_INPUT_HEADERS
 		${PROJECT_SOURCE_DIR}/include/TrackNtuple.h
 		${PROJECT_SOURCE_DIR}/include/VertexMassRecovery.h
 		${PROJECT_SOURCE_DIR}/include/VertexNtuple.h
+
+		${PROJECT_SOURCE_DIR}/include/processwithDL.h
+		${PROJECT_SOURCE_DIR}/include/makerootfileforDL.h
+		
 		${PROJECT_SOURCE_DIR}/include/LinkDef.h
 )
 #SET( ROOT_DICT_INCLUDE_DIRS ${Marlin_INCLUDE_DIRS} )

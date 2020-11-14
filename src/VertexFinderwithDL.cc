@@ -92,6 +92,13 @@ std::vector<std::vector<std::vector<double> > > VertexFinderwithDL::Tensor2N3DVe
   return vec;
 }
 
+void VertexFinderwithDL::DebugPrintVariableSize(std::vector<std::vector<double> > pairs, 
+		                                std::vector<std::vector<double> > encoder_tracks, std::vector<std::vector<double> > decoder_tracks){
+  std::cout << "Pairs Data Size Checking ... : " << pairs.size() << " " << pairs.at(0).size() << std::endl;
+  std::cout << "Encoder Data Size Checking ... : " << encoder_tracks.size() << " " << encoder_tracks.at(0).size() << std::endl;
+  std::cout << "Decoder Data Size Checking ... : " << decoder_tracks.size() << " " << decoder_tracks.at(0).size() << std::endl;
+}
+
 void VertexFinderwithDL::DebugPrintGetEventData(std::vector<std::vector<double> > event_data, int ncomb, int NCombination){
   std::cout << "Event Data Size Checking ... : " << event_data.size() << " = " << ncomb << " = " << NCombination << std::endl;
 }
@@ -100,9 +107,9 @@ void VertexFinderwithDL::DebugPrintSecondarySort(std::vector<std::vector<double>
   int iMax = secondary_seeds.size();
   if(secondary_seeds.size() > 10) iMax = 10;
   for(int i=0; i<iMax; i++){
-    std::cout << "Track 1 " << secondary_seeds.at(i).at(1) << " Track 2 " << secondary_seeds.at(i).at(2)
-	      << " SV Score " << secondary_seeds.at(i).at(61)+secondary_seeds.at(i).at(62)+secondary_seeds.at(i).at(63)
-	      << " NC " << secondary_seeds.at(i).at(59) << " PV " << secondary_seeds.at(i).at(60) << std::endl;
+    std::cout << "Track 1 " << secondary_seeds.at(i).at(0) << " Track 2 " << secondary_seeds.at(i).at(1)
+	      << " SV Score " << secondary_seeds.at(i).at(48)+secondary_seeds.at(i).at(49)+secondary_seeds.at(i).at(50)
+	      << " NC " << secondary_seeds.at(i).at(46) << " PV " << secondary_seeds.at(i).at(47) << std::endl;
   }
 }
 
@@ -110,7 +117,7 @@ void VertexFinderwithDL::DebugPrintPrimarySort(std::vector<std::vector<double> >
   int iMax = primary_seeds.size();
   if(primary_seeds.size() > 10) iMax = 10;
   for(int i=0; i<iMax; i++){
-    std::cout << "Track 1 " << primary_seeds.at(i).at(0) << " Track 2 " << primary_seeds.at(i).at(1) << " Score " << primary_seeds.at(i).at(60) << std::endl;
+    std::cout << "Track 1 " << primary_seeds.at(i).at(0) << " Track 2 " << primary_seeds.at(i).at(1) << " Score " << primary_seeds.at(i).at(47) << std::endl;
   }
 }
 
@@ -164,6 +171,7 @@ void VertexFinderwithDL::PrintResults(std::vector<int> primary_track_list, std::
 
 
 void VertexFinderwithDL::GetPairsEncoderDecoderTracks(TrackVec& tracks, int NTrackVariable, int MaxTrack,
+                                                 std::vector<std::vector<double> >& index,
                                                  std::vector<std::vector<double> >& pairs,
                                                  std::vector<std::vector<double> >& encoder_tracks, 
 						 std::vector<std::vector<double> >& decoder_tracks){
@@ -173,14 +181,16 @@ void VertexFinderwithDL::GetPairsEncoderDecoderTracks(TrackVec& tracks, int NTra
   // One track
   for(std::size_t i=0; i<tracks.size(); i++){
     const Track* track = tracks.at(i);
+    TLorentzVector tlv = *track;
     std::vector<double> tmptrack;
-    std::vector<double> tmppair;
+    std::vector<double> tmppair1;
     double tr1d0 = tanh(track->getD0());
     double tr1z0 = tanh(track->getZ0());
     double tr1phi = (1.0/M_PI) * track->getPhi();
     double tr1omega = tanh(200 * track->getOmega());
     double tr1tanlam = tanh(0.3 * track->getTanLambda());
     double tr1charge = track->getCharge();
+    double tr1energy = tanh(0.5 * (tlv.E() - 5.0));
     
     tmptrack.push_back(1);
     tmptrack.push_back(tr1d0);
@@ -189,63 +199,71 @@ void VertexFinderwithDL::GetPairsEncoderDecoderTracks(TrackVec& tracks, int NTra
     tmptrack.push_back(tr1omega);
     tmptrack.push_back(tr1tanlam);
     tmptrack.push_back(tr1charge);
-    tmppair.push_back(tr1d0);
-    tmppair.push_back(tr1z0);
-    tmppair.push_back(tr1phi);
-    tmppair.push_back(tr1omega);
-    tmppair.push_back(tr1tanlam);
-    tmppair.push_back(tr1charge);
-
-    TLorentzVector tlv = *track;
-    double tr1energy = tanh(0.5 * (tlv.E() - 5.0));
     tmptrack.push_back(tr1energy);
-    tmppair.push_back(tr1energy);
+
+    tmppair1.push_back(tr1d0);
+    tmppair1.push_back(tr1z0);
+    tmppair1.push_back(tr1phi);
+    tmppair1.push_back(tr1omega);
+    tmppair1.push_back(tr1tanlam);
+    tmppair1.push_back(tr1charge);
+    tmppair1.push_back(tr1energy);
 
     const double* cov = track->getCovMatrix();
     for(int c=0; c<15; c++){
-      tmptrack.push_back(tanh(8000 * (cov[c] + 0.0005)));
-      tmppair.push_back(tanh(8000 * (cov[c] + 0.0005)));
+      tmptrack.push_back(-tanh(8000 * (cov[c] + 0.0005)));
+      tmppair1.push_back(-tanh(8000 * (cov[c] + 0.0005)));
     }
+    // One track
+    encoder_tracks.push_back(tmptrack);
+    decoder_tracks.push_back(tmptrack);
+    tmptrack.clear();
 
     // The other track
     for(std::size_t j=0; j<i; j++){
+
       const Track* other_track = tracks.at(j);
+      TLorentzVector other_tlv = *other_track;
+      std::vector<double> tmppair;
       double tr2d0 = tanh(other_track->getD0());
       double tr2z0 = tanh(other_track->getZ0());
       double tr2phi = (1.0/M_PI) * other_track->getPhi();
       double tr2omega = tanh(200 * other_track->getOmega());
       double tr2tanlam = tanh(0.3 * other_track->getTanLambda());
       double tr2charge = other_track->getCharge();
+      double tr2energy = tanh(0.5 * (other_tlv.E() - 5.0));
+      
+      tmppair = tmppair1;
       tmppair.push_back(tr2d0);
       tmppair.push_back(tr2z0);
       tmppair.push_back(tr2phi);
       tmppair.push_back(tr2omega);
       tmppair.push_back(tr2tanlam);
       tmppair.push_back(tr2charge);
-
-      TLorentzVector other_tlv = *other_track;
-      double tr2energy = tanh(0.5 * (other_tlv.E() - 5.0));
-      tmptrack.push_back(tr2energy);
+      tmppair.push_back(tr2energy);
 
       const double* other_cov = other_track->getCovMatrix();
       for(int c=0; c<15; c++){
-        tmptrack.push_back(tanh(8000 * (other_cov[c] + 0.0005)));
+        tmppair.push_back(-tanh(8000 * (other_cov[c] + 0.0005)));
       }
+      // Pair Index
+      pairs.push_back(tmppair);
+      tmppair.clear();
+      std::vector<double> tmpindex = {double(i), double(j)};
+      index.push_back(tmpindex);
     }
-    // One track
-    encoder_tracks.push_back(tmptrack);
-    decoder_tracks.push_back(tmptrack);
-    pairs.push_back(tmppair);
   }
   for(int i=tracks.size(); i<MaxTrack; i++){
     encoder_tracks.push_back(tmpzero_track);
   }
 }
 
-std::vector<std::vector<double> > VertexFinderwithDL::GetEventData(std::vector<std::vector<double> > variables,
+std::vector<std::vector<double> > VertexFinderwithDL::GetEventData(bool debug, std::vector<std::vector<double> > index, std::vector<std::vector<double> > variables,
                                                                    tensorflow::SavedModelBundleLite& pair_model_bundle,
 								   tensorflow::SavedModelBundleLite& pair_pos_model_bundle){
+
   tensorflow::Tensor tvariables = VertexFinderwithDL::N2DVector2Tensor(variables);
+  std::cout << "num pairs " << variables.size() << " num vars " << variables.at(0).size() << std::endl;
   std::vector<tensorflow::Tensor> tmppair_outputs;
   tensorflow::Status pair_runStatus = pair_model_bundle.GetSession()->Run({{"serving_default_input_1:0", tvariables}},
 				          		                  {"StatefulPartitionedCall:0"},
@@ -258,8 +276,24 @@ std::vector<std::vector<double> > VertexFinderwithDL::GetEventData(std::vector<s
 						                                  {}, &tmppair_pos_outputs);
   std::vector<std::vector<double> > _positions = VertexFinderwithDL::Tensor2N2DVector(tmppair_pos_outputs[0]);
 
-  std::vector<std::vector<double> > _variables_labels = VertexFinderwithDL::ConcatN2DVector(variables, _labels); // 44:NC 45:PV 46CC 47BB 48BC
-  std::vector<std::vector<double> > event_data = VertexFinderwithDL::ConcatN2DVector(_variables_labels, _positions); // 49Pos
+  std::vector<std::vector<double> > _index_variables = VertexFinderwithDL::ConcatN2DVector(index, variables); // 0,1:Track Num 2-45:Var
+  std::vector<std::vector<double> > _variables_labels = VertexFinderwithDL::ConcatN2DVector(_index_variables, _labels); // 46:NC 47:PV 48CC 49BB 50BC
+  std::vector<std::vector<double> > event_data = VertexFinderwithDL::ConcatN2DVector(_variables_labels, _positions); // 51Pos
+
+  if(debug==true){
+    int iMax = variables.size();
+    if(variables.size() > 10) iMax = 10;
+    for(int i=0; i<iMax; i++){
+      std::cout << "Track 1 " << event_data.at(i).at(0) << " Track 2 " << event_data.at(i).at(1)
+	        << " NC " << event_data.at(i).at(46) << " PV " << event_data.at(i).at(47)
+	        << " SV CC " << event_data.at(i).at(48) << " BB " << event_data.at(i).at(49) << " BC " << event_data.at(i).at(50)
+	        << " Position " << event_data.at(i).at(51) << std::endl;
+      std::cout << "Track 1 " << index.at(i).at(0) << " Track 2 " << index.at(i).at(1)
+	        << " NC " << _labels.at(i).at(0) << " PV " << _labels.at(i).at(1)
+	        << " SV CC " << _labels.at(i).at(2) << " BB " << _labels.at(i).at(3) << " BC " << _labels.at(i).at(4)
+	        << " Position " << _positions.at(i).at(0) << std::endl;
+    }
+  }
   return event_data;
 }
 
@@ -276,18 +310,18 @@ std::vector<std::vector<double> > VertexFinderwithDL::GetRemainDecoderTracks(std
 std::vector<std::vector<double> > VertexFinderwithDL::SecondarySeedSelection(std::vector<std::vector<double> > event_data, int ThresholdPairSecondaryScore, int ThresholdPairPosScore){
   std::vector<std::vector<double> > secondary_event_data;
   for(std::size_t i=0; i<event_data.size(); i++){
-    double tmp_secondary_score = event_data.at(i).at(46) + event_data.at(i).at(47) + event_data.at(i).at(48);
-    if((event_data.at(i).at(44) > event_data.at(i).at(45) and event_data.at(i).at(44) > event_data.at(i).at(46) and
-	event_data.at(i).at(44) > event_data.at(i).at(47) and event_data.at(i).at(44) > event_data.at(i).at(48)) or
-       (event_data.at(i).at(45) > event_data.at(i).at(44) and event_data.at(i).at(45) > event_data.at(i).at(46) and
-        event_data.at(i).at(45) > event_data.at(i).at(47) and event_data.at(i).at(45) > event_data.at(i).at(48))) continue;
-    //if((event_data.at(i).at(46) > ThresholdPairSecondaryScoreBBCC) or (event_data.at(i).at(47) > ThresholdPairSecondaryScoreBBCC)) continue;
+    double tmp_secondary_score = event_data.at(i).at(48) + event_data.at(i).at(49) + event_data.at(i).at(50);
+    if((event_data.at(i).at(46) > event_data.at(i).at(47) and event_data.at(i).at(46) > event_data.at(i).at(48) and
+	event_data.at(i).at(46) > event_data.at(i).at(49) and event_data.at(i).at(46) > event_data.at(i).at(50)) or
+       (event_data.at(i).at(47) > event_data.at(i).at(46) and event_data.at(i).at(47) > event_data.at(i).at(48) and
+        event_data.at(i).at(47) > event_data.at(i).at(49) and event_data.at(i).at(47) > event_data.at(i).at(50))) continue;
+    //if((event_data.at(i).at(48) > ThresholdPairSecondaryScoreBBCC) or (event_data.at(i).at(49) > ThresholdPairSecondaryScoreBBCC)) continue;
     if(tmp_secondary_score < ThresholdPairSecondaryScore) continue;
-    if(event_data.at(i).at(49) > ThresholdPairPosScore) continue;
+    if(event_data.at(i).at(51) > ThresholdPairPosScore) continue;
     secondary_event_data.push_back(event_data.at(i));
   }
   sort(secondary_event_data.begin(), secondary_event_data.end(), [](const std::vector<double> &alpha, const std::vector<double> &beta){
-    return alpha.at(46)+alpha.at(47)+alpha.at(48) > beta.at(46)+beta.at(47)+beta.at(48);
+    return alpha.at(48)+alpha.at(49)+alpha.at(50) > beta.at(48)+beta.at(49)+beta.at(50);
   });
   return secondary_event_data;
 }
@@ -299,16 +333,16 @@ void VertexFinderwithDL::PrimaryVertexFinder(bool debug, int MaxPrimaryVertexLoo
 			 std::vector<double>& bigger_primary_scores){
   std::vector<std::vector<double> > primary_event_data = event_data;
   sort(primary_event_data.begin(), primary_event_data.end(), [](const std::vector<double> &alpha, const std::vector<double> &beta){
-    return alpha.at(60) > beta.at(60);
+    return alpha.at(47) > beta.at(47);
   });
 
   if(debug==true){
     for(int i=0; i<MaxPrimaryVertexLoop; i++){
-      std::cout << "Track 1 " << primary_event_data.at(i).at(1) << " Track 2 " << primary_event_data.at(i).at(2) << " Score " << primary_event_data.at(i).at(60) << std::endl;
+      std::cout << "Track 1 " << primary_event_data.at(i).at(0) << " Track 2 " << primary_event_data.at(i).at(1) << " Score " << primary_event_data.at(i).at(47) << std::endl;
     }
   }
 
-  std::vector<std::vector<double> > primary_pairs = VertexFinderwithDL::SliceN2DVector(primary_event_data, 0, MaxPrimaryVertexLoop, 3, 47);
+  std::vector<std::vector<double> > primary_pairs = VertexFinderwithDL::SliceN2DVector(primary_event_data, 0, MaxPrimaryVertexLoop, 2, 46);
   std::vector<std::vector<std::vector<double> > > primary_encoder_tracks(primary_pairs.size(), encoder_tracks);
   std::vector<std::vector<std::vector<double> > > primary_decoder_tracks(primary_pairs.size(), decoder_tracks);
 
@@ -335,7 +369,7 @@ void VertexFinderwithDL::PrimaryVertexFinder(bool debug, int MaxPrimaryVertexLoo
   std::sort(primary_track_list.begin(), primary_track_list.end());
   primary_track_list.erase(std::unique(primary_track_list.begin(), primary_track_list.end()), primary_track_list.end());
   
-  for(std::size_t i=0; i<encoder_tracks.size(); i++){
+  for(std::size_t i=0; i<decoder_tracks.size(); i++){
     double tmpbigger_primary_scores = 0;
     for(int j=0; j<MaxPrimaryVertexLoop; j++){
       if(tmpbigger_primary_scores < primary_scores.at(j).at(i).at(0)) tmpbigger_primary_scores = primary_scores.at(j).at(i).at(0);
@@ -353,7 +387,7 @@ void VertexFinderwithDL::SecondaryVertexFinder(bool debug, double ThresholdSecon
   std::vector<int> track_list(decoder_tracks.size());
   std::iota(track_list.begin(), track_list.end(), 0);
   for(std::size_t i=0; i<secondary_event_data.size(); i++){
-    int track1 = secondary_event_data.at(i).at(1), track2 = secondary_event_data.at(i).at(2);
+    int track1 = secondary_event_data.at(i).at(0), track2 = secondary_event_data.at(i).at(1);
     if(std::find(primary_track_list.begin(), primary_track_list.end(), track1) != primary_track_list.end() or
        std::find(primary_track_list.begin(), primary_track_list.end(), track2) != primary_track_list.end()) continue;
     if(debug==true){
@@ -368,7 +402,7 @@ void VertexFinderwithDL::SecondaryVertexFinder(bool debug, double ThresholdSecon
 
     std::vector<std::vector<double> > remain_decoder_tracks = VertexFinderwithDL::GetRemainDecoderTracks(decoder_tracks, track_list);
 
-    std::vector<std::vector<double> > secondary_pair = VertexFinderwithDL::SliceN2DVector(secondary_event_data, i, i+1, 3, 47);
+    std::vector<std::vector<double> > secondary_pair = VertexFinderwithDL::SliceN2DVector(secondary_event_data, i, i+1, 2, 46);
     std::vector<std::vector<std::vector<double> > > secondary_encoder_tracks(1, encoder_tracks);
     std::vector<std::vector<std::vector<double> > > secondary_remain_decoder_tracks(1, remain_decoder_tracks);
 
@@ -411,64 +445,76 @@ void VertexFinderwithDL::SecondaryVertexFinder(bool debug, double ThresholdSecon
 }
 
 std::vector<std::vector<int> > VertexFinderwithDL::MergeSingleTrack(TrackVec& tracks, std::vector<std::vector<int> > secondary_track_lists){
-  std::vector<std::vector<int> > merge_secondary_track_lists, tmp_secondary_track_lists = secondary_track_lists;
-  std::vector<int> tmp_single_track_list, tmp_not_single_track_list;
+  std::vector<std::vector<int> > merge_secondary_track_lists;
+  std::vector<int> single_track_list, not_single_track_list, all_track_list;
   std::vector<const Track*> tmp_tracks(2);
-  double chi;
-  int merge_track_num;
+  double chi=999;
+  int merge_track_num=-1;
 
   for(std::size_t i=0; i<secondary_track_lists.size(); i++){
     if(secondary_track_lists.at(i).size()==1){
-      tmp_single_track_list.push_back(secondary_track_lists.at(i).at(0));
-      tmp_secondary_track_lists.erase(std::remove(tmp_secondary_track_lists.begin(), tmp_secondary_track_lists.end(), secondary_track_lists.at(i)), tmp_secondary_track_lists.end());
+      single_track_list.push_back(secondary_track_lists.at(i).at(0));
+      all_track_list.push_back(secondary_track_lists.at(i).at(0));
     }
     else{
       for(std::size_t j=0; j<secondary_track_lists.at(i).size(); j++){
-        tmp_not_single_track_list.push_back(secondary_track_lists.at(i).at(j));
+        not_single_track_list.push_back(secondary_track_lists.at(i).at(j));
+        all_track_list.push_back(secondary_track_lists.at(i).at(j));
       }
+      merge_secondary_track_lists.push_back(secondary_track_lists.at(i));
     }
   }
-  for(std::size_t i=0; i<tmp_single_track_list.size(); i++){
-    tmp_tracks.at(0) = tracks.at(tmp_single_track_list.at(i));
-    for(std::size_t j=0; j<tmp_not_single_track_list.size(); j++){
-      tmp_tracks.at(1) = tracks.at(tmp_not_single_track_list.at(j));
+  for(std::size_t i=0; i<single_track_list.size(); i++){
+    if(std::find(not_single_track_list.begin(), not_single_track_list.end(), single_track_list.at(i)) != not_single_track_list.end()) continue;
+    tmp_tracks.at(0) = tracks.at(single_track_list.at(i));
+    for(std::size_t j=0; j<all_track_list.size(); j++){
+      if(single_track_list.at(i)==all_track_list.at(j)) continue;
+      tmp_tracks.at(1) = tracks.at(all_track_list.at(j));
       Vertex* vtx = VertexFitterSimple_V()(tmp_tracks.begin(), tmp_tracks.end());
-      if(j==0){
+      if(vtx->getChi2()<chi){
         chi = vtx->getChi2();
-	merge_track_num = tmp_not_single_track_list.at(j);
-      } 
-      else if(chi>vtx->getChi2()){
-        chi = vtx->getChi2();
-	merge_track_num = tmp_not_single_track_list.at(j);
+	merge_track_num = all_track_list.at(j);
       }
     }
-    for(std::size_t j=0; j<tmp_secondary_track_lists.size(); j++){
-      if(std::find(tmp_secondary_track_lists.at(j).begin(), tmp_secondary_track_lists.at(j).end(), merge_track_num) != tmp_secondary_track_lists.at(j).end()){
-        tmp_secondary_track_lists.at(j).push_back(tmp_single_track_list.at(i));
+    if(chi==999) continue;
+    bool single_single = true;
+    for(std::size_t j=0; j<merge_secondary_track_lists.size(); j++){
+      if(std::find(merge_secondary_track_lists.at(j).begin(), merge_secondary_track_lists.at(j).end(), merge_track_num) != merge_secondary_track_lists.at(j).end()){
+        merge_secondary_track_lists.at(j).push_back(single_track_list.at(i));
+	single_single = false;
       }
     }
+    if(single_single==true){
+      std::vector<int> _merge_secondary_track_list = {single_track_list.at(i), merge_track_num};
+      merge_secondary_track_lists.push_back(_merge_secondary_track_list);
+    }
+    not_single_track_list.push_back(single_track_list.at(i));
+    not_single_track_list.push_back(merge_track_num);
+    chi = 999;
+    merge_track_num = -1;
   }
-  merge_secondary_track_lists = tmp_secondary_track_lists;
   return merge_secondary_track_lists;
 }
 
 void VertexFinderwithDL::PrimarySecondaryVertices(TrackVec& tracks, std::vector<int> primary_track_list, std::vector<std::vector<int> > secondary_track_lists,
-		                                  Vertex& vtx, std::vector<Vertex*>& vtces){
+		                                  std::vector<Vertex*>*& vtx, std::vector<Vertex*>*& vtces){
   //TrackVec& primary_tracks;
   std::vector<const Track*> primary_tracks;
   for(std::size_t i=0; i<primary_track_list.size(); i++){
     primary_tracks.push_back(tracks.at(primary_track_list.at(i)));
   }
-  Vertex* tmpvtx = VertexFitterSimple_V()(primary_tracks.begin(), primary_tracks.end());
-  vtx = *tmpvtx;
+  Vertex* tmpprimary_vtx = VertexFitterSimple_V()(primary_tracks.begin(), primary_tracks.end());
+  vtx->push_back(tmpprimary_vtx);
   for(std::size_t i=0; i<secondary_track_lists.size(); i++){
+    std::cout << "check point 2 : " << i << std::endl;
     //TrackVec& tmpsecondary_tracks;
     std::vector<const Track*> tmpsecondary_tracks;
     for(std::size_t j=0; j<secondary_track_lists.at(i).size(); j++){
+      std::cout << "check point 3 : " << i << " " << j << std::endl;
       tmpsecondary_tracks.push_back(tracks.at(secondary_track_lists.at(i).at(j)));
     }
     Vertex* tmpsecondary_vtx = VertexFitterSimple_V()(tmpsecondary_tracks.begin(), tmpsecondary_tracks.end());
-    vtces.push_back(tmpsecondary_vtx);
+    vtces->push_back(tmpsecondary_vtx);
   }
 }
 
