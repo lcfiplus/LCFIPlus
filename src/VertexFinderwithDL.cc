@@ -151,20 +151,25 @@ void VertexFinderwithDL::DebugPrintVLSTMPrediction(std::vector<std::vector<std::
 void VertexFinderwithDL::PrintResults(std::vector<int> primary_track_list, std::vector<std::vector<int> > secondary_track_lists){
   std::cout << "Finish !!" << std::endl;
 
-  std::cout << "Primary Track List" << std::endl;
-  for(std::size_t i=0; i<primary_track_list.size(); i++){
-    std::cout << primary_track_list.at(i) << " ";
-  }
-  std::cout << std::endl;
-  std::cout << std::endl;
-
-  std::cout << "Secondary Track Lists" << std::endl;
-  for(std::size_t i=0; i<secondary_track_lists.size(); i++){
-    std::cout << "List " << i << std::endl;
-    for(std::size_t j=0; j<secondary_track_lists.at(i).size(); j++){
-      std::cout << secondary_track_lists.at(i).at(j) << " ";
+  if(primary_track_list.size()==0) std::cout << "Primary Track List is not exist" << std::endl;
+  else{
+    std::cout << "Primary Track List" << std::endl;
+    for(std::size_t i=0; i<primary_track_list.size(); i++){
+      std::cout << primary_track_list.at(i) << " ";
     }
     std::cout << std::endl;
+  }
+  std::cout << std::endl;
+  if(secondary_track_lists.size()==0) std::cout << "Secondary Track Lists are not exist" << std::endl;
+  else{
+    std::cout << "Secondary Track Lists" << std::endl;
+    for(std::size_t i=0; i<secondary_track_lists.size(); i++){
+      std::cout << "List " << i << std::endl;
+      for(std::size_t j=0; j<secondary_track_lists.at(i).size(); j++){
+        std::cout << secondary_track_lists.at(i).at(j) << " ";
+      }
+      std::cout << std::endl;
+    }
   }
   std::cout << std::endl;
 }
@@ -263,7 +268,6 @@ std::vector<std::vector<double> > VertexFinderwithDL::GetEventData(bool debug, s
 								   tensorflow::SavedModelBundleLite& pair_pos_model_bundle){
 
   tensorflow::Tensor tvariables = VertexFinderwithDL::N2DVector2Tensor(variables);
-  std::cout << "num pairs " << variables.size() << " num vars " << variables.at(0).size() << std::endl;
   std::vector<tensorflow::Tensor> tmppair_outputs;
   tensorflow::Status pair_runStatus = pair_model_bundle.GetSession()->Run({{"serving_default_input_1:0", tvariables}},
 				          		                  {"StatefulPartitionedCall:0"},
@@ -496,25 +500,42 @@ std::vector<std::vector<int> > VertexFinderwithDL::MergeSingleTrack(TrackVec& tr
   return merge_secondary_track_lists;
 }
 
-void VertexFinderwithDL::PrimarySecondaryVertices(TrackVec& tracks, std::vector<int> primary_track_list, std::vector<std::vector<int> > secondary_track_lists,
+void VertexFinderwithDL::PrimarySecondaryVertices(bool verbose, TrackVec& tracks, std::vector<int> primary_track_list, std::vector<std::vector<int> > secondary_track_lists,
 		                                  std::vector<Vertex*>*& vtx, std::vector<Vertex*>*& vtces){
-  //TrackVec& primary_tracks;
-  std::vector<const Track*> primary_tracks;
-  for(std::size_t i=0; i<primary_track_list.size(); i++){
-    primary_tracks.push_back(tracks.at(primary_track_list.at(i)));
+
+  if(primary_track_list.size()==0){
+    std::cout << "Primary Vertex is not created" << std::endl;
+    Vertex* tmpprimary_vtx = 0;
+    vtx->push_back(tmpprimary_vtx);
   }
-  Vertex* tmpprimary_vtx = VertexFitterSimple_V()(primary_tracks.begin(), primary_tracks.end());
-  vtx->push_back(tmpprimary_vtx);
-  for(std::size_t i=0; i<secondary_track_lists.size(); i++){
-    std::cout << "check point 2 : " << i << std::endl;
-    //TrackVec& tmpsecondary_tracks;
-    std::vector<const Track*> tmpsecondary_tracks;
-    for(std::size_t j=0; j<secondary_track_lists.at(i).size(); j++){
-      std::cout << "check point 3 : " << i << " " << j << std::endl;
-      tmpsecondary_tracks.push_back(tracks.at(secondary_track_lists.at(i).at(j)));
+  else{
+    std::vector<const Track*> primary_tracks;
+    if(verbose) std::cout << "Primary Vertex : Track Num";
+    for(std::size_t i=0; i<primary_track_list.size(); i++){
+      if(verbose) std::cout << " " << primary_track_list.at(i) << " ";
+      primary_tracks.push_back(tracks.at(primary_track_list.at(i)));
     }
-    Vertex* tmpsecondary_vtx = VertexFitterSimple_V()(tmpsecondary_tracks.begin(), tmpsecondary_tracks.end());
+    Vertex* tmpprimary_vtx = VertexFitterSimple_V()(primary_tracks.begin(), primary_tracks.end());
+    vtx->push_back(tmpprimary_vtx);
+    if(verbose) std::cout << ": Chi2 " << tmpprimary_vtx->getChi2() << std::endl;
+  }
+  if(secondary_track_lists.size()==0){
+    std::cout << "Secondary Vertices are not exist" << std::endl;
+    Vertex* tmpsecondary_vtx = 0;
     vtces->push_back(tmpsecondary_vtx);
+  }
+  else{
+    for(std::size_t i=0; i<secondary_track_lists.size(); i++){
+      std::vector<const Track*> tmpsecondary_tracks;
+      if(verbose) std::cout << "Secondary Vertex " << i << " : Track Num";
+      for(std::size_t j=0; j<secondary_track_lists.at(i).size(); j++){
+        if(verbose) std::cout << " " << secondary_track_lists.at(i).at(j) << " ";
+        tmpsecondary_tracks.push_back(tracks.at(secondary_track_lists.at(i).at(j)));
+      }
+      Vertex* tmpsecondary_vtx = VertexFitterSimple_V()(tmpsecondary_tracks.begin(), tmpsecondary_tracks.end());
+      vtces->push_back(tmpsecondary_vtx);
+      if(verbose) std::cout << ": Chi2 " << tmpsecondary_vtx->getChi2() << std::endl;
+    }
   }
 }
 

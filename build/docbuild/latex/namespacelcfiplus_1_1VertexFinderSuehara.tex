@@ -1,0 +1,171 @@
+\section{lcfiplus\+:\+:Vertex\+Finder\+Suehara Namespace Reference}
+\label{namespacelcfiplus_1_1VertexFinderSuehara}\index{lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \textbf{ Sort\+Tracks\+By\+I\+P\+Sig}
+\item 
+class \textbf{ Vertex\+Finder\+Suehara\+Config}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \textbf{ Vertex\+Nearer} (const \textbf{ Vertex} $\ast$vtx1, const \textbf{ Vertex} $\ast$vtx2)
+\item 
+bool \textbf{ Vertex\+Prob\+Larger} (const \textbf{ Vertex} $\ast$vtx1, const \textbf{ Vertex} $\ast$vtx2)
+\item 
+void \textbf{ Get\+Vertex\+List} (list$<$ const \textbf{ Track} $\ast$$>$ \&tracks, const \textbf{ Vertex} $\ast$ip, vector$<$ \textbf{ Vertex} $\ast$$>$ \&vtx, vector$<$ \textbf{ Vertex} $\ast$$>$ \&v0vtx, \textbf{ Vertex\+Finder\+Suehara\+Config} \&cfg)
+\item 
+\textbf{ lcfiplus\+::\+Vertex} $\ast$ \textbf{ associate\+Tracks} (\textbf{ Vertex} $\ast$vertex, const \textbf{ Vertex\+Vec} \&v0vtx, list$<$ const \textbf{ Track} $\ast$$>$ \&tracks, \textbf{ Vertex\+Finder\+Suehara\+Config} \&cfg, list$<$ const \textbf{ Track} $\ast$$>$ $\ast$residual\+Tracks=0)
+\item 
+void \textbf{ associate\+I\+P\+Tracks} (vector$<$ \textbf{ Vertex} $\ast$$>$ \&vertices, \textbf{ Vertex} $\ast$ip, \textbf{ Vertex\+Finder\+Suehara\+Config} \&cfg)
+\item 
+void \textbf{ associate\+I\+P\+Tracks\+A\+VF} (vector$<$ \textbf{ Vertex} $\ast$$>$ \&vertices, \textbf{ Vertex} $\ast$ip, \textbf{ Vertex\+Finder\+Suehara\+Config} \&cfg)
+\item 
+void \textbf{ build\+Up} (\textbf{ Track\+Vec} \&tracks, vector$<$ \textbf{ Vertex} $\ast$$>$ \&vtx, vector$<$ \textbf{ Vertex} $\ast$$>$ \&v0vtx, double chi2thpri, \textbf{ Vertex\+Finder\+Suehara\+Config} \&cfg, \textbf{ Vertex} $\ast$$\ast$ip=0)
+\item 
+void \textbf{ build\+Up\+For\+Jet\+Clustering} (\textbf{ Track\+Vec} \&tracks, vector$<$ \textbf{ Vertex} $\ast$$>$ \&vtx)
+\item 
+vector$<$ \textbf{ Vertex} $\ast$ $>$ \textbf{ make\+Single\+Track\+Vertices} (\textbf{ Vertex\+Vec} \&vtcs, \textbf{ Track\+Vec} \&tracks, \textbf{ Vertex\+Vec} \&v0vtx, const \textbf{ Vertex} $\ast$ip, \textbf{ Vertex\+Finder\+Suehara\+Config} \&cfg)
+\item 
+vector$<$ \textbf{ Vertex} $\ast$ $>$ \textbf{ make\+Single\+Track\+Vertices} (\textbf{ Jet} $\ast$jet, \textbf{ Track\+Vec} \&tracks, \textbf{ Vertex\+Vec} \&v0vtx, const \textbf{ Vertex} $\ast$ip, \textbf{ Vertex\+Finder\+Suehara\+Config} \&cfg)
+\item 
+void \textbf{ recombine\+Vertices} (vector$<$ \textbf{ Vertex} $\ast$$>$ \&vertices, vector$<$ \textbf{ Vertex} $\ast$$>$ \&single\+Vertices)
+\item 
+void \textbf{ recombine\+Vertices} (vector$<$ \textbf{ Vertex} $\ast$$>$ \&vertices, vector$<$ \textbf{ Vertex} $\ast$$>$ \&single\+Vertices, \textbf{ Vertex\+Finder\+Suehara\+Config} \&cfg)
+\item 
+void \textbf{ optimize\+Two\+Vertices} (\textbf{ Vertex} $\ast$\&v1, \textbf{ Vertex} $\ast$\&v2, int nvr)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\mbox{\label{namespacelcfiplus_1_1VertexFinderSuehara_a562ea1e9b2371041758066a89b975319}} 
+\index{lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}!associate\+I\+P\+Tracks@{associate\+I\+P\+Tracks}}
+\index{associate\+I\+P\+Tracks@{associate\+I\+P\+Tracks}!lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}}
+\subsubsection{associate\+I\+P\+Tracks()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Finder\+Suehara\+::associate\+I\+P\+Tracks (\begin{DoxyParamCaption}\item[{vector$<$ \textbf{ Vertex} $\ast$$>$ \&}]{vertices,  }\item[{\textbf{ Vertex} $\ast$}]{ip,  }\item[{\textbf{ Vertex\+Finder\+Suehara\+Config} \&}]{cfg }\end{DoxyParamCaption})}
+
+
+
+Referenced by lcfiplus\+::\+Build\+Up\+Vertex\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderSuehara_a2adbe91b995f9a959364570bba86e3be}} 
+\index{lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}!associate\+I\+P\+Tracks\+A\+VF@{associate\+I\+P\+Tracks\+A\+VF}}
+\index{associate\+I\+P\+Tracks\+A\+VF@{associate\+I\+P\+Tracks\+A\+VF}!lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}}
+\subsubsection{associate\+I\+P\+Tracks\+A\+V\+F()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Finder\+Suehara\+::associate\+I\+P\+Tracks\+A\+VF (\begin{DoxyParamCaption}\item[{vector$<$ \textbf{ Vertex} $\ast$$>$ \&}]{vertices,  }\item[{\textbf{ Vertex} $\ast$}]{ip,  }\item[{\textbf{ Vertex\+Finder\+Suehara\+Config} \&}]{cfg }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+Vertex\+Finder\+Suehara\+::\+Vertex\+Finder\+Suehara\+Config\+::chi2th, lcfiplus\+::\+Helix\+::\+Close\+Point(), lcfiplus\+::tpar\+::d0d0, lcfiplus\+::\+Vertex\+::get\+Chi2\+Track(), lcfiplus\+::\+Vertex\+::get\+Id(), lcfiplus\+::\+Vertex\+::get\+Pos(), lcfiplus\+::\+Vertex\+::get\+Tracks(), lcfiplus\+::algo\+Etc\+::make\+Beam\+Vertex(), lcfiplus\+::\+Vertex\+Finder\+Suehara\+::\+Vertex\+Finder\+Suehara\+Config\+::minimumdist\+IP, lcfiplus\+::\+Point\+Base\+::\+S\+E\+C\+V\+TX, lcfiplus\+::\+Vertex\+Finder\+Suehara\+::\+Vertex\+Finder\+Suehara\+Config\+::temperature, lcfiplus\+::verbose, lcfiplus\+::\+Vertex\+::xx, lcfiplus\+::\+Vertex\+::yy, lcfiplus\+::tpar\+::z0z0, and lcfiplus\+::\+Vertex\+::zz.
+
+
+
+Referenced by lcfiplus\+::\+Build\+Up\+Vertex\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderSuehara_a561fdd6b1766a505021f77f248b5e58a}} 
+\index{lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}!associate\+Tracks@{associate\+Tracks}}
+\index{associate\+Tracks@{associate\+Tracks}!lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}}
+\subsubsection{associate\+Tracks()}
+{\footnotesize\ttfamily \textbf{ Vertex} $\ast$ lcfiplus\+::\+Vertex\+Finder\+Suehara\+::associate\+Tracks (\begin{DoxyParamCaption}\item[{\textbf{ Vertex} $\ast$}]{vertex,  }\item[{const \textbf{ Vertex\+Vec} \&}]{v0vtx,  }\item[{list$<$ const \textbf{ Track} $\ast$$>$ \&}]{tracks,  }\item[{\textbf{ Vertex\+Finder\+Suehara\+Config} \&}]{cfg,  }\item[{list$<$ const \textbf{ Track} $\ast$$>$ $\ast$}]{residual\+Tracks = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Referenced by Get\+Vertex\+List().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderSuehara_ac342f7caac2af7bbe2aa77b578a3815e}} 
+\index{lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}!build\+Up@{build\+Up}}
+\index{build\+Up@{build\+Up}!lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}}
+\subsubsection{build\+Up()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Finder\+Suehara\+::build\+Up (\begin{DoxyParamCaption}\item[{\textbf{ Track\+Vec} \&}]{tracks,  }\item[{vector$<$ \textbf{ Vertex} $\ast$$>$ \&}]{vtx,  }\item[{vector$<$ \textbf{ Vertex} $\ast$$>$ \&}]{v0vtx,  }\item[{double}]{chi2thpri,  }\item[{\textbf{ Vertex\+Finder\+Suehara\+Config} \&}]{cfg,  }\item[{\textbf{ Vertex} $\ast$$\ast$}]{ip = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::find\+Primary\+Vertex().
+
+
+
+Referenced by lcfiplus\+::\+Build\+Up\+Vertex\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderSuehara_aca014441d6f9e7aecee5193452efc1f7}} 
+\index{lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}!build\+Up\+For\+Jet\+Clustering@{build\+Up\+For\+Jet\+Clustering}}
+\index{build\+Up\+For\+Jet\+Clustering@{build\+Up\+For\+Jet\+Clustering}!lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}}
+\subsubsection{build\+Up\+For\+Jet\+Clustering()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Finder\+Suehara\+::build\+Up\+For\+Jet\+Clustering (\begin{DoxyParamCaption}\item[{\textbf{ Track\+Vec} \&}]{tracks,  }\item[{vector$<$ \textbf{ Vertex} $\ast$$>$ \&}]{vtx }\end{DoxyParamCaption})}
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderSuehara_ae99678f83395c172d54f894849d3dce5}} 
+\index{lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}!Get\+Vertex\+List@{Get\+Vertex\+List}}
+\index{Get\+Vertex\+List@{Get\+Vertex\+List}!lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}}
+\subsubsection{Get\+Vertex\+List()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Finder\+Suehara\+::\+Get\+Vertex\+List (\begin{DoxyParamCaption}\item[{list$<$ const \textbf{ Track} $\ast$$>$ \&}]{tracks,  }\item[{const \textbf{ Vertex} $\ast$}]{ip,  }\item[{vector$<$ \textbf{ Vertex} $\ast$$>$ \&}]{vtx,  }\item[{vector$<$ \textbf{ Vertex} $\ast$$>$ \&}]{v0vtx,  }\item[{\textbf{ Vertex\+Finder\+Suehara\+Config} \&}]{cfg }\end{DoxyParamCaption})}
+
+
+
+References associate\+Tracks(), lcfiplus\+::\+Vertex\+Finder\+Suehara\+::\+Vertex\+Finder\+Suehara\+Config\+::avf, lcfiplus\+::\+Vertex\+Finder\+Suehara\+::\+Vertex\+Finder\+Suehara\+Config\+::chi2th, lcfiplus\+::\+Vertex\+Finder\+Suehara\+::\+Vertex\+Finder\+Suehara\+Config\+::chi2th\+V0\+Sel\+Track, lcfiplus\+::const\+Vector(), lcfiplus\+::\+Vertex\+::get\+Chi2\+Track(), lcfiplus\+::\+Vertex\+::get\+Cov(), lcfiplus\+::\+Vertex\+::get\+Pos(), lcfiplus\+::\+Vertex\+::get\+Prob(), lcfiplus\+::\+Vertex\+::get\+Tracks(), lcfiplus\+::\+Vertex\+::get\+Vertex\+Mass(), lcfiplus\+::\+Vertex\+::get\+X(), lcfiplus\+::\+Vertex\+::get\+Y(), lcfiplus\+::\+Vertex\+::get\+Z(), lcfiplus\+::\+Vertex\+Finder\+Suehara\+::\+Vertex\+Finder\+Suehara\+Config\+::massth, lcfiplus\+::algo\+Etc\+::min(), lcfiplus\+::\+Vertex\+::set\+Vertexing\+Name(), lcfiplus\+::\+Vertex\+Finder\+Suehara\+::\+Vertex\+Finder\+Suehara\+Config\+::v0sel\+Track, lcfiplus\+::\+Vertex\+Finder\+Suehara\+::\+Vertex\+Finder\+Suehara\+Config\+::v0sel\+Vertex, lcfiplus\+::verbose, Vertex\+Prob\+Larger(), lcfiplus\+::\+Vertex\+::xx, lcfiplus\+::\+Vertex\+::xy, lcfiplus\+::\+Vertex\+::xz, lcfiplus\+::\+Vertex\+::yy, lcfiplus\+::\+Vertex\+::yz, and lcfiplus\+::\+Vertex\+::zz.
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderSuehara_afd9aaa6fba7bad0dfd0bc3c4f6b2a67b}} 
+\index{lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}!make\+Single\+Track\+Vertices@{make\+Single\+Track\+Vertices}}
+\index{make\+Single\+Track\+Vertices@{make\+Single\+Track\+Vertices}!lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}}
+\subsubsection{make\+Single\+Track\+Vertices()\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily vector$<$ \textbf{ Vertex} $\ast$ $>$ lcfiplus\+::\+Vertex\+Finder\+Suehara\+::make\+Single\+Track\+Vertices (\begin{DoxyParamCaption}\item[{\textbf{ Vertex\+Vec} \&}]{vtcs,  }\item[{\textbf{ Track\+Vec} \&}]{tracks,  }\item[{\textbf{ Vertex\+Vec} \&}]{v0vtx,  }\item[{const \textbf{ Vertex} $\ast$}]{ip,  }\item[{\textbf{ Vertex\+Finder\+Suehara\+Config} \&}]{cfg }\end{DoxyParamCaption})}
+
+
+
+Referenced by test\+Suehara().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderSuehara_a18de0efc554dcce9ef6174fc70907dbc}} 
+\index{lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}!make\+Single\+Track\+Vertices@{make\+Single\+Track\+Vertices}}
+\index{make\+Single\+Track\+Vertices@{make\+Single\+Track\+Vertices}!lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}}
+\subsubsection{make\+Single\+Track\+Vertices()\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily vector$<$ \textbf{ Vertex} $\ast$ $>$ lcfiplus\+::\+Vertex\+Finder\+Suehara\+::make\+Single\+Track\+Vertices (\begin{DoxyParamCaption}\item[{\textbf{ Jet} $\ast$}]{jet,  }\item[{\textbf{ Track\+Vec} \&}]{tracks,  }\item[{\textbf{ Vertex\+Vec} \&}]{v0vtx,  }\item[{const \textbf{ Vertex} $\ast$}]{ip,  }\item[{\textbf{ Vertex\+Finder\+Suehara\+Config} \&}]{cfg }\end{DoxyParamCaption})}
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderSuehara_a67259687aac1da1330fadf50383636d5}} 
+\index{lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}!optimize\+Two\+Vertices@{optimize\+Two\+Vertices}}
+\index{optimize\+Two\+Vertices@{optimize\+Two\+Vertices}!lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}}
+\subsubsection{optimize\+Two\+Vertices()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Finder\+Suehara\+::optimize\+Two\+Vertices (\begin{DoxyParamCaption}\item[{\textbf{ Vertex} $\ast$\&}]{v1,  }\item[{\textbf{ Vertex} $\ast$\&}]{v2,  }\item[{int}]{nvr }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+Vertex\+::get\+Chi2(), lcfiplus\+::\+Vertex\+::get\+Chi2\+Track(), lcfiplus\+::\+Vertex\+::get\+Prob(), and lcfiplus\+::\+Vertex\+::get\+Tracks().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderSuehara_a97a5fa5cd377e7acfee6671225fe1a9b}} 
+\index{lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}!recombine\+Vertices@{recombine\+Vertices}}
+\index{recombine\+Vertices@{recombine\+Vertices}!lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}}
+\subsubsection{recombine\+Vertices()\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Finder\+Suehara\+::recombine\+Vertices (\begin{DoxyParamCaption}\item[{vector$<$ \textbf{ Vertex} $\ast$$>$ \&}]{vertices,  }\item[{vector$<$ \textbf{ Vertex} $\ast$$>$ \&}]{single\+Vertices }\end{DoxyParamCaption})}
+
+
+
+Referenced by test\+Suehara().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderSuehara_ab963db09bcb3eac74990528e291e76e8}} 
+\index{lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}!recombine\+Vertices@{recombine\+Vertices}}
+\index{recombine\+Vertices@{recombine\+Vertices}!lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}}
+\subsubsection{recombine\+Vertices()\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Finder\+Suehara\+::recombine\+Vertices (\begin{DoxyParamCaption}\item[{vector$<$ \textbf{ Vertex} $\ast$$>$ \&}]{vertices,  }\item[{vector$<$ \textbf{ Vertex} $\ast$$>$ \&}]{single\+Vertices,  }\item[{\textbf{ Vertex\+Finder\+Suehara\+Config} \&}]{cfg }\end{DoxyParamCaption})}
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderSuehara_ab63633a6b9d2e03ba72331686e5857dd}} 
+\index{lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}!Vertex\+Nearer@{Vertex\+Nearer}}
+\index{Vertex\+Nearer@{Vertex\+Nearer}!lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}}
+\subsubsection{Vertex\+Nearer()}
+{\footnotesize\ttfamily bool lcfiplus\+::\+Vertex\+Finder\+Suehara\+::\+Vertex\+Nearer (\begin{DoxyParamCaption}\item[{const \textbf{ Vertex} $\ast$}]{vtx1,  }\item[{const \textbf{ Vertex} $\ast$}]{vtx2 }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+Vertex\+::get\+Pos().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderSuehara_a390fa0c9aa8110066c3490bf1c919414}} 
+\index{lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}!Vertex\+Prob\+Larger@{Vertex\+Prob\+Larger}}
+\index{Vertex\+Prob\+Larger@{Vertex\+Prob\+Larger}!lcfiplus\+::\+Vertex\+Finder\+Suehara@{lcfiplus\+::\+Vertex\+Finder\+Suehara}}
+\subsubsection{Vertex\+Prob\+Larger()}
+{\footnotesize\ttfamily bool lcfiplus\+::\+Vertex\+Finder\+Suehara\+::\+Vertex\+Prob\+Larger (\begin{DoxyParamCaption}\item[{const \textbf{ Vertex} $\ast$}]{vtx1,  }\item[{const \textbf{ Vertex} $\ast$}]{vtx2 }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+Vertex\+::get\+Prob().
+
+
+
+Referenced by Get\+Vertex\+List().
+

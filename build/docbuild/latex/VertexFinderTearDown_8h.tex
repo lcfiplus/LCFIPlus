@@ -1,0 +1,27 @@
+\section{Vertex\+Finder\+Tear\+Down.\+h File Reference}
+\label{VertexFinderTearDown_8h}\index{Vertex\+Finder\+Tear\+Down.\+h@{Vertex\+Finder\+Tear\+Down.\+h}}
+{\ttfamily \#include \char`\"{}lcfiplus.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Vertex\+Fitter\+L\+C\+F\+I.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Vertex\+Fitter\+Simple.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}algo\+Etc.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$list$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \textbf{ lcfiplus\+::\+Sort\+Tracks\+By\+Chi2}
+\item 
+class \textbf{ lcfiplus\+::\+Vertex\+Finder\+Tear\+Down$<$ Container, Vertex\+Fitter $>$}
+\end{DoxyCompactItemize}
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \textbf{ lcfiplus}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+vector$<$ \textbf{ lcfiplus\+::\+Vertex} $\ast$ $>$ $\ast$ \textbf{ lcfiplus\+::find\+Tear\+Down\+Vertices} (const \textbf{ Event} \&evt, const \textbf{ Jet} \&jet)
+\item 
+\textbf{ lcfiplus\+::\+Vertex} $\ast$ \textbf{ lcfiplus\+::find\+Primary\+Vertex} (\textbf{ Track\+Vec} \&tracks, double chi2=9.\+0, bool beamspot\+Constraint=true, bool smear\+Beamspot=true)
+\end{DoxyCompactItemize}

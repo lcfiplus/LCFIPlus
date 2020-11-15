@@ -1,0 +1,129 @@
+\section{algo.\+h File Reference}
+\label{algo_8h}\index{algo.\+h@{algo.\+h}}
+{\ttfamily \#include $<$math.\+h$>$}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \textbf{ lcfiplus}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \textbf{ S\+H\+FT}(a,  b,  c,  d)~(a)=(b);(b)=(c);(c)=(d);
+\item 
+\#define \textbf{ S\+H\+F\+T2}(a,  b,  c)~(a)=(b);(b)=(c);
+\item 
+\#define \textbf{ S\+H\+F\+T3}(a,  b,  c,  d)~(a)=(b);(b)=(c);(c)=(d);
+\item 
+\#define \textbf{ S\+I\+GN}(a,  b)~((b)$>$=0.\+0 ? fabs(a) \+: -\/fabs(a))
+\item 
+\#define \textbf{ M\+O\+V3}(a,  b,  c,  d,  e,  f)~(a)=(d);(b)=(e);(c)=(f);
+\item 
+\#define \textbf{ F\+M\+AX}(a,  b)~(maxarg1=(a),maxarg2=(b),(maxarg1) $>$ (maxarg2) ? (maxarg1) \+: (maxarg2))
+\item 
+\#define \textbf{ F\+M\+AX}(a,  b)~(maxarg1=(a),maxarg2=(b),(maxarg1) $>$ (maxarg2) ? (maxarg1) \+: (maxarg2))
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$class T $>$ }\\double \textbf{ lcfiplus\+::golden} (double ax, double bx, double cx, T $\ast$obj, double tol, double \&xmin)
+\item 
+{\footnotesize template$<$class T $>$ }\\double \textbf{ lcfiplus\+::brent} (double ax, double bx, double cx, T $\ast$obj, double tol, double \&xmin)
+\item 
+{\footnotesize template$<$class T , class U $>$ }\\double \textbf{ lcfiplus\+::dbrent} (double ax, double bx, double cx, T $\ast$obj, U $\ast$dobj, double tol, double \&xmin)
+\item 
+{\footnotesize template$<$class T $>$ }\\void \textbf{ lcfiplus\+::lnsrch} (int n, double xold[$\,$], double fold, double g[$\,$], double p[$\,$], double x[$\,$], double $\ast$f, double stpmax, int $\ast$check, T $\ast$obj)
+\item 
+{\footnotesize template$<$class T , class U $>$ }\\void \textbf{ lcfiplus\+::dfpmin} (double p[$\,$], int n, double gtol, int $\ast$iter, double $\ast$fret, T $\ast$obj, U $\ast$dobj)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const double \textbf{ lcfiplus\+::R} =0.\+61803399
+\item 
+const double \textbf{ lcfiplus\+::C} =(1.\+0-\/R)
+\item 
+const double \textbf{ lcfiplus\+::\+G\+O\+LD} =1.\+618034
+\item 
+const double \textbf{ lcfiplus\+::\+G\+L\+I\+M\+IT} =100.\+0
+\item 
+const double \textbf{ lcfiplus\+::\+T\+I\+NY} =1.e-\/25
+\item 
+const double \textbf{ lcfiplus\+::\+C\+G\+O\+LD} =0.\+3819660
+\item 
+const double \textbf{ lcfiplus\+::\+Z\+E\+PS} = 1e-\/20
+\item 
+const int \textbf{ lcfiplus\+::\+I\+T\+M\+AX} =200
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\mbox{\label{algo_8h_a985ff4ce447bced94342e89ab3766fdd}} 
+\index{algo.\+h@{algo.\+h}!F\+M\+AX@{F\+M\+AX}}
+\index{F\+M\+AX@{F\+M\+AX}!algo.\+h@{algo.\+h}}
+\subsubsection{F\+M\+AX\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \#define F\+M\+AX(\begin{DoxyParamCaption}\item[{}]{a,  }\item[{}]{b }\end{DoxyParamCaption})~(maxarg1=(a),maxarg2=(b),(maxarg1) $>$ (maxarg2) ? (maxarg1) \+: (maxarg2))}
+
+
+
+Referenced by lcfiplus\+::dfpmin(), and lcfiplus\+::lnsrch().
+
+\mbox{\label{algo_8h_a985ff4ce447bced94342e89ab3766fdd}} 
+\index{algo.\+h@{algo.\+h}!F\+M\+AX@{F\+M\+AX}}
+\index{F\+M\+AX@{F\+M\+AX}!algo.\+h@{algo.\+h}}
+\subsubsection{F\+M\+AX\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \#define F\+M\+AX(\begin{DoxyParamCaption}\item[{}]{a,  }\item[{}]{b }\end{DoxyParamCaption})~(maxarg1=(a),maxarg2=(b),(maxarg1) $>$ (maxarg2) ? (maxarg1) \+: (maxarg2))}
+
+\mbox{\label{algo_8h_afa069e7bc1c4fc253e85c69fce265d2b}} 
+\index{algo.\+h@{algo.\+h}!M\+O\+V3@{M\+O\+V3}}
+\index{M\+O\+V3@{M\+O\+V3}!algo.\+h@{algo.\+h}}
+\subsubsection{M\+O\+V3}
+{\footnotesize\ttfamily \#define M\+O\+V3(\begin{DoxyParamCaption}\item[{}]{a,  }\item[{}]{b,  }\item[{}]{c,  }\item[{}]{d,  }\item[{}]{e,  }\item[{}]{f }\end{DoxyParamCaption})~(a)=(d);(b)=(e);(c)=(f);}
+
+
+
+Referenced by lcfiplus\+::dbrent().
+
+\mbox{\label{algo_8h_a199afb41152cc9a1c32d60f129a40ea5}} 
+\index{algo.\+h@{algo.\+h}!S\+H\+FT@{S\+H\+FT}}
+\index{S\+H\+FT@{S\+H\+FT}!algo.\+h@{algo.\+h}}
+\subsubsection{S\+H\+FT}
+{\footnotesize\ttfamily \#define S\+H\+FT(\begin{DoxyParamCaption}\item[{}]{a,  }\item[{}]{b,  }\item[{}]{c,  }\item[{}]{d }\end{DoxyParamCaption})~(a)=(b);(b)=(c);(c)=(d);}
+
+
+
+Referenced by lcfiplus\+::brent(), and lcfiplus\+::mnbrak().
+
+\mbox{\label{algo_8h_a4a68f16b0ff909c9a2db33ed91c173f3}} 
+\index{algo.\+h@{algo.\+h}!S\+H\+F\+T2@{S\+H\+F\+T2}}
+\index{S\+H\+F\+T2@{S\+H\+F\+T2}!algo.\+h@{algo.\+h}}
+\subsubsection{S\+H\+F\+T2}
+{\footnotesize\ttfamily \#define S\+H\+F\+T2(\begin{DoxyParamCaption}\item[{}]{a,  }\item[{}]{b,  }\item[{}]{c }\end{DoxyParamCaption})~(a)=(b);(b)=(c);}
+
+
+
+Referenced by lcfiplus\+::golden().
+
+\mbox{\label{algo_8h_aa2fe0a6eb610d7d50048c62747994d4a}} 
+\index{algo.\+h@{algo.\+h}!S\+H\+F\+T3@{S\+H\+F\+T3}}
+\index{S\+H\+F\+T3@{S\+H\+F\+T3}!algo.\+h@{algo.\+h}}
+\subsubsection{S\+H\+F\+T3}
+{\footnotesize\ttfamily \#define S\+H\+F\+T3(\begin{DoxyParamCaption}\item[{}]{a,  }\item[{}]{b,  }\item[{}]{c,  }\item[{}]{d }\end{DoxyParamCaption})~(a)=(b);(b)=(c);(c)=(d);}
+
+
+
+Referenced by lcfiplus\+::golden().
+
+\mbox{\label{algo_8h_ac89d5f8a358eb8a1abdcd0fcef134f1a}} 
+\index{algo.\+h@{algo.\+h}!S\+I\+GN@{S\+I\+GN}}
+\index{S\+I\+GN@{S\+I\+GN}!algo.\+h@{algo.\+h}}
+\subsubsection{S\+I\+GN}
+{\footnotesize\ttfamily \#define S\+I\+GN(\begin{DoxyParamCaption}\item[{}]{a,  }\item[{}]{b }\end{DoxyParamCaption})~((b)$>$=0.\+0 ? fabs(a) \+: -\/fabs(a))}
+
+
+
+Referenced by lcfiplus\+::brent(), lcfiplus\+::dbrent(), and lcfiplus\+::mnbrak().
+

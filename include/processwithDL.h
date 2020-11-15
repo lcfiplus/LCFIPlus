@@ -34,6 +34,7 @@ class VertexFindingwithDL : public Algorithm {
   // parameters
   tensorflow::ConfigProto config;
 
+  int NEventNumber;
   int NTrackVariable;
   int MaxTrack;
   int MaxPrimaryVertexLoop;

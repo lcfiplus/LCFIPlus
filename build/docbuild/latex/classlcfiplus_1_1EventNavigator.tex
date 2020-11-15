@@ -1,0 +1,114 @@
+\section{lcfiplus\+:\+:Event\+Navigator Class Reference}
+\label{classlcfiplus_1_1EventNavigator}\index{lcfiplus\+::\+Event\+Navigator@{lcfiplus\+::\+Event\+Navigator}}
+
+
+\doxyref{Event}{p.}{classlcfiplus_1_1Event} display for L\+C\+F\+I\+Plus.  
+
+
+
+
+{\ttfamily \#include $<$Event\+Navigator.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\textbf{ Event\+Navigator} (const char $\ast$input, int start=0)
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+\textbf{ $\sim$\+Event\+Navigator} ()
+\item 
+void \textbf{ Fwd} ()
+\begin{DoxyCompactList}\small\item\em Display next event. \end{DoxyCompactList}\item 
+void \textbf{ Bck} ()
+\item 
+void \textbf{ draw\+Event} (\textbf{ Event} $\ast$event)
+\begin{DoxyCompactList}\small\item\em Draws given event. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\doxyref{Event}{p.}{classlcfiplus_1_1Event} display for L\+C\+F\+I\+Plus. 
+
+The graphics is based on the T\+Eve framework for R\+O\+OT. Adapted from the $<$a href="{\tt http\+://llr.\+in2p3.\+fr/$\sim$ruan/\+I\+L\+D\+Display/}$>$Druid event display.
+
+\begin{DoxyAuthor}{Author}
+T. Tanabe, I\+C\+E\+PP, The University of Tokyo 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+\$\+Id\$ 
+\end{DoxyVersion}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\label{classlcfiplus_1_1EventNavigator_a6ee61abd6eb6ac9265d1ccb132d91510}} 
+\index{lcfiplus\+::\+Event\+Navigator@{lcfiplus\+::\+Event\+Navigator}!Event\+Navigator@{Event\+Navigator}}
+\index{Event\+Navigator@{Event\+Navigator}!lcfiplus\+::\+Event\+Navigator@{lcfiplus\+::\+Event\+Navigator}}
+\subsubsection{Event\+Navigator()}
+{\footnotesize\ttfamily lcfiplus\+::\+Event\+Navigator\+::\+Event\+Navigator (\begin{DoxyParamCaption}\item[{const char $\ast$}]{input,  }\item[{int}]{start = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Constructor. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em input} & input file which contains events to inspect. \\
+\hline
+\mbox{\tt in}  & {\em start} & skips given number of events. \\
+\hline
+\end{DoxyParams}
+
+
+References lcfiplus\+::\+L\+C\+I\+O\+Storer\+::\+Next().
+
+\mbox{\label{classlcfiplus_1_1EventNavigator_ab0e80957435833bbcf04c4d11cf9de2f}} 
+\index{lcfiplus\+::\+Event\+Navigator@{lcfiplus\+::\+Event\+Navigator}!````~Event\+Navigator@{$\sim$\+Event\+Navigator}}
+\index{````~Event\+Navigator@{$\sim$\+Event\+Navigator}!lcfiplus\+::\+Event\+Navigator@{lcfiplus\+::\+Event\+Navigator}}
+\subsubsection{$\sim$\+Event\+Navigator()}
+{\footnotesize\ttfamily lcfiplus\+::\+Event\+Navigator\+::$\sim$\+Event\+Navigator (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\label{classlcfiplus_1_1EventNavigator_add85c2e4134c32f9c084dfc50715124b}} 
+\index{lcfiplus\+::\+Event\+Navigator@{lcfiplus\+::\+Event\+Navigator}!Bck@{Bck}}
+\index{Bck@{Bck}!lcfiplus\+::\+Event\+Navigator@{lcfiplus\+::\+Event\+Navigator}}
+\subsubsection{Bck()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Event\+Navigator\+::\+Bck (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\label{classlcfiplus_1_1EventNavigator_abfade858f734595fc0133ed1c869f6a8}} 
+\index{lcfiplus\+::\+Event\+Navigator@{lcfiplus\+::\+Event\+Navigator}!draw\+Event@{draw\+Event}}
+\index{draw\+Event@{draw\+Event}!lcfiplus\+::\+Event\+Navigator@{lcfiplus\+::\+Event\+Navigator}}
+\subsubsection{draw\+Event()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Event\+Navigator\+::draw\+Event (\begin{DoxyParamCaption}\item[{\textbf{ Event} $\ast$}]{event }\end{DoxyParamCaption})}
+
+
+
+Draws given event. 
+
+
+
+References lcfiplus\+::tpar\+::d0, lcfiplus\+::\+Globals\+::get\+B\+Field(), lcfiplus\+::\+Track\+::get\+Charge(), lcfiplus\+::\+M\+C\+Particle\+::get\+Charge(), lcfiplus\+::\+Vertex\+::get\+Chi2(), lcfiplus\+::\+Track\+::get\+D0(), lcfiplus\+::\+M\+C\+Particle\+::get\+Ex(), lcfiplus\+::\+M\+C\+Particle\+::get\+Ey(), lcfiplus\+::\+M\+C\+Particle\+::get\+Ez(), lcfiplus\+::\+M\+C\+Particle\+::get\+Flavor\+Tag\+Category(), lcfiplus\+::\+Track\+::get\+P\+D\+G(), lcfiplus\+::\+M\+C\+Particle\+::get\+P\+D\+G(), lcfiplus\+::\+Track\+::get\+Phi(), lcfiplus\+::\+Vertex\+::get\+Tracks(), lcfiplus\+::\+M\+C\+Particle\+::get\+Vertex(), lcfiplus\+::\+Vertex\+::get\+X(), lcfiplus\+::\+Vertex\+::get\+Y(), lcfiplus\+::\+Vertex\+::get\+Z(), lcfiplus\+::\+Track\+::get\+Z0(), lcfiplus\+::\+Globals\+::\+Instance(), lcfiplus\+::\+M\+C\+Particle\+::is\+Stable\+Track(), and lcfiplus\+::tpar\+::z0.
+
+
+
+Referenced by Fwd().
+
+\mbox{\label{classlcfiplus_1_1EventNavigator_a2649c62f002c5e662496fb28785bb688}} 
+\index{lcfiplus\+::\+Event\+Navigator@{lcfiplus\+::\+Event\+Navigator}!Fwd@{Fwd}}
+\index{Fwd@{Fwd}!lcfiplus\+::\+Event\+Navigator@{lcfiplus\+::\+Event\+Navigator}}
+\subsubsection{Fwd()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Event\+Navigator\+::\+Fwd (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Display next event. 
+
+
+
+References draw\+Event(), lcfiplus\+::\+Event\+::\+Instance(), and lcfiplus\+::\+L\+C\+I\+O\+Storer\+::\+Next().
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ Event\+Navigator.\+h}\item 
+\textbf{ Event\+Navigator.\+cc}\end{DoxyCompactItemize}

@@ -1,0 +1,163 @@
+\section{lcfiplus\+:\+:Parameters Class Reference}
+\label{classlcfiplus_1_1Parameters}\index{lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}}
+
+
+{\ttfamily \#include $<$lcfiplus.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\textbf{ Parameters} (bool as=true)
+\item 
+\textbf{ $\sim$\+Parameters} ()
+\item 
+\textbf{ Parameters} (const \textbf{ Parameters} \&ref)
+\item 
+\textbf{ Parameters} \& \textbf{ operator=} (const \textbf{ Parameters} \&ref)
+\item 
+{\footnotesize template$<$typename T $>$ }\\void \textbf{ fetch} (const char $\ast$key, T \&ret, T def=T()) const
+\item 
+{\footnotesize template$<$typename T $>$ }\\void \textbf{ fetch\+Array} (const char $\ast$key, vector$<$ T $>$ \&ret) const
+\item 
+{\footnotesize template$<$typename T $>$ }\\T \textbf{ get} (const char $\ast$key, T def=T()) const
+\item 
+{\footnotesize template$<$typename T $>$ }\\std\+::vector$<$ T $>$ \textbf{ get\+Vec} (const char $\ast$key) const
+\item 
+bool \textbf{ exist} (const char $\ast$key) const
+\item 
+{\footnotesize template$<$typename T $>$ }\\void \textbf{ add} (const char $\ast$key, T data)
+\item 
+void \textbf{ remove} (const char $\ast$key)
+\item 
+void \textbf{ clear} ()
+\item 
+{\footnotesize template$<$typename T $>$ }\\void \textbf{ assign} (const char $\ast$key, T data)
+\item 
+const map$<$ string, pair$<$ const type\+\_\+info $\ast$, void $\ast$ $>$ $>$ \& \textbf{ param\+Map} () const
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\label{classlcfiplus_1_1Parameters_a6477747e2ec38ec165df21b106b17ed4}} 
+\index{lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}!Parameters@{Parameters}}
+\index{Parameters@{Parameters}!lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}}
+\subsubsection{Parameters()\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily lcfiplus\+::\+Parameters\+::\+Parameters (\begin{DoxyParamCaption}\item[{bool}]{as = {\ttfamily true} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1Parameters_a05a4af1fa750b3d8ae18d6d56eda7b5e}} 
+\index{lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}!````~Parameters@{$\sim$\+Parameters}}
+\index{````~Parameters@{$\sim$\+Parameters}!lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}}
+\subsubsection{$\sim$\+Parameters()}
+{\footnotesize\ttfamily lcfiplus\+::\+Parameters\+::$\sim$\+Parameters (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1Parameters_a14987ec824053706cb494a3f4c573587}} 
+\index{lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}!Parameters@{Parameters}}
+\index{Parameters@{Parameters}!lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}}
+\subsubsection{Parameters()\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily lcfiplus\+::\+Parameters\+::\+Parameters (\begin{DoxyParamCaption}\item[{const \textbf{ Parameters} \&}]{ref }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\label{classlcfiplus_1_1Parameters_a72360e493087ca775163442c63b5cab7}} 
+\index{lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}!add@{add}}
+\index{add@{add}!lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}}
+\subsubsection{add()}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void lcfiplus\+::\+Parameters\+::add (\begin{DoxyParamCaption}\item[{const char $\ast$}]{key,  }\item[{T}]{data }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by Lcfiplus\+Processor\+::init(), operator=(), lcfiplus\+::\+Jet\+Clustering\+::process(), lcfiplus\+::\+F\+T\+Manager\+::process(), and lcfiplus\+::\+L\+C\+I\+O\+Storer\+::\+Read\+Jets().
+
+\mbox{\label{classlcfiplus_1_1Parameters_a914dd51a8f56ef674b8becf1cfb6b0e5}} 
+\index{lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}!assign@{assign}}
+\index{assign@{assign}!lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}}
+\subsubsection{assign()}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void lcfiplus\+::\+Parameters\+::assign (\begin{DoxyParamCaption}\item[{const char $\ast$}]{key,  }\item[{T}]{data }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1Parameters_abcb5934a6f3d284892b3c1fe6890776e}} 
+\index{lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}!clear@{clear}}
+\index{clear@{clear}!lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}}
+\subsubsection{clear()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Parameters\+::clear (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Referenced by operator=().
+
+\mbox{\label{classlcfiplus_1_1Parameters_ad64bd6233648fb10d36408bc6e1ce60e}} 
+\index{lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}!exist@{exist}}
+\index{exist@{exist}!lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}}
+\subsubsection{exist()}
+{\footnotesize\ttfamily bool lcfiplus\+::\+Parameters\+::exist (\begin{DoxyParamCaption}\item[{const char $\ast$}]{key }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1Parameters_a32c2c737ce139d02dbdb7759caaa3d6e}} 
+\index{lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}!fetch@{fetch}}
+\index{fetch@{fetch}!lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}}
+\subsubsection{fetch()}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void lcfiplus\+::\+Parameters\+::fetch (\begin{DoxyParamCaption}\item[{const char $\ast$}]{key,  }\item[{T \&}]{ret,  }\item[{T}]{def = {\ttfamily T()} }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1Parameters_ac6aae83fccf3947a0f0e44e96e3eb28b}} 
+\index{lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}!fetch\+Array@{fetch\+Array}}
+\index{fetch\+Array@{fetch\+Array}!lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}}
+\subsubsection{fetch\+Array()}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+void lcfiplus\+::\+Parameters\+::fetch\+Array (\begin{DoxyParamCaption}\item[{const char $\ast$}]{key,  }\item[{vector$<$ T $>$ \&}]{ret }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by lcfiplus\+::\+Train\+M\+V\+A\+::init(), lcfiplus\+::\+Read\+M\+V\+A\+::init(), and lcfiplus\+::\+Jet\+Clustering\+::init().
+
+\mbox{\label{classlcfiplus_1_1Parameters_aa6f8404418f133834839cfb50d2c9772}} 
+\index{lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}!get@{get}}
+\index{get@{get}!lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}}
+\subsubsection{get()}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+T lcfiplus\+::\+Parameters\+::get (\begin{DoxyParamCaption}\item[{const char $\ast$}]{key,  }\item[{T}]{def = {\ttfamily T()} }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Mass\+Recovery\+::init(), lcfiplus\+::\+Primary\+Vertex\+Finder\+::init(), lcfiplus\+::\+Make\+R\+O\+O\+T\+File\+C\+C\+::init(), lcfiplus\+::\+Make\+Ntuple\+::init(), lcfiplus\+::\+Vertex\+Findingwith\+D\+L\+::init(), lcfiplus\+::\+Train\+M\+V\+A\+::init(), lcfiplus\+::\+Vertex\+Ntuple\+::init(), lcfiplus\+::\+Track\+Ntuple\+::init(), lcfiplus\+::\+Read\+M\+V\+A\+::init(), lcfiplus\+::\+Flavor\+Tag\+::init(), lcfiplus\+::\+Build\+Up\+Vertex\+::init(), lcfiplus\+::\+Jet\+Clustering\+::init(), lcfiplus\+::\+Jet\+Vertex\+Refiner\+::init(), lcfiplus\+::\+Make\+R\+O\+O\+T\+File\+B\+B\+::init(), lcfiplus\+::\+Z\+H\+H\+Algo\+::init(), lcfiplus\+::\+Test\+Algo\+::init(), lcfiplus\+::\+Vertex\+Analysis\+::init(), lcfiplus\+::\+Flavtag\+Reader\+::init(), lcfiplus\+::\+Test\+Algo\+V0\+::init(), lcfiplus\+::\+Z\+H\+H\+Algo\+::process(), lcfiplus\+::\+Flavtag\+Reader\+::process(), lcfiplus\+::\+Z\+H\+H\+Algo\+::sort\+Btag(), and lcfiplus\+::\+L\+C\+I\+O\+Storer\+::\+Write\+P\+I\+D().
+
+\mbox{\label{classlcfiplus_1_1Parameters_a6c484849393b5b8b844d9b34956b8c2c}} 
+\index{lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}!get\+Vec@{get\+Vec}}
+\index{get\+Vec@{get\+Vec}!lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}}
+\subsubsection{get\+Vec()}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+std\+::vector$<$T$>$ lcfiplus\+::\+Parameters\+::get\+Vec (\begin{DoxyParamCaption}\item[{const char $\ast$}]{key }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1Parameters_ab1ff29728d805f7dac49233261fe10d1}} 
+\index{lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}!operator=@{operator=}}
+\index{operator=@{operator=}!lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}}
+\subsubsection{operator=()}
+{\footnotesize\ttfamily \textbf{ Parameters} \& lcfiplus\+::\+Parameters\+::operator= (\begin{DoxyParamCaption}\item[{const \textbf{ Parameters} \&}]{ref }\end{DoxyParamCaption})}
+
+
+
+References add(), and clear().
+
+\mbox{\label{classlcfiplus_1_1Parameters_a9da54d56ac681813f61e38c40c00bdb1}} 
+\index{lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}!param\+Map@{param\+Map}}
+\index{param\+Map@{param\+Map}!lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}}
+\subsubsection{param\+Map()}
+{\footnotesize\ttfamily const map$<$string, pair$<$const type\+\_\+info$\ast$, void$\ast$$>$ $>$\& lcfiplus\+::\+Parameters\+::param\+Map (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by lcfiplus\+::\+L\+C\+I\+O\+Storer\+::\+Write\+P\+I\+D().
+
+\mbox{\label{classlcfiplus_1_1Parameters_a87390bb27075c4c6e382044dcb9cc510}} 
+\index{lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}!remove@{remove}}
+\index{remove@{remove}!lcfiplus\+::\+Parameters@{lcfiplus\+::\+Parameters}}
+\subsubsection{remove()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Parameters\+::remove (\begin{DoxyParamCaption}\item[{const char $\ast$}]{key }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ lcfiplus.\+h}\item 
+\textbf{ lcfiplus.\+cc}\end{DoxyCompactItemize}

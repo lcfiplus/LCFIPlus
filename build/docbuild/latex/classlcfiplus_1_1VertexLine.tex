@@ -1,0 +1,150 @@
+\section{lcfiplus\+:\+:Vertex\+Line Class Reference}
+\label{classlcfiplus_1_1VertexLine}\index{lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}}
+
+
+{\ttfamily \#include $<$geometry.\+h$>$}
+
+Inheritance diagram for lcfiplus\+:\+:Vertex\+Line\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classlcfiplus_1_1VertexLine}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual double \textbf{ Log\+Likelihood} (const T\+Vector3 \&p) const
+\item 
+double \textbf{ Log\+Likelihood} (const T\+Vector3 \&p, double \&tmin) const
+\item 
+void \textbf{ Log\+Likelihood\+Deriv} (const T\+Vector3 \&p, double $\ast$output) const
+\item 
+double \textbf{ Variance} (const T\+Vector3 \&p, double t) const
+\item 
+\textbf{ Vertex\+Line} (\textbf{ F\+I\+T\+F\+L\+AG} flag)
+\item 
+\textbf{ Vertex\+Line} (const \textbf{ Vertex} $\ast$ip, const \textbf{ Vertex} $\ast$secvtx, \textbf{ F\+I\+T\+F\+L\+AG} flag)
+\item 
+\textbf{ Vertex\+Line} (const T\+Vector3 \&origin, const T\+Vector3 \&dir, \textbf{ F\+I\+T\+F\+L\+AG} flag)
+\item 
+\textbf{ $\sim$\+Vertex\+Line} ()
+\item 
+void \textbf{ Set} (const T\+Vector3 \&origin, const T\+Vector3 \&dir)
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+class \textbf{ Helix\+::\+Helix\+Line\+Distance2\+Functor}
+\item 
+class \textbf{ Helix\+::\+Helix\+Line\+Distance2\+Deriv\+Functor}
+\item 
+T\+Vector3 \textbf{ Helix\+::\+Close\+Point} (const \textbf{ Vertex\+Line} \&line, double $\ast$distance) const
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\label{classlcfiplus_1_1VertexLine_acf99a817e6302b72cada541e5d1f049d}} 
+\index{lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}!Vertex\+Line@{Vertex\+Line}}
+\index{Vertex\+Line@{Vertex\+Line}!lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}}
+\subsubsection{Vertex\+Line()\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily lcfiplus\+::\+Vertex\+Line\+::\+Vertex\+Line (\begin{DoxyParamCaption}\item[{\textbf{ F\+I\+T\+F\+L\+AG}}]{flag }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1VertexLine_a7a88bcf0d87a515a3ad8f53adeb6d7d7}} 
+\index{lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}!Vertex\+Line@{Vertex\+Line}}
+\index{Vertex\+Line@{Vertex\+Line}!lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}}
+\subsubsection{Vertex\+Line()\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily lcfiplus\+::\+Vertex\+Line\+::\+Vertex\+Line (\begin{DoxyParamCaption}\item[{const \textbf{ Vertex} $\ast$}]{ip,  }\item[{const \textbf{ Vertex} $\ast$}]{secvtx,  }\item[{\textbf{ F\+I\+T\+F\+L\+AG}}]{flag }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+References lcfiplus\+::\+Vertex\+::get\+Pos().
+
+\mbox{\label{classlcfiplus_1_1VertexLine_a67367088646f60ccba2ae58c08f898b9}} 
+\index{lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}!Vertex\+Line@{Vertex\+Line}}
+\index{Vertex\+Line@{Vertex\+Line}!lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}}
+\subsubsection{Vertex\+Line()\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily lcfiplus\+::\+Vertex\+Line\+::\+Vertex\+Line (\begin{DoxyParamCaption}\item[{const T\+Vector3 \&}]{origin,  }\item[{const T\+Vector3 \&}]{dir,  }\item[{\textbf{ F\+I\+T\+F\+L\+AG}}]{flag }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1VertexLine_aed1065b3a6d987a40c86916ff5c05058}} 
+\index{lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}!````~Vertex\+Line@{$\sim$\+Vertex\+Line}}
+\index{````~Vertex\+Line@{$\sim$\+Vertex\+Line}!lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}}
+\subsubsection{$\sim$\+Vertex\+Line()}
+{\footnotesize\ttfamily lcfiplus\+::\+Vertex\+Line\+::$\sim$\+Vertex\+Line (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\label{classlcfiplus_1_1VertexLine_aa3366dafc37738540b2bef3efbcd18a8}} 
+\index{lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}!Log\+Likelihood@{Log\+Likelihood}}
+\index{Log\+Likelihood@{Log\+Likelihood}!lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}}
+\subsubsection{Log\+Likelihood()\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily virtual double lcfiplus\+::\+Vertex\+Line\+::\+Log\+Likelihood (\begin{DoxyParamCaption}\item[{const T\+Vector3 \&}]{p }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Implements \textbf{ lcfiplus\+::\+Point\+Base} \doxyref{}{p.}{classlcfiplus_1_1PointBase_ae23cbb155b71a6da8057936384605278}.
+
+\mbox{\label{classlcfiplus_1_1VertexLine_ab8f71cf9eb70d5f0241999e0c9a27db8}} 
+\index{lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}!Log\+Likelihood@{Log\+Likelihood}}
+\index{Log\+Likelihood@{Log\+Likelihood}!lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}}
+\subsubsection{Log\+Likelihood()\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily double lcfiplus\+::\+Vertex\+Line\+::\+Log\+Likelihood (\begin{DoxyParamCaption}\item[{const T\+Vector3 \&}]{p,  }\item[{double \&}]{tmin }\end{DoxyParamCaption}) const}
+
+
+
+References lcfiplus\+::algo\+Etc\+::min(), and lcfiplus\+::verbose.
+
+\mbox{\label{classlcfiplus_1_1VertexLine_a78d3e4326d8b1bcd258f990eebd6caeb}} 
+\index{lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}!Log\+Likelihood\+Deriv@{Log\+Likelihood\+Deriv}}
+\index{Log\+Likelihood\+Deriv@{Log\+Likelihood\+Deriv}!lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}}
+\subsubsection{Log\+Likelihood\+Deriv()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Line\+::\+Log\+Likelihood\+Deriv (\begin{DoxyParamCaption}\item[{const T\+Vector3 \&}]{p,  }\item[{double $\ast$}]{output }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Implements \textbf{ lcfiplus\+::\+Point\+Base} \doxyref{}{p.}{classlcfiplus_1_1PointBase_a98789168bf825ba0f4326c7aa0f9a43f}.
+
+\mbox{\label{classlcfiplus_1_1VertexLine_acc02b67b788930125730099e16f76181}} 
+\index{lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}!Set@{Set}}
+\index{Set@{Set}!lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}}
+\subsubsection{Set()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Line\+::\+Set (\begin{DoxyParamCaption}\item[{const T\+Vector3 \&}]{origin,  }\item[{const T\+Vector3 \&}]{dir }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1VertexLine_a814094bf8192c67331dd8a597a0ed0f1}} 
+\index{lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}!Variance@{Variance}}
+\index{Variance@{Variance}!lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}}
+\subsubsection{Variance()}
+{\footnotesize\ttfamily double lcfiplus\+::\+Vertex\+Line\+::\+Variance (\begin{DoxyParamCaption}\item[{const T\+Vector3 \&}]{p,  }\item[{double}]{t }\end{DoxyParamCaption}) const}
+
+
+
+References lcfiplus\+::\+Vertex\+::xx, lcfiplus\+::\+Vertex\+::xy, lcfiplus\+::\+Vertex\+::xz, lcfiplus\+::\+Vertex\+::yy, lcfiplus\+::\+Vertex\+::yz, and lcfiplus\+::\+Vertex\+::zz.
+
+
+
+\subsection{Friends And Related Function Documentation}
+\mbox{\label{classlcfiplus_1_1VertexLine_a1f585f462b381c106c5e0c48c4040e7a}} 
+\index{lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}!Helix\+::\+Close\+Point@{Helix\+::\+Close\+Point}}
+\index{Helix\+::\+Close\+Point@{Helix\+::\+Close\+Point}!lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}}
+\subsubsection{Helix\+::\+Close\+Point}
+{\footnotesize\ttfamily T\+Vector3 \textbf{ Helix\+::\+Close\+Point} (\begin{DoxyParamCaption}\item[{const \textbf{ Vertex\+Line} \&}]{line,  }\item[{double $\ast$}]{distance }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [friend]}}
+
+\mbox{\label{classlcfiplus_1_1VertexLine_a49f31344b1cff6827a65aa7968c9cdaa}} 
+\index{lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}!Helix\+::\+Helix\+Line\+Distance2\+Deriv\+Functor@{Helix\+::\+Helix\+Line\+Distance2\+Deriv\+Functor}}
+\index{Helix\+::\+Helix\+Line\+Distance2\+Deriv\+Functor@{Helix\+::\+Helix\+Line\+Distance2\+Deriv\+Functor}!lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}}
+\subsubsection{Helix\+::\+Helix\+Line\+Distance2\+Deriv\+Functor}
+{\footnotesize\ttfamily friend class \textbf{ Helix\+::\+Helix\+Line\+Distance2\+Deriv\+Functor}\hspace{0.3cm}{\ttfamily [friend]}}
+
+\mbox{\label{classlcfiplus_1_1VertexLine_ad23a5d92a751a2b7d09da0240d572b4d}} 
+\index{lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}!Helix\+::\+Helix\+Line\+Distance2\+Functor@{Helix\+::\+Helix\+Line\+Distance2\+Functor}}
+\index{Helix\+::\+Helix\+Line\+Distance2\+Functor@{Helix\+::\+Helix\+Line\+Distance2\+Functor}!lcfiplus\+::\+Vertex\+Line@{lcfiplus\+::\+Vertex\+Line}}
+\subsubsection{Helix\+::\+Helix\+Line\+Distance2\+Functor}
+{\footnotesize\ttfamily friend class \textbf{ Helix\+::\+Helix\+Line\+Distance2\+Functor}\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ geometry.\+h}\item 
+\textbf{ geometry.\+cc}\end{DoxyCompactItemize}

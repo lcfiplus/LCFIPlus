@@ -1,0 +1,301 @@
+\section{lcfiplus\+:\+:F\+T\+Algo Class Reference}
+\label{classlcfiplus_1_1FTAlgo}\index{lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}}
+
+
+{\ttfamily \#include $<$flavtag.\+h$>$}
+
+Inheritance diagram for lcfiplus\+:\+:F\+T\+Algo\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=12.000000cm]{classlcfiplus_1_1FTAlgo}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\textbf{ F\+T\+Algo} (string name)
+\item 
+virtual \textbf{ $\sim$\+F\+T\+Algo} ()
+\item 
+void \textbf{ set\+Event} (const \textbf{ Event} $\ast$event, const \textbf{ Vertex} $\ast$privtx)
+\item 
+void \textbf{ set\+Jet} (const \textbf{ Jet} $\ast$jet)
+\item 
+void \textbf{ set\+N\+Hits\+Joint\+Prob\+D0} (int value)
+\item 
+void \textbf{ set\+N\+Hits\+Joint\+Prob\+Z0} (int value)
+\item 
+void \textbf{ set\+N\+Hits\+Most\+Significant\+Track} (int value)
+\item 
+float \textbf{ get\+Value} ()
+\item 
+const string \& \textbf{ get\+Name} () const
+\item 
+float $\ast$ \textbf{ get\+Value\+Address} ()
+\item 
+virtual void \textbf{ process\+Event} ()
+\item 
+virtual void \textbf{ process} ()
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+const \textbf{ Event} $\ast$ \textbf{ \+\_\+event}
+\item 
+const \textbf{ Vertex} $\ast$ \textbf{ \+\_\+privtx}
+\item 
+const \textbf{ Jet} $\ast$ \textbf{ \+\_\+jet}
+\item 
+int \textbf{ \+\_\+nhits\+Joint\+Prob\+D0}
+\item 
+int \textbf{ \+\_\+nhits\+Joint\+Prob\+Z0}
+\item 
+int \textbf{ \+\_\+nhits\+Most\+Significant\+Track}
+\item 
+float \textbf{ \+\_\+result}
+\item 
+string \textbf{ \+\_\+name}
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\label{classlcfiplus_1_1FTAlgo_a18309a8c94ce19e288f03d48cfe00e79}} 
+\index{lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}!F\+T\+Algo@{F\+T\+Algo}}
+\index{F\+T\+Algo@{F\+T\+Algo}!lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}}
+\subsubsection{F\+T\+Algo()}
+{\footnotesize\ttfamily lcfiplus\+::\+F\+T\+Algo\+::\+F\+T\+Algo (\begin{DoxyParamCaption}\item[{string}]{name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1FTAlgo_af267a08fa8ee5359a53dcd8758828dbd}} 
+\index{lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}!````~F\+T\+Algo@{$\sim$\+F\+T\+Algo}}
+\index{````~F\+T\+Algo@{$\sim$\+F\+T\+Algo}!lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}}
+\subsubsection{$\sim$\+F\+T\+Algo()}
+{\footnotesize\ttfamily virtual lcfiplus\+::\+F\+T\+Algo\+::$\sim$\+F\+T\+Algo (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\label{classlcfiplus_1_1FTAlgo_ac76e9ae13546c85c71e2be71542781b0}} 
+\index{lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}!get\+Name@{get\+Name}}
+\index{get\+Name@{get\+Name}!lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}}
+\subsubsection{get\+Name()}
+{\footnotesize\ttfamily const string\& lcfiplus\+::\+F\+T\+Algo\+::get\+Name (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+References \+\_\+name.
+
+
+
+Referenced by lcfiplus\+::\+F\+T\+Manager\+::get\+Var\+Address(), lcfiplus\+::\+F\+T\+Manager\+::open\+File(), lcfiplus\+::\+F\+T\+Manager\+::open\+Tree(), and lcfiplus\+::\+F\+T\+Manager\+::process().
+
+\mbox{\label{classlcfiplus_1_1FTAlgo_acee17e9515c3ca59b50eae41490c29de}} 
+\index{lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}!get\+Value@{get\+Value}}
+\index{get\+Value@{get\+Value}!lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}}
+\subsubsection{get\+Value()}
+{\footnotesize\ttfamily float lcfiplus\+::\+F\+T\+Algo\+::get\+Value (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References \+\_\+result.
+
+\mbox{\label{classlcfiplus_1_1FTAlgo_a61f8d2c2afe4f4d563c43cb0817047e0}} 
+\index{lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}!get\+Value\+Address@{get\+Value\+Address}}
+\index{get\+Value\+Address@{get\+Value\+Address}!lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}}
+\subsubsection{get\+Value\+Address()}
+{\footnotesize\ttfamily float$\ast$ lcfiplus\+::\+F\+T\+Algo\+::get\+Value\+Address (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+References \+\_\+result.
+
+
+
+Referenced by lcfiplus\+::\+F\+T\+Manager\+::get\+Var\+Address(), lcfiplus\+::\+F\+T\+Manager\+::open\+File(), and lcfiplus\+::\+F\+T\+Manager\+::open\+Tree().
+
+\mbox{\label{classlcfiplus_1_1FTAlgo_a23cc3f3cd1c100ab6b5e16056112351a}} 
+\index{lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}!process@{process}}
+\index{process@{process}!lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}}
+\subsubsection{process()}
+{\footnotesize\ttfamily virtual void lcfiplus\+::\+F\+T\+Algo\+::process (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented in \textbf{ lcfiplus\+::\+Ft\+N\+B\+Ness} \doxyref{}{p.}{classlcfiplus_1_1FtNBNess_af9a1114a1d0f001a10036490570e5a82}, \textbf{ lcfiplus\+::\+Ft\+B\+Ness\+Mass} \doxyref{}{p.}{classlcfiplus_1_1FtBNessMass_aa542017c9cce9c344b674aae68f3084e}, \textbf{ lcfiplus\+::\+Ft\+B\+Ness3} \doxyref{}{p.}{classlcfiplus_1_1FtBNess3_aea7ab74de348d9897b3804d12bd4f938}, \textbf{ lcfiplus\+::\+Ft\+B\+Ness2} \doxyref{}{p.}{classlcfiplus_1_1FtBNess2_a777253ce5623451441076e1f82db65d7}, \textbf{ lcfiplus\+::\+Ft\+B\+Ness1} \doxyref{}{p.}{classlcfiplus_1_1FtBNess1_a91ff1353e4e18811aece7512160fd116}, \textbf{ lcfiplus\+::\+Ft\+B\+Ness0} \doxyref{}{p.}{classlcfiplus_1_1FtBNess0_af8d04b8f7e900520ee4057ad9d27b40f}, \textbf{ lcfiplus\+::\+Ft\+N\+Pi0s2} \doxyref{}{p.}{classlcfiplus_1_1FtNPi0s2_a924b3a544cab8451465c7d33e7480b87}, \textbf{ lcfiplus\+::\+Ft\+N\+Pi0s1} \doxyref{}{p.}{classlcfiplus_1_1FtNPi0s1_a7fdafff17efcbeabf1697488b99cbeae}, \textbf{ lcfiplus\+::\+Ft\+Pi0\+Momentum\+All} \doxyref{}{p.}{classlcfiplus_1_1FtPi0MomentumAll_aac1d58ec21b23c22524859dd71c950c1}, \textbf{ lcfiplus\+::\+Ft\+Pi0\+Momentum2} \doxyref{}{p.}{classlcfiplus_1_1FtPi0Momentum2_aa676b1d5afd4581dabf344232dca8bb9}, \textbf{ lcfiplus\+::\+Ft\+Pi0\+Momentum1} \doxyref{}{p.}{classlcfiplus_1_1FtPi0Momentum1_a28c14c5071b349004b59be4e389713e0}, \textbf{ lcfiplus\+::\+Ft\+Corr\+Vtx\+Momentum\+All} \doxyref{}{p.}{classlcfiplus_1_1FtCorrVtxMomentumAll_a541350ba8ec892f2d86b3072d2b5e3ad}, \textbf{ lcfiplus\+::\+Ft\+Corr\+Vtx\+Momentum2} \doxyref{}{p.}{classlcfiplus_1_1FtCorrVtxMomentum2_a3bbf00a47a5598287aedffbcd7f1f4e7}, \textbf{ lcfiplus\+::\+Ft\+Corr\+Vtx\+Momentum1} \doxyref{}{p.}{classlcfiplus_1_1FtCorrVtxMomentum1_aed6efc62695091f145b3ee80d8d0bbc0}, \textbf{ lcfiplus\+::\+Ft\+Corr\+Vtx\+Mass\+All} \doxyref{}{p.}{classlcfiplus_1_1FtCorrVtxMassAll_a2a48b21fd4d03f7c35bbe71040cec7c9}, \textbf{ lcfiplus\+::\+Ft\+Corr\+Vtx\+Mass2} \doxyref{}{p.}{classlcfiplus_1_1FtCorrVtxMass2_a469cb633f5323240b29ce0779a36f1f7}, \textbf{ lcfiplus\+::\+Ft\+Corr\+Vtx\+Mass1} \doxyref{}{p.}{classlcfiplus_1_1FtCorrVtxMass1_a9854c75f70d16dd4b24ef7e70a4b92dd}, \textbf{ lcfiplus\+::\+Ft\+Z0c\+Prob\+IP} \doxyref{}{p.}{classlcfiplus_1_1FtZ0cProbIP_a26be7b91972ec6e2c165d767c9aedb25}, \textbf{ lcfiplus\+::\+Ft\+Z0b\+Prob\+IP} \doxyref{}{p.}{classlcfiplus_1_1FtZ0bProbIP_a1fff3afba2dcf596886292756283e8c7}, \textbf{ lcfiplus\+::\+Ft\+Z0q\+Prob2} \doxyref{}{p.}{classlcfiplus_1_1FtZ0qProb2_a83ea4dca7b99a30bae246fcf71394246}, \textbf{ lcfiplus\+::\+Ft\+Z0q\+Prob} \doxyref{}{p.}{classlcfiplus_1_1FtZ0qProb_a352fb1ffb695a18a3feef62ffe8cfb74}, \textbf{ lcfiplus\+::\+Ft\+Z0c\+Prob2} \doxyref{}{p.}{classlcfiplus_1_1FtZ0cProb2_af7577bcba793b2204a72885f90b9b830}, \textbf{ lcfiplus\+::\+Ft\+Z0c\+Prob} \doxyref{}{p.}{classlcfiplus_1_1FtZ0cProb_a6421a336a5e0e8cd22f7308350144957}, \textbf{ lcfiplus\+::\+Ft\+Z0b\+Prob2} \doxyref{}{p.}{classlcfiplus_1_1FtZ0bProb2_a105402e137a7c17f0d4ee04505129c7d}, \textbf{ lcfiplus\+::\+Ft\+Z0b\+Prob} \doxyref{}{p.}{classlcfiplus_1_1FtZ0bProb_a6d27f53bc71ed168c1406d52967ee1c2}, \textbf{ lcfiplus\+::\+Ft\+D0c\+Prob\+IP} \doxyref{}{p.}{classlcfiplus_1_1FtD0cProbIP_afb0b4e7c2480d972480aae6860b0ce5a}, \textbf{ lcfiplus\+::\+Ft\+D0b\+Prob\+IP} \doxyref{}{p.}{classlcfiplus_1_1FtD0bProbIP_a8e332673a741c1134d4cb3093be77bde}, \textbf{ lcfiplus\+::\+Ft\+D0q\+Prob\+Signed} \doxyref{}{p.}{classlcfiplus_1_1FtD0qProbSigned_a14df76a1cc006604864aca8617e2b9d2}, \textbf{ lcfiplus\+::\+Ft\+D0c\+Prob\+Signed} \doxyref{}{p.}{classlcfiplus_1_1FtD0cProbSigned_af4849ec51c395a8954ef23374a3d6e48}, \textbf{ lcfiplus\+::\+Ft\+D0b\+Prob\+Signed} \doxyref{}{p.}{classlcfiplus_1_1FtD0bProbSigned_a575e55603f4df3743b3e2a4847355b85}, \textbf{ lcfiplus\+::\+Ft\+D0q\+Prob2} \doxyref{}{p.}{classlcfiplus_1_1FtD0qProb2_aa393b69dfbc040f70cdae5d6edda7a1c}, \textbf{ lcfiplus\+::\+Ft\+D0q\+Prob} \doxyref{}{p.}{classlcfiplus_1_1FtD0qProb_a9f292cfd608518ac59b94a419f3a1f54}, \textbf{ lcfiplus\+::\+Ft\+D0c\+Prob2} \doxyref{}{p.}{classlcfiplus_1_1FtD0cProb2_aba032ecbae4dad88b1e1c75925134046}, \textbf{ lcfiplus\+::\+Ft\+D0c\+Prob} \doxyref{}{p.}{classlcfiplus_1_1FtD0cProb_a3b88af3360cc9ab954541bc5e4554673}, \textbf{ lcfiplus\+::\+Ft\+D0b\+Prob2} \doxyref{}{p.}{classlcfiplus_1_1FtD0bProb2_a2b66e3cd5cfab4dfecdfbb7d76867ad7}, \textbf{ lcfiplus\+::\+Ft\+D0b\+Prob} \doxyref{}{p.}{classlcfiplus_1_1FtD0bProb_aa33fb90a1cb5fc5c444ea9a3317994b9}, \textbf{ lcfiplus\+::\+Ft\+M\+C\+NC} \doxyref{}{p.}{classlcfiplus_1_1FtMCNC_a8832b03425cdc9fc1713c209587d3a20}, \textbf{ lcfiplus\+::\+Ft\+M\+C\+NB} \doxyref{}{p.}{classlcfiplus_1_1FtMCNB_a8495a07421105a91a8fc8f437e7f7e41}, \textbf{ lcfiplus\+::\+Ft\+M\+C\+N\+Electron} \doxyref{}{p.}{classlcfiplus_1_1FtMCNElectron_aa6883f0b241486acdae416e06f5c8d14}, \textbf{ lcfiplus\+::\+Ft\+M\+C\+N\+Muon} \doxyref{}{p.}{classlcfiplus_1_1FtMCNMuon_a257089c0418ddb5bad6d4f644462b98c}, \textbf{ lcfiplus\+::\+Ft\+N\+Muon\+P\+ID} \doxyref{}{p.}{classlcfiplus_1_1FtNMuonPID_aa11ced9d3f89b6046206df1fb3ef879e}, \textbf{ lcfiplus\+::\+Ft\+N\+Electron\+P\+ID} \doxyref{}{p.}{classlcfiplus_1_1FtNElectronPID_a6b4cb272635b48c13c3acd2810cab715}, \textbf{ lcfiplus\+::\+Ft\+N\+Electron} \doxyref{}{p.}{classlcfiplus_1_1FtNElectron_a2beafefb58d803a1af565c11f301eab8}, \textbf{ lcfiplus\+::\+Ft\+N\+Muon} \doxyref{}{p.}{classlcfiplus_1_1FtNMuon_adc2c58022919b1732aa130148e4ee068}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Longitudinal\+Deviation} \doxyref{}{p.}{classlcfiplus_1_1FtVtxLongitudinalDeviation_a09c2c20c11802a7dcd85f21e9a3b0cb3}, \textbf{ lcfiplus\+::\+Ft\+N\+Sec\+Tracks} \doxyref{}{p.}{classlcfiplus_1_1FtNSecTracks_aa83884b0ee9505e92f2051b1a925569a}, \textbf{ lcfiplus\+::\+Ft\+Trk\+Mass2} \doxyref{}{p.}{classlcfiplus_1_1FtTrkMass2_a12798546edfab6fc39ada5ed3aa28c12}, \textbf{ lcfiplus\+::\+Ft\+Trk\+Mass} \doxyref{}{p.}{classlcfiplus_1_1FtTrkMass_ad4e922e5aff8b6129f1d9dd6d45da461}, \textbf{ lcfiplus\+::\+Ft\+Sphericity} \doxyref{}{p.}{classlcfiplus_1_1FtSphericity_aae492dec997d4e4ed2774e41f5429a7d}, \textbf{ lcfiplus\+::\+Ft\+J\+Prob\+Z25\+Sigma} \doxyref{}{p.}{classlcfiplus_1_1FtJProbZ25Sigma_a166ae515e6a478e74877d5ed2db243bf}, \textbf{ lcfiplus\+::\+Ft\+J\+Prob\+R25\+Sigma} \doxyref{}{p.}{classlcfiplus_1_1FtJProbR25Sigma_a4023aebf51a661e640842bf6006facaa}, \textbf{ lcfiplus\+::\+Ft\+J\+Prob\+Z2} \doxyref{}{p.}{classlcfiplus_1_1FtJProbZ2_a8fcb9cd0ca85e631f6ebba7dd8681f0c}, \textbf{ lcfiplus\+::\+Ft\+J\+Prob\+R2} \doxyref{}{p.}{classlcfiplus_1_1FtJProbR2_abdc160e02a597230ffead6a04147e9f4}, \textbf{ lcfiplus\+::\+Ft\+J\+Prob\+Z5\+Sigma} \doxyref{}{p.}{classlcfiplus_1_1FtJProbZ5Sigma_acabdb6a10a791978f4fdf5c77111726d}, \textbf{ lcfiplus\+::\+Ft\+J\+Prob\+R5\+Sigma} \doxyref{}{p.}{classlcfiplus_1_1FtJProbR5Sigma_aeaf2eec741c8f11a7534eac003401007}, \textbf{ lcfiplus\+::\+Ft\+J\+ProbZ} \doxyref{}{p.}{classlcfiplus_1_1FtJProbZ_aeae617aa635e1ec77a4ab1235448ac35}, \textbf{ lcfiplus\+::\+Ft\+J\+ProbR} \doxyref{}{p.}{classlcfiplus_1_1FtJProbR_a8bca5390b49033530ceec071aca60762}, \textbf{ lcfiplus\+::\+Ft\+Trk2\+Pt\+By\+JetE} \doxyref{}{p.}{classlcfiplus_1_1FtTrk2PtByJetE_a2bf84efcb9445254559dd792f05142cd}, \textbf{ lcfiplus\+::\+Ft\+Trk1\+Pt\+By\+JetE} \doxyref{}{p.}{classlcfiplus_1_1FtTrk1PtByJetE_a62bffce7f7aa2f04955af9942d83778f}, \textbf{ lcfiplus\+::\+Ft\+Trk2\+Pt} \doxyref{}{p.}{classlcfiplus_1_1FtTrk2Pt_a71ee427b434dca028bc460b112271654}, \textbf{ lcfiplus\+::\+Ft\+Trk1\+Pt} \doxyref{}{p.}{classlcfiplus_1_1FtTrk1Pt_abcc889e774fe3bf5a1cf7be55f235bcc}, \textbf{ lcfiplus\+::\+Ft\+Trk2\+Z0\+Sig} \doxyref{}{p.}{classlcfiplus_1_1FtTrk2Z0Sig_ab08166ac62a893ebf5ecc2282b889ecb}, \textbf{ lcfiplus\+::\+Ft\+Trk1\+Z0\+Sig} \doxyref{}{p.}{classlcfiplus_1_1FtTrk1Z0Sig_a254b45dc2e1f2fa4f1f2ff7313f2e2db}, \textbf{ lcfiplus\+::\+Ft\+Trk2\+D0\+Sig} \doxyref{}{p.}{classlcfiplus_1_1FtTrk2D0Sig_ae8f2ba348322a8bffb379480a8bbeb93}, \textbf{ lcfiplus\+::\+Ft\+Trk1\+D0\+Sig} \doxyref{}{p.}{classlcfiplus_1_1FtTrk1D0Sig_a60d4f8688341c6ed7e156d55f47071fb}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mult2} \doxyref{}{p.}{classlcfiplus_1_1FtVtxMult2_aeba9c8e3dbd47de0d8ab41918e7efefc}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mult1} \doxyref{}{p.}{classlcfiplus_1_1FtVtxMult1_af9ec09d21643b55ded80b11991eea801}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mult} \doxyref{}{p.}{classlcfiplus_1_1FtVtxMult_a9f7f885a9cc05627574231f7080effdd}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mass2} \doxyref{}{p.}{classlcfiplus_1_1FtVtxMass2_a5a608c80cff2827515f3023c5fbd875e}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mass1} \doxyref{}{p.}{classlcfiplus_1_1FtVtxMass1_a39edfa0bc88f4aa2302466c0f5fa3e42}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mass} \doxyref{}{p.}{classlcfiplus_1_1FtVtxMass_a68f7a29e7781b612b55626160db226cc}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Prob} \doxyref{}{p.}{classlcfiplus_1_1FtVtxProb_af2aea188e06463875859a06e758346f8}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mass\+Pt\+Corr} \doxyref{}{p.}{classlcfiplus_1_1FtVtxMassPtCorr_a4548a4904e91d0046b22c2a0ee91ed23}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mom2\+By\+JetE} \doxyref{}{p.}{classlcfiplus_1_1FtVtxMom2ByJetE_a029a38e007d9905dfad972deb1facf03}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mom1\+By\+JetE} \doxyref{}{p.}{classlcfiplus_1_1FtVtxMom1ByJetE_a5383c444edf2a1cf3f0a57250c79ac5d}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mom\+By\+JetE} \doxyref{}{p.}{classlcfiplus_1_1FtVtxMomByJetE_af84866a2fe7170465b0379082db94380}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mom2} \doxyref{}{p.}{classlcfiplus_1_1FtVtxMom2_a2c8b056bdee18283fb7aebc07cdc3904}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mom1} \doxyref{}{p.}{classlcfiplus_1_1FtVtxMom1_a220f239f33e36a724e1c2ea52b474269}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mom} \doxyref{}{p.}{classlcfiplus_1_1FtVtxMom_a5084c2c18c43b29f14db6cb208e2fbca}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Dir\+Ang12\+Times\+JetE} \doxyref{}{p.}{classlcfiplus_1_1FtVtxDirAng12TimesJetE_a47c27ed04146b14a35a20f60d31ac0d5}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Dir\+Ang2\+Times\+JetE} \doxyref{}{p.}{classlcfiplus_1_1FtVtxDirAng2TimesJetE_a347f269fe151dd63ba3a87521edf1337}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Dir\+Ang1\+Times\+JetE} \doxyref{}{p.}{classlcfiplus_1_1FtVtxDirAng1TimesJetE_a89477c43c615630152abcbddd4e125be}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Dir\+Ang12} \doxyref{}{p.}{classlcfiplus_1_1FtVtxDirAng12_a28ff3b7778f404dd1ea9a09c3a7a554c}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Dir\+Ang2} \doxyref{}{p.}{classlcfiplus_1_1FtVtxDirAng2_a1083a33352880b11c7bc341e286c5111}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Dir\+Ang1} \doxyref{}{p.}{classlcfiplus_1_1FtVtxDirAng1_ae741908744bbc9a859b313033d836d57}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Sig12\+By\+JetE} \doxyref{}{p.}{classlcfiplus_1_1FtVtxSig12ByJetE_a4c444fe1243d24a58f2b2257ac6b82fa}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Sig2\+By\+JetE} \doxyref{}{p.}{classlcfiplus_1_1FtVtxSig2ByJetE_aed16e786431b1e0b16dfc563080f165b}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Sig1\+By\+JetE} \doxyref{}{p.}{classlcfiplus_1_1FtVtxSig1ByJetE_abb86953e2039954d74568a2cb041a219}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Sig12} \doxyref{}{p.}{classlcfiplus_1_1FtVtxSig12_ab30a72fd89f34f96a33082d95dad5630}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Sig2} \doxyref{}{p.}{classlcfiplus_1_1FtVtxSig2_ad9ee270ed49ec11808c259b2aaea80c3}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Sig1} \doxyref{}{p.}{classlcfiplus_1_1FtVtxSig1_a6aae4d789f6e3e402a25a529b689e4f6}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Len12\+By\+JetE} \doxyref{}{p.}{classlcfiplus_1_1FtVtxLen12ByJetE_aca8743034a4ef3aef41757abd1c5e89e}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Len2\+By\+JetE} \doxyref{}{p.}{classlcfiplus_1_1FtVtxLen2ByJetE_a27517a6ebfedb5f7a8ad31452519fe09}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Len1\+By\+JetE} \doxyref{}{p.}{classlcfiplus_1_1FtVtxLen1ByJetE_a35dc0c77214951f224b1bb79e5fc17ca}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Len12} \doxyref{}{p.}{classlcfiplus_1_1FtVtxLen12_a795a6c5f1f2b210bee84cbd966a7ee6c}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Len2} \doxyref{}{p.}{classlcfiplus_1_1FtVtxLen2_a137f42d4ef11154f1fb95b4063a1e334}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Len1} \doxyref{}{p.}{classlcfiplus_1_1FtVtxLen1_a1e12d61253c3771de132b8d43f0ff123}, \textbf{ lcfiplus\+::\+Ft\+JetE} \doxyref{}{p.}{classlcfiplus_1_1FtJetE_ab39abe153f0a14a4aa5de8145d6d1e30}, \textbf{ lcfiplus\+::\+Ft\+Nvtx} \doxyref{}{p.}{classlcfiplus_1_1FtNvtx_af1d407d62e17ea231e299838c7795f46}, \textbf{ lcfiplus\+::\+Ft1\+Vtx\+Prob} \doxyref{}{p.}{classlcfiplus_1_1Ft1VtxProb_ad74ede9d41a8727cd2aae354d1690743}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Len12\+All\+By\+JetE} \doxyref{}{p.}{classlcfiplus_1_1FtVtxLen12AllByJetE_a7be7b6a99d26c08a3894cc2fab6acfa9}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Len12\+All} \doxyref{}{p.}{classlcfiplus_1_1FtVtxLen12All_ae67541407b33577ff49f5be788692c27}, \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mass\+All} \doxyref{}{p.}{classlcfiplus_1_1FtVtxMassAll_a32942f93b2008c86797d123b8932113c}, \textbf{ lcfiplus\+::\+Ft\+Nvtx\+All} \doxyref{}{p.}{classlcfiplus_1_1FtNvtxAll_afdad8e549b571380cca394cab1cb24ca}, \textbf{ lcfiplus\+::\+Ft\+Ntrk} \doxyref{}{p.}{classlcfiplus_1_1FtNtrk_a4f85046fdadbb3d63fa3e16d73e4927b}, \textbf{ lcfiplus\+::\+Ft\+Ntrk\+Without\+V0} \doxyref{}{p.}{classlcfiplus_1_1FtNtrkWithoutV0_a1c17b675542cd448e3e720525c14e6dd}, \textbf{ lcfiplus\+::\+Ft\+AuxiliaryM} \doxyref{}{p.}{classlcfiplus_1_1FtAuxiliaryM_a2c0df248a7f26d0cdcaa7483f9829e0a}, and \textbf{ lcfiplus\+::\+Ft\+Auxiliary} \doxyref{}{p.}{classlcfiplus_1_1FtAuxiliary_aafb10984a9f3e5d054ea7601ea23477c}.
+
+
+
+Referenced by lcfiplus\+::\+F\+T\+Manager\+::process().
+
+\mbox{\label{classlcfiplus_1_1FTAlgo_a4b22a0cc29f4dc2045ba2770ab30a128}} 
+\index{lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}!process\+Event@{process\+Event}}
+\index{process\+Event@{process\+Event}!lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}}
+\subsubsection{process\+Event()}
+{\footnotesize\ttfamily virtual void lcfiplus\+::\+F\+T\+Algo\+::process\+Event (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+Reimplemented in \textbf{ lcfiplus\+::\+Ft\+M\+C\+NC} \doxyref{}{p.}{classlcfiplus_1_1FtMCNC_af577b1bad0f22f3ad28db551534a455a}, and \textbf{ lcfiplus\+::\+Ft\+M\+C\+NB} \doxyref{}{p.}{classlcfiplus_1_1FtMCNB_a98f262af3450b8f201bb1ae24dcf5a93}.
+
+
+
+Referenced by lcfiplus\+::\+F\+T\+Manager\+::process().
+
+\mbox{\label{classlcfiplus_1_1FTAlgo_ac49764d7d0e38c42b7094d90568788ec}} 
+\index{lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}!set\+Event@{set\+Event}}
+\index{set\+Event@{set\+Event}!lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}}
+\subsubsection{set\+Event()}
+{\footnotesize\ttfamily void lcfiplus\+::\+F\+T\+Algo\+::set\+Event (\begin{DoxyParamCaption}\item[{const \textbf{ Event} $\ast$}]{event,  }\item[{const \textbf{ Vertex} $\ast$}]{privtx }\end{DoxyParamCaption})}
+
+
+
+References \+\_\+event, and \+\_\+privtx.
+
+
+
+Referenced by lcfiplus\+::\+F\+T\+Manager\+::process().
+
+\mbox{\label{classlcfiplus_1_1FTAlgo_a5692d90a2bacb05037f50343c0c963d7}} 
+\index{lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}!set\+Jet@{set\+Jet}}
+\index{set\+Jet@{set\+Jet}!lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}}
+\subsubsection{set\+Jet()}
+{\footnotesize\ttfamily void lcfiplus\+::\+F\+T\+Algo\+::set\+Jet (\begin{DoxyParamCaption}\item[{const \textbf{ Jet} $\ast$}]{jet }\end{DoxyParamCaption})}
+
+
+
+References \+\_\+jet.
+
+
+
+Referenced by lcfiplus\+::\+F\+T\+Manager\+::process().
+
+\mbox{\label{classlcfiplus_1_1FTAlgo_adb5db810a0a2ae3f947bfadc01c0ddf0}} 
+\index{lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}!set\+N\+Hits\+Joint\+Prob\+D0@{set\+N\+Hits\+Joint\+Prob\+D0}}
+\index{set\+N\+Hits\+Joint\+Prob\+D0@{set\+N\+Hits\+Joint\+Prob\+D0}!lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}}
+\subsubsection{set\+N\+Hits\+Joint\+Prob\+D0()}
+{\footnotesize\ttfamily void lcfiplus\+::\+F\+T\+Algo\+::set\+N\+Hits\+Joint\+Prob\+D0 (\begin{DoxyParamCaption}\item[{int}]{value }\end{DoxyParamCaption})}
+
+
+
+References \+\_\+nhits\+Joint\+Prob\+D0.
+
+
+
+Referenced by lcfiplus\+::\+F\+T\+Manager\+::process().
+
+\mbox{\label{classlcfiplus_1_1FTAlgo_a5c7e3e599a4089265c4fe4f9a9aa08f6}} 
+\index{lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}!set\+N\+Hits\+Joint\+Prob\+Z0@{set\+N\+Hits\+Joint\+Prob\+Z0}}
+\index{set\+N\+Hits\+Joint\+Prob\+Z0@{set\+N\+Hits\+Joint\+Prob\+Z0}!lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}}
+\subsubsection{set\+N\+Hits\+Joint\+Prob\+Z0()}
+{\footnotesize\ttfamily void lcfiplus\+::\+F\+T\+Algo\+::set\+N\+Hits\+Joint\+Prob\+Z0 (\begin{DoxyParamCaption}\item[{int}]{value }\end{DoxyParamCaption})}
+
+
+
+References \+\_\+nhits\+Joint\+Prob\+Z0.
+
+
+
+Referenced by lcfiplus\+::\+F\+T\+Manager\+::process().
+
+\mbox{\label{classlcfiplus_1_1FTAlgo_ae64a5269b5dc42b68b249873cac33ebc}} 
+\index{lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}!set\+N\+Hits\+Most\+Significant\+Track@{set\+N\+Hits\+Most\+Significant\+Track}}
+\index{set\+N\+Hits\+Most\+Significant\+Track@{set\+N\+Hits\+Most\+Significant\+Track}!lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}}
+\subsubsection{set\+N\+Hits\+Most\+Significant\+Track()}
+{\footnotesize\ttfamily void lcfiplus\+::\+F\+T\+Algo\+::set\+N\+Hits\+Most\+Significant\+Track (\begin{DoxyParamCaption}\item[{int}]{value }\end{DoxyParamCaption})}
+
+
+
+References \+\_\+nhits\+Most\+Significant\+Track.
+
+
+
+Referenced by lcfiplus\+::\+F\+T\+Manager\+::process().
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\label{classlcfiplus_1_1FTAlgo_a3509085db2dcd973ab4471a6bd9204c8}} 
+\index{lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}!\+\_\+event@{\+\_\+event}}
+\index{\+\_\+event@{\+\_\+event}!lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}}
+\subsubsection{\+\_\+event}
+{\footnotesize\ttfamily const \textbf{ Event}$\ast$ lcfiplus\+::\+F\+T\+Algo\+::\+\_\+event\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Referenced by set\+Event().
+
+\mbox{\label{classlcfiplus_1_1FTAlgo_a3d335341927f3f889d7edee065f1f5c9}} 
+\index{lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}!\+\_\+jet@{\+\_\+jet}}
+\index{\+\_\+jet@{\+\_\+jet}!lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}}
+\subsubsection{\+\_\+jet}
+{\footnotesize\ttfamily const \textbf{ Jet}$\ast$ lcfiplus\+::\+F\+T\+Algo\+::\+\_\+jet\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Referenced by set\+Jet().
+
+\mbox{\label{classlcfiplus_1_1FTAlgo_aa23a75f0f0bf4af0760609eefec0dd3c}} 
+\index{lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}!\+\_\+name@{\+\_\+name}}
+\index{\+\_\+name@{\+\_\+name}!lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}}
+\subsubsection{\+\_\+name}
+{\footnotesize\ttfamily string lcfiplus\+::\+F\+T\+Algo\+::\+\_\+name\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Referenced by get\+Name().
+
+\mbox{\label{classlcfiplus_1_1FTAlgo_afd447cf5dd7b88a3b4b6a88525c0df98}} 
+\index{lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}!\+\_\+nhits\+Joint\+Prob\+D0@{\+\_\+nhits\+Joint\+Prob\+D0}}
+\index{\+\_\+nhits\+Joint\+Prob\+D0@{\+\_\+nhits\+Joint\+Prob\+D0}!lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}}
+\subsubsection{\+\_\+nhits\+Joint\+Prob\+D0}
+{\footnotesize\ttfamily int lcfiplus\+::\+F\+T\+Algo\+::\+\_\+nhits\+Joint\+Prob\+D0\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Referenced by set\+N\+Hits\+Joint\+Prob\+D0().
+
+\mbox{\label{classlcfiplus_1_1FTAlgo_af9e2f019041855d28895ee89a318891e}} 
+\index{lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}!\+\_\+nhits\+Joint\+Prob\+Z0@{\+\_\+nhits\+Joint\+Prob\+Z0}}
+\index{\+\_\+nhits\+Joint\+Prob\+Z0@{\+\_\+nhits\+Joint\+Prob\+Z0}!lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}}
+\subsubsection{\+\_\+nhits\+Joint\+Prob\+Z0}
+{\footnotesize\ttfamily int lcfiplus\+::\+F\+T\+Algo\+::\+\_\+nhits\+Joint\+Prob\+Z0\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Referenced by set\+N\+Hits\+Joint\+Prob\+Z0().
+
+\mbox{\label{classlcfiplus_1_1FTAlgo_aecf97b44577f63419e77a98f92a64c3c}} 
+\index{lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}!\+\_\+nhits\+Most\+Significant\+Track@{\+\_\+nhits\+Most\+Significant\+Track}}
+\index{\+\_\+nhits\+Most\+Significant\+Track@{\+\_\+nhits\+Most\+Significant\+Track}!lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}}
+\subsubsection{\+\_\+nhits\+Most\+Significant\+Track}
+{\footnotesize\ttfamily int lcfiplus\+::\+F\+T\+Algo\+::\+\_\+nhits\+Most\+Significant\+Track\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Referenced by set\+N\+Hits\+Most\+Significant\+Track().
+
+\mbox{\label{classlcfiplus_1_1FTAlgo_aa9fb98a9e80c976f6fa231048dbf4645}} 
+\index{lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}!\+\_\+privtx@{\+\_\+privtx}}
+\index{\+\_\+privtx@{\+\_\+privtx}!lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}}
+\subsubsection{\+\_\+privtx}
+{\footnotesize\ttfamily const \textbf{ Vertex}$\ast$ lcfiplus\+::\+F\+T\+Algo\+::\+\_\+privtx\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Referenced by set\+Event().
+
+\mbox{\label{classlcfiplus_1_1FTAlgo_a1237a9bafb00e4e85d11e8171158d567}} 
+\index{lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}!\+\_\+result@{\+\_\+result}}
+\index{\+\_\+result@{\+\_\+result}!lcfiplus\+::\+F\+T\+Algo@{lcfiplus\+::\+F\+T\+Algo}}
+\subsubsection{\+\_\+result}
+{\footnotesize\ttfamily float lcfiplus\+::\+F\+T\+Algo\+::\+\_\+result\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Referenced by get\+Value(), and get\+Value\+Address().
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ flavtag.\+h}\item 
+\textbf{ flavtag.\+cc}\end{DoxyCompactItemize}

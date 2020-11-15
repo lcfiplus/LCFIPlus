@@ -1,0 +1,96 @@
+\section{lcfiplus\+:\+:Vertex\+Selector Class Reference}
+\label{classlcfiplus_1_1VertexSelector}\index{lcfiplus\+::\+Vertex\+Selector@{lcfiplus\+::\+Vertex\+Selector}}
+
+
+{\ttfamily \#include $<$Vertex\+Selector.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+vector$<$ const \textbf{ Vertex} $\ast$ $>$ \textbf{ operator()} (\textbf{ Vertex\+Vec} \&vertices, \textbf{ Vertex\+Selector\+Config} \&config, vector$<$ const \textbf{ Track} $\ast$$>$ \&residual\+Tracks, bool add\+Tracks)
+\item 
+vector$<$ \textbf{ Vertex} $\ast$ $>$ \textbf{ operator()} (const vector$<$ \textbf{ Vertex} $\ast$$>$ \&vertices, \textbf{ Vertex\+Selector\+Config} \&config, vector$<$ const \textbf{ Track} $\ast$$>$ \&residual\+Tracks, bool add\+Tracks)
+\item 
+vector$<$ const \textbf{ Vertex} $\ast$ $>$ \textbf{ operator()} (\textbf{ Vertex\+Vec} \&vertices, \textbf{ Vertex\+Selector\+Config} \&config)
+\item 
+void \textbf{ operator()} (vector$<$ \textbf{ Vertex} $\ast$$>$ \&vertices, \textbf{ Vertex\+Selector\+Config} \&config)
+\item 
+bool \textbf{ is\+V0} (const \textbf{ Vertex} $\ast$vtx, const \textbf{ Vertex\+Selector\+Config} \&cfg, const \textbf{ Vertex} $\ast$primary)
+\item 
+bool \textbf{ passes\+Cut} (const \textbf{ Vertex} $\ast$vtx, const \textbf{ Vertex\+Selector\+Config} \&cfg, const \textbf{ Vertex} $\ast$primary=0)
+\item 
+\textbf{ Vertex\+Selector} ()
+\item 
+\textbf{ $\sim$\+Vertex\+Selector} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\label{classlcfiplus_1_1VertexSelector_a848f79f6fd8e13ba52398b104bef9462}} 
+\index{lcfiplus\+::\+Vertex\+Selector@{lcfiplus\+::\+Vertex\+Selector}!Vertex\+Selector@{Vertex\+Selector}}
+\index{Vertex\+Selector@{Vertex\+Selector}!lcfiplus\+::\+Vertex\+Selector@{lcfiplus\+::\+Vertex\+Selector}}
+\subsubsection{Vertex\+Selector()}
+{\footnotesize\ttfamily lcfiplus\+::\+Vertex\+Selector\+::\+Vertex\+Selector (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1VertexSelector_a270b98eea3a1859153e9f9d99c78e571}} 
+\index{lcfiplus\+::\+Vertex\+Selector@{lcfiplus\+::\+Vertex\+Selector}!````~Vertex\+Selector@{$\sim$\+Vertex\+Selector}}
+\index{````~Vertex\+Selector@{$\sim$\+Vertex\+Selector}!lcfiplus\+::\+Vertex\+Selector@{lcfiplus\+::\+Vertex\+Selector}}
+\subsubsection{$\sim$\+Vertex\+Selector()}
+{\footnotesize\ttfamily lcfiplus\+::\+Vertex\+Selector\+::$\sim$\+Vertex\+Selector (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\label{classlcfiplus_1_1VertexSelector_a61969ef2915ff86e750fa104cb19a0a8}} 
+\index{lcfiplus\+::\+Vertex\+Selector@{lcfiplus\+::\+Vertex\+Selector}!is\+V0@{is\+V0}}
+\index{is\+V0@{is\+V0}!lcfiplus\+::\+Vertex\+Selector@{lcfiplus\+::\+Vertex\+Selector}}
+\subsubsection{is\+V0()}
+{\footnotesize\ttfamily bool lcfiplus\+::\+Vertex\+Selector\+::is\+V0 (\begin{DoxyParamCaption}\item[{const \textbf{ Vertex} $\ast$}]{vtx,  }\item[{const \textbf{ Vertex\+Selector\+Config} \&}]{cfg,  }\item[{const \textbf{ Vertex} $\ast$}]{primary }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+References lcfiplus\+::\+Vertex\+Selector\+Config\+::convdirdot, lcfiplus\+::\+Vertex\+Selector\+Config\+::convdist, lcfiplus\+::\+Vertex\+Selector\+Config\+::convmass, lcfiplus\+::\+Vertex\+::get\+Pos(), lcfiplus\+::\+Vertex\+::get\+Tracks(), lcfiplus\+::\+Vertex\+Selector\+Config\+::k0dirdot, lcfiplus\+::\+Vertex\+Selector\+Config\+::k0width, lcfiplus\+::\+Vertex\+Selector\+Config\+::l0dirdot, lcfiplus\+::\+Vertex\+Selector\+Config\+::l0width, lcfiplus\+::\+Vertex\+Selector\+Config\+::rejectconv, lcfiplus\+::\+Vertex\+Selector\+Config\+::rejectk0, and lcfiplus\+::\+Vertex\+Selector\+Config\+::rejectl0.
+
+\mbox{\label{classlcfiplus_1_1VertexSelector_afead2a97111f08fcae7405cb2f03446b}} 
+\index{lcfiplus\+::\+Vertex\+Selector@{lcfiplus\+::\+Vertex\+Selector}!operator()@{operator()}}
+\index{operator()@{operator()}!lcfiplus\+::\+Vertex\+Selector@{lcfiplus\+::\+Vertex\+Selector}}
+\subsubsection{operator()()\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily vector$<$const \textbf{ Vertex}$\ast$$>$ lcfiplus\+::\+Vertex\+Selector\+::operator() (\begin{DoxyParamCaption}\item[{\textbf{ Vertex\+Vec} \&}]{vertices,  }\item[{\textbf{ Vertex\+Selector\+Config} \&}]{config,  }\item[{vector$<$ const \textbf{ Track} $\ast$$>$ \&}]{residual\+Tracks,  }\item[{bool}]{add\+Tracks }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1VertexSelector_ab60b082f6c482c010f5b120d6709c135}} 
+\index{lcfiplus\+::\+Vertex\+Selector@{lcfiplus\+::\+Vertex\+Selector}!operator()@{operator()}}
+\index{operator()@{operator()}!lcfiplus\+::\+Vertex\+Selector@{lcfiplus\+::\+Vertex\+Selector}}
+\subsubsection{operator()()\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily vector$<$\textbf{ Vertex}$\ast$$>$ lcfiplus\+::\+Vertex\+Selector\+::operator() (\begin{DoxyParamCaption}\item[{const vector$<$ \textbf{ Vertex} $\ast$$>$ \&}]{vertices,  }\item[{\textbf{ Vertex\+Selector\+Config} \&}]{config,  }\item[{vector$<$ const \textbf{ Track} $\ast$$>$ \&}]{residual\+Tracks,  }\item[{bool}]{add\+Tracks }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1VertexSelector_a0981a6da2cd91651eae47b8ff2b27835}} 
+\index{lcfiplus\+::\+Vertex\+Selector@{lcfiplus\+::\+Vertex\+Selector}!operator()@{operator()}}
+\index{operator()@{operator()}!lcfiplus\+::\+Vertex\+Selector@{lcfiplus\+::\+Vertex\+Selector}}
+\subsubsection{operator()()\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily vector$<$const \textbf{ Vertex}$\ast$$>$ lcfiplus\+::\+Vertex\+Selector\+::operator() (\begin{DoxyParamCaption}\item[{\textbf{ Vertex\+Vec} \&}]{vertices,  }\item[{\textbf{ Vertex\+Selector\+Config} \&}]{config }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1VertexSelector_a75b880ae4281adbe6d217085485b5a49}} 
+\index{lcfiplus\+::\+Vertex\+Selector@{lcfiplus\+::\+Vertex\+Selector}!operator()@{operator()}}
+\index{operator()@{operator()}!lcfiplus\+::\+Vertex\+Selector@{lcfiplus\+::\+Vertex\+Selector}}
+\subsubsection{operator()()\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Selector\+::operator() (\begin{DoxyParamCaption}\item[{vector$<$ \textbf{ Vertex} $\ast$$>$ \&}]{vertices,  }\item[{\textbf{ Vertex\+Selector\+Config} \&}]{config }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1VertexSelector_a44bb96d74ba3b339cf73ddacd557a4b9}} 
+\index{lcfiplus\+::\+Vertex\+Selector@{lcfiplus\+::\+Vertex\+Selector}!passes\+Cut@{passes\+Cut}}
+\index{passes\+Cut@{passes\+Cut}!lcfiplus\+::\+Vertex\+Selector@{lcfiplus\+::\+Vertex\+Selector}}
+\subsubsection{passes\+Cut()}
+{\footnotesize\ttfamily bool lcfiplus\+::\+Vertex\+Selector\+::passes\+Cut (\begin{DoxyParamCaption}\item[{const \textbf{ Vertex} $\ast$}]{vtx,  }\item[{const \textbf{ Vertex\+Selector\+Config} \&}]{cfg,  }\item[{const \textbf{ Vertex} $\ast$}]{primary = {\ttfamily 0} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+References lcfiplus\+::\+Vertex\+::get\+Pos(), lcfiplus\+::\+Vertex\+Selector\+Config\+::maxpos, lcfiplus\+::\+Vertex\+Selector\+Config\+::minpos, lcfiplus\+::\+Vertex\+Selector\+Config\+::rejectconv, lcfiplus\+::\+Vertex\+Selector\+Config\+::rejectdist, lcfiplus\+::\+Vertex\+Selector\+Config\+::rejectdistnegative, lcfiplus\+::\+Vertex\+Selector\+Config\+::rejectdistor, lcfiplus\+::\+Vertex\+Selector\+Config\+::rejectk0, and lcfiplus\+::\+Vertex\+Selector\+Config\+::rejectl0.
+
+
+
+Referenced by lcfiplus\+::\+Make\+R\+O\+O\+T\+File\+C\+C\+::process(), and lcfiplus\+::\+Make\+R\+O\+O\+T\+File\+B\+B\+::process().
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ Vertex\+Selector.\+h}\end{DoxyCompactItemize}

@@ -36,6 +36,7 @@ namespace lcfiplus {
 void VertexFindingwithDL::init(Parameters* param) {
   Algorithm::init(param);
 
+  config.mutable_gpu_options()->set_visible_device_list("1");
   config.mutable_gpu_options()->set_allow_growth(true);
 
   _primary_vertex = 0;
@@ -48,6 +49,7 @@ void VertexFindingwithDL::init(Parameters* param) {
   // default setting
   Event::Instance()->setDefaultPrimaryVertex(vpricolname.c_str());
 
+  NEventNumber = 0;
   MaxTrack = 53;
   NTrackVariable=22;
   MaxPrimaryVertexLoop = 3;
@@ -78,13 +80,18 @@ void VertexFindingwithDL::init(Parameters* param) {
 void VertexFindingwithDL::process() {
   bool verbose = true;
   Event* event = Event::Instance();
+  if(verbose==true){
+    std::cout << "########################################################################################################" << std::endl;
+    std::cout << "Event Number : " << NEventNumber << std::endl;
+    std::cout << "########################################################################################################" << std::endl;
+  }
 
   // clearing old vertices
-  if (_primary_vertex->size()>0) {
+  if(_primary_vertex->size()>0) {
     delete (*_primary_vertex)[0];
     _primary_vertex->clear();
   }
-  for (std::size_t n=0; n<_secondary_vertices->size(); n++)
+  for(std::size_t n=0; n<_secondary_vertices->size(); n++)
     delete (*_secondary_vertices)[n];
   _secondary_vertices->clear();
 
@@ -130,9 +137,11 @@ void VertexFindingwithDL::process() {
   if(verbose==true) VertexFinderwithDL::PrintResults(primary_track_list, merge_secondary_track_lists);
 
   if(verbose==true) std::cout << "Vertex Making ..." << std::endl;
-  VertexFinderwithDL::PrimarySecondaryVertices(tracks, primary_track_list, merge_secondary_track_lists, _primary_vertex, _secondary_vertices);
-  if(!_primary_vertex->at(0)) std::cout << "PrimaryVertexFinder: No primary vertex found." << std::endl; 
-  if(verbose==true) std::cout << "PrimaryVertexFinder: " << _primary_vertex->at(0)->getTracks().size() << " tracks associated to the primary vertex." << std::endl;
+  VertexFinderwithDL::PrimarySecondaryVertices(verbose, tracks, primary_track_list, merge_secondary_track_lists, _primary_vertex, _secondary_vertices);
+  //if(!_primary_vertex->at(0)) std::cout << "PrimaryVertexFinder: No primary vertex found." << std::endl; 
+  //if(verbose==true) std::cout << "PrimaryVertexFinder: " << _primary_vertex->at(0)->getTracks().size() << " tracks associated to the primary vertex." << std::endl;
+  NEventNumber++;
+  if(verbose==true) std::cout << std::endl;
 }
 
 void VertexFindingwithDL::end() {

@@ -1,0 +1,140 @@
+\section{lcfiplus\+:\+:M\+C\+Vertex Class Reference}
+\label{classlcfiplus_1_1MCVertex}\index{lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}}
+
+
+{\ttfamily \#include $<$lcfiplus.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\textbf{ M\+C\+Vertex} ()
+\item 
+void \textbf{ set\+Parent} (const \textbf{ M\+C\+Particle} $\ast$parent)
+\item 
+const \textbf{ M\+C\+Particle} $\ast$ \textbf{ get\+Parent} () const
+\item 
+void \textbf{ add} (const \textbf{ M\+C\+Particle} $\ast$mcp)
+\item 
+void \textbf{ add} (const \textbf{ Track} $\ast$trk)
+\item 
+void \textbf{ set\+Reco\+Vertex} (const \textbf{ Vertex} $\ast$vtx)
+\item 
+const vector$<$ const \textbf{ M\+C\+Particle} $\ast$ $>$ \& \textbf{ get\+Daughters} () const
+\item 
+const vector$<$ const \textbf{ Track} $\ast$ $>$ \& \textbf{ get\+Reco\+Tracks} () const
+\item 
+const \textbf{ Vertex} $\ast$ \textbf{ get\+Reco\+Vertex} () const
+\item 
+const T\+Vector3 \& \textbf{ get\+Pos} () const
+\item 
+void \textbf{ set\+Pos} (const T\+Vector3 \&pos)
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\label{classlcfiplus_1_1MCVertex_afdda54c20f1759eb4d914ffea108c738}} 
+\index{lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}!M\+C\+Vertex@{M\+C\+Vertex}}
+\index{M\+C\+Vertex@{M\+C\+Vertex}!lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}}
+\subsubsection{M\+C\+Vertex()}
+{\footnotesize\ttfamily lcfiplus\+::\+M\+C\+Vertex\+::\+M\+C\+Vertex (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\label{classlcfiplus_1_1MCVertex_a8fca0ee51e54ff037df3afbb5e8336e9}} 
+\index{lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}!add@{add}}
+\index{add@{add}!lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}}
+\subsubsection{add()\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void lcfiplus\+::\+M\+C\+Vertex\+::add (\begin{DoxyParamCaption}\item[{const \textbf{ M\+C\+Particle} $\ast$}]{mcp }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by find\+Mc\+Vertex(), lcfiplus\+::\+Vertex\+Finder\+Perfect\+::find\+Perfect\+Vertices(), and match\+Mc\+Vertex().
+
+\mbox{\label{classlcfiplus_1_1MCVertex_a9e23265f83e949df02501b31276e865e}} 
+\index{lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}!add@{add}}
+\index{add@{add}!lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}}
+\subsubsection{add()\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void lcfiplus\+::\+M\+C\+Vertex\+::add (\begin{DoxyParamCaption}\item[{const \textbf{ Track} $\ast$}]{trk }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1MCVertex_a25c5286977e00d62dfb4f877a2fe2eb9}} 
+\index{lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}!get\+Daughters@{get\+Daughters}}
+\index{get\+Daughters@{get\+Daughters}!lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}}
+\subsubsection{get\+Daughters()}
+{\footnotesize\ttfamily const vector$<$const \textbf{ M\+C\+Particle}$\ast$$>$\& lcfiplus\+::\+M\+C\+Vertex\+::get\+Daughters (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by find\+Mc\+Vertex(), match\+Mc\+Vertex(), and match\+Mc\+Vertex\+Jet().
+
+\mbox{\label{classlcfiplus_1_1MCVertex_ae9f06f613a0280226c00ddf49f2db834}} 
+\index{lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}!get\+Parent@{get\+Parent}}
+\index{get\+Parent@{get\+Parent}!lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}}
+\subsubsection{get\+Parent()}
+{\footnotesize\ttfamily const \textbf{ M\+C\+Particle}$\ast$ lcfiplus\+::\+M\+C\+Vertex\+::get\+Parent (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by find\+Mc\+Vertex(), match\+Mc\+Vertex(), and match\+Mc\+Vertex\+Reco\+V0().
+
+\mbox{\label{classlcfiplus_1_1MCVertex_ae67d3adfe07dd60ceed570f6d72810fc}} 
+\index{lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}!get\+Pos@{get\+Pos}}
+\index{get\+Pos@{get\+Pos}!lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}}
+\subsubsection{get\+Pos()}
+{\footnotesize\ttfamily const T\+Vector3\& lcfiplus\+::\+M\+C\+Vertex\+::get\+Pos (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1MCVertex_a36a0d3c1cd8a0b3942872e5af6f24e55}} 
+\index{lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}!get\+Reco\+Tracks@{get\+Reco\+Tracks}}
+\index{get\+Reco\+Tracks@{get\+Reco\+Tracks}!lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}}
+\subsubsection{get\+Reco\+Tracks()}
+{\footnotesize\ttfamily const vector$<$const \textbf{ Track}$\ast$$>$\& lcfiplus\+::\+M\+C\+Vertex\+::get\+Reco\+Tracks (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by match\+Mc\+Vertex\+Reco().
+
+\mbox{\label{classlcfiplus_1_1MCVertex_a9a53cb636961756ffc1d6ff9f00c9e02}} 
+\index{lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}!get\+Reco\+Vertex@{get\+Reco\+Vertex}}
+\index{get\+Reco\+Vertex@{get\+Reco\+Vertex}!lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}}
+\subsubsection{get\+Reco\+Vertex()}
+{\footnotesize\ttfamily const \textbf{ Vertex}$\ast$ lcfiplus\+::\+M\+C\+Vertex\+::get\+Reco\+Vertex (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by match\+Mc\+Vertex\+Reco().
+
+\mbox{\label{classlcfiplus_1_1MCVertex_aa0e6b16e4f0380a4347fd132250e0fdb}} 
+\index{lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}!set\+Parent@{set\+Parent}}
+\index{set\+Parent@{set\+Parent}!lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}}
+\subsubsection{set\+Parent()}
+{\footnotesize\ttfamily void lcfiplus\+::\+M\+C\+Vertex\+::set\+Parent (\begin{DoxyParamCaption}\item[{const \textbf{ M\+C\+Particle} $\ast$}]{parent }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by find\+Mc\+Vertex(), and lcfiplus\+::\+Vertex\+Finder\+Perfect\+::find\+Perfect\+Vertices().
+
+\mbox{\label{classlcfiplus_1_1MCVertex_aa75079983c59944f205b9c6e3c42d3f5}} 
+\index{lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}!set\+Pos@{set\+Pos}}
+\index{set\+Pos@{set\+Pos}!lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}}
+\subsubsection{set\+Pos()}
+{\footnotesize\ttfamily void lcfiplus\+::\+M\+C\+Vertex\+::set\+Pos (\begin{DoxyParamCaption}\item[{const T\+Vector3 \&}]{pos }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Finder\+Perfect\+::find\+Perfect\+Vertices().
+
+\mbox{\label{classlcfiplus_1_1MCVertex_a48ca68400f75f304e083eedda426f50a}} 
+\index{lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}!set\+Reco\+Vertex@{set\+Reco\+Vertex}}
+\index{set\+Reco\+Vertex@{set\+Reco\+Vertex}!lcfiplus\+::\+M\+C\+Vertex@{lcfiplus\+::\+M\+C\+Vertex}}
+\subsubsection{set\+Reco\+Vertex()}
+{\footnotesize\ttfamily void lcfiplus\+::\+M\+C\+Vertex\+::set\+Reco\+Vertex (\begin{DoxyParamCaption}\item[{const \textbf{ Vertex} $\ast$}]{vtx }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by match\+Mc\+Vertex\+Reco().
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ lcfiplus.\+h}\end{DoxyCompactItemize}

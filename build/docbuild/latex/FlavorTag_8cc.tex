@@ -1,0 +1,250 @@
+\section{Flavor\+Tag.\+cc File Reference}
+\label{FlavorTag_8cc}\index{Flavor\+Tag.\+cc@{Flavor\+Tag.\+cc}}
+{\ttfamily \#include \char`\"{}Flavor\+Tag.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$assert.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}Event\+Store.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Lcfi\+Interface.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Jet\+Finder.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Tree\+Storer.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Vertex\+Fitter\+L\+C\+F\+I.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Vertex\+Finder\+Tear\+Down.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Vertex\+Finder\+Perfect.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}algo\+Sig\+Prob.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}algo\+Etc.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Track\+Selector.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}T\+R\+O\+O\+T.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}T\+Interpreter.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}T\+File.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}T\+Tree.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}T\+Lorentz\+Vector.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}T\+Cut.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$string$>$}\newline
+{\ttfamily \#include \char`\"{}T\+Random3.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}flavtag.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}geometry.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}T\+H1\+F.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$sstream$>$}\newline
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Auxiliary}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+AuxiliaryM}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Ntrk\+Without\+V0}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Ntrk}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Nvtx\+All}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mass\+All}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Len12\+All}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Len12\+All\+By\+JetE}
+\item 
+class \textbf{ lcfiplus\+::\+Ft1\+Vtx\+Prob}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Nvtx}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+JetE}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Len1}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Len2}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Len12}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Len1\+By\+JetE}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Len2\+By\+JetE}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Len12\+By\+JetE}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Sig1}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Sig2}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Sig12}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Sig1\+By\+JetE}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Sig2\+By\+JetE}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Sig12\+By\+JetE}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Dir\+Ang1}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Dir\+Ang2}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Dir\+Ang12}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Dir\+Ang1\+Times\+JetE}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Dir\+Ang2\+Times\+JetE}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Dir\+Ang12\+Times\+JetE}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mom}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mom1}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mom2}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mom\+By\+JetE}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mom1\+By\+JetE}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mom2\+By\+JetE}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mass\+Pt\+Corr}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Prob}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mass}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mass1}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mass2}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mult}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mult1}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Mult2}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Trk1\+D0\+Sig}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Trk2\+D0\+Sig}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Trk1\+Z0\+Sig}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Trk2\+Z0\+Sig}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Trk1\+Pt}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Trk2\+Pt}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Trk1\+Pt\+By\+JetE}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Trk2\+Pt\+By\+JetE}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+J\+ProbR}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+J\+ProbZ}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+J\+Prob\+R5\+Sigma}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+J\+Prob\+Z5\+Sigma}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+J\+Prob\+R2}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+J\+Prob\+Z2}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+J\+Prob\+R25\+Sigma}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+J\+Prob\+Z25\+Sigma}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Sphericity}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Trk\+Mass}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Trk\+Mass2}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+N\+Sec\+Tracks}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Vtx\+Longitudinal\+Deviation}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+N\+Muon}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+N\+Electron}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+N\+Electron\+P\+ID}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+N\+Muon\+P\+ID}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+M\+C\+N\+Muon}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+M\+C\+N\+Electron}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+M\+C\+NB}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+M\+C\+NC}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+D0b\+Prob}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+D0b\+Prob2}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+D0c\+Prob}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+D0c\+Prob2}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+D0q\+Prob}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+D0q\+Prob2}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+D0b\+Prob\+Signed}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+D0c\+Prob\+Signed}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+D0q\+Prob\+Signed}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+D0b\+Prob\+IP}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+D0c\+Prob\+IP}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Z0b\+Prob}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Z0b\+Prob2}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Z0c\+Prob}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Z0c\+Prob2}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Z0q\+Prob}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Z0q\+Prob2}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Z0b\+Prob\+IP}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Z0c\+Prob\+IP}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Corr\+Vtx\+Mass1}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Corr\+Vtx\+Mass2}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Corr\+Vtx\+Mass\+All}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Corr\+Vtx\+Momentum1}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Corr\+Vtx\+Momentum2}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Corr\+Vtx\+Momentum\+All}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Pi0\+Momentum1}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Pi0\+Momentum2}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+Pi0\+Momentum\+All}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+N\+Pi0s1}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+N\+Pi0s2}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+B\+Ness0}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+B\+Ness1}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+B\+Ness2}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+B\+Ness3}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+B\+Ness\+Mass}
+\item 
+class \textbf{ lcfiplus\+::\+Ft\+N\+B\+Ness}
+\end{DoxyCompactItemize}
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \textbf{ lcfiplus}
+\end{DoxyCompactItemize}

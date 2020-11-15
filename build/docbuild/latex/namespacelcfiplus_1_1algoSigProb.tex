@@ -1,0 +1,302 @@
+\section{lcfiplus\+:\+:algo\+Sig\+Prob Namespace Reference}
+\label{namespacelcfiplus_1_1algoSigProb}\index{lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \textbf{ track\+Selection\+For\+Flavor\+Tag} (const \textbf{ Track} $\ast$trk, int n\+Hit\+Cut)
+\item 
+double \textbf{ track\+D0\+Significance} (const \textbf{ Track} $\ast$trk, const \textbf{ Vertex} $\ast$pri)
+\item 
+double \textbf{ track\+Z0\+Significance} (const \textbf{ Track} $\ast$trk, const \textbf{ Vertex} $\ast$pri)
+\item 
+double \textbf{ signed\+D0\+Significance} (const \textbf{ Track} $\ast$trk, const \textbf{ Jet} $\ast$jet, const \textbf{ Vertex} $\ast$pri, bool update\+Flt=false)
+\item 
+double \textbf{ signed\+Z0\+Significance} (const \textbf{ Track} $\ast$trk, const \textbf{ Jet} $\ast$jet, const \textbf{ Vertex} $\ast$pri, bool update\+Flt=false)
+\item 
+double \textbf{ signed\+D0} (const \textbf{ Track} $\ast$trk, const \textbf{ Jet} $\ast$jet, const \textbf{ Vertex} $\ast$pri, bool update\+Flt=false)
+\item 
+double \textbf{ signed\+Z0} (const \textbf{ Track} $\ast$trk, const \textbf{ Jet} $\ast$jet, const \textbf{ Vertex} $\ast$pri, bool update\+Flt=false)
+\item 
+void \textbf{ find\+Most\+Significant\+Track} (const \textbf{ Jet} $\ast$jet, const \textbf{ Vertex} $\ast$pri, int minhitcut, double sig\+Vec[6])
+\item 
+double \textbf{ prob1D} (double sig, double maxsig, double $\ast$pars)
+\item 
+double \textbf{ track\+Prob\+D0} (const \textbf{ Track} $\ast$trk, const \textbf{ Vertex} $\ast$pri)
+\item 
+double \textbf{ track\+Prob\+Z0} (const \textbf{ Track} $\ast$trk, const \textbf{ Vertex} $\ast$pri)
+\item 
+double \textbf{ joint\+Prob\+D0} (const \textbf{ Jet} $\ast$jet, const \textbf{ Vertex} $\ast$pri, int minhitcut, double maxd0sigcut=1e+300, bool use\+Vertex\+Tracks=true)
+\item 
+double \textbf{ joint\+Prob\+Z0} (const \textbf{ Jet} $\ast$jet, const \textbf{ Vertex} $\ast$pri, int minhitcut, double maxz0sigcut=1e+300, bool use\+Vertex\+Tracks=true)
+\item 
+double \textbf{ joint\+Prob2\+D0} (const \textbf{ Jet} $\ast$jet, const \textbf{ Vertex} $\ast$pri, int minhitcut, double maxd0sigcut, bool use\+Vertex\+Tracks, const T\+H1 $\ast$jh1, const T\+H1 $\ast$jh2)
+\item 
+double \textbf{ joint\+Prob2\+Z0} (const \textbf{ Jet} $\ast$jet, const \textbf{ Vertex} $\ast$pri, int minhitcut, double maxz0sigcut, bool use\+Vertex\+Tracks, const T\+H1 $\ast$jh1, const T\+H1 $\ast$jh2)
+\item 
+double \textbf{ prob1\+D2} (double sig, double, const T\+H1 $\ast$jh1, const T\+H1 $\ast$jh2)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+double \textbf{ rpars} [7]
+\item 
+double \textbf{ zpars} [7]
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\mbox{\label{namespacelcfiplus_1_1algoSigProb_a59cef708bc2ffad16f788ad2400a3dd8}} 
+\index{lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}!find\+Most\+Significant\+Track@{find\+Most\+Significant\+Track}}
+\index{find\+Most\+Significant\+Track@{find\+Most\+Significant\+Track}!lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}}
+\subsubsection{find\+Most\+Significant\+Track()}
+{\footnotesize\ttfamily void lcfiplus\+::algo\+Sig\+Prob\+::find\+Most\+Significant\+Track (\begin{DoxyParamCaption}\item[{const \textbf{ Jet} $\ast$}]{jet,  }\item[{const \textbf{ Vertex} $\ast$}]{pri,  }\item[{int}]{minhitcut,  }\item[{double}]{sig\+Vec[6] }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+Jet\+::get\+All\+Tracks(), signed\+D0\+Significance(), signed\+Z0\+Significance(), and track\+Selection\+For\+Flavor\+Tag().
+
+
+
+Referenced by lcfiplus\+::\+Ft\+Trk1\+D0\+Sig\+::process(), lcfiplus\+::\+Ft\+Trk2\+D0\+Sig\+::process(), lcfiplus\+::\+Ft\+Trk1\+Z0\+Sig\+::process(), lcfiplus\+::\+Ft\+Trk2\+Z0\+Sig\+::process(), lcfiplus\+::\+Ft\+Trk1\+Pt\+::process(), lcfiplus\+::\+Ft\+Trk2\+Pt\+::process(), lcfiplus\+::\+Ft\+Trk1\+Pt\+By\+Jet\+E\+::process(), and lcfiplus\+::\+Ft\+Trk2\+Pt\+By\+Jet\+E\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1algoSigProb_a486e3c57f60524cfc1cc249a6a545ec6}} 
+\index{lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}!joint\+Prob2\+D0@{joint\+Prob2\+D0}}
+\index{joint\+Prob2\+D0@{joint\+Prob2\+D0}!lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}}
+\subsubsection{joint\+Prob2\+D0()}
+{\footnotesize\ttfamily double lcfiplus\+::algo\+Sig\+Prob\+::joint\+Prob2\+D0 (\begin{DoxyParamCaption}\item[{const \textbf{ Jet} $\ast$}]{jet,  }\item[{const \textbf{ Vertex} $\ast$}]{pri,  }\item[{int}]{minhitcut,  }\item[{double}]{maxd0sigcut,  }\item[{bool}]{use\+Vertex\+Tracks,  }\item[{const T\+H1 $\ast$}]{jh1,  }\item[{const T\+H1 $\ast$}]{jh2 }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+Jet\+::get\+All\+Tracks(), lcfiplus\+::\+Jet\+::get\+Tracks(), prob1\+D2(), track\+D0\+Significance(), and track\+Selection\+For\+Flavor\+Tag().
+
+
+
+Referenced by lcfiplus\+::\+Ft\+J\+Prob\+R2\+::process(), and lcfiplus\+::\+Ft\+J\+Prob\+R25\+Sigma\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1algoSigProb_ab08b0e00c34971b790e759fda81ec314}} 
+\index{lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}!joint\+Prob2\+Z0@{joint\+Prob2\+Z0}}
+\index{joint\+Prob2\+Z0@{joint\+Prob2\+Z0}!lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}}
+\subsubsection{joint\+Prob2\+Z0()}
+{\footnotesize\ttfamily double lcfiplus\+::algo\+Sig\+Prob\+::joint\+Prob2\+Z0 (\begin{DoxyParamCaption}\item[{const \textbf{ Jet} $\ast$}]{jet,  }\item[{const \textbf{ Vertex} $\ast$}]{pri,  }\item[{int}]{minhitcut,  }\item[{double}]{maxz0sigcut,  }\item[{bool}]{use\+Vertex\+Tracks,  }\item[{const T\+H1 $\ast$}]{jh1,  }\item[{const T\+H1 $\ast$}]{jh2 }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+Jet\+::get\+All\+Tracks(), lcfiplus\+::\+Jet\+::get\+Tracks(), prob1\+D2(), track\+Selection\+For\+Flavor\+Tag(), and track\+Z0\+Significance().
+
+
+
+Referenced by lcfiplus\+::\+Ft\+J\+Prob\+Z2\+::process(), and lcfiplus\+::\+Ft\+J\+Prob\+Z25\+Sigma\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1algoSigProb_add58bf3f73d50d6da3cc6fcf0edda938}} 
+\index{lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}!joint\+Prob\+D0@{joint\+Prob\+D0}}
+\index{joint\+Prob\+D0@{joint\+Prob\+D0}!lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}}
+\subsubsection{joint\+Prob\+D0()}
+{\footnotesize\ttfamily double lcfiplus\+::algo\+Sig\+Prob\+::joint\+Prob\+D0 (\begin{DoxyParamCaption}\item[{const \textbf{ Jet} $\ast$}]{jet,  }\item[{const \textbf{ Vertex} $\ast$}]{pri,  }\item[{int}]{minhitcut,  }\item[{double}]{maxd0sigcut = {\ttfamily 1e+300},  }\item[{bool}]{use\+Vertex\+Tracks = {\ttfamily true} }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+Jet\+::get\+All\+Tracks(), lcfiplus\+::\+Jet\+::get\+Tracks(), prob1\+D(), rpars, track\+D0\+Significance(), and track\+Selection\+For\+Flavor\+Tag().
+
+
+
+Referenced by lcfiplus\+::\+Ft\+J\+Prob\+R\+::process(), and lcfiplus\+::\+Ft\+J\+Prob\+R5\+Sigma\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1algoSigProb_a83e6934a5303236ffb68cb8e9a8c34b0}} 
+\index{lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}!joint\+Prob\+Z0@{joint\+Prob\+Z0}}
+\index{joint\+Prob\+Z0@{joint\+Prob\+Z0}!lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}}
+\subsubsection{joint\+Prob\+Z0()}
+{\footnotesize\ttfamily double lcfiplus\+::algo\+Sig\+Prob\+::joint\+Prob\+Z0 (\begin{DoxyParamCaption}\item[{const \textbf{ Jet} $\ast$}]{jet,  }\item[{const \textbf{ Vertex} $\ast$}]{pri,  }\item[{int}]{minhitcut,  }\item[{double}]{maxz0sigcut = {\ttfamily 1e+300},  }\item[{bool}]{use\+Vertex\+Tracks = {\ttfamily true} }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+Jet\+::get\+All\+Tracks(), lcfiplus\+::\+Jet\+::get\+Tracks(), prob1\+D(), track\+Selection\+For\+Flavor\+Tag(), track\+Z0\+Significance(), and zpars.
+
+
+
+Referenced by lcfiplus\+::\+Ft\+J\+Prob\+Z\+::process(), and lcfiplus\+::\+Ft\+J\+Prob\+Z5\+Sigma\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1algoSigProb_a8f69d75be4c24b3b7996e4ba2abff275}} 
+\index{lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}!prob1D@{prob1D}}
+\index{prob1D@{prob1D}!lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}}
+\subsubsection{prob1\+D()}
+{\footnotesize\ttfamily double lcfiplus\+::algo\+Sig\+Prob\+::prob1D (\begin{DoxyParamCaption}\item[{double}]{sig,  }\item[{double}]{maxsig,  }\item[{double $\ast$}]{pars }\end{DoxyParamCaption})}
+
+
+
+Referenced by joint\+Prob\+D0(), joint\+Prob\+Z0(), track\+Prob\+D0(), and track\+Prob\+Z0().
+
+\mbox{\label{namespacelcfiplus_1_1algoSigProb_a607d8c6a50bd4e79540d9af10041b870}} 
+\index{lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}!prob1\+D2@{prob1\+D2}}
+\index{prob1\+D2@{prob1\+D2}!lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}}
+\subsubsection{prob1\+D2()}
+{\footnotesize\ttfamily double lcfiplus\+::algo\+Sig\+Prob\+::prob1\+D2 (\begin{DoxyParamCaption}\item[{double}]{sig,  }\item[{double}]{,  }\item[{const T\+H1 $\ast$}]{jh1,  }\item[{const T\+H1 $\ast$}]{jh2 }\end{DoxyParamCaption})}
+
+
+
+Referenced by joint\+Prob2\+D0(), and joint\+Prob2\+Z0().
+
+\mbox{\label{namespacelcfiplus_1_1algoSigProb_a69330faef3e18bdd94f5022a49526437}} 
+\index{lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}!signed\+D0@{signed\+D0}}
+\index{signed\+D0@{signed\+D0}!lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}}
+\subsubsection{signed\+D0()}
+{\footnotesize\ttfamily double lcfiplus\+::algo\+Sig\+Prob\+::signed\+D0 (\begin{DoxyParamCaption}\item[{const \textbf{ Track} $\ast$}]{trk,  }\item[{const \textbf{ Jet} $\ast$}]{jet,  }\item[{const \textbf{ Vertex} $\ast$}]{pri,  }\item[{bool}]{update\+Flt = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::tpar\+::d0, lcfiplus\+::\+Track\+::get\+D0(), lcfiplus\+::\+Track\+Poca\+X\+Y\+::get\+Flight\+Length(), lcfiplus\+::\+Track\+::get\+Phi(), lcfiplus\+::\+Track\+::get\+X(), lcfiplus\+::\+Vertex\+::get\+X(), lcfiplus\+::\+Track\+::get\+Y(), lcfiplus\+::\+Vertex\+::get\+Y(), lcfiplus\+::\+Track\+::get\+Z0(), and lcfiplus\+::\+Track\+::set\+Flight\+Length().
+
+
+
+Referenced by lcfiplus\+::\+Track\+Ntuple\+::process(), lcfiplus\+::\+Ft\+D0b\+Prob\+Signed\+::process(), lcfiplus\+::\+Ft\+D0c\+Prob\+Signed\+::process(), and lcfiplus\+::\+Ft\+D0q\+Prob\+Signed\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1algoSigProb_a1648c125565400b9e96f9ce09b8975d8}} 
+\index{lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}!signed\+D0\+Significance@{signed\+D0\+Significance}}
+\index{signed\+D0\+Significance@{signed\+D0\+Significance}!lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}}
+\subsubsection{signed\+D0\+Significance()}
+{\footnotesize\ttfamily double lcfiplus\+::algo\+Sig\+Prob\+::signed\+D0\+Significance (\begin{DoxyParamCaption}\item[{const \textbf{ Track} $\ast$}]{trk,  }\item[{const \textbf{ Jet} $\ast$}]{jet,  }\item[{const \textbf{ Vertex} $\ast$}]{pri,  }\item[{bool}]{update\+Flt = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::tpar\+::d0, lcfiplus\+::tpar\+::d0d0, lcfiplus\+::\+Vertex\+::get\+Cov(), lcfiplus\+::\+Track\+::get\+Cov\+Matrix(), lcfiplus\+::\+Track\+::get\+D0(), lcfiplus\+::\+Track\+Poca\+X\+Y\+::get\+Flight\+Length(), lcfiplus\+::\+Track\+::get\+Phi(), lcfiplus\+::\+Track\+::get\+X(), lcfiplus\+::\+Vertex\+::get\+X(), lcfiplus\+::\+Track\+::get\+Y(), lcfiplus\+::\+Vertex\+::get\+Y(), lcfiplus\+::\+Track\+::get\+Z0(), lcfiplus\+::\+Track\+::set\+Flight\+Length(), lcfiplus\+::\+Vertex\+::xx, and lcfiplus\+::\+Vertex\+::yy.
+
+
+
+Referenced by find\+Most\+Significant\+Track(), lcfiplus\+::\+Track\+Ntuple\+::process(), lcfiplus\+::\+Ft\+D0b\+Prob\+I\+P\+::process(), and lcfiplus\+::\+Ft\+D0c\+Prob\+I\+P\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1algoSigProb_ad8868d4166de2cbd8284a9c95b53f887}} 
+\index{lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}!signed\+Z0@{signed\+Z0}}
+\index{signed\+Z0@{signed\+Z0}!lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}}
+\subsubsection{signed\+Z0()}
+{\footnotesize\ttfamily double lcfiplus\+::algo\+Sig\+Prob\+::signed\+Z0 (\begin{DoxyParamCaption}\item[{const \textbf{ Track} $\ast$}]{trk,  }\item[{const \textbf{ Jet} $\ast$}]{jet,  }\item[{const \textbf{ Vertex} $\ast$}]{pri,  }\item[{bool}]{update\+Flt = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+Track\+::get\+D0(), lcfiplus\+::\+Track\+Poca\+X\+Y\+::get\+Flight\+Length(), lcfiplus\+::\+Track\+::get\+Phi(), lcfiplus\+::\+Vertex\+::get\+Z(), lcfiplus\+::\+Track\+::get\+Z0(), and lcfiplus\+::\+Track\+::set\+Flight\+Length().
+
+
+
+Referenced by lcfiplus\+::\+Track\+Ntuple\+::process(), and signed\+Z0\+Significance().
+
+\mbox{\label{namespacelcfiplus_1_1algoSigProb_adc2ab4e7161c938cb2d34f66b0650bc5}} 
+\index{lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}!signed\+Z0\+Significance@{signed\+Z0\+Significance}}
+\index{signed\+Z0\+Significance@{signed\+Z0\+Significance}!lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}}
+\subsubsection{signed\+Z0\+Significance()}
+{\footnotesize\ttfamily double lcfiplus\+::algo\+Sig\+Prob\+::signed\+Z0\+Significance (\begin{DoxyParamCaption}\item[{const \textbf{ Track} $\ast$}]{trk,  }\item[{const \textbf{ Jet} $\ast$}]{jet,  }\item[{const \textbf{ Vertex} $\ast$}]{pri,  }\item[{bool}]{update\+Flt = {\ttfamily false} }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+Vertex\+::get\+Cov(), lcfiplus\+::\+Track\+::get\+Cov\+Matrix(), signed\+Z0(), lcfiplus\+::tpar\+::z0z0, and lcfiplus\+::\+Vertex\+::zz.
+
+
+
+Referenced by find\+Most\+Significant\+Track(), lcfiplus\+::\+Track\+Ntuple\+::process(), lcfiplus\+::\+Ft\+Z0b\+Prob\+I\+P\+::process(), and lcfiplus\+::\+Ft\+Z0c\+Prob\+I\+P\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1algoSigProb_a36b1bb76590bcb1051f3ad625c23b920}} 
+\index{lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}!track\+D0\+Significance@{track\+D0\+Significance}}
+\index{track\+D0\+Significance@{track\+D0\+Significance}!lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}}
+\subsubsection{track\+D0\+Significance()}
+{\footnotesize\ttfamily double lcfiplus\+::algo\+Sig\+Prob\+::track\+D0\+Significance (\begin{DoxyParamCaption}\item[{const \textbf{ Track} $\ast$}]{trk,  }\item[{const \textbf{ Vertex} $\ast$}]{pri }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::tpar\+::d0, lcfiplus\+::tpar\+::d0d0, lcfiplus\+::\+Vertex\+::get\+Cov(), lcfiplus\+::\+Track\+::get\+Cov\+Matrix(), lcfiplus\+::\+Track\+Poca\+X\+Y\+::get\+Flight\+Length(), lcfiplus\+::\+Track\+::get\+X(), lcfiplus\+::\+Vertex\+::get\+X(), lcfiplus\+::\+Track\+::get\+Y(), lcfiplus\+::\+Vertex\+::get\+Y(), lcfiplus\+::\+Track\+::set\+Flight\+Length(), lcfiplus\+::\+Vertex\+::xx, and lcfiplus\+::\+Vertex\+::yy.
+
+
+
+Referenced by joint\+Prob2\+D0(), joint\+Prob\+D0(), lcfiplus\+::\+Ft\+D0b\+Prob\+::process(), lcfiplus\+::\+Ft\+D0b\+Prob2\+::process(), lcfiplus\+::\+Ft\+D0c\+Prob\+::process(), lcfiplus\+::\+Ft\+D0c\+Prob2\+::process(), lcfiplus\+::\+Ft\+D0q\+Prob\+::process(), lcfiplus\+::\+Ft\+D0q\+Prob2\+::process(), lcfiplus\+::\+Ft\+D0b\+Prob\+Signed\+::process(), lcfiplus\+::\+Ft\+D0c\+Prob\+Signed\+::process(), lcfiplus\+::\+Ft\+D0q\+Prob\+Signed\+::process(), and track\+Prob\+D0().
+
+\mbox{\label{namespacelcfiplus_1_1algoSigProb_ae83446908470b94aa993b3fab1b42b4d}} 
+\index{lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}!track\+Prob\+D0@{track\+Prob\+D0}}
+\index{track\+Prob\+D0@{track\+Prob\+D0}!lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}}
+\subsubsection{track\+Prob\+D0()}
+{\footnotesize\ttfamily double lcfiplus\+::algo\+Sig\+Prob\+::track\+Prob\+D0 (\begin{DoxyParamCaption}\item[{const \textbf{ Track} $\ast$}]{trk,  }\item[{const \textbf{ Vertex} $\ast$}]{pri }\end{DoxyParamCaption})}
+
+
+
+References prob1\+D(), rpars, and track\+D0\+Significance().
+
+\mbox{\label{namespacelcfiplus_1_1algoSigProb_a08c5b6f8a6acaf2823cb0b9aab62eb14}} 
+\index{lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}!track\+Prob\+Z0@{track\+Prob\+Z0}}
+\index{track\+Prob\+Z0@{track\+Prob\+Z0}!lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}}
+\subsubsection{track\+Prob\+Z0()}
+{\footnotesize\ttfamily double lcfiplus\+::algo\+Sig\+Prob\+::track\+Prob\+Z0 (\begin{DoxyParamCaption}\item[{const \textbf{ Track} $\ast$}]{trk,  }\item[{const \textbf{ Vertex} $\ast$}]{pri }\end{DoxyParamCaption})}
+
+
+
+References prob1\+D(), track\+Z0\+Significance(), and zpars.
+
+\mbox{\label{namespacelcfiplus_1_1algoSigProb_aa237d31224316cd7bdd7ff494b898b6e}} 
+\index{lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}!track\+Selection\+For\+Flavor\+Tag@{track\+Selection\+For\+Flavor\+Tag}}
+\index{track\+Selection\+For\+Flavor\+Tag@{track\+Selection\+For\+Flavor\+Tag}!lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}}
+\subsubsection{track\+Selection\+For\+Flavor\+Tag()}
+{\footnotesize\ttfamily bool lcfiplus\+::algo\+Sig\+Prob\+::track\+Selection\+For\+Flavor\+Tag (\begin{DoxyParamCaption}\item[{const \textbf{ Track} $\ast$}]{trk,  }\item[{int}]{n\+Hit\+Cut }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+Track\+::get\+Ftd\+Hits(), and lcfiplus\+::\+Track\+::get\+Vtx\+Hits().
+
+
+
+Referenced by find\+Most\+Significant\+Track(), joint\+Prob2\+D0(), joint\+Prob2\+Z0(), joint\+Prob\+D0(), joint\+Prob\+Z0(), and lcfiplus\+::\+Track\+Ntuple\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1algoSigProb_a7edf49cc18ec154a434d430ce16172ca}} 
+\index{lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}!track\+Z0\+Significance@{track\+Z0\+Significance}}
+\index{track\+Z0\+Significance@{track\+Z0\+Significance}!lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}}
+\subsubsection{track\+Z0\+Significance()}
+{\footnotesize\ttfamily double lcfiplus\+::algo\+Sig\+Prob\+::track\+Z0\+Significance (\begin{DoxyParamCaption}\item[{const \textbf{ Track} $\ast$}]{trk,  }\item[{const \textbf{ Vertex} $\ast$}]{pri }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+Vertex\+::get\+Cov(), lcfiplus\+::\+Track\+::get\+Cov\+Matrix(), lcfiplus\+::\+Track\+Poca\+X\+Y\+::get\+Flight\+Length(), lcfiplus\+::\+Track\+::get\+Z(), lcfiplus\+::\+Vertex\+::get\+Z(), lcfiplus\+::\+Track\+::set\+Flight\+Length(), lcfiplus\+::tpar\+::z0, lcfiplus\+::tpar\+::z0z0, and lcfiplus\+::\+Vertex\+::zz.
+
+
+
+Referenced by joint\+Prob2\+Z0(), joint\+Prob\+Z0(), lcfiplus\+::\+Ft\+Z0b\+Prob\+::process(), lcfiplus\+::\+Ft\+Z0b\+Prob2\+::process(), lcfiplus\+::\+Ft\+Z0c\+Prob\+::process(), lcfiplus\+::\+Ft\+Z0c\+Prob2\+::process(), lcfiplus\+::\+Ft\+Z0q\+Prob\+::process(), lcfiplus\+::\+Ft\+Z0q\+Prob2\+::process(), and track\+Prob\+Z0().
+
+
+
+\subsection{Variable Documentation}
+\mbox{\label{namespacelcfiplus_1_1algoSigProb_a326ec0f0497c4389a6a40ee5a7e7b85f}} 
+\index{lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}!rpars@{rpars}}
+\index{rpars@{rpars}!lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}}
+\subsubsection{rpars}
+{\footnotesize\ttfamily double lcfiplus\+::algo\+Sig\+Prob\+::rpars[7]}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= \{
+  1.19312,
+  2.17842e-05,
+  0.131316,
+  6.27001e-06,
+  0.630934,
+  0.00012063,
+  0.0165772
+\}
+\end{DoxyCode}
+
+
+Referenced by joint\+Prob\+D0(), and track\+Prob\+D0().
+
+\mbox{\label{namespacelcfiplus_1_1algoSigProb_a16dd326bd0db6084e4aace741538642e}} 
+\index{lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}!zpars@{zpars}}
+\index{zpars@{zpars}!lcfiplus\+::algo\+Sig\+Prob@{lcfiplus\+::algo\+Sig\+Prob}}
+\subsubsection{zpars}
+{\footnotesize\ttfamily double lcfiplus\+::algo\+Sig\+Prob\+::zpars[7]}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= \{
+  1.28694,
+  2.64263e-05,
+  0.121609,
+  7.32101e-06,
+  0.624213,
+  0.000161151,
+  0.0138247
+\}
+\end{DoxyCode}
+
+
+Referenced by joint\+Prob\+Z0(), and track\+Prob\+Z0().
+

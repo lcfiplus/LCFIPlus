@@ -1,0 +1,142 @@
+\section{Kal\+Trk Struct Reference}
+\label{structKalTrk}\index{Kal\+Trk@{Kal\+Trk}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\textbf{ Kal\+Trk} (const \textbf{ Track} \&trk)
+\item 
+double \textbf{ compute} (const \textbf{ Kal\+Vtx} \&vtx)
+\item 
+void \textbf{ update} (\textbf{ Kal\+Vtx} \&vtx)
+\item 
+\textbf{ S\+Vector2} \textbf{ get\+Closest\+XY} (\textbf{ S\+Vector3} pos)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\textbf{ S\+Vector2} \textbf{ \+\_\+dz}
+\item 
+\textbf{ S\+Vector3} \textbf{ \+\_\+mom}
+\item 
+\textbf{ S\+Matrix\+Sym5} \textbf{ \+\_\+cov}
+\item 
+\textbf{ S\+Matrix\+Sym2} \textbf{ \+\_\+cov11}
+\item 
+\textbf{ S\+Matrix\+Sym3} \textbf{ \+\_\+cov22}
+\item 
+\textbf{ S\+Matrix23} \textbf{ \+\_\+cov12}
+\item 
+\textbf{ S\+Matrix32} \textbf{ \+\_\+mat\+Gain}
+\item 
+\textbf{ S\+Vector2} \textbf{ \+\_\+residual}
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\label{structKalTrk_ac3b66be7eccb2fb85458923ed8c7303a}} 
+\index{Kal\+Trk@{Kal\+Trk}!Kal\+Trk@{Kal\+Trk}}
+\index{Kal\+Trk@{Kal\+Trk}!Kal\+Trk@{Kal\+Trk}}
+\subsubsection{Kal\+Trk()}
+{\footnotesize\ttfamily Kal\+Trk\+::\+Kal\+Trk (\begin{DoxyParamCaption}\item[{const \textbf{ Track} \&}]{trk }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+References lcfiplus\+::tpar\+::d0d0, lcfiplus\+::tpar\+::d0om, lcfiplus\+::tpar\+::d0ph, lcfiplus\+::tpar\+::d0td, lcfiplus\+::tpar\+::d0z0, lcfiplus\+::\+Track\+::get\+Cov\+Matrix(), lcfiplus\+::\+Track\+::get\+D0(), lcfiplus\+::\+Track\+::get\+Omega(), lcfiplus\+::\+Track\+::get\+Phi(), lcfiplus\+::\+Track\+::get\+Tan\+Lambda(), lcfiplus\+::\+Track\+::get\+Z0(), lcfiplus\+::tpar\+::omom, lcfiplus\+::tpar\+::omtd, lcfiplus\+::tpar\+::phom, lcfiplus\+::tpar\+::phph, lcfiplus\+::tpar\+::phtd, lcfiplus\+::tpar\+::tdtd, lcfiplus\+::tpar\+::z0om, lcfiplus\+::tpar\+::z0ph, lcfiplus\+::tpar\+::z0td, and lcfiplus\+::tpar\+::z0z0.
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\label{structKalTrk_a9712c5fe64adebf1c5dcc14537960e78}} 
+\index{Kal\+Trk@{Kal\+Trk}!compute@{compute}}
+\index{compute@{compute}!Kal\+Trk@{Kal\+Trk}}
+\subsubsection{compute()}
+{\footnotesize\ttfamily double Kal\+Trk\+::compute (\begin{DoxyParamCaption}\item[{const \textbf{ Kal\+Vtx} \&}]{vtx }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+References Kal\+Vtx\+::pos.
+
+
+
+Referenced by test\+Tomohiko().
+
+\mbox{\label{structKalTrk_a151b6d6759ce0e8fa13cdc618dea815f}} 
+\index{Kal\+Trk@{Kal\+Trk}!get\+Closest\+XY@{get\+Closest\+XY}}
+\index{get\+Closest\+XY@{get\+Closest\+XY}!Kal\+Trk@{Kal\+Trk}}
+\subsubsection{get\+Closest\+X\+Y()}
+{\footnotesize\ttfamily \textbf{ S\+Vector2} Kal\+Trk\+::get\+Closest\+XY (\begin{DoxyParamCaption}\item[{\textbf{ S\+Vector3}}]{pos }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+References lcfiplus\+::tpar\+::d0, lcfiplus\+::tpar\+::om, lcfiplus\+::R, and lcfiplus\+::tpar\+::z0.
+
+\mbox{\label{structKalTrk_a5ffea8c5eb9b66f8a33dea564e28dfb2}} 
+\index{Kal\+Trk@{Kal\+Trk}!update@{update}}
+\index{update@{update}!Kal\+Trk@{Kal\+Trk}}
+\subsubsection{update()}
+{\footnotesize\ttfamily void Kal\+Trk\+::update (\begin{DoxyParamCaption}\item[{\textbf{ Kal\+Vtx} \&}]{vtx }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+References Kal\+Vtx\+::pos.
+
+
+
+Referenced by test\+Tomohiko().
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\label{structKalTrk_ad85d8970209dff9b8d42f4346851f5fa}} 
+\index{Kal\+Trk@{Kal\+Trk}!\+\_\+cov@{\+\_\+cov}}
+\index{\+\_\+cov@{\+\_\+cov}!Kal\+Trk@{Kal\+Trk}}
+\subsubsection{\+\_\+cov}
+{\footnotesize\ttfamily \textbf{ S\+Matrix\+Sym5} Kal\+Trk\+::\+\_\+cov}
+
+\mbox{\label{structKalTrk_a29177b2997e00b5ea452bb00e5a39319}} 
+\index{Kal\+Trk@{Kal\+Trk}!\+\_\+cov11@{\+\_\+cov11}}
+\index{\+\_\+cov11@{\+\_\+cov11}!Kal\+Trk@{Kal\+Trk}}
+\subsubsection{\+\_\+cov11}
+{\footnotesize\ttfamily \textbf{ S\+Matrix\+Sym2} Kal\+Trk\+::\+\_\+cov11}
+
+\mbox{\label{structKalTrk_a939e9edc38e9a550eb4c643c51db9f35}} 
+\index{Kal\+Trk@{Kal\+Trk}!\+\_\+cov12@{\+\_\+cov12}}
+\index{\+\_\+cov12@{\+\_\+cov12}!Kal\+Trk@{Kal\+Trk}}
+\subsubsection{\+\_\+cov12}
+{\footnotesize\ttfamily \textbf{ S\+Matrix23} Kal\+Trk\+::\+\_\+cov12}
+
+\mbox{\label{structKalTrk_a837038f91a6ddc647be27ee528716cb3}} 
+\index{Kal\+Trk@{Kal\+Trk}!\+\_\+cov22@{\+\_\+cov22}}
+\index{\+\_\+cov22@{\+\_\+cov22}!Kal\+Trk@{Kal\+Trk}}
+\subsubsection{\+\_\+cov22}
+{\footnotesize\ttfamily \textbf{ S\+Matrix\+Sym3} Kal\+Trk\+::\+\_\+cov22}
+
+\mbox{\label{structKalTrk_ae2fb8029c3d8db4efbe63d64a3cd00e5}} 
+\index{Kal\+Trk@{Kal\+Trk}!\+\_\+dz@{\+\_\+dz}}
+\index{\+\_\+dz@{\+\_\+dz}!Kal\+Trk@{Kal\+Trk}}
+\subsubsection{\+\_\+dz}
+{\footnotesize\ttfamily \textbf{ S\+Vector2} Kal\+Trk\+::\+\_\+dz}
+
+\mbox{\label{structKalTrk_a2bfff6dfccbe953c600fbd432b4b1b26}} 
+\index{Kal\+Trk@{Kal\+Trk}!\+\_\+mat\+Gain@{\+\_\+mat\+Gain}}
+\index{\+\_\+mat\+Gain@{\+\_\+mat\+Gain}!Kal\+Trk@{Kal\+Trk}}
+\subsubsection{\+\_\+mat\+Gain}
+{\footnotesize\ttfamily \textbf{ S\+Matrix32} Kal\+Trk\+::\+\_\+mat\+Gain}
+
+\mbox{\label{structKalTrk_a9e81bb1a9fc1fdd02b488a9e91ea1f71}} 
+\index{Kal\+Trk@{Kal\+Trk}!\+\_\+mom@{\+\_\+mom}}
+\index{\+\_\+mom@{\+\_\+mom}!Kal\+Trk@{Kal\+Trk}}
+\subsubsection{\+\_\+mom}
+{\footnotesize\ttfamily \textbf{ S\+Vector3} Kal\+Trk\+::\+\_\+mom}
+
+\mbox{\label{structKalTrk_a532ae2ddc14325b61fbdc56b1b8777dc}} 
+\index{Kal\+Trk@{Kal\+Trk}!\+\_\+residual@{\+\_\+residual}}
+\index{\+\_\+residual@{\+\_\+residual}!Kal\+Trk@{Kal\+Trk}}
+\subsubsection{\+\_\+residual}
+{\footnotesize\ttfamily \textbf{ S\+Vector2} Kal\+Trk\+::\+\_\+residual}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ Driver.\+cc}\end{DoxyCompactItemize}

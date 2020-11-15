@@ -1,0 +1,340 @@
+\section{lcfiplus\+:\+:Jet\+Finder Class Reference}
+\label{classlcfiplus_1_1JetFinder}\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+
+
+Finds jets using various jet clustering algorithms.  
+
+
+
+
+{\ttfamily \#include $<$Jet\+Finder.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\textbf{ Jet\+Finder} (const \textbf{ Jet\+Config} \&cfg, const \textbf{ Vertex} $\ast$ip=0)
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+\textbf{ $\sim$\+Jet\+Finder} ()
+\begin{DoxyCompactList}\small\item\em Destructor. \end{DoxyCompactList}\item 
+void \textbf{ Configure} (const \textbf{ Jet\+Config} \&cfg)
+\begin{DoxyCompactList}\small\item\em Replace \doxyref{Jet\+Config}{p.}{structlcfiplus_1_1JetConfig}. \end{DoxyCompactList}\item 
+vector$<$ \textbf{ Jet} $\ast$ $>$ \textbf{ run} (\textbf{ Track\+Vec} \&tracks)
+\begin{DoxyCompactList}\small\item\em Perform jet clustering with charged tracks only. \end{DoxyCompactList}\item 
+vector$<$ \textbf{ Jet} $\ast$ $>$ \textbf{ run} (\textbf{ Track\+Vec} \&tracks, \textbf{ Neutral\+Vec} \&neutrals, double $\ast$pymin=0, int ynjetmax=10)
+\begin{DoxyCompactList}\small\item\em Perform jet clustering using both charged tracks and neutral particles. \end{DoxyCompactList}\item 
+vector$<$ \textbf{ Jet} $\ast$ $>$ \textbf{ run} (\textbf{ Track\+Vec} \&tracks, \textbf{ Neutral\+Vec} \&neutrals, \textbf{ Vertex\+Vec} \&vertices, double $\ast$pymin=0, int ynjetmax=10)
+\begin{DoxyCompactList}\small\item\em Perform jet clustering using charged tracks and neutral particles with the contraint that the given vertices are not merged. \end{DoxyCompactList}\item 
+vector$<$ \textbf{ Jet} $\ast$ $>$ \textbf{ prerun} (\textbf{ Track\+Vec} \&tracks, \textbf{ Neutral\+Vec} \&neutrals, \textbf{ Vertex\+Vec} \&vertices, int $\ast$pn\+Vertex\+Jets=0)
+\begin{DoxyCompactList}\small\item\em Lepton finder and vertex isolator/combiner, called from \doxyref{run()}{p.}{classlcfiplus_1_1JetFinder_a40837828e5589519d225673216a00d9e} with vertices. \end{DoxyCompactList}\item 
+vector$<$ \textbf{ Jet} $\ast$ $>$ \textbf{ run} (vector$<$ \textbf{ Jet} $\ast$$>$ input, double $\ast$pymin=0, int ynjetmax=10)
+\begin{DoxyCompactList}\small\item\em Main function of jet clustering, called from other \doxyref{run()}{p.}{classlcfiplus_1_1JetFinder_a40837828e5589519d225673216a00d9e} functions. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static double \textbf{ func\+Durham} (\textbf{ Jet} \&jet1, \textbf{ Jet} \&jet2, double Evis2, \textbf{ Jet\+Config} \&cfg)
+\item 
+static double \textbf{ func\+Jade} (\textbf{ Jet} \&jet1, \textbf{ Jet} \&jet2, double Evis2, \textbf{ Jet\+Config} \&cfg)
+\item 
+static double \textbf{ func\+JadeE} (\textbf{ Jet} \&jet1, \textbf{ Jet} \&jet2, double Evis2, \textbf{ Jet\+Config} \&cfg)
+\item 
+static double \textbf{ func\+Durham\+Cheat} (\textbf{ Jet} \&jet1, \textbf{ Jet} \&jet2, double Evis2, \textbf{ Jet\+Config} \&cfg)
+\item 
+static double \textbf{ func\+Kt} (\textbf{ Jet} \&jet1, \textbf{ Jet} \&jet2, double Evis2, \textbf{ Jet\+Config} \&cfg)
+\item 
+static double \textbf{ func\+Valencia} (\textbf{ Jet} \&jet1, \textbf{ Jet} \&jet2, double Evis2, \textbf{ Jet\+Config} \&cfg)
+\item 
+static double \textbf{ func\+Vertex} (\textbf{ Jet} \&jet1, \textbf{ Jet} \&jet2, double Evis2, \textbf{ Jet\+Config} \&cfg, double($\ast$func)(\textbf{ Jet} \&, \textbf{ Jet} \&, double, \textbf{ Jet\+Config} \&))
+\item 
+static double \textbf{ func\+Durham\+Vertex} (\textbf{ Jet} \&jet1, \textbf{ Jet} \&jet2, double Evis2, \textbf{ Jet\+Config} \&cfg)
+\item 
+static double \textbf{ func\+Kt\+Vertex} (\textbf{ Jet} \&jet1, \textbf{ Jet} \&jet2, double Evis2, \textbf{ Jet\+Config} \&cfg)
+\item 
+static double \textbf{ func\+Valencia\+Vertex} (\textbf{ Jet} \&jet1, \textbf{ Jet} \&jet2, double Evis2, \textbf{ Jet\+Config} \&cfg)
+\item 
+static double \textbf{ func\+Durham\+Beam\+Distance} (\textbf{ Jet} \&jet, double Evis2, \textbf{ Jet\+Config} \&cfg)
+\item 
+static double \textbf{ func\+Kt\+Beam\+Distance} (\textbf{ Jet} \&jet, double Evis2, \textbf{ Jet\+Config} \&cfg)
+\item 
+static double \textbf{ func\+Valencia\+Beam\+Distance} (\textbf{ Jet} \&jet, double Evis2, \textbf{ Jet\+Config} \&cfg)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Finds jets using various jet clustering algorithms. 
+
+\begin{DoxyAuthor}{Author}
+T. Tanabe, I\+C\+E\+PP, The University of Tokyo 
+
+T. Suehara, I\+C\+E\+PP, The University of Tokyo 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+\$\+Id\$ 
+\end{DoxyVersion}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\label{classlcfiplus_1_1JetFinder_a39a911612cd06a34c6c40ef8add37a7c}} 
+\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}!Jet\+Finder@{Jet\+Finder}}
+\index{Jet\+Finder@{Jet\+Finder}!lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+\subsubsection{Jet\+Finder()}
+{\footnotesize\ttfamily lcfiplus\+::\+Jet\+Finder\+::\+Jet\+Finder (\begin{DoxyParamCaption}\item[{const \textbf{ Jet\+Config} \&}]{cfg,  }\item[{const \textbf{ Vertex} $\ast$}]{ip = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Constructor. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em cfg} & specify the algorithm and the parameters \\
+\hline
+\end{DoxyParams}
+\mbox{\label{classlcfiplus_1_1JetFinder_a775c200f5a72c55a3322af779e5f66d6}} 
+\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}!````~Jet\+Finder@{$\sim$\+Jet\+Finder}}
+\index{````~Jet\+Finder@{$\sim$\+Jet\+Finder}!lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+\subsubsection{$\sim$\+Jet\+Finder()}
+{\footnotesize\ttfamily lcfiplus\+::\+Jet\+Finder\+::$\sim$\+Jet\+Finder (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Destructor. 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\label{classlcfiplus_1_1JetFinder_a934cc214131917f760916ed2a6f13459}} 
+\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}!Configure@{Configure}}
+\index{Configure@{Configure}!lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+\subsubsection{Configure()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Jet\+Finder\+::\+Configure (\begin{DoxyParamCaption}\item[{const \textbf{ Jet\+Config} \&}]{cfg }\end{DoxyParamCaption})}
+
+
+
+Replace \doxyref{Jet\+Config}{p.}{structlcfiplus_1_1JetConfig}. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\tt in}  & {\em cfg} & specify the algorithm and the parameters \\
+\hline
+\end{DoxyParams}
+\mbox{\label{classlcfiplus_1_1JetFinder_a8ea7f97b49af5ce7f560d9b5c3f43b31}} 
+\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}!func\+Durham@{func\+Durham}}
+\index{func\+Durham@{func\+Durham}!lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+\subsubsection{func\+Durham()}
+{\footnotesize\ttfamily double lcfiplus\+::\+Jet\+Finder\+::func\+Durham (\begin{DoxyParamCaption}\item[{\textbf{ Jet} \&}]{jet1,  }\item[{\textbf{ Jet} \&}]{jet2,  }\item[{double}]{Evis2,  }\item[{\textbf{ Jet\+Config} \&}]{cfg }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References lcfiplus\+::algo\+Etc\+::min().
+
+
+
+Referenced by prerun().
+
+\mbox{\label{classlcfiplus_1_1JetFinder_af23921b7aa3f0f361d7192fe59d656a2}} 
+\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}!func\+Durham\+Beam\+Distance@{func\+Durham\+Beam\+Distance}}
+\index{func\+Durham\+Beam\+Distance@{func\+Durham\+Beam\+Distance}!lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+\subsubsection{func\+Durham\+Beam\+Distance()}
+{\footnotesize\ttfamily double lcfiplus\+::\+Jet\+Finder\+::func\+Durham\+Beam\+Distance (\begin{DoxyParamCaption}\item[{\textbf{ Jet} \&}]{jet,  }\item[{double}]{Evis2,  }\item[{\textbf{ Jet\+Config} \&}]{cfg }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References lcfiplus\+::\+Jet\+Config\+::alpha\+Parameter.
+
+
+
+Referenced by prerun().
+
+\mbox{\label{classlcfiplus_1_1JetFinder_a0cdd8b714f764db8600a56f8aab8e2a2}} 
+\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}!func\+Durham\+Cheat@{func\+Durham\+Cheat}}
+\index{func\+Durham\+Cheat@{func\+Durham\+Cheat}!lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+\subsubsection{func\+Durham\+Cheat()}
+{\footnotesize\ttfamily double lcfiplus\+::\+Jet\+Finder\+::func\+Durham\+Cheat (\begin{DoxyParamCaption}\item[{\textbf{ Jet} \&}]{jet1,  }\item[{\textbf{ Jet} \&}]{jet2,  }\item[{double}]{Evis2,  }\item[{\textbf{ Jet\+Config} \&}]{cfg }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References lcfiplus\+::algo\+Etc\+::min().
+
+\mbox{\label{classlcfiplus_1_1JetFinder_a37c1f0c004064895bbd169196a9475ae}} 
+\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}!func\+Durham\+Vertex@{func\+Durham\+Vertex}}
+\index{func\+Durham\+Vertex@{func\+Durham\+Vertex}!lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+\subsubsection{func\+Durham\+Vertex()}
+{\footnotesize\ttfamily double lcfiplus\+::\+Jet\+Finder\+::func\+Durham\+Vertex (\begin{DoxyParamCaption}\item[{\textbf{ Jet} \&}]{jet1,  }\item[{\textbf{ Jet} \&}]{jet2,  }\item[{double}]{Evis2,  }\item[{\textbf{ Jet\+Config} \&}]{cfg }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Referenced by prerun().
+
+\mbox{\label{classlcfiplus_1_1JetFinder_ab20cc4f73e34e3c11d72e94a1026810f}} 
+\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}!func\+Jade@{func\+Jade}}
+\index{func\+Jade@{func\+Jade}!lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+\subsubsection{func\+Jade()}
+{\footnotesize\ttfamily double lcfiplus\+::\+Jet\+Finder\+::func\+Jade (\begin{DoxyParamCaption}\item[{\textbf{ Jet} \&}]{jet1,  }\item[{\textbf{ Jet} \&}]{jet2,  }\item[{double}]{Evis2,  }\item[{\textbf{ Jet\+Config} \&}]{cfg }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\label{classlcfiplus_1_1JetFinder_a7bd06fa1c1b1b0ce7d631e31a0309420}} 
+\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}!func\+JadeE@{func\+JadeE}}
+\index{func\+JadeE@{func\+JadeE}!lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+\subsubsection{func\+Jade\+E()}
+{\footnotesize\ttfamily double lcfiplus\+::\+Jet\+Finder\+::func\+JadeE (\begin{DoxyParamCaption}\item[{\textbf{ Jet} \&}]{jet1,  }\item[{\textbf{ Jet} \&}]{jet2,  }\item[{double}]{Evis2,  }\item[{\textbf{ Jet\+Config} \&}]{cfg }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\mbox{\label{classlcfiplus_1_1JetFinder_ac92795a3e3fa2d504907ac5ddba6e6c4}} 
+\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}!func\+Kt@{func\+Kt}}
+\index{func\+Kt@{func\+Kt}!lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+\subsubsection{func\+Kt()}
+{\footnotesize\ttfamily double lcfiplus\+::\+Jet\+Finder\+::func\+Kt (\begin{DoxyParamCaption}\item[{\textbf{ Jet} \&}]{jet1,  }\item[{\textbf{ Jet} \&}]{jet2,  }\item[{double}]{Evis2,  }\item[{\textbf{ Jet\+Config} \&}]{cfg }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References lcfiplus\+::algo\+Etc\+::min(), and lcfiplus\+::\+Jet\+Config\+::r\+Parameter.
+
+
+
+Referenced by prerun().
+
+\mbox{\label{classlcfiplus_1_1JetFinder_aece2fadd2174c0b36148b80a62246919}} 
+\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}!func\+Kt\+Beam\+Distance@{func\+Kt\+Beam\+Distance}}
+\index{func\+Kt\+Beam\+Distance@{func\+Kt\+Beam\+Distance}!lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+\subsubsection{func\+Kt\+Beam\+Distance()}
+{\footnotesize\ttfamily double lcfiplus\+::\+Jet\+Finder\+::func\+Kt\+Beam\+Distance (\begin{DoxyParamCaption}\item[{\textbf{ Jet} \&}]{jet,  }\item[{double}]{Evis2,  }\item[{\textbf{ Jet\+Config} \&}]{cfg }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Referenced by prerun().
+
+\mbox{\label{classlcfiplus_1_1JetFinder_aa56f654902821b0a0a07dd344adc8146}} 
+\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}!func\+Kt\+Vertex@{func\+Kt\+Vertex}}
+\index{func\+Kt\+Vertex@{func\+Kt\+Vertex}!lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+\subsubsection{func\+Kt\+Vertex()}
+{\footnotesize\ttfamily double lcfiplus\+::\+Jet\+Finder\+::func\+Kt\+Vertex (\begin{DoxyParamCaption}\item[{\textbf{ Jet} \&}]{jet1,  }\item[{\textbf{ Jet} \&}]{jet2,  }\item[{double}]{Evis2,  }\item[{\textbf{ Jet\+Config} \&}]{cfg }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Referenced by prerun().
+
+\mbox{\label{classlcfiplus_1_1JetFinder_ac57e96eeea1de7fd6d864879be0f14e2}} 
+\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}!func\+Valencia@{func\+Valencia}}
+\index{func\+Valencia@{func\+Valencia}!lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+\subsubsection{func\+Valencia()}
+{\footnotesize\ttfamily double lcfiplus\+::\+Jet\+Finder\+::func\+Valencia (\begin{DoxyParamCaption}\item[{\textbf{ Jet} \&}]{jet1,  }\item[{\textbf{ Jet} \&}]{jet2,  }\item[{double}]{Evis2,  }\item[{\textbf{ Jet\+Config} \&}]{cfg }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References lcfiplus\+::\+Jet\+Config\+::beta\+Parameter, lcfiplus\+::algo\+Etc\+::min(), and lcfiplus\+::\+Jet\+Config\+::r\+Parameter.
+
+
+
+Referenced by prerun().
+
+\mbox{\label{classlcfiplus_1_1JetFinder_a85a9d484fd05935539baa93cef4a5630}} 
+\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}!func\+Valencia\+Beam\+Distance@{func\+Valencia\+Beam\+Distance}}
+\index{func\+Valencia\+Beam\+Distance@{func\+Valencia\+Beam\+Distance}!lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+\subsubsection{func\+Valencia\+Beam\+Distance()}
+{\footnotesize\ttfamily double lcfiplus\+::\+Jet\+Finder\+::func\+Valencia\+Beam\+Distance (\begin{DoxyParamCaption}\item[{\textbf{ Jet} \&}]{jet,  }\item[{double}]{Evis2,  }\item[{\textbf{ Jet\+Config} \&}]{cfg }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References lcfiplus\+::\+Jet\+Config\+::beta\+Parameter, and lcfiplus\+::\+Jet\+Config\+::gamma\+Parameter.
+
+
+
+Referenced by prerun().
+
+\mbox{\label{classlcfiplus_1_1JetFinder_aba062e88a619a0f892f4fb894dd0e506}} 
+\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}!func\+Valencia\+Vertex@{func\+Valencia\+Vertex}}
+\index{func\+Valencia\+Vertex@{func\+Valencia\+Vertex}!lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+\subsubsection{func\+Valencia\+Vertex()}
+{\footnotesize\ttfamily double lcfiplus\+::\+Jet\+Finder\+::func\+Valencia\+Vertex (\begin{DoxyParamCaption}\item[{\textbf{ Jet} \&}]{jet1,  }\item[{\textbf{ Jet} \&}]{jet2,  }\item[{double}]{Evis2,  }\item[{\textbf{ Jet\+Config} \&}]{cfg }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Referenced by prerun().
+
+\mbox{\label{classlcfiplus_1_1JetFinder_ac0eec4432b125e16b674c5c16b188d1d}} 
+\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}!func\+Vertex@{func\+Vertex}}
+\index{func\+Vertex@{func\+Vertex}!lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+\subsubsection{func\+Vertex()}
+{\footnotesize\ttfamily double lcfiplus\+::\+Jet\+Finder\+::func\+Vertex (\begin{DoxyParamCaption}\item[{\textbf{ Jet} \&}]{jet1,  }\item[{\textbf{ Jet} \&}]{jet2,  }\item[{double}]{Evis2,  }\item[{\textbf{ Jet\+Config} \&}]{cfg,  }\item[{double($\ast$)(\textbf{ Jet} \&, \textbf{ Jet} \&, double, \textbf{ Jet\+Config} \&)}]{func }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+References lcfiplus\+::\+Jet\+::get\+Vertices(), lcfiplus\+::\+Jet\+Config\+::\+Yadd\+LL, lcfiplus\+::\+Jet\+Config\+::\+Yadd\+VL, and lcfiplus\+::\+Jet\+Config\+::\+Yadd\+VV.
+
+\mbox{\label{classlcfiplus_1_1JetFinder_a339be4a6370bcd69f579b87f7329dc7c}} 
+\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}!prerun@{prerun}}
+\index{prerun@{prerun}!lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+\subsubsection{prerun()}
+{\footnotesize\ttfamily vector$<$ \textbf{ Jet} $\ast$ $>$ lcfiplus\+::\+Jet\+Finder\+::prerun (\begin{DoxyParamCaption}\item[{\textbf{ Track\+Vec} \&}]{tracks,  }\item[{\textbf{ Neutral\+Vec} \&}]{neutrals,  }\item[{\textbf{ Vertex\+Vec} \&}]{vertices,  }\item[{int $\ast$}]{pn\+Vertex\+Jets = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Lepton finder and vertex isolator/combiner, called from \doxyref{run()}{p.}{classlcfiplus_1_1JetFinder_a40837828e5589519d225673216a00d9e} with vertices. 
+
+
+
+References lcfiplus\+::\+Vertex\+::add(), lcfiplus\+::\+Jet\+::add(), lcfiplus\+::\+Jet\+Config\+::algo, func\+Durham(), func\+Durham\+Beam\+Distance(), func\+Durham\+Vertex(), func\+Kt(), func\+Kt\+Beam\+Distance(), func\+Kt\+Vertex(), func\+Valencia(), func\+Valencia\+Beam\+Distance(), func\+Valencia\+Vertex(), lcfiplus\+::\+Vertex\+::get\+Mcp(), lcfiplus\+::\+Track\+::get\+Particle\+I\+D\+Probability(), lcfiplus\+::\+M\+C\+Particle\+::get\+P\+D\+G(), lcfiplus\+::\+Vertex\+::get\+Pos(), lcfiplus\+::\+Jet\+::get\+Vertices(), lcfiplus\+::\+Vertex\+::get\+X(), lcfiplus\+::\+Vertex\+::get\+Y(), lcfiplus\+::\+Vertex\+::get\+Z(), lcfiplus\+::\+M\+C\+Particle\+::is\+Parent(), lcfiplus\+::\+Jet\+Config\+::muon\+I\+D\+External, lcfiplus\+::\+Jet\+Config\+::muon\+I\+D\+Max\+Dist, lcfiplus\+::\+Jet\+Config\+::muon\+I\+D\+Min\+D0\+Sig, lcfiplus\+::\+Jet\+Config\+::muon\+I\+D\+Min\+Energy, lcfiplus\+::\+Jet\+Config\+::muon\+I\+D\+Min\+Prob, lcfiplus\+::\+Jet\+Config\+::muon\+I\+D\+Min\+Z0\+Sig, lcfiplus\+::\+Jet\+Config\+::n\+Jet, lcfiplus\+::algo\+Etc\+::\+Simple\+Sec\+Muon\+Finder(), and lcfiplus\+::\+Jet\+Config\+::use\+Muon\+ID.
+
+
+
+Referenced by run().
+
+\mbox{\label{classlcfiplus_1_1JetFinder_a40837828e5589519d225673216a00d9e}} 
+\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}!run@{run}}
+\index{run@{run}!lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+\subsubsection{run()\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily vector$<$ \textbf{ Jet} $\ast$ $>$ lcfiplus\+::\+Jet\+Finder\+::run (\begin{DoxyParamCaption}\item[{\textbf{ Track\+Vec} \&}]{tracks }\end{DoxyParamCaption})}
+
+
+
+Perform jet clustering with charged tracks only. 
+
+
+
+Referenced by run().
+
+\mbox{\label{classlcfiplus_1_1JetFinder_a8f6722bfcb52f37adec8209119f905ee}} 
+\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}!run@{run}}
+\index{run@{run}!lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+\subsubsection{run()\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily vector$<$ \textbf{ Jet} $\ast$ $>$ lcfiplus\+::\+Jet\+Finder\+::run (\begin{DoxyParamCaption}\item[{\textbf{ Track\+Vec} \&}]{tracks,  }\item[{\textbf{ Neutral\+Vec} \&}]{neutrals,  }\item[{double $\ast$}]{pymin = {\ttfamily 0},  }\item[{int}]{ynjetmax = {\ttfamily 10} }\end{DoxyParamCaption})}
+
+
+
+Perform jet clustering using both charged tracks and neutral particles. 
+
+
+
+References run().
+
+\mbox{\label{classlcfiplus_1_1JetFinder_a7dda10d11757a24d70d8c6cfec4be967}} 
+\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}!run@{run}}
+\index{run@{run}!lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+\subsubsection{run()\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily vector$<$ \textbf{ Jet} $\ast$ $>$ lcfiplus\+::\+Jet\+Finder\+::run (\begin{DoxyParamCaption}\item[{\textbf{ Track\+Vec} \&}]{tracks,  }\item[{\textbf{ Neutral\+Vec} \&}]{neutrals,  }\item[{\textbf{ Vertex\+Vec} \&}]{vertices,  }\item[{double $\ast$}]{pymin = {\ttfamily 0},  }\item[{int}]{ynjetmax = {\ttfamily 10} }\end{DoxyParamCaption})}
+
+
+
+Perform jet clustering using charged tracks and neutral particles with the contraint that the given vertices are not merged. 
+
+
+
+References prerun(), and run().
+
+\mbox{\label{classlcfiplus_1_1JetFinder_aa024653c4b81d976333e072e2bf02f1f}} 
+\index{lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}!run@{run}}
+\index{run@{run}!lcfiplus\+::\+Jet\+Finder@{lcfiplus\+::\+Jet\+Finder}}
+\subsubsection{run()\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily vector$<$ \textbf{ Jet} $\ast$ $>$ lcfiplus\+::\+Jet\+Finder\+::run (\begin{DoxyParamCaption}\item[{vector$<$ \textbf{ Jet} $\ast$$>$}]{input,  }\item[{double $\ast$}]{pymin = {\ttfamily 0},  }\item[{int}]{ynjetmax = {\ttfamily 10} }\end{DoxyParamCaption})}
+
+
+
+Main function of jet clustering, called from other \doxyref{run()}{p.}{classlcfiplus_1_1JetFinder_a40837828e5589519d225673216a00d9e} functions. 
+
+
+
+References lcfiplus\+::algo\+Etc\+::min(), lcfiplus\+::\+Jet\+Config\+::n\+Jet, lcfiplus\+::\+Jet\+::sort\+\_\+by\+\_\+energy(), lcfiplus\+::\+Jet\+Config\+::use\+Beam\+Jets, and lcfiplus\+::\+Jet\+Config\+::\+Ycut.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ Jet\+Finder.\+h}\item 
+\textbf{ Jet\+Finder.\+cc}\end{DoxyCompactItemize}

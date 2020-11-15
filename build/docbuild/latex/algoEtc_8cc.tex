@@ -1,0 +1,32 @@
+\section{algo\+Etc.\+cc File Reference}
+\label{algoEtc_8cc}\index{algo\+Etc.\+cc@{algo\+Etc.\+cc}}
+{\ttfamily \#include \char`\"{}lcfiplus.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}algo\+Etc.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}T\+Random.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$math.\+h$>$}\newline
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \textbf{ lcfiplus}
+\item 
+ \textbf{ lcfiplus\+::algo\+Etc}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \textbf{ lcfiplus\+::algo\+Etc\+::min} (int a, int b)
+\item 
+void \textbf{ lcfiplus\+::algo\+Etc\+::make\+Beam\+Tracks} (\textbf{ Track} $\ast$\&t1, \textbf{ Track} $\ast$\&t2, bool smear=true)
+\item 
+void \textbf{ lcfiplus\+::algo\+Etc\+::make\+Beam\+Vertex} (\textbf{ Vertex} $\ast$\&vtx, bool smear=true)
+\item 
+void \textbf{ lcfiplus\+::algo\+Etc\+::connect\+Vertices\+To\+Jets} (const \textbf{ Jet\+Vec} \&jets, const vector$<$ \textbf{ Vertex} $\ast$$>$ \&vtcs, vector$<$ vector$<$ \textbf{ Vertex} $\ast$$>$ $>$ \&jet\+Vertices, vector$<$ vector$<$ const \textbf{ Track} $\ast$$>$ $>$ \&jet\+Residual\+Tracks, const \textbf{ Vertex} $\ast$ip=0)
+\item 
+vector$<$ const \textbf{ Track} $\ast$ $>$ \textbf{ lcfiplus\+::algo\+Etc\+::extract\+Tracks} (\textbf{ Vertex\+Vec} \&vtx)
+\item 
+double \textbf{ lcfiplus\+::algo\+Etc\+::calc\+Thrust} (vector$<$ T\+Vector3 $>$ \&list, T\+Vector3 \&taxis)
+\item 
+bool \textbf{ lcfiplus\+::algo\+Etc\+::\+Simple\+Sec\+Muon\+Finder} (const \textbf{ Track} $\ast$tr, double d0sigth, double z0sigth, double maxpos, double mudepmin, double ecaldepmin, double ecaldepmax, double hcaldepmin, double hcaldepmax, double maxclusterpertrackenergy=10., const \textbf{ Vertex} $\ast$ip=0)
+\item 
+bool \textbf{ lcfiplus\+::algo\+Etc\+::\+Simple\+Sec\+Electron\+Finder} (const \textbf{ Track} $\ast$tr, double d0sigth, double z0sigth, double maxpos, double emin, double minfracecal, double minecalpertrackenergy, double maxecalpertrackenergy, const \textbf{ Vertex} $\ast$ip=0)
+\end{DoxyCompactItemize}

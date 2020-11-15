@@ -1,0 +1,61 @@
+\section{Vertex\+Finderwith\+D\+L.\+h File Reference}
+\label{VertexFinderwithDL_8h}\index{Vertex\+Finderwith\+D\+L.\+h@{Vertex\+Finderwith\+D\+L.\+h}}
+{\ttfamily \#include \char`\"{}lcfiplus.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$list$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$functional$>$}\newline
+{\ttfamily \#include $<$algorithm$>$}\newline
+{\ttfamily \#include $<$tensorflow/cc/saved\+\_\+model/loader.\+h$>$}\newline
+{\ttfamily \#include $<$tensorflow/cc/saved\+\_\+model/tag\+\_\+constants.\+h$>$}\newline
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \textbf{ lcfiplus}
+\item 
+ \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+DL}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Slice\+N2\+D\+Vector} (std\+::vector$<$ std\+::vector$<$ double $>$ $>$ vec, int rowstart, int rowend, int colstart, int colend)
+\item 
+std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Concat\+N2\+D\+Vector} (std\+::vector$<$ std\+::vector$<$ double $>$ $>$ vec1, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ vec2)
+\item 
+tensorflow\+::\+Tensor \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+N2\+D\+Vector2\+Tensor} (std\+::vector$<$ std\+::vector$<$ double $>$ $>$ vec)
+\item 
+tensorflow\+::\+Tensor \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+N3\+D\+Vector2\+Tensor} (std\+::vector$<$ std\+::vector$<$ std\+::vector$<$ double $>$ $>$ $>$ vec)
+\item 
+std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Tensor2\+N2\+D\+Vector} (tensorflow\+::\+Tensor tensor)
+\item 
+std\+::vector$<$ std\+::vector$<$ std\+::vector$<$ double $>$ $>$ $>$ \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Tensor2\+N3\+D\+Vector} (tensorflow\+::\+Tensor tensor)
+\item 
+void \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Debug\+Print\+Variable\+Size} (std\+::vector$<$ std\+::vector$<$ double $>$ $>$ paris, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ encoder\+\_\+tracks, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ decoder\+\_\+tracks)
+\item 
+void \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Debug\+Print\+Get\+Event\+Data} (std\+::vector$<$ std\+::vector$<$ double $>$ $>$ event\+\_\+data, int ncomb, int N\+Combination)
+\item 
+void \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Debug\+Print\+Secondary\+Sort} (std\+::vector$<$ std\+::vector$<$ double $>$ $>$ secondary\+\_\+seeds)
+\item 
+void \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Debug\+Print\+Primary\+Sort} (std\+::vector$<$ std\+::vector$<$ double $>$ $>$ primary\+\_\+seeds)
+\item 
+void \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Debug\+Print\+Get\+Tracks} (std\+::vector$<$ std\+::vector$<$ double $>$ $>$ tracks)
+\item 
+void \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Debug\+Print\+V\+L\+S\+T\+M\+Prediction} (std\+::vector$<$ std\+::vector$<$ std\+::vector$<$ double $>$ $>$ $>$ scores)
+\item 
+std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Get\+Event\+Data} (bool debug, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ index, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ variables, tensorflow\+::\+Saved\+Model\+Bundle\+Lite \&pair\+\_\+model\+\_\+bundle, tensorflow\+::\+Saved\+Model\+Bundle\+Lite \&pair\+\_\+pos\+\_\+model\+\_\+bundle)
+\item 
+std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Get\+Remain\+Decoder\+Tracks} (std\+::vector$<$ std\+::vector$<$ double $>$ $>$ decoder\+\_\+tracks, std\+::vector$<$ int $>$ track\+\_\+list)
+\item 
+std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Secondary\+Seed\+Selection} (std\+::vector$<$ std\+::vector$<$ double $>$ $>$ event\+\_\+data, int Threshold\+Pair\+Secondary\+Score, int Threshold\+Pair\+Pos\+Score)
+\item 
+void \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Print\+Results} (std\+::vector$<$ int $>$ primary\+\_\+track\+\_\+list, std\+::vector$<$ std\+::vector$<$ int $>$ $>$ secondary\+\_\+track\+\_\+lists)
+\item 
+void \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Get\+Pairs\+Encoder\+Decoder\+Tracks} (\textbf{ Track\+Vec} \&tracks, int N\+Track\+Variable, int Max\+Track, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \&index, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \&pairs, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \&encoder\+\_\+tracks, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \&decoder\+\_\+tracks)
+\item 
+void \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Primary\+Vertex\+Finder} (bool debug, int Max\+Primary\+Vertex\+Loop, double Threshold\+Primary\+Score, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ event\+\_\+data, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ encoder\+\_\+tracks, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ decoder\+\_\+tracks, tensorflow\+::\+Saved\+Model\+Bundle\+Lite \&lstm\+\_\+model\+\_\+bundle, std\+::vector$<$ int $>$ \&primary\+\_\+track\+\_\+list, std\+::vector$<$ std\+::vector$<$ std\+::vector$<$ double $>$ $>$ $>$ \&primary\+\_\+scores, std\+::vector$<$ double $>$ \&bigger\+\_\+primary\+\_\+scores)
+\item 
+void \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Secondary\+Vertex\+Finder} (bool debug, double Threshold\+Secondary\+Score, std\+::vector$<$ double $>$ primary\+\_\+scores, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ secondary\+\_\+event\+\_\+data, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ encoder\+\_\+tracks, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ decoder\+\_\+tracks, tensorflow\+::\+Saved\+Model\+Bundle\+Lite \&slstm\+\_\+model\+\_\+bundle, std\+::vector$<$ int $>$ \&primary\+\_\+track\+\_\+list, std\+::vector$<$ std\+::vector$<$ int $>$ $>$ \&secondary\+\_\+track\+\_\+lists)
+\item 
+std\+::vector$<$ std\+::vector$<$ int $>$ $>$ \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Merge\+Single\+Track} (\textbf{ Track\+Vec} \&tracks, std\+::vector$<$ std\+::vector$<$ int $>$ $>$ secondary\+\_\+track\+\_\+lists)
+\item 
+void \textbf{ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Primary\+Secondary\+Vertices} (\textbf{ Track\+Vec} \&tracks, std\+::vector$<$ int $>$ primary\+\_\+track\+\_\+list, std\+::vector$<$ std\+::vector$<$ int $>$ $>$ secondary\+\_\+track\+\_\+lists, std\+::vector$<$ \textbf{ Vertex} $\ast$$>$ $\ast$\&vtx, std\+::vector$<$ \textbf{ Vertex} $\ast$$>$ $\ast$\&vtces)
+\end{DoxyCompactItemize}

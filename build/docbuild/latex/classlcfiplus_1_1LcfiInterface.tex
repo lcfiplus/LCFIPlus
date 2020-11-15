@@ -1,0 +1,134 @@
+\section{lcfiplus\+:\+:Lcfi\+Interface Class Reference}
+\label{classlcfiplus_1_1LcfiInterface}\index{lcfiplus\+::\+Lcfi\+Interface@{lcfiplus\+::\+Lcfi\+Interface}}
+
+
+{\ttfamily \#include $<$Lcfi\+Interface.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\textbf{ Lcfi\+Interface} (const \textbf{ Event} $\ast$event=N\+U\+LL, const \textbf{ Vertex} $\ast$primary\+Vertex=0)
+\item 
+\textbf{ $\sim$\+Lcfi\+Interface} ()
+\item 
+\textbf{ Vertex} $\ast$ \textbf{ find\+Primary\+Vertex} ()
+\item 
+vector$<$ \textbf{ Vertex} $\ast$ $>$ \textbf{ find\+Secondary\+Vertices} (const \textbf{ Jet} $\ast$jet, const \textbf{ Secondary\+Vertex\+Config} \&cfg)
+\item 
+vector$<$ \textbf{ Vertex} $\ast$ $>$ \textbf{ force\+Zvtop} (const \textbf{ Jet} \&jet)
+\item 
+double \textbf{ get\+Chi2\+Track\+Vtx} (const \textbf{ Vertex} $\ast$vtx, const \textbf{ Track} $\ast$trk) const
+\item 
+double \textbf{ vertex\+Mass\+Pt\+Correction} (const \textbf{ Vertex} $\ast$secondary, const \textbf{ Vertex} $\ast$primary, const T\+Vector3 \&momentum, float sigmax) const
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+bool \textbf{ debug}
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$class Iterator $>$ }\\class \textbf{ Vertex\+Fitter\+L\+C\+FI}
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\label{classlcfiplus_1_1LcfiInterface_a3bc5a9591f307e4eb97d09102fb6a4f2}} 
+\index{lcfiplus\+::\+Lcfi\+Interface@{lcfiplus\+::\+Lcfi\+Interface}!Lcfi\+Interface@{Lcfi\+Interface}}
+\index{Lcfi\+Interface@{Lcfi\+Interface}!lcfiplus\+::\+Lcfi\+Interface@{lcfiplus\+::\+Lcfi\+Interface}}
+\subsubsection{Lcfi\+Interface()}
+{\footnotesize\ttfamily lcfiplus\+::\+Lcfi\+Interface\+::\+Lcfi\+Interface (\begin{DoxyParamCaption}\item[{const \textbf{ Event} $\ast$}]{event = {\ttfamily NULL},  }\item[{const \textbf{ Vertex} $\ast$}]{primary\+Vertex = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+\mbox{\label{classlcfiplus_1_1LcfiInterface_a14b3b074fef18207e83ed71253d1103f}} 
+\index{lcfiplus\+::\+Lcfi\+Interface@{lcfiplus\+::\+Lcfi\+Interface}!````~Lcfi\+Interface@{$\sim$\+Lcfi\+Interface}}
+\index{````~Lcfi\+Interface@{$\sim$\+Lcfi\+Interface}!lcfiplus\+::\+Lcfi\+Interface@{lcfiplus\+::\+Lcfi\+Interface}}
+\subsubsection{$\sim$\+Lcfi\+Interface()}
+{\footnotesize\ttfamily lcfiplus\+::\+Lcfi\+Interface\+::$\sim$\+Lcfi\+Interface (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\label{classlcfiplus_1_1LcfiInterface_a821d4e93fab8c1be65dbc0e3711d72c0}} 
+\index{lcfiplus\+::\+Lcfi\+Interface@{lcfiplus\+::\+Lcfi\+Interface}!find\+Primary\+Vertex@{find\+Primary\+Vertex}}
+\index{find\+Primary\+Vertex@{find\+Primary\+Vertex}!lcfiplus\+::\+Lcfi\+Interface@{lcfiplus\+::\+Lcfi\+Interface}}
+\subsubsection{find\+Primary\+Vertex()}
+{\footnotesize\ttfamily \textbf{ Vertex} $\ast$ lcfiplus\+::\+Lcfi\+Interface\+::find\+Primary\+Vertex (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References debug, lcfiplus\+::\+Lcfi\+Instance\+::get\+Instance(), and lcfiplus\+::\+Lcfi\+Instance\+::get\+Ip\+Fitter().
+
+\mbox{\label{classlcfiplus_1_1LcfiInterface_a2dfb4d75842b594688ee1dd193a90f6d}} 
+\index{lcfiplus\+::\+Lcfi\+Interface@{lcfiplus\+::\+Lcfi\+Interface}!find\+Secondary\+Vertices@{find\+Secondary\+Vertices}}
+\index{find\+Secondary\+Vertices@{find\+Secondary\+Vertices}!lcfiplus\+::\+Lcfi\+Interface@{lcfiplus\+::\+Lcfi\+Interface}}
+\subsubsection{find\+Secondary\+Vertices()}
+{\footnotesize\ttfamily vector$<$ \textbf{ Vertex} $\ast$ $>$ lcfiplus\+::\+Lcfi\+Interface\+::find\+Secondary\+Vertices (\begin{DoxyParamCaption}\item[{const \textbf{ Jet} $\ast$}]{jet,  }\item[{const \textbf{ Secondary\+Vertex\+Config} \&}]{cfg }\end{DoxyParamCaption})}
+
+
+
+References debug, lcfiplus\+::\+Lcfi\+Instance\+::get\+Instance(), lcfiplus\+::\+Jet\+::get\+Tracks(), lcfiplus\+::\+Lcfi\+Instance\+::get\+Z\+V\+R\+E\+S(), lcfiplus\+::\+Track\+Selector\+::passes\+Cut(), lcfiplus\+::\+Secondary\+Vertex\+Config\+::\+Resolver\+Cut, lcfiplus\+::\+Secondary\+Vertex\+Config\+::\+Track\+Quality\+Cuts, lcfiplus\+::\+Secondary\+Vertex\+Config\+::\+Track\+Trim\+Cut, and lcfiplus\+::\+Secondary\+Vertex\+Config\+::\+Two\+Prong\+Cut.
+
+\mbox{\label{classlcfiplus_1_1LcfiInterface_a6fbfb1bc658041181913e1def5309b98}} 
+\index{lcfiplus\+::\+Lcfi\+Interface@{lcfiplus\+::\+Lcfi\+Interface}!force\+Zvtop@{force\+Zvtop}}
+\index{force\+Zvtop@{force\+Zvtop}!lcfiplus\+::\+Lcfi\+Interface@{lcfiplus\+::\+Lcfi\+Interface}}
+\subsubsection{force\+Zvtop()}
+{\footnotesize\ttfamily vector$<$ \textbf{ Vertex} $\ast$ $>$ lcfiplus\+::\+Lcfi\+Interface\+::force\+Zvtop (\begin{DoxyParamCaption}\item[{const \textbf{ Jet} \&}]{jet }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+Lcfi\+Instance\+::get\+Instance(), lcfiplus\+::\+Jet\+::get\+Tracks(), and lcfiplus\+::\+Lcfi\+Instance\+::get\+Z\+V\+R\+E\+S().
+
+
+
+Referenced by match\+Mc\+Vertex().
+
+\mbox{\label{classlcfiplus_1_1LcfiInterface_aca23b132c18f5ef056d8bbaac43ae12f}} 
+\index{lcfiplus\+::\+Lcfi\+Interface@{lcfiplus\+::\+Lcfi\+Interface}!get\+Chi2\+Track\+Vtx@{get\+Chi2\+Track\+Vtx}}
+\index{get\+Chi2\+Track\+Vtx@{get\+Chi2\+Track\+Vtx}!lcfiplus\+::\+Lcfi\+Interface@{lcfiplus\+::\+Lcfi\+Interface}}
+\subsubsection{get\+Chi2\+Track\+Vtx()}
+{\footnotesize\ttfamily double lcfiplus\+::\+Lcfi\+Interface\+::get\+Chi2\+Track\+Vtx (\begin{DoxyParamCaption}\item[{const \textbf{ Vertex} $\ast$}]{vtx,  }\item[{const \textbf{ Track} $\ast$}]{trk }\end{DoxyParamCaption}) const}
+
+
+
+References lcfiplus\+::\+Vertex\+::get\+Cov(), lcfiplus\+::\+Vertex\+::get\+X(), lcfiplus\+::\+Vertex\+::get\+Y(), and lcfiplus\+::\+Vertex\+::get\+Z().
+
+\mbox{\label{classlcfiplus_1_1LcfiInterface_a04de5305926f7c4c9130c79cd2103f0f}} 
+\index{lcfiplus\+::\+Lcfi\+Interface@{lcfiplus\+::\+Lcfi\+Interface}!vertex\+Mass\+Pt\+Correction@{vertex\+Mass\+Pt\+Correction}}
+\index{vertex\+Mass\+Pt\+Correction@{vertex\+Mass\+Pt\+Correction}!lcfiplus\+::\+Lcfi\+Interface@{lcfiplus\+::\+Lcfi\+Interface}}
+\subsubsection{vertex\+Mass\+Pt\+Correction()}
+{\footnotesize\ttfamily double lcfiplus\+::\+Lcfi\+Interface\+::vertex\+Mass\+Pt\+Correction (\begin{DoxyParamCaption}\item[{const \textbf{ Vertex} $\ast$}]{secondary,  }\item[{const \textbf{ Vertex} $\ast$}]{primary,  }\item[{const T\+Vector3 \&}]{momentum,  }\item[{float}]{sigmax }\end{DoxyParamCaption}) const}
+
+
+
+Referenced by lcfiplus\+::\+Ft\+Vtx\+Mass\+Pt\+Corr\+::process().
+
+
+
+\subsection{Friends And Related Function Documentation}
+\mbox{\label{classlcfiplus_1_1LcfiInterface_a996b32b4a9ba9ca9c1ff7035f5e123df}} 
+\index{lcfiplus\+::\+Lcfi\+Interface@{lcfiplus\+::\+Lcfi\+Interface}!Vertex\+Fitter\+L\+C\+FI@{Vertex\+Fitter\+L\+C\+FI}}
+\index{Vertex\+Fitter\+L\+C\+FI@{Vertex\+Fitter\+L\+C\+FI}!lcfiplus\+::\+Lcfi\+Interface@{lcfiplus\+::\+Lcfi\+Interface}}
+\subsubsection{Vertex\+Fitter\+L\+C\+FI}
+{\footnotesize\ttfamily template$<$class Iterator $>$ \\
+friend class \textbf{ Vertex\+Fitter\+L\+C\+FI}\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\label{classlcfiplus_1_1LcfiInterface_a8fea94d95b2e7aadcc1d2a203cb2a2b0}} 
+\index{lcfiplus\+::\+Lcfi\+Interface@{lcfiplus\+::\+Lcfi\+Interface}!debug@{debug}}
+\index{debug@{debug}!lcfiplus\+::\+Lcfi\+Interface@{lcfiplus\+::\+Lcfi\+Interface}}
+\subsubsection{debug}
+{\footnotesize\ttfamily bool lcfiplus\+::\+Lcfi\+Interface\+::debug}
+
+
+
+Referenced by find\+Primary\+Vertex(), and find\+Secondary\+Vertices().
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ Lcfi\+Interface.\+h}\item 
+\textbf{ Lcfi\+Interface.\+cc}\end{DoxyCompactItemize}

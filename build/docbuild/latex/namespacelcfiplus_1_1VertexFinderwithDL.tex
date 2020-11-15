@@ -1,0 +1,272 @@
+\section{lcfiplus\+:\+:Vertex\+Finderwith\+DL Namespace Reference}
+\label{namespacelcfiplus_1_1VertexFinderwithDL}\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \textbf{ Slice\+N2\+D\+Vector} (std\+::vector$<$ std\+::vector$<$ double $>$ $>$ vec, int rowstart, int rowend, int colstart, int colend)
+\item 
+std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \textbf{ Concat\+N2\+D\+Vector} (std\+::vector$<$ std\+::vector$<$ double $>$ $>$ vec1, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ vec2)
+\item 
+tensorflow\+::\+Tensor \textbf{ N2\+D\+Vector2\+Tensor} (std\+::vector$<$ std\+::vector$<$ double $>$ $>$ vec)
+\item 
+tensorflow\+::\+Tensor \textbf{ N3\+D\+Vector2\+Tensor} (std\+::vector$<$ std\+::vector$<$ std\+::vector$<$ double $>$ $>$ $>$ vec)
+\item 
+std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \textbf{ Tensor2\+N2\+D\+Vector} (tensorflow\+::\+Tensor tensor)
+\item 
+std\+::vector$<$ std\+::vector$<$ std\+::vector$<$ double $>$ $>$ $>$ \textbf{ Tensor2\+N3\+D\+Vector} (tensorflow\+::\+Tensor tensor)
+\item 
+void \textbf{ Debug\+Print\+Variable\+Size} (std\+::vector$<$ std\+::vector$<$ double $>$ $>$ paris, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ encoder\+\_\+tracks, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ decoder\+\_\+tracks)
+\item 
+void \textbf{ Debug\+Print\+Get\+Event\+Data} (std\+::vector$<$ std\+::vector$<$ double $>$ $>$ event\+\_\+data, int ncomb, int N\+Combination)
+\item 
+void \textbf{ Debug\+Print\+Secondary\+Sort} (std\+::vector$<$ std\+::vector$<$ double $>$ $>$ secondary\+\_\+seeds)
+\item 
+void \textbf{ Debug\+Print\+Primary\+Sort} (std\+::vector$<$ std\+::vector$<$ double $>$ $>$ primary\+\_\+seeds)
+\item 
+void \textbf{ Debug\+Print\+Get\+Tracks} (std\+::vector$<$ std\+::vector$<$ double $>$ $>$ tracks)
+\item 
+void \textbf{ Debug\+Print\+V\+L\+S\+T\+M\+Prediction} (std\+::vector$<$ std\+::vector$<$ std\+::vector$<$ double $>$ $>$ $>$ scores)
+\item 
+std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \textbf{ Get\+Event\+Data} (bool debug, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ index, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ variables, tensorflow\+::\+Saved\+Model\+Bundle\+Lite \&pair\+\_\+model\+\_\+bundle, tensorflow\+::\+Saved\+Model\+Bundle\+Lite \&pair\+\_\+pos\+\_\+model\+\_\+bundle)
+\item 
+std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \textbf{ Get\+Remain\+Decoder\+Tracks} (std\+::vector$<$ std\+::vector$<$ double $>$ $>$ decoder\+\_\+tracks, std\+::vector$<$ int $>$ track\+\_\+list)
+\item 
+std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \textbf{ Secondary\+Seed\+Selection} (std\+::vector$<$ std\+::vector$<$ double $>$ $>$ event\+\_\+data, int Threshold\+Pair\+Secondary\+Score, int Threshold\+Pair\+Pos\+Score)
+\item 
+void \textbf{ Print\+Results} (std\+::vector$<$ int $>$ primary\+\_\+track\+\_\+list, std\+::vector$<$ std\+::vector$<$ int $>$ $>$ secondary\+\_\+track\+\_\+lists)
+\item 
+void \textbf{ Get\+Pairs\+Encoder\+Decoder\+Tracks} (\textbf{ Track\+Vec} \&tracks, int N\+Track\+Variable, int Max\+Track, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \&index, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \&pairs, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \&encoder\+\_\+tracks, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \&decoder\+\_\+tracks)
+\item 
+void \textbf{ Primary\+Vertex\+Finder} (bool debug, int Max\+Primary\+Vertex\+Loop, double Threshold\+Primary\+Score, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ event\+\_\+data, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ encoder\+\_\+tracks, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ decoder\+\_\+tracks, tensorflow\+::\+Saved\+Model\+Bundle\+Lite \&lstm\+\_\+model\+\_\+bundle, std\+::vector$<$ int $>$ \&primary\+\_\+track\+\_\+list, std\+::vector$<$ std\+::vector$<$ std\+::vector$<$ double $>$ $>$ $>$ \&primary\+\_\+scores, std\+::vector$<$ double $>$ \&bigger\+\_\+primary\+\_\+scores)
+\item 
+void \textbf{ Secondary\+Vertex\+Finder} (bool debug, double Threshold\+Secondary\+Score, std\+::vector$<$ double $>$ primary\+\_\+scores, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ secondary\+\_\+event\+\_\+data, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ encoder\+\_\+tracks, std\+::vector$<$ std\+::vector$<$ double $>$ $>$ decoder\+\_\+tracks, tensorflow\+::\+Saved\+Model\+Bundle\+Lite \&slstm\+\_\+model\+\_\+bundle, std\+::vector$<$ int $>$ \&primary\+\_\+track\+\_\+list, std\+::vector$<$ std\+::vector$<$ int $>$ $>$ \&secondary\+\_\+track\+\_\+lists)
+\item 
+std\+::vector$<$ std\+::vector$<$ int $>$ $>$ \textbf{ Merge\+Single\+Track} (\textbf{ Track\+Vec} \&tracks, std\+::vector$<$ std\+::vector$<$ int $>$ $>$ secondary\+\_\+track\+\_\+lists)
+\item 
+void \textbf{ Primary\+Secondary\+Vertices} (\textbf{ Track\+Vec} \&tracks, std\+::vector$<$ int $>$ primary\+\_\+track\+\_\+list, std\+::vector$<$ std\+::vector$<$ int $>$ $>$ secondary\+\_\+track\+\_\+lists, std\+::vector$<$ \textbf{ Vertex} $\ast$$>$ $\ast$\&vtx, std\+::vector$<$ \textbf{ Vertex} $\ast$$>$ $\ast$\&vtces)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\mbox{\label{namespacelcfiplus_1_1VertexFinderwithDL_a25ff5f93f960ee69e080216f132c5e1c}} 
+\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}!Concat\+N2\+D\+Vector@{Concat\+N2\+D\+Vector}}
+\index{Concat\+N2\+D\+Vector@{Concat\+N2\+D\+Vector}!lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsubsection{Concat\+N2\+D\+Vector()}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::vector$<$ double $>$ $>$ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Concat\+N2\+D\+Vector (\begin{DoxyParamCaption}\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{vec1,  }\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{vec2 }\end{DoxyParamCaption})}
+
+
+
+Referenced by Get\+Event\+Data().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderwithDL_a172281350ea443c9eb5b63ac949cec10}} 
+\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}!Debug\+Print\+Get\+Event\+Data@{Debug\+Print\+Get\+Event\+Data}}
+\index{Debug\+Print\+Get\+Event\+Data@{Debug\+Print\+Get\+Event\+Data}!lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsubsection{Debug\+Print\+Get\+Event\+Data()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Debug\+Print\+Get\+Event\+Data (\begin{DoxyParamCaption}\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{event\+\_\+data,  }\item[{int}]{ncomb,  }\item[{int}]{N\+Combination }\end{DoxyParamCaption})}
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderwithDL_a20069cf25a193bc90c3b406b9722d31e}} 
+\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}!Debug\+Print\+Get\+Tracks@{Debug\+Print\+Get\+Tracks}}
+\index{Debug\+Print\+Get\+Tracks@{Debug\+Print\+Get\+Tracks}!lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsubsection{Debug\+Print\+Get\+Tracks()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Debug\+Print\+Get\+Tracks (\begin{DoxyParamCaption}\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{tracks }\end{DoxyParamCaption})}
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Findingwith\+D\+L\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderwithDL_a2ab0b048939212519481d2fe77644a54}} 
+\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}!Debug\+Print\+Primary\+Sort@{Debug\+Print\+Primary\+Sort}}
+\index{Debug\+Print\+Primary\+Sort@{Debug\+Print\+Primary\+Sort}!lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsubsection{Debug\+Print\+Primary\+Sort()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Debug\+Print\+Primary\+Sort (\begin{DoxyParamCaption}\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{primary\+\_\+seeds }\end{DoxyParamCaption})}
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderwithDL_a562c9053b9fe8d261d9ff3c9f9cc40f0}} 
+\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}!Debug\+Print\+Secondary\+Sort@{Debug\+Print\+Secondary\+Sort}}
+\index{Debug\+Print\+Secondary\+Sort@{Debug\+Print\+Secondary\+Sort}!lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsubsection{Debug\+Print\+Secondary\+Sort()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Debug\+Print\+Secondary\+Sort (\begin{DoxyParamCaption}\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{secondary\+\_\+seeds }\end{DoxyParamCaption})}
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Findingwith\+D\+L\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderwithDL_a44889391d0c343fdfe06b2ee5a87463e}} 
+\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}!Debug\+Print\+Variable\+Size@{Debug\+Print\+Variable\+Size}}
+\index{Debug\+Print\+Variable\+Size@{Debug\+Print\+Variable\+Size}!lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsubsection{Debug\+Print\+Variable\+Size()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Debug\+Print\+Variable\+Size (\begin{DoxyParamCaption}\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{paris,  }\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{encoder\+\_\+tracks,  }\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{decoder\+\_\+tracks }\end{DoxyParamCaption})}
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Findingwith\+D\+L\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderwithDL_af1422ad379e596cd2cd4afc0ad364021}} 
+\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}!Debug\+Print\+V\+L\+S\+T\+M\+Prediction@{Debug\+Print\+V\+L\+S\+T\+M\+Prediction}}
+\index{Debug\+Print\+V\+L\+S\+T\+M\+Prediction@{Debug\+Print\+V\+L\+S\+T\+M\+Prediction}!lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsubsection{Debug\+Print\+V\+L\+S\+T\+M\+Prediction()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Debug\+Print\+V\+L\+S\+T\+M\+Prediction (\begin{DoxyParamCaption}\item[{std\+::vector$<$ std\+::vector$<$ std\+::vector$<$ double $>$ $>$ $>$}]{scores }\end{DoxyParamCaption})}
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Findingwith\+D\+L\+::process(), and Secondary\+Vertex\+Finder().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderwithDL_a719656476002b2e8d4b42cecc8cee36d}} 
+\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}!Get\+Event\+Data@{Get\+Event\+Data}}
+\index{Get\+Event\+Data@{Get\+Event\+Data}!lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsubsection{Get\+Event\+Data()}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::vector$<$ double $>$ $>$ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Get\+Event\+Data (\begin{DoxyParamCaption}\item[{bool}]{debug,  }\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{index,  }\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{variables,  }\item[{tensorflow\+::\+Saved\+Model\+Bundle\+Lite \&}]{pair\+\_\+model\+\_\+bundle,  }\item[{tensorflow\+::\+Saved\+Model\+Bundle\+Lite \&}]{pair\+\_\+pos\+\_\+model\+\_\+bundle }\end{DoxyParamCaption})}
+
+
+
+References Concat\+N2\+D\+Vector(), N2\+D\+Vector2\+Tensor(), and Tensor2\+N2\+D\+Vector().
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Findingwith\+D\+L\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderwithDL_ab6f640b872cf305e92307523107e045e}} 
+\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}!Get\+Pairs\+Encoder\+Decoder\+Tracks@{Get\+Pairs\+Encoder\+Decoder\+Tracks}}
+\index{Get\+Pairs\+Encoder\+Decoder\+Tracks@{Get\+Pairs\+Encoder\+Decoder\+Tracks}!lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsubsection{Get\+Pairs\+Encoder\+Decoder\+Tracks()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Get\+Pairs\+Encoder\+Decoder\+Tracks (\begin{DoxyParamCaption}\item[{\textbf{ Track\+Vec} \&}]{tracks,  }\item[{int}]{N\+Track\+Variable,  }\item[{int}]{Max\+Track,  }\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \&}]{index,  }\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \&}]{pairs,  }\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \&}]{encoder\+\_\+tracks,  }\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$ \&}]{decoder\+\_\+tracks }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+Track\+::get\+Charge(), lcfiplus\+::\+Track\+::get\+Cov\+Matrix(), lcfiplus\+::\+Track\+::get\+D0(), lcfiplus\+::\+Track\+::get\+Omega(), lcfiplus\+::\+Track\+::get\+Phi(), lcfiplus\+::\+Track\+::get\+Tan\+Lambda(), and lcfiplus\+::\+Track\+::get\+Z0().
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Findingwith\+D\+L\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderwithDL_a302fc2df867f2ecbef3759a1e2424982}} 
+\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}!Get\+Remain\+Decoder\+Tracks@{Get\+Remain\+Decoder\+Tracks}}
+\index{Get\+Remain\+Decoder\+Tracks@{Get\+Remain\+Decoder\+Tracks}!lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsubsection{Get\+Remain\+Decoder\+Tracks()}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::vector$<$ double $>$ $>$ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Get\+Remain\+Decoder\+Tracks (\begin{DoxyParamCaption}\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{decoder\+\_\+tracks,  }\item[{std\+::vector$<$ int $>$}]{track\+\_\+list }\end{DoxyParamCaption})}
+
+
+
+Referenced by Secondary\+Vertex\+Finder().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderwithDL_ad53c2b3b1bdcc626d80bfb272af0e5b6}} 
+\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}!Merge\+Single\+Track@{Merge\+Single\+Track}}
+\index{Merge\+Single\+Track@{Merge\+Single\+Track}!lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsubsection{Merge\+Single\+Track()}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::vector$<$ int $>$ $>$ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Merge\+Single\+Track (\begin{DoxyParamCaption}\item[{\textbf{ Track\+Vec} \&}]{tracks,  }\item[{std\+::vector$<$ std\+::vector$<$ int $>$ $>$}]{secondary\+\_\+track\+\_\+lists }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+Vertex\+::get\+Chi2().
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Findingwith\+D\+L\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderwithDL_aeab304ede69e16f9e8a0f14d2dbd870b}} 
+\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}!N2\+D\+Vector2\+Tensor@{N2\+D\+Vector2\+Tensor}}
+\index{N2\+D\+Vector2\+Tensor@{N2\+D\+Vector2\+Tensor}!lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsubsection{N2\+D\+Vector2\+Tensor()}
+{\footnotesize\ttfamily tensorflow\+::\+Tensor lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+N2\+D\+Vector2\+Tensor (\begin{DoxyParamCaption}\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{vec }\end{DoxyParamCaption})}
+
+
+
+Referenced by Get\+Event\+Data(), Primary\+Vertex\+Finder(), and Secondary\+Vertex\+Finder().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderwithDL_aa777b46a86b96d0ff9ff607c027430dc}} 
+\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}!N3\+D\+Vector2\+Tensor@{N3\+D\+Vector2\+Tensor}}
+\index{N3\+D\+Vector2\+Tensor@{N3\+D\+Vector2\+Tensor}!lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsubsection{N3\+D\+Vector2\+Tensor()}
+{\footnotesize\ttfamily tensorflow\+::\+Tensor lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+N3\+D\+Vector2\+Tensor (\begin{DoxyParamCaption}\item[{std\+::vector$<$ std\+::vector$<$ std\+::vector$<$ double $>$ $>$ $>$}]{vec }\end{DoxyParamCaption})}
+
+
+
+Referenced by Primary\+Vertex\+Finder(), and Secondary\+Vertex\+Finder().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderwithDL_ab11f2f72f8dcd9a7e8965a901bbed1f4}} 
+\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}!Primary\+Secondary\+Vertices@{Primary\+Secondary\+Vertices}}
+\index{Primary\+Secondary\+Vertices@{Primary\+Secondary\+Vertices}!lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsubsection{Primary\+Secondary\+Vertices()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Primary\+Secondary\+Vertices (\begin{DoxyParamCaption}\item[{\textbf{ Track\+Vec} \&}]{tracks,  }\item[{std\+::vector$<$ int $>$}]{primary\+\_\+track\+\_\+list,  }\item[{std\+::vector$<$ std\+::vector$<$ int $>$ $>$}]{secondary\+\_\+track\+\_\+lists,  }\item[{std\+::vector$<$ \textbf{ Vertex} $\ast$$>$ $\ast$\&}]{vtx,  }\item[{std\+::vector$<$ \textbf{ Vertex} $\ast$$>$ $\ast$\&}]{vtces }\end{DoxyParamCaption})}
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Findingwith\+D\+L\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderwithDL_acb151fc9eb0432374b6a4324e2799faf}} 
+\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}!Primary\+Vertex\+Finder@{Primary\+Vertex\+Finder}}
+\index{Primary\+Vertex\+Finder@{Primary\+Vertex\+Finder}!lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsubsection{Primary\+Vertex\+Finder()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Primary\+Vertex\+Finder (\begin{DoxyParamCaption}\item[{bool}]{debug,  }\item[{int}]{Max\+Primary\+Vertex\+Loop,  }\item[{double}]{Threshold\+Primary\+Score,  }\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{event\+\_\+data,  }\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{encoder\+\_\+tracks,  }\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{decoder\+\_\+tracks,  }\item[{tensorflow\+::\+Saved\+Model\+Bundle\+Lite \&}]{lstm\+\_\+model\+\_\+bundle,  }\item[{std\+::vector$<$ int $>$ \&}]{primary\+\_\+track\+\_\+list,  }\item[{std\+::vector$<$ std\+::vector$<$ std\+::vector$<$ double $>$ $>$ $>$ \&}]{primary\+\_\+scores,  }\item[{std\+::vector$<$ double $>$ \&}]{bigger\+\_\+primary\+\_\+scores }\end{DoxyParamCaption})}
+
+
+
+References N2\+D\+Vector2\+Tensor(), N3\+D\+Vector2\+Tensor(), Slice\+N2\+D\+Vector(), and Tensor2\+N3\+D\+Vector().
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Findingwith\+D\+L\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderwithDL_a3012f2cb205b006e9ccf3877afcee260}} 
+\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}!Print\+Results@{Print\+Results}}
+\index{Print\+Results@{Print\+Results}!lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsubsection{Print\+Results()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Print\+Results (\begin{DoxyParamCaption}\item[{std\+::vector$<$ int $>$}]{primary\+\_\+track\+\_\+list,  }\item[{std\+::vector$<$ std\+::vector$<$ int $>$ $>$}]{secondary\+\_\+track\+\_\+lists }\end{DoxyParamCaption})}
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Findingwith\+D\+L\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderwithDL_a669c6d7a52ada7d54dce25ed1726232a}} 
+\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}!Secondary\+Seed\+Selection@{Secondary\+Seed\+Selection}}
+\index{Secondary\+Seed\+Selection@{Secondary\+Seed\+Selection}!lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsubsection{Secondary\+Seed\+Selection()}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::vector$<$ double $>$ $>$ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Secondary\+Seed\+Selection (\begin{DoxyParamCaption}\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{event\+\_\+data,  }\item[{int}]{Threshold\+Pair\+Secondary\+Score,  }\item[{int}]{Threshold\+Pair\+Pos\+Score }\end{DoxyParamCaption})}
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Findingwith\+D\+L\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderwithDL_a1b960269e87cc039ad8afab187a43f87}} 
+\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}!Secondary\+Vertex\+Finder@{Secondary\+Vertex\+Finder}}
+\index{Secondary\+Vertex\+Finder@{Secondary\+Vertex\+Finder}!lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsubsection{Secondary\+Vertex\+Finder()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Secondary\+Vertex\+Finder (\begin{DoxyParamCaption}\item[{bool}]{debug,  }\item[{double}]{Threshold\+Secondary\+Score,  }\item[{std\+::vector$<$ double $>$}]{primary\+\_\+scores,  }\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{secondary\+\_\+event\+\_\+data,  }\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{encoder\+\_\+tracks,  }\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{decoder\+\_\+tracks,  }\item[{tensorflow\+::\+Saved\+Model\+Bundle\+Lite \&}]{slstm\+\_\+model\+\_\+bundle,  }\item[{std\+::vector$<$ int $>$ \&}]{primary\+\_\+track\+\_\+list,  }\item[{std\+::vector$<$ std\+::vector$<$ int $>$ $>$ \&}]{secondary\+\_\+track\+\_\+lists }\end{DoxyParamCaption})}
+
+
+
+References Debug\+Print\+V\+L\+S\+T\+M\+Prediction(), Get\+Remain\+Decoder\+Tracks(), N2\+D\+Vector2\+Tensor(), N3\+D\+Vector2\+Tensor(), Slice\+N2\+D\+Vector(), and Tensor2\+N3\+D\+Vector().
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Findingwith\+D\+L\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderwithDL_ad3a77d621d3426891785935a67473c83}} 
+\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}!Slice\+N2\+D\+Vector@{Slice\+N2\+D\+Vector}}
+\index{Slice\+N2\+D\+Vector@{Slice\+N2\+D\+Vector}!lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsubsection{Slice\+N2\+D\+Vector()}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::vector$<$ double $>$ $>$ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Slice\+N2\+D\+Vector (\begin{DoxyParamCaption}\item[{std\+::vector$<$ std\+::vector$<$ double $>$ $>$}]{vec,  }\item[{int}]{rowstart,  }\item[{int}]{rowend,  }\item[{int}]{colstart,  }\item[{int}]{colend }\end{DoxyParamCaption})}
+
+
+
+Referenced by Primary\+Vertex\+Finder(), and Secondary\+Vertex\+Finder().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderwithDL_a6d9daefa2746d9b0e044cc158ff91ea4}} 
+\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}!Tensor2\+N2\+D\+Vector@{Tensor2\+N2\+D\+Vector}}
+\index{Tensor2\+N2\+D\+Vector@{Tensor2\+N2\+D\+Vector}!lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsubsection{Tensor2\+N2\+D\+Vector()}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::vector$<$ double $>$ $>$ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Tensor2\+N2\+D\+Vector (\begin{DoxyParamCaption}\item[{tensorflow\+::\+Tensor}]{tensor }\end{DoxyParamCaption})}
+
+
+
+Referenced by Get\+Event\+Data().
+
+\mbox{\label{namespacelcfiplus_1_1VertexFinderwithDL_ad2ccb431dbf59b7081534aebd8e55e18}} 
+\index{lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}!Tensor2\+N3\+D\+Vector@{Tensor2\+N3\+D\+Vector}}
+\index{Tensor2\+N3\+D\+Vector@{Tensor2\+N3\+D\+Vector}!lcfiplus\+::\+Vertex\+Finderwith\+DL@{lcfiplus\+::\+Vertex\+Finderwith\+DL}}
+\subsubsection{Tensor2\+N3\+D\+Vector()}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::vector$<$ std\+::vector$<$ double $>$ $>$ $>$ lcfiplus\+::\+Vertex\+Finderwith\+D\+L\+::\+Tensor2\+N3\+D\+Vector (\begin{DoxyParamCaption}\item[{tensorflow\+::\+Tensor}]{tensor }\end{DoxyParamCaption})}
+
+
+
+Referenced by Primary\+Vertex\+Finder(), and Secondary\+Vertex\+Finder().
+

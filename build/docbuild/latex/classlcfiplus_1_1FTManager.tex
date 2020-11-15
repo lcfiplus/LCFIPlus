@@ -1,0 +1,218 @@
+\section{lcfiplus\+:\+:F\+T\+Manager Class Reference}
+\label{classlcfiplus_1_1FTManager}\index{lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}}
+
+
+{\ttfamily \#include $<$flavtag.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \textbf{ init\+Vars} ()
+\item 
+void \textbf{ fill\+Tree} ()
+\item 
+void \textbf{ open\+Tree} ()
+\item 
+void \textbf{ open\+File} (const char $\ast$filename)
+\item 
+void \textbf{ close\+File} ()
+\item 
+void \textbf{ process} (const \textbf{ Event} $\ast$event, const \textbf{ Vertex} $\ast$privtx, int nhits\+Joint\+Prob\+D0, int nhits\+Joint\+Prob\+Z0, int nhits\+Most\+Significant\+Track, \textbf{ Jet\+Vec} \&jets)
+\item 
+float $\ast$ \textbf{ get\+Var\+Address} (const string \&varname)
+\item 
+void \textbf{ set\+Eval} (bool seteval, bool export\+All\+Vars)
+\item 
+void \textbf{ add\+Reader} (T\+M\+V\+A\+::\+Reader $\ast$reader, const \textbf{ Flavtag\+Category} \&c)
+\item 
+void \textbf{ set\+Param\+Name} (T\+String s)
+\item 
+const \textbf{ Ft\+I\+P\+Prob\+Holder} $\ast$ \textbf{ get\+I\+P\+Prob\+Holder} () const
+\item 
+void \textbf{ set\+I\+P\+Prob\+Holder} (\textbf{ Ft\+I\+P\+Prob\+Holder} $\ast$holder)
+\item 
+double \textbf{ get\+Auxiliary} () const
+\item 
+void \textbf{ set\+Auxiliary} (double aux)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \textbf{ F\+T\+Manager} \& \textbf{ get\+Instance} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\mbox{\label{classlcfiplus_1_1FTManager_a5dd1e2351bc025b6e96f8233af8bed17}} 
+\index{lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}!add\+Reader@{add\+Reader}}
+\index{add\+Reader@{add\+Reader}!lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}}
+\subsubsection{add\+Reader()}
+{\footnotesize\ttfamily void lcfiplus\+::\+F\+T\+Manager\+::add\+Reader (\begin{DoxyParamCaption}\item[{T\+M\+V\+A\+::\+Reader $\ast$}]{reader,  }\item[{const \textbf{ Flavtag\+Category} \&}]{c }\end{DoxyParamCaption})}
+
+
+
+Referenced by lcfiplus\+::\+Read\+M\+V\+A\+::init().
+
+\mbox{\label{classlcfiplus_1_1FTManager_ada9310ab84f69d0a55268d908b4281ce}} 
+\index{lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}!close\+File@{close\+File}}
+\index{close\+File@{close\+File}!lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}}
+\subsubsection{close\+File()}
+{\footnotesize\ttfamily void lcfiplus\+::\+F\+T\+Manager\+::close\+File (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Referenced by lcfiplus\+::\+Make\+Ntuple\+::end().
+
+\mbox{\label{classlcfiplus_1_1FTManager_a49959b6f525f8803142e99144283bde4}} 
+\index{lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}!fill\+Tree@{fill\+Tree}}
+\index{fill\+Tree@{fill\+Tree}!lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}}
+\subsubsection{fill\+Tree()}
+{\footnotesize\ttfamily void lcfiplus\+::\+F\+T\+Manager\+::fill\+Tree (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Referenced by process().
+
+\mbox{\label{classlcfiplus_1_1FTManager_a0656a449b3528ce1028f6a6713c8582d}} 
+\index{lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}!get\+Auxiliary@{get\+Auxiliary}}
+\index{get\+Auxiliary@{get\+Auxiliary}!lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}}
+\subsubsection{get\+Auxiliary()}
+{\footnotesize\ttfamily double lcfiplus\+::\+F\+T\+Manager\+::get\+Auxiliary (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by lcfiplus\+::\+Ft\+Auxiliary\+M\+::process().
+
+\mbox{\label{classlcfiplus_1_1FTManager_adb1794dc4342b9fca995e77a9dbb580f}} 
+\index{lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}!get\+Instance@{get\+Instance}}
+\index{get\+Instance@{get\+Instance}!lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}}
+\subsubsection{get\+Instance()}
+{\footnotesize\ttfamily static \textbf{ F\+T\+Manager}\& lcfiplus\+::\+F\+T\+Manager\+::get\+Instance (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Referenced by lcfiplus\+::\+Make\+Ntuple\+::end(), lcfiplus\+::\+Make\+Ntuple\+::init(), lcfiplus\+::\+Read\+M\+V\+A\+::init(), lcfiplus\+::\+Flavor\+Tag\+::init(), lcfiplus\+::\+Flavor\+Tag\+::process(), lcfiplus\+::\+Ft\+Auxiliary\+M\+::process(), lcfiplus\+::\+Ft\+J\+Prob\+R2\+::process(), lcfiplus\+::\+Ft\+J\+Prob\+Z2\+::process(), lcfiplus\+::\+Ft\+J\+Prob\+R25\+Sigma\+::process(), lcfiplus\+::\+Ft\+J\+Prob\+Z25\+Sigma\+::process(), lcfiplus\+::\+Ft\+D0b\+Prob\+::process(), lcfiplus\+::\+Ft\+D0b\+Prob2\+::process(), lcfiplus\+::\+Ft\+D0c\+Prob\+::process(), lcfiplus\+::\+Ft\+D0c\+Prob2\+::process(), lcfiplus\+::\+Ft\+D0q\+Prob\+::process(), lcfiplus\+::\+Ft\+D0q\+Prob2\+::process(), lcfiplus\+::\+Ft\+D0b\+Prob\+Signed\+::process(), lcfiplus\+::\+Ft\+D0c\+Prob\+Signed\+::process(), lcfiplus\+::\+Ft\+D0q\+Prob\+Signed\+::process(), lcfiplus\+::\+Ft\+D0b\+Prob\+I\+P\+::process(), lcfiplus\+::\+Ft\+D0c\+Prob\+I\+P\+::process(), lcfiplus\+::\+Ft\+Z0b\+Prob\+::process(), lcfiplus\+::\+Ft\+Z0b\+Prob2\+::process(), lcfiplus\+::\+Ft\+Z0c\+Prob\+::process(), lcfiplus\+::\+Ft\+Z0c\+Prob2\+::process(), lcfiplus\+::\+Ft\+Z0q\+Prob\+::process(), lcfiplus\+::\+Ft\+Z0q\+Prob2\+::process(), lcfiplus\+::\+Ft\+Z0b\+Prob\+I\+P\+::process(), and lcfiplus\+::\+Ft\+Z0c\+Prob\+I\+P\+::process().
+
+\mbox{\label{classlcfiplus_1_1FTManager_a78adde7b0b9e8798493c2e2d7f5dc419}} 
+\index{lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}!get\+I\+P\+Prob\+Holder@{get\+I\+P\+Prob\+Holder}}
+\index{get\+I\+P\+Prob\+Holder@{get\+I\+P\+Prob\+Holder}!lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}}
+\subsubsection{get\+I\+P\+Prob\+Holder()}
+{\footnotesize\ttfamily const \textbf{ Ft\+I\+P\+Prob\+Holder}$\ast$ lcfiplus\+::\+F\+T\+Manager\+::get\+I\+P\+Prob\+Holder (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by lcfiplus\+::\+Ft\+J\+Prob\+R2\+::process(), lcfiplus\+::\+Ft\+J\+Prob\+Z2\+::process(), lcfiplus\+::\+Ft\+J\+Prob\+R25\+Sigma\+::process(), lcfiplus\+::\+Ft\+J\+Prob\+Z25\+Sigma\+::process(), lcfiplus\+::\+Ft\+D0b\+Prob\+::process(), lcfiplus\+::\+Ft\+D0b\+Prob2\+::process(), lcfiplus\+::\+Ft\+D0c\+Prob\+::process(), lcfiplus\+::\+Ft\+D0c\+Prob2\+::process(), lcfiplus\+::\+Ft\+D0q\+Prob\+::process(), lcfiplus\+::\+Ft\+D0q\+Prob2\+::process(), lcfiplus\+::\+Ft\+D0b\+Prob\+Signed\+::process(), lcfiplus\+::\+Ft\+D0c\+Prob\+Signed\+::process(), lcfiplus\+::\+Ft\+D0q\+Prob\+Signed\+::process(), lcfiplus\+::\+Ft\+D0b\+Prob\+I\+P\+::process(), lcfiplus\+::\+Ft\+D0c\+Prob\+I\+P\+::process(), lcfiplus\+::\+Ft\+Z0b\+Prob\+::process(), lcfiplus\+::\+Ft\+Z0b\+Prob2\+::process(), lcfiplus\+::\+Ft\+Z0c\+Prob\+::process(), lcfiplus\+::\+Ft\+Z0c\+Prob2\+::process(), lcfiplus\+::\+Ft\+Z0q\+Prob\+::process(), lcfiplus\+::\+Ft\+Z0q\+Prob2\+::process(), lcfiplus\+::\+Ft\+Z0b\+Prob\+I\+P\+::process(), and lcfiplus\+::\+Ft\+Z0c\+Prob\+I\+P\+::process().
+
+\mbox{\label{classlcfiplus_1_1FTManager_a62ddf44a37554417ce3b31a9f7771cd9}} 
+\index{lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}!get\+Var\+Address@{get\+Var\+Address}}
+\index{get\+Var\+Address@{get\+Var\+Address}!lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}}
+\subsubsection{get\+Var\+Address()}
+{\footnotesize\ttfamily float $\ast$ lcfiplus\+::\+F\+T\+Manager\+::get\+Var\+Address (\begin{DoxyParamCaption}\item[{const string \&}]{varname }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+F\+T\+Algo\+::get\+Name(), and lcfiplus\+::\+F\+T\+Algo\+::get\+Value\+Address().
+
+
+
+Referenced by lcfiplus\+::\+Read\+M\+V\+A\+::init().
+
+\mbox{\label{classlcfiplus_1_1FTManager_a8e1c87a7ae3abd38f49d54275659b972}} 
+\index{lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}!init\+Vars@{init\+Vars}}
+\index{init\+Vars@{init\+Vars}!lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}}
+\subsubsection{init\+Vars()}
+{\footnotesize\ttfamily void lcfiplus\+::\+F\+T\+Manager\+::init\+Vars (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Referenced by lcfiplus\+::\+Flavor\+Tag\+::init().
+
+\mbox{\label{classlcfiplus_1_1FTManager_a0bc30c3329fca1fa239d620fd2c5ebc4}} 
+\index{lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}!open\+File@{open\+File}}
+\index{open\+File@{open\+File}!lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}}
+\subsubsection{open\+File()}
+{\footnotesize\ttfamily void lcfiplus\+::\+F\+T\+Manager\+::open\+File (\begin{DoxyParamCaption}\item[{const char $\ast$}]{filename }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+F\+T\+Algo\+::get\+Name(), and lcfiplus\+::\+F\+T\+Algo\+::get\+Value\+Address().
+
+
+
+Referenced by lcfiplus\+::\+Make\+Ntuple\+::init().
+
+\mbox{\label{classlcfiplus_1_1FTManager_a77588e2cb1437933bfa798f8bf6a2229}} 
+\index{lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}!open\+Tree@{open\+Tree}}
+\index{open\+Tree@{open\+Tree}!lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}}
+\subsubsection{open\+Tree()}
+{\footnotesize\ttfamily void lcfiplus\+::\+F\+T\+Manager\+::open\+Tree (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+F\+T\+Algo\+::get\+Name(), and lcfiplus\+::\+F\+T\+Algo\+::get\+Value\+Address().
+
+
+
+Referenced by lcfiplus\+::\+Read\+M\+V\+A\+::init().
+
+\mbox{\label{classlcfiplus_1_1FTManager_a6b5c1f001fd8a802c21131d760a06254}} 
+\index{lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}!process@{process}}
+\index{process@{process}!lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}}
+\subsubsection{process()}
+{\footnotesize\ttfamily void lcfiplus\+::\+F\+T\+Manager\+::process (\begin{DoxyParamCaption}\item[{const \textbf{ Event} $\ast$}]{event,  }\item[{const \textbf{ Vertex} $\ast$}]{privtx,  }\item[{int}]{nhits\+Joint\+Prob\+D0,  }\item[{int}]{nhits\+Joint\+Prob\+Z0,  }\item[{int}]{nhits\+Most\+Significant\+Track,  }\item[{\textbf{ Jet\+Vec} \&}]{jets }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+Parameters\+::add(), lcfiplus\+::\+Jet\+::add\+Param(), fill\+Tree(), lcfiplus\+::\+F\+T\+Algo\+::get\+Name(), lcfiplus\+::\+F\+T\+Algo\+::process(), lcfiplus\+::\+F\+T\+Algo\+::process\+Event(), lcfiplus\+::\+F\+T\+Algo\+::set\+Event(), lcfiplus\+::\+F\+T\+Algo\+::set\+Jet(), lcfiplus\+::\+F\+T\+Algo\+::set\+N\+Hits\+Joint\+Prob\+D0(), lcfiplus\+::\+F\+T\+Algo\+::set\+N\+Hits\+Joint\+Prob\+Z0(), and lcfiplus\+::\+F\+T\+Algo\+::set\+N\+Hits\+Most\+Significant\+Track().
+
+
+
+Referenced by lcfiplus\+::\+Flavor\+Tag\+::process().
+
+\mbox{\label{classlcfiplus_1_1FTManager_acfe28cf6673eea93ca877cd6e16e901a}} 
+\index{lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}!set\+Auxiliary@{set\+Auxiliary}}
+\index{set\+Auxiliary@{set\+Auxiliary}!lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}}
+\subsubsection{set\+Auxiliary()}
+{\footnotesize\ttfamily void lcfiplus\+::\+F\+T\+Manager\+::set\+Auxiliary (\begin{DoxyParamCaption}\item[{double}]{aux }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by lcfiplus\+::\+Flavor\+Tag\+::process().
+
+\mbox{\label{classlcfiplus_1_1FTManager_a1ba2d2473212c51bb60446455ed174e4}} 
+\index{lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}!set\+Eval@{set\+Eval}}
+\index{set\+Eval@{set\+Eval}!lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}}
+\subsubsection{set\+Eval()}
+{\footnotesize\ttfamily void lcfiplus\+::\+F\+T\+Manager\+::set\+Eval (\begin{DoxyParamCaption}\item[{bool}]{seteval,  }\item[{bool}]{export\+All\+Vars }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by lcfiplus\+::\+Read\+M\+V\+A\+::init().
+
+\mbox{\label{classlcfiplus_1_1FTManager_aef54f9bf30cd8b652573e3232d1ebf94}} 
+\index{lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}!set\+I\+P\+Prob\+Holder@{set\+I\+P\+Prob\+Holder}}
+\index{set\+I\+P\+Prob\+Holder@{set\+I\+P\+Prob\+Holder}!lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}}
+\subsubsection{set\+I\+P\+Prob\+Holder()}
+{\footnotesize\ttfamily void lcfiplus\+::\+F\+T\+Manager\+::set\+I\+P\+Prob\+Holder (\begin{DoxyParamCaption}\item[{\textbf{ Ft\+I\+P\+Prob\+Holder} $\ast$}]{holder }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by lcfiplus\+::\+Flavor\+Tag\+::process().
+
+\mbox{\label{classlcfiplus_1_1FTManager_acdc4d22b0ccb69d5b218303485af42dd}} 
+\index{lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}!set\+Param\+Name@{set\+Param\+Name}}
+\index{set\+Param\+Name@{set\+Param\+Name}!lcfiplus\+::\+F\+T\+Manager@{lcfiplus\+::\+F\+T\+Manager}}
+\subsubsection{set\+Param\+Name()}
+{\footnotesize\ttfamily void lcfiplus\+::\+F\+T\+Manager\+::set\+Param\+Name (\begin{DoxyParamCaption}\item[{T\+String}]{s }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by lcfiplus\+::\+Read\+M\+V\+A\+::init().
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ flavtag.\+h}\item 
+\textbf{ Flavor\+Tag.\+cc}\item 
+\textbf{ flavtag.\+cc}\end{DoxyCompactItemize}

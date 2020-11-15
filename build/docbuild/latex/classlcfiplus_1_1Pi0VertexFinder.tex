@@ -1,0 +1,109 @@
+\section{lcfiplus\+:\+:Pi0\+Vertex\+Finder Class Reference}
+\label{classlcfiplus_1_1Pi0VertexFinder}\index{lcfiplus\+::\+Pi0\+Vertex\+Finder@{lcfiplus\+::\+Pi0\+Vertex\+Finder}}
+
+
+{\ttfamily \#include $<$Pi0\+Vertex\+Finder.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\textbf{ Pi0\+Vertex\+Finder} ()
+\item 
+\textbf{ Pi0\+Vertex\+Finder} (vector$<$ string $>$ weightfiles, vector$<$ string $>$ booknames, vector$<$ double $>$ opp, string pi0pdfname, string pi0pdfname2d)
+\item 
+\textbf{ $\sim$\+Pi0\+Vertex\+Finder} ()
+\item 
+void \textbf{ Initialize} ()
+\item 
+void \textbf{ Make\+\_\+\+Gamma\+Vector} (const \textbf{ lcfiplus\+::\+Neutral} $\ast$ntrl)
+\item 
+void \textbf{ Reco\+\_\+\+Pi0s} (T\+Vector3 vtx, T\+Vector3 vtxdir)
+\item 
+T\+Lorentz\+Vector \textbf{ Corr\+\_\+\+Vtx\+Vect} (int vtxtype, T\+Lorentz\+Vector vtx1vect, int $\ast$npart, T\+Vector3 vtx, T\+Vector3 vtxdir)
+\item 
+int \textbf{ Get\+\_\+n\+Pi0} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\label{classlcfiplus_1_1Pi0VertexFinder_ae23e54157e2dc48ea59f7d6f836b1f48}} 
+\index{lcfiplus\+::\+Pi0\+Vertex\+Finder@{lcfiplus\+::\+Pi0\+Vertex\+Finder}!Pi0\+Vertex\+Finder@{Pi0\+Vertex\+Finder}}
+\index{Pi0\+Vertex\+Finder@{Pi0\+Vertex\+Finder}!lcfiplus\+::\+Pi0\+Vertex\+Finder@{lcfiplus\+::\+Pi0\+Vertex\+Finder}}
+\subsubsection{Pi0\+Vertex\+Finder()\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily lcfiplus\+::\+Pi0\+Vertex\+Finder\+::\+Pi0\+Vertex\+Finder (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\label{classlcfiplus_1_1Pi0VertexFinder_a527d13b0091b96d4e1402b42c5cb41d2}} 
+\index{lcfiplus\+::\+Pi0\+Vertex\+Finder@{lcfiplus\+::\+Pi0\+Vertex\+Finder}!Pi0\+Vertex\+Finder@{Pi0\+Vertex\+Finder}}
+\index{Pi0\+Vertex\+Finder@{Pi0\+Vertex\+Finder}!lcfiplus\+::\+Pi0\+Vertex\+Finder@{lcfiplus\+::\+Pi0\+Vertex\+Finder}}
+\subsubsection{Pi0\+Vertex\+Finder()\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily Pi0\+Vertex\+Finder\+::\+Pi0\+Vertex\+Finder (\begin{DoxyParamCaption}\item[{vector$<$ string $>$}]{weightfiles,  }\item[{vector$<$ string $>$}]{booknames,  }\item[{vector$<$ double $>$}]{opp,  }\item[{string}]{pi0pdfname,  }\item[{string}]{pi0pdfname2d }\end{DoxyParamCaption})}
+
+\mbox{\label{classlcfiplus_1_1Pi0VertexFinder_a5bfc9a18d0233b0eb2812f2ef01b7675}} 
+\index{lcfiplus\+::\+Pi0\+Vertex\+Finder@{lcfiplus\+::\+Pi0\+Vertex\+Finder}!````~Pi0\+Vertex\+Finder@{$\sim$\+Pi0\+Vertex\+Finder}}
+\index{````~Pi0\+Vertex\+Finder@{$\sim$\+Pi0\+Vertex\+Finder}!lcfiplus\+::\+Pi0\+Vertex\+Finder@{lcfiplus\+::\+Pi0\+Vertex\+Finder}}
+\subsubsection{$\sim$\+Pi0\+Vertex\+Finder()}
+{\footnotesize\ttfamily Pi0\+Vertex\+Finder\+::$\sim$\+Pi0\+Vertex\+Finder (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\label{classlcfiplus_1_1Pi0VertexFinder_ab18b007a1799d3ab8993f50d7dba74fd}} 
+\index{lcfiplus\+::\+Pi0\+Vertex\+Finder@{lcfiplus\+::\+Pi0\+Vertex\+Finder}!Corr\+\_\+\+Vtx\+Vect@{Corr\+\_\+\+Vtx\+Vect}}
+\index{Corr\+\_\+\+Vtx\+Vect@{Corr\+\_\+\+Vtx\+Vect}!lcfiplus\+::\+Pi0\+Vertex\+Finder@{lcfiplus\+::\+Pi0\+Vertex\+Finder}}
+\subsubsection{Corr\+\_\+\+Vtx\+Vect()}
+{\footnotesize\ttfamily T\+Lorentz\+Vector Pi0\+Vertex\+Finder\+::\+Corr\+\_\+\+Vtx\+Vect (\begin{DoxyParamCaption}\item[{int}]{vtxtype,  }\item[{T\+Lorentz\+Vector}]{vtx1vect,  }\item[{int $\ast$}]{npart,  }\item[{T\+Vector3}]{vtx,  }\item[{T\+Vector3}]{vtxdir }\end{DoxyParamCaption})}
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Mass\+Recovery\+::process().
+
+\mbox{\label{classlcfiplus_1_1Pi0VertexFinder_a9b4087ec457fd93373f470d6b9e5caf5}} 
+\index{lcfiplus\+::\+Pi0\+Vertex\+Finder@{lcfiplus\+::\+Pi0\+Vertex\+Finder}!Get\+\_\+n\+Pi0@{Get\+\_\+n\+Pi0}}
+\index{Get\+\_\+n\+Pi0@{Get\+\_\+n\+Pi0}!lcfiplus\+::\+Pi0\+Vertex\+Finder@{lcfiplus\+::\+Pi0\+Vertex\+Finder}}
+\subsubsection{Get\+\_\+n\+Pi0()}
+{\footnotesize\ttfamily int Pi0\+Vertex\+Finder\+::\+Get\+\_\+n\+Pi0 (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Mass\+Recovery\+::process().
+
+\mbox{\label{classlcfiplus_1_1Pi0VertexFinder_a010fb6d33fd801f5be3a510f32479189}} 
+\index{lcfiplus\+::\+Pi0\+Vertex\+Finder@{lcfiplus\+::\+Pi0\+Vertex\+Finder}!Initialize@{Initialize}}
+\index{Initialize@{Initialize}!lcfiplus\+::\+Pi0\+Vertex\+Finder@{lcfiplus\+::\+Pi0\+Vertex\+Finder}}
+\subsubsection{Initialize()}
+{\footnotesize\ttfamily void Pi0\+Vertex\+Finder\+::\+Initialize (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Mass\+Recovery\+::process().
+
+\mbox{\label{classlcfiplus_1_1Pi0VertexFinder_a0ce350c269f06a79f449d13845428679}} 
+\index{lcfiplus\+::\+Pi0\+Vertex\+Finder@{lcfiplus\+::\+Pi0\+Vertex\+Finder}!Make\+\_\+\+Gamma\+Vector@{Make\+\_\+\+Gamma\+Vector}}
+\index{Make\+\_\+\+Gamma\+Vector@{Make\+\_\+\+Gamma\+Vector}!lcfiplus\+::\+Pi0\+Vertex\+Finder@{lcfiplus\+::\+Pi0\+Vertex\+Finder}}
+\subsubsection{Make\+\_\+\+Gamma\+Vector()}
+{\footnotesize\ttfamily void Pi0\+Vertex\+Finder\+::\+Make\+\_\+\+Gamma\+Vector (\begin{DoxyParamCaption}\item[{const \textbf{ lcfiplus\+::\+Neutral} $\ast$}]{ntrl }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::tpar\+::ecal, lcfiplus\+::\+Neutral\+::get\+Clusters(), and lcfiplus\+::tpar\+::hcal.
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Mass\+Recovery\+::process().
+
+\mbox{\label{classlcfiplus_1_1Pi0VertexFinder_a5607958c83fe0e48c36e95a5b7c888cd}} 
+\index{lcfiplus\+::\+Pi0\+Vertex\+Finder@{lcfiplus\+::\+Pi0\+Vertex\+Finder}!Reco\+\_\+\+Pi0s@{Reco\+\_\+\+Pi0s}}
+\index{Reco\+\_\+\+Pi0s@{Reco\+\_\+\+Pi0s}!lcfiplus\+::\+Pi0\+Vertex\+Finder@{lcfiplus\+::\+Pi0\+Vertex\+Finder}}
+\subsubsection{Reco\+\_\+\+Pi0s()}
+{\footnotesize\ttfamily void Pi0\+Vertex\+Finder\+::\+Reco\+\_\+\+Pi0s (\begin{DoxyParamCaption}\item[{T\+Vector3}]{vtx,  }\item[{T\+Vector3}]{vtxdir }\end{DoxyParamCaption})}
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Mass\+Recovery\+::process().
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ Pi0\+Vertex\+Finder.\+h}\item 
+\textbf{ Pi0\+Vertex\+Finder.\+cc}\end{DoxyCompactItemize}

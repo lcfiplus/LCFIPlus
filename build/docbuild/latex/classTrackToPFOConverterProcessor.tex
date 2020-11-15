@@ -1,0 +1,129 @@
+\section{Track\+To\+P\+F\+O\+Converter\+Processor Class Reference}
+\label{classTrackToPFOConverterProcessor}\index{Track\+To\+P\+F\+O\+Converter\+Processor@{Track\+To\+P\+F\+O\+Converter\+Processor}}
+
+
+Marlin processor for L\+C\+F\+I\+Plus.  
+
+
+
+
+{\ttfamily \#include $<$Track\+To\+P\+F\+O\+Converter\+Processor.\+h$>$}
+
+Inheritance diagram for Track\+To\+P\+F\+O\+Converter\+Processor\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classTrackToPFOConverterProcessor}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual Processor $\ast$ \textbf{ new\+Processor} ()
+\item 
+\textbf{ Track\+To\+P\+F\+O\+Converter\+Processor} ()
+\item 
+virtual \textbf{ $\sim$\+Track\+To\+P\+F\+O\+Converter\+Processor} ()
+\item 
+virtual void \textbf{ init} ()
+\begin{DoxyCompactList}\small\item\em Called at the begin of the job before anything is read. \end{DoxyCompactList}\item 
+virtual void \textbf{ process\+Run\+Header} (L\+C\+Run\+Header $\ast$run)
+\begin{DoxyCompactList}\small\item\em Called for every run. \end{DoxyCompactList}\item 
+virtual void \textbf{ process\+Event} (L\+C\+Event $\ast$evt)
+\begin{DoxyCompactList}\small\item\em Called for every event -\/ the working horse. \end{DoxyCompactList}\item 
+virtual void \textbf{ check} (L\+C\+Event $\ast$evt)
+\item 
+virtual void \textbf{ end} ()
+\begin{DoxyCompactList}\small\item\em Called after data processing for clean up. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Marlin processor for L\+C\+F\+I\+Plus. 
+
+\begin{DoxyAuthor}{Author}
+Tomohiko Tanabe, I\+C\+E\+PP, The University of Tokyo 
+
+Taikan Suehara, I\+C\+E\+PP, The University of Tokyo 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+\$\+Id\$ 
+\end{DoxyVersion}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\label{classTrackToPFOConverterProcessor_af8b94a550680eed57d83a6244c64b823}} 
+\index{Track\+To\+P\+F\+O\+Converter\+Processor@{Track\+To\+P\+F\+O\+Converter\+Processor}!Track\+To\+P\+F\+O\+Converter\+Processor@{Track\+To\+P\+F\+O\+Converter\+Processor}}
+\index{Track\+To\+P\+F\+O\+Converter\+Processor@{Track\+To\+P\+F\+O\+Converter\+Processor}!Track\+To\+P\+F\+O\+Converter\+Processor@{Track\+To\+P\+F\+O\+Converter\+Processor}}
+\subsubsection{Track\+To\+P\+F\+O\+Converter\+Processor()}
+{\footnotesize\ttfamily Track\+To\+P\+F\+O\+Converter\+Processor\+::\+Track\+To\+P\+F\+O\+Converter\+Processor (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\label{classTrackToPFOConverterProcessor_a38e4a17cc17b3d24345018f63652c0c2}} 
+\index{Track\+To\+P\+F\+O\+Converter\+Processor@{Track\+To\+P\+F\+O\+Converter\+Processor}!````~Track\+To\+P\+F\+O\+Converter\+Processor@{$\sim$\+Track\+To\+P\+F\+O\+Converter\+Processor}}
+\index{````~Track\+To\+P\+F\+O\+Converter\+Processor@{$\sim$\+Track\+To\+P\+F\+O\+Converter\+Processor}!Track\+To\+P\+F\+O\+Converter\+Processor@{Track\+To\+P\+F\+O\+Converter\+Processor}}
+\subsubsection{$\sim$\+Track\+To\+P\+F\+O\+Converter\+Processor()}
+{\footnotesize\ttfamily Track\+To\+P\+F\+O\+Converter\+Processor\+::$\sim$\+Track\+To\+P\+F\+O\+Converter\+Processor (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\label{classTrackToPFOConverterProcessor_af305254181eb5aebee00b0cae8800a84}} 
+\index{Track\+To\+P\+F\+O\+Converter\+Processor@{Track\+To\+P\+F\+O\+Converter\+Processor}!check@{check}}
+\index{check@{check}!Track\+To\+P\+F\+O\+Converter\+Processor@{Track\+To\+P\+F\+O\+Converter\+Processor}}
+\subsubsection{check()}
+{\footnotesize\ttfamily void Track\+To\+P\+F\+O\+Converter\+Processor\+::check (\begin{DoxyParamCaption}\item[{L\+C\+Event $\ast$}]{evt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+\mbox{\label{classTrackToPFOConverterProcessor_acfa14fec4553eb62133998b1b519c4e9}} 
+\index{Track\+To\+P\+F\+O\+Converter\+Processor@{Track\+To\+P\+F\+O\+Converter\+Processor}!end@{end}}
+\index{end@{end}!Track\+To\+P\+F\+O\+Converter\+Processor@{Track\+To\+P\+F\+O\+Converter\+Processor}}
+\subsubsection{end()}
+{\footnotesize\ttfamily void Track\+To\+P\+F\+O\+Converter\+Processor\+::end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Called after data processing for clean up. 
+
+\mbox{\label{classTrackToPFOConverterProcessor_a3db6b8b8983070e501c669856b1e2472}} 
+\index{Track\+To\+P\+F\+O\+Converter\+Processor@{Track\+To\+P\+F\+O\+Converter\+Processor}!init@{init}}
+\index{init@{init}!Track\+To\+P\+F\+O\+Converter\+Processor@{Track\+To\+P\+F\+O\+Converter\+Processor}}
+\subsubsection{init()}
+{\footnotesize\ttfamily void Track\+To\+P\+F\+O\+Converter\+Processor\+::init (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Called at the begin of the job before anything is read. 
+
+\mbox{\label{classTrackToPFOConverterProcessor_aa5473c5b5fa8973d69746bcb33da4701}} 
+\index{Track\+To\+P\+F\+O\+Converter\+Processor@{Track\+To\+P\+F\+O\+Converter\+Processor}!new\+Processor@{new\+Processor}}
+\index{new\+Processor@{new\+Processor}!Track\+To\+P\+F\+O\+Converter\+Processor@{Track\+To\+P\+F\+O\+Converter\+Processor}}
+\subsubsection{new\+Processor()}
+{\footnotesize\ttfamily virtual Processor$\ast$ Track\+To\+P\+F\+O\+Converter\+Processor\+::new\+Processor (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+\mbox{\label{classTrackToPFOConverterProcessor_a7d69d8417c63a4dd093381484b0b7a70}} 
+\index{Track\+To\+P\+F\+O\+Converter\+Processor@{Track\+To\+P\+F\+O\+Converter\+Processor}!process\+Event@{process\+Event}}
+\index{process\+Event@{process\+Event}!Track\+To\+P\+F\+O\+Converter\+Processor@{Track\+To\+P\+F\+O\+Converter\+Processor}}
+\subsubsection{process\+Event()}
+{\footnotesize\ttfamily void Track\+To\+P\+F\+O\+Converter\+Processor\+::process\+Event (\begin{DoxyParamCaption}\item[{L\+C\+Event $\ast$}]{evt }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Called for every event -\/ the working horse. 
+
+
+
+References lcfiplus\+::tpar\+::om, and lcfiplus\+::tpar\+::td.
+
+\mbox{\label{classTrackToPFOConverterProcessor_aacebef63027292a5861d6a119a488775}} 
+\index{Track\+To\+P\+F\+O\+Converter\+Processor@{Track\+To\+P\+F\+O\+Converter\+Processor}!process\+Run\+Header@{process\+Run\+Header}}
+\index{process\+Run\+Header@{process\+Run\+Header}!Track\+To\+P\+F\+O\+Converter\+Processor@{Track\+To\+P\+F\+O\+Converter\+Processor}}
+\subsubsection{process\+Run\+Header()}
+{\footnotesize\ttfamily void Track\+To\+P\+F\+O\+Converter\+Processor\+::process\+Run\+Header (\begin{DoxyParamCaption}\item[{L\+C\+Run\+Header $\ast$}]{run }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Called for every run. 
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ Track\+To\+P\+F\+O\+Converter\+Processor.\+h}\item 
+\textbf{ Track\+To\+P\+F\+O\+Converter\+Processor.\+cc}\end{DoxyCompactItemize}

@@ -1,0 +1,72 @@
+\section{lcfiplus\+:\+:Geometry\+Handler Class Reference}
+\label{classlcfiplus_1_1GeometryHandler}\index{lcfiplus\+::\+Geometry\+Handler@{lcfiplus\+::\+Geometry\+Handler}}
+
+
+{\ttfamily \#include $<$geometry.\+h$>$}
+
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \textbf{ Point\+Fit\+Deriv\+Functor}
+\item 
+class \textbf{ Point\+Fit\+Functor}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+double \textbf{ Point\+Fit} (const vector$<$ \textbf{ Point\+Base} $\ast$$>$ \&points, const T\+Vector3 \&initial, \textbf{ Point} $\ast$result=0)
+\item 
+double \textbf{ Helix\+Point\+Fit} (const vector$<$ \textbf{ Helix} $\ast$$>$ \&helices, \textbf{ Point} $\ast$result=0)
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \textbf{ Geometry\+Handler} $\ast$ \textbf{ Instance} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Function Documentation}
+\mbox{\label{classlcfiplus_1_1GeometryHandler_a9029010066d4fd39ee83490c5ba2be2f}} 
+\index{lcfiplus\+::\+Geometry\+Handler@{lcfiplus\+::\+Geometry\+Handler}!Helix\+Point\+Fit@{Helix\+Point\+Fit}}
+\index{Helix\+Point\+Fit@{Helix\+Point\+Fit}!lcfiplus\+::\+Geometry\+Handler@{lcfiplus\+::\+Geometry\+Handler}}
+\subsubsection{Helix\+Point\+Fit()}
+{\footnotesize\ttfamily double lcfiplus\+::\+Geometry\+Handler\+::\+Helix\+Point\+Fit (\begin{DoxyParamCaption}\item[{const vector$<$ \textbf{ Helix} $\ast$$>$ \&}]{helices,  }\item[{\textbf{ Point} $\ast$}]{result = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+Point\+::\+Get\+Pos(), and lcfiplus\+::verbose.
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Fitter\+Simple$<$ Iterator $>$\+::operator()().
+
+\mbox{\label{classlcfiplus_1_1GeometryHandler_a8186dc974f9fa1b44445267381bd8dab}} 
+\index{lcfiplus\+::\+Geometry\+Handler@{lcfiplus\+::\+Geometry\+Handler}!Instance@{Instance}}
+\index{Instance@{Instance}!lcfiplus\+::\+Geometry\+Handler@{lcfiplus\+::\+Geometry\+Handler}}
+\subsubsection{Instance()}
+{\footnotesize\ttfamily \textbf{ Geometry\+Handler} $\ast$ lcfiplus\+::\+Geometry\+Handler\+::\+Instance (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Referenced by lcfiplus\+::\+Helix\+::\+Longitudinal\+Deviation().
+
+\mbox{\label{classlcfiplus_1_1GeometryHandler_a719d1c4165e936732c8b77f34495a210}} 
+\index{lcfiplus\+::\+Geometry\+Handler@{lcfiplus\+::\+Geometry\+Handler}!Point\+Fit@{Point\+Fit}}
+\index{Point\+Fit@{Point\+Fit}!lcfiplus\+::\+Geometry\+Handler@{lcfiplus\+::\+Geometry\+Handler}}
+\subsubsection{Point\+Fit()}
+{\footnotesize\ttfamily double lcfiplus\+::\+Geometry\+Handler\+::\+Point\+Fit (\begin{DoxyParamCaption}\item[{const vector$<$ \textbf{ Point\+Base} $\ast$$>$ \&}]{points,  }\item[{const T\+Vector3 \&}]{initial,  }\item[{\textbf{ Point} $\ast$}]{result = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::algo\+Etc\+::min(), lcfiplus\+::\+Point\+::\+Set\+Pos\+Err(), and lcfiplus\+::verbose.
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Fitter\+Simple$<$ Iterator $>$\+::get\+Chi2(), lcfiplus\+::\+Helix\+::\+Longitudinal\+Deviation(), and lcfiplus\+::\+Vertex\+Fitter\+Simple$<$ Iterator $>$\+::operator()().
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ geometry.\+h}\item 
+\textbf{ geometry.\+cc}\end{DoxyCompactItemize}

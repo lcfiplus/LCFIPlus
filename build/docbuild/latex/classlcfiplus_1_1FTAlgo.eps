@@ -1,0 +1,627 @@
+%!PS-Adobe-2.0 EPSF-2.0
+%%Title: ClassName
+%%Creator: Doxygen
+%%CreationDate: Time
+%%For: 
+%Magnification: 1.00
+%%Orientation: Portrait
+%%BoundingBox: 0 0 500 5046.296296
+%%Pages: 0
+%%BeginSetup
+%%EndSetup
+%%EndComments
+
+% ----- variables -----
+
+/boxwidth 0 def
+/boxheight 40 def
+/fontheight 24 def
+/marginwidth 10 def
+/distx 20 def
+/disty 40 def
+/boundaspect 0.099083 def  % aspect ratio of the BoundingBox (width/height)
+/boundx 500 def
+/boundy boundx boundaspect div def
+/xspacing 0 def
+/yspacing 0 def
+/rows 109 def
+/cols 2 def
+/scalefactor 0 def
+/boxfont /Times-Roman findfont fontheight scalefont def
+
+% ----- procedures -----
+
+/dotted { [1 4] 0 setdash } def
+/dashed { [5] 0 setdash } def
+/solid  { [] 0 setdash } def
+
+/max % result = MAX(arg1,arg2)
+{
+  /a exch def
+  /b exch def
+  a b gt {a} {b} ifelse
+} def
+
+/xoffset % result = MAX(0,(scalefactor-(boxwidth*cols+distx*(cols-1)))/2)
+{
+  0 scalefactor boxwidth cols mul distx cols 1 sub mul add sub 2 div max
+} def
+
+/cw % boxwidth = MAX(boxwidth, stringwidth(arg1))
+{
+  /str exch def
+  /boxwidth boxwidth str stringwidth pop max def
+} def
+
+/box % draws a box with text `arg1' at grid pos (arg2,arg3)
+{ gsave
+  2 setlinewidth
+  newpath
+  exch xspacing mul xoffset add
+  exch yspacing mul
+  moveto
+  boxwidth 0 rlineto 
+  0 boxheight rlineto 
+  boxwidth neg 0 rlineto 
+  0 boxheight neg rlineto 
+  closepath
+  dup stringwidth pop neg boxwidth add 2 div
+  boxheight fontheight 2 div sub 2 div
+  rmoveto show stroke
+  grestore
+} def  
+
+/mark
+{ newpath
+  exch xspacing mul xoffset add boxwidth add
+  exch yspacing mul
+  moveto
+  0 boxheight 4 div rlineto
+  boxheight neg 4 div boxheight neg 4 div rlineto
+  closepath
+  eofill
+  stroke
+} def
+
+/arrow
+{ newpath
+  moveto
+  3 -8 rlineto
+  -6 0 rlineto
+  3 8 rlineto
+  closepath
+  eofill
+  stroke
+} def
+
+/out % draws an output connector for the block at (arg1,arg2)
+{
+  newpath
+  exch xspacing mul xoffset add boxwidth 2 div add
+  exch yspacing mul boxheight add
+  /y exch def
+  /x exch def
+  x y moveto
+  0 disty 2 div rlineto 
+  stroke
+  1 eq { x y disty 2 div add arrow } if
+} def
+
+/in % draws an input connector for the block at (arg1,arg2)
+{
+  newpath
+  exch xspacing mul xoffset add boxwidth 2 div add
+  exch yspacing mul disty 2 div sub
+  /y exch def
+  /x exch def
+  x y moveto
+  0 disty 2 div rlineto
+  stroke
+  1 eq { x y disty 2 div add arrow } if
+} def
+
+/hedge
+{
+  exch xspacing mul xoffset add boxwidth 2 div add
+  exch yspacing mul boxheight 2 div sub
+  /y exch def
+  /x exch def
+  newpath
+  x y moveto
+  boxwidth 2 div distx add 0 rlineto
+  stroke
+  1 eq
+  { newpath x boxwidth 2 div distx add add y moveto
+    -8 3 rlineto
+    0 -6 rlineto
+    8 3 rlineto
+    closepath
+    eofill
+    stroke
+  } if
+} def
+
+/vedge
+{
+  /ye exch def
+  /ys exch def
+  /xs exch def
+  newpath
+  xs xspacing mul xoffset add boxwidth 2 div add dup
+  ys yspacing mul boxheight 2 div sub
+  moveto
+  ye yspacing mul boxheight 2 div sub
+  lineto
+  stroke
+} def
+
+/conn % connections the blocks from col `arg1' to `arg2' of row `arg3'
+{
+  /ys exch def
+  /xe exch def
+  /xs exch def
+  newpath
+  xs xspacing mul xoffset add boxwidth 2 div add
+  ys yspacing mul disty 2 div sub
+  moveto
+  xspacing xe xs sub mul 0
+  rlineto
+  stroke
+} def
+
+% ----- main ------
+
+boxfont setfont
+1 boundaspect scale
+(lcfiplus::FTAlgo) cw
+(lcfiplus::Ft1VtxProb) cw
+(lcfiplus::FtAuxiliary) cw
+(lcfiplus::FtAuxiliaryM) cw
+(lcfiplus::FtBNess0) cw
+(lcfiplus::FtBNess1) cw
+(lcfiplus::FtBNess2) cw
+(lcfiplus::FtBNess3) cw
+(lcfiplus::FtBNessMass) cw
+(lcfiplus::FtCorrVtxMass1) cw
+(lcfiplus::FtCorrVtxMass2) cw
+(lcfiplus::FtCorrVtxMassAll) cw
+(lcfiplus::FtCorrVtxMomentum1) cw
+(lcfiplus::FtCorrVtxMomentum2) cw
+(lcfiplus::FtCorrVtxMomentumAll) cw
+(lcfiplus::FtD0bProb) cw
+(lcfiplus::FtD0bProb2) cw
+(lcfiplus::FtD0bProbIP) cw
+(lcfiplus::FtD0bProbSigned) cw
+(lcfiplus::FtD0cProb) cw
+(lcfiplus::FtD0cProb2) cw
+(lcfiplus::FtD0cProbIP) cw
+(lcfiplus::FtD0cProbSigned) cw
+(lcfiplus::FtD0qProb) cw
+(lcfiplus::FtD0qProb2) cw
+(lcfiplus::FtD0qProbSigned) cw
+(lcfiplus::FtJetE) cw
+(lcfiplus::FtJProbR) cw
+(lcfiplus::FtJProbR2) cw
+(lcfiplus::FtJProbR25Sigma) cw
+(lcfiplus::FtJProbR5Sigma) cw
+(lcfiplus::FtJProbZ) cw
+(lcfiplus::FtJProbZ2) cw
+(lcfiplus::FtJProbZ25Sigma) cw
+(lcfiplus::FtJProbZ5Sigma) cw
+(lcfiplus::FtMCNB) cw
+(lcfiplus::FtMCNC) cw
+(lcfiplus::FtMCNElectron) cw
+(lcfiplus::FtMCNMuon) cw
+(lcfiplus::FtNBNess) cw
+(lcfiplus::FtNElectron) cw
+(lcfiplus::FtNElectronPID) cw
+(lcfiplus::FtNMuon) cw
+(lcfiplus::FtNMuonPID) cw
+(lcfiplus::FtNPi0s1) cw
+(lcfiplus::FtNPi0s2) cw
+(lcfiplus::FtNSecTracks) cw
+(lcfiplus::FtNtrk) cw
+(lcfiplus::FtNtrkWithoutV0) cw
+(lcfiplus::FtNvtx) cw
+(lcfiplus::FtNvtxAll) cw
+(lcfiplus::FtPi0Momentum1) cw
+(lcfiplus::FtPi0Momentum2) cw
+(lcfiplus::FtPi0MomentumAll) cw
+(lcfiplus::FtSphericity) cw
+(lcfiplus::FtTrk1D0Sig) cw
+(lcfiplus::FtTrk1Pt) cw
+(lcfiplus::FtTrk1PtByJetE) cw
+(lcfiplus::FtTrk1Z0Sig) cw
+(lcfiplus::FtTrk2D0Sig) cw
+(lcfiplus::FtTrk2Pt) cw
+(lcfiplus::FtTrk2PtByJetE) cw
+(lcfiplus::FtTrk2Z0Sig) cw
+(lcfiplus::FtTrkMass) cw
+(lcfiplus::FtTrkMass2) cw
+(lcfiplus::FtVtxDirAng1) cw
+(lcfiplus::FtVtxDirAng12) cw
+(lcfiplus::FtVtxDirAng12TimesJetE) cw
+(lcfiplus::FtVtxDirAng1TimesJetE) cw
+(lcfiplus::FtVtxDirAng2) cw
+(lcfiplus::FtVtxDirAng2TimesJetE) cw
+(lcfiplus::FtVtxLen1) cw
+(lcfiplus::FtVtxLen12) cw
+(lcfiplus::FtVtxLen12All) cw
+(lcfiplus::FtVtxLen12AllByJetE) cw
+(lcfiplus::FtVtxLen12ByJetE) cw
+(lcfiplus::FtVtxLen1ByJetE) cw
+(lcfiplus::FtVtxLen2) cw
+(lcfiplus::FtVtxLen2ByJetE) cw
+(lcfiplus::FtVtxLongitudinalDeviation) cw
+(lcfiplus::FtVtxMass) cw
+(lcfiplus::FtVtxMass1) cw
+(lcfiplus::FtVtxMass2) cw
+(lcfiplus::FtVtxMassAll) cw
+(lcfiplus::FtVtxMassPtCorr) cw
+(lcfiplus::FtVtxMom) cw
+(lcfiplus::FtVtxMom1) cw
+(lcfiplus::FtVtxMom1ByJetE) cw
+(lcfiplus::FtVtxMom2) cw
+(lcfiplus::FtVtxMom2ByJetE) cw
+(lcfiplus::FtVtxMomByJetE) cw
+(lcfiplus::FtVtxMult) cw
+(lcfiplus::FtVtxMult1) cw
+(lcfiplus::FtVtxMult2) cw
+(lcfiplus::FtVtxProb) cw
+(lcfiplus::FtVtxSig1) cw
+(lcfiplus::FtVtxSig12) cw
+(lcfiplus::FtVtxSig12ByJetE) cw
+(lcfiplus::FtVtxSig1ByJetE) cw
+(lcfiplus::FtVtxSig2) cw
+(lcfiplus::FtVtxSig2ByJetE) cw
+(lcfiplus::FtZ0bProb) cw
+(lcfiplus::FtZ0bProb2) cw
+(lcfiplus::FtZ0bProbIP) cw
+(lcfiplus::FtZ0cProb) cw
+(lcfiplus::FtZ0cProb2) cw
+(lcfiplus::FtZ0cProbIP) cw
+(lcfiplus::FtZ0qProb) cw
+(lcfiplus::FtZ0qProb2) cw
+/boxwidth boxwidth marginwidth 2 mul add def
+/xspacing boxwidth distx add def
+/yspacing boxheight disty add def
+/scalefactor 
+  boxwidth cols mul distx cols 1 sub mul add
+  boxheight rows mul disty rows 1 sub mul add boundaspect mul 
+  max def
+boundx scalefactor div boundy scalefactor div scale
+
+% ----- classes -----
+
+ (lcfiplus::FTAlgo) 0.000000 108.000000 box
+ (lcfiplus::Ft1VtxProb) 1.000000 107.000000 box
+ (lcfiplus::FtAuxiliary) 1.000000 106.000000 box
+ (lcfiplus::FtAuxiliaryM) 1.000000 105.000000 box
+ (lcfiplus::FtBNess0) 1.000000 104.000000 box
+ (lcfiplus::FtBNess1) 1.000000 103.000000 box
+ (lcfiplus::FtBNess2) 1.000000 102.000000 box
+ (lcfiplus::FtBNess3) 1.000000 101.000000 box
+ (lcfiplus::FtBNessMass) 1.000000 100.000000 box
+ (lcfiplus::FtCorrVtxMass1) 1.000000 99.000000 box
+ (lcfiplus::FtCorrVtxMass2) 1.000000 98.000000 box
+ (lcfiplus::FtCorrVtxMassAll) 1.000000 97.000000 box
+ (lcfiplus::FtCorrVtxMomentum1) 1.000000 96.000000 box
+ (lcfiplus::FtCorrVtxMomentum2) 1.000000 95.000000 box
+ (lcfiplus::FtCorrVtxMomentumAll) 1.000000 94.000000 box
+ (lcfiplus::FtD0bProb) 1.000000 93.000000 box
+ (lcfiplus::FtD0bProb2) 1.000000 92.000000 box
+ (lcfiplus::FtD0bProbIP) 1.000000 91.000000 box
+ (lcfiplus::FtD0bProbSigned) 1.000000 90.000000 box
+ (lcfiplus::FtD0cProb) 1.000000 89.000000 box
+ (lcfiplus::FtD0cProb2) 1.000000 88.000000 box
+ (lcfiplus::FtD0cProbIP) 1.000000 87.000000 box
+ (lcfiplus::FtD0cProbSigned) 1.000000 86.000000 box
+ (lcfiplus::FtD0qProb) 1.000000 85.000000 box
+ (lcfiplus::FtD0qProb2) 1.000000 84.000000 box
+ (lcfiplus::FtD0qProbSigned) 1.000000 83.000000 box
+ (lcfiplus::FtJetE) 1.000000 82.000000 box
+ (lcfiplus::FtJProbR) 1.000000 81.000000 box
+ (lcfiplus::FtJProbR2) 1.000000 80.000000 box
+ (lcfiplus::FtJProbR25Sigma) 1.000000 79.000000 box
+ (lcfiplus::FtJProbR5Sigma) 1.000000 78.000000 box
+ (lcfiplus::FtJProbZ) 1.000000 77.000000 box
+ (lcfiplus::FtJProbZ2) 1.000000 76.000000 box
+ (lcfiplus::FtJProbZ25Sigma) 1.000000 75.000000 box
+ (lcfiplus::FtJProbZ5Sigma) 1.000000 74.000000 box
+ (lcfiplus::FtMCNB) 1.000000 73.000000 box
+ (lcfiplus::FtMCNC) 1.000000 72.000000 box
+ (lcfiplus::FtMCNElectron) 1.000000 71.000000 box
+ (lcfiplus::FtMCNMuon) 1.000000 70.000000 box
+ (lcfiplus::FtNBNess) 1.000000 69.000000 box
+ (lcfiplus::FtNElectron) 1.000000 68.000000 box
+ (lcfiplus::FtNElectronPID) 1.000000 67.000000 box
+ (lcfiplus::FtNMuon) 1.000000 66.000000 box
+ (lcfiplus::FtNMuonPID) 1.000000 65.000000 box
+ (lcfiplus::FtNPi0s1) 1.000000 64.000000 box
+ (lcfiplus::FtNPi0s2) 1.000000 63.000000 box
+ (lcfiplus::FtNSecTracks) 1.000000 62.000000 box
+ (lcfiplus::FtNtrk) 1.000000 61.000000 box
+ (lcfiplus::FtNtrkWithoutV0) 1.000000 60.000000 box
+ (lcfiplus::FtNvtx) 1.000000 59.000000 box
+ (lcfiplus::FtNvtxAll) 1.000000 58.000000 box
+ (lcfiplus::FtPi0Momentum1) 1.000000 57.000000 box
+ (lcfiplus::FtPi0Momentum2) 1.000000 56.000000 box
+ (lcfiplus::FtPi0MomentumAll) 1.000000 55.000000 box
+ (lcfiplus::FtSphericity) 1.000000 54.000000 box
+ (lcfiplus::FtTrk1D0Sig) 1.000000 53.000000 box
+ (lcfiplus::FtTrk1Pt) 1.000000 52.000000 box
+ (lcfiplus::FtTrk1PtByJetE) 1.000000 51.000000 box
+ (lcfiplus::FtTrk1Z0Sig) 1.000000 50.000000 box
+ (lcfiplus::FtTrk2D0Sig) 1.000000 49.000000 box
+ (lcfiplus::FtTrk2Pt) 1.000000 48.000000 box
+ (lcfiplus::FtTrk2PtByJetE) 1.000000 47.000000 box
+ (lcfiplus::FtTrk2Z0Sig) 1.000000 46.000000 box
+ (lcfiplus::FtTrkMass) 1.000000 45.000000 box
+ (lcfiplus::FtTrkMass2) 1.000000 44.000000 box
+ (lcfiplus::FtVtxDirAng1) 1.000000 43.000000 box
+ (lcfiplus::FtVtxDirAng12) 1.000000 42.000000 box
+ (lcfiplus::FtVtxDirAng12TimesJetE) 1.000000 41.000000 box
+ (lcfiplus::FtVtxDirAng1TimesJetE) 1.000000 40.000000 box
+ (lcfiplus::FtVtxDirAng2) 1.000000 39.000000 box
+ (lcfiplus::FtVtxDirAng2TimesJetE) 1.000000 38.000000 box
+ (lcfiplus::FtVtxLen1) 1.000000 37.000000 box
+ (lcfiplus::FtVtxLen12) 1.000000 36.000000 box
+ (lcfiplus::FtVtxLen12All) 1.000000 35.000000 box
+ (lcfiplus::FtVtxLen12AllByJetE) 1.000000 34.000000 box
+ (lcfiplus::FtVtxLen12ByJetE) 1.000000 33.000000 box
+ (lcfiplus::FtVtxLen1ByJetE) 1.000000 32.000000 box
+ (lcfiplus::FtVtxLen2) 1.000000 31.000000 box
+ (lcfiplus::FtVtxLen2ByJetE) 1.000000 30.000000 box
+ (lcfiplus::FtVtxLongitudinalDeviation) 1.000000 29.000000 box
+ (lcfiplus::FtVtxMass) 1.000000 28.000000 box
+ (lcfiplus::FtVtxMass1) 1.000000 27.000000 box
+ (lcfiplus::FtVtxMass2) 1.000000 26.000000 box
+ (lcfiplus::FtVtxMassAll) 1.000000 25.000000 box
+ (lcfiplus::FtVtxMassPtCorr) 1.000000 24.000000 box
+ (lcfiplus::FtVtxMom) 1.000000 23.000000 box
+ (lcfiplus::FtVtxMom1) 1.000000 22.000000 box
+ (lcfiplus::FtVtxMom1ByJetE) 1.000000 21.000000 box
+ (lcfiplus::FtVtxMom2) 1.000000 20.000000 box
+ (lcfiplus::FtVtxMom2ByJetE) 1.000000 19.000000 box
+ (lcfiplus::FtVtxMomByJetE) 1.000000 18.000000 box
+ (lcfiplus::FtVtxMult) 1.000000 17.000000 box
+ (lcfiplus::FtVtxMult1) 1.000000 16.000000 box
+ (lcfiplus::FtVtxMult2) 1.000000 15.000000 box
+ (lcfiplus::FtVtxProb) 1.000000 14.000000 box
+ (lcfiplus::FtVtxSig1) 1.000000 13.000000 box
+ (lcfiplus::FtVtxSig12) 1.000000 12.000000 box
+ (lcfiplus::FtVtxSig12ByJetE) 1.000000 11.000000 box
+ (lcfiplus::FtVtxSig1ByJetE) 1.000000 10.000000 box
+ (lcfiplus::FtVtxSig2) 1.000000 9.000000 box
+ (lcfiplus::FtVtxSig2ByJetE) 1.000000 8.000000 box
+ (lcfiplus::FtZ0bProb) 1.000000 7.000000 box
+ (lcfiplus::FtZ0bProb2) 1.000000 6.000000 box
+ (lcfiplus::FtZ0bProbIP) 1.000000 5.000000 box
+ (lcfiplus::FtZ0cProb) 1.000000 4.000000 box
+ (lcfiplus::FtZ0cProb2) 1.000000 3.000000 box
+ (lcfiplus::FtZ0cProbIP) 1.000000 2.000000 box
+ (lcfiplus::FtZ0qProb) 1.000000 1.000000 box
+ (lcfiplus::FtZ0qProb2) 1.000000 0.000000 box
+
+% ----- relations -----
+
+solid
+1 0.000000 107.250000 out
+solid
+0 0.000000 107.500000 hedge
+solid
+0 0.000000 106.500000 hedge
+solid
+0 0.000000 105.500000 hedge
+solid
+0 0.000000 104.500000 hedge
+solid
+0 0.000000 103.500000 hedge
+solid
+0 0.000000 102.500000 hedge
+solid
+0 0.000000 101.500000 hedge
+solid
+0 0.000000 100.500000 hedge
+solid
+0 0.000000 99.500000 hedge
+solid
+0 0.000000 98.500000 hedge
+solid
+0 0.000000 97.500000 hedge
+solid
+0 0.000000 96.500000 hedge
+solid
+0 0.000000 95.500000 hedge
+solid
+0 0.000000 94.500000 hedge
+solid
+0 0.000000 93.500000 hedge
+solid
+0 0.000000 92.500000 hedge
+solid
+0 0.000000 91.500000 hedge
+solid
+0 0.000000 90.500000 hedge
+solid
+0 0.000000 89.500000 hedge
+solid
+0 0.000000 88.500000 hedge
+solid
+0 0.000000 87.500000 hedge
+solid
+0 0.000000 86.500000 hedge
+solid
+0 0.000000 85.500000 hedge
+solid
+0 0.000000 84.500000 hedge
+solid
+0 0.000000 83.500000 hedge
+solid
+0 0.000000 82.500000 hedge
+solid
+0 0.000000 81.500000 hedge
+solid
+0 0.000000 80.500000 hedge
+solid
+0 0.000000 79.500000 hedge
+solid
+0 0.000000 78.500000 hedge
+solid
+0 0.000000 77.500000 hedge
+solid
+0 0.000000 76.500000 hedge
+solid
+0 0.000000 75.500000 hedge
+solid
+0 0.000000 74.500000 hedge
+solid
+0 0.000000 73.500000 hedge
+solid
+0 0.000000 72.500000 hedge
+solid
+0 0.000000 71.500000 hedge
+solid
+0 0.000000 70.500000 hedge
+solid
+0 0.000000 69.500000 hedge
+solid
+0 0.000000 68.500000 hedge
+solid
+0 0.000000 67.500000 hedge
+solid
+0 0.000000 66.500000 hedge
+solid
+0 0.000000 65.500000 hedge
+solid
+0 0.000000 64.500000 hedge
+solid
+0 0.000000 63.500000 hedge
+solid
+0 0.000000 62.500000 hedge
+solid
+0 0.000000 61.500000 hedge
+solid
+0 0.000000 60.500000 hedge
+solid
+0 0.000000 59.500000 hedge
+solid
+0 0.000000 58.500000 hedge
+solid
+0 0.000000 57.500000 hedge
+solid
+0 0.000000 56.500000 hedge
+solid
+0 0.000000 55.500000 hedge
+solid
+0 0.000000 54.500000 hedge
+solid
+0 0.000000 53.500000 hedge
+solid
+0 0.000000 52.500000 hedge
+solid
+0 0.000000 51.500000 hedge
+solid
+0 0.000000 50.500000 hedge
+solid
+0 0.000000 49.500000 hedge
+solid
+0 0.000000 48.500000 hedge
+solid
+0 0.000000 47.500000 hedge
+solid
+0 0.000000 46.500000 hedge
+solid
+0 0.000000 45.500000 hedge
+solid
+0 0.000000 44.500000 hedge
+solid
+0 0.000000 43.500000 hedge
+solid
+0 0.000000 42.500000 hedge
+solid
+0 0.000000 41.500000 hedge
+solid
+0 0.000000 40.500000 hedge
+solid
+0 0.000000 39.500000 hedge
+solid
+0 0.000000 38.500000 hedge
+solid
+0 0.000000 37.500000 hedge
+solid
+0 0.000000 36.500000 hedge
+solid
+0 0.000000 35.500000 hedge
+solid
+0 0.000000 34.500000 hedge
+solid
+0 0.000000 33.500000 hedge
+solid
+0 0.000000 32.500000 hedge
+solid
+0 0.000000 31.500000 hedge
+solid
+0 0.000000 30.500000 hedge
+solid
+0 0.000000 29.500000 hedge
+solid
+0 0.000000 28.500000 hedge
+solid
+0 0.000000 27.500000 hedge
+solid
+0 0.000000 26.500000 hedge
+solid
+0 0.000000 25.500000 hedge
+solid
+0 0.000000 24.500000 hedge
+solid
+0 0.000000 23.500000 hedge
+solid
+0 0.000000 22.500000 hedge
+solid
+0 0.000000 21.500000 hedge
+solid
+0 0.000000 20.500000 hedge
+solid
+0 0.000000 19.500000 hedge
+solid
+0 0.000000 18.500000 hedge
+solid
+0 0.000000 17.500000 hedge
+solid
+0 0.000000 16.500000 hedge
+solid
+0 0.000000 15.500000 hedge
+solid
+0 0.000000 14.500000 hedge
+solid
+0 0.000000 13.500000 hedge
+solid
+0 0.000000 12.500000 hedge
+solid
+0 0.000000 11.500000 hedge
+solid
+0 0.000000 10.500000 hedge
+solid
+0 0.000000 9.500000 hedge
+solid
+0 0.000000 8.500000 hedge
+solid
+0 0.000000 7.500000 hedge
+solid
+0 0.000000 6.500000 hedge
+solid
+0 0.000000 5.500000 hedge
+solid
+0 0.000000 4.500000 hedge
+solid
+0 0.000000 3.500000 hedge
+solid
+0 0.000000 2.500000 hedge
+solid
+0 0.000000 1.500000 hedge
+solid
+0 0.000000 0.500000 hedge
+solid
+0.000000 108.000000 0.500000 vedge

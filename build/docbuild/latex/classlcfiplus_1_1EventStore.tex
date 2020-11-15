@@ -1,0 +1,293 @@
+\section{lcfiplus\+:\+:Event\+Store Class Reference}
+\label{classlcfiplus_1_1EventStore}\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+
+
+A simple named storage for event data.  
+
+
+
+
+{\ttfamily \#include $<$Event\+Store.\+h$>$}
+
+Inheritance diagram for lcfiplus\+:\+:Event\+Store\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classlcfiplus_1_1EventStore}
+\end{center}
+\end{figure}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \textbf{ Stored\+Entry}
+\end{DoxyCompactItemize}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \{ \textbf{ D\+O\+\_\+\+N\+O\+T\+\_\+\+D\+E\+L\+E\+TE} = 0x0001, 
+\textbf{ P\+E\+R\+S\+I\+ST} = 0x0002, 
+\textbf{ J\+E\+T\+\_\+\+W\+R\+I\+T\+E\+\_\+\+V\+E\+R\+T\+EX} = 0x1000
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \textbf{ Register\+Observer} (\textbf{ Event\+Store\+Observer} $\ast$observer)
+\item 
+void \textbf{ Unregister\+Observer} (\textbf{ Event\+Store\+Observer} $\ast$observer)
+\item 
+int \textbf{ Count} (const char $\ast$name) const
+\item 
+bool \textbf{ Is\+Exist} (const char $\ast$name) const
+\item 
+bool \textbf{ Is\+Exist} (const char $\ast$name, const char $\ast$classname) const
+\item 
+const char $\ast$ \textbf{ Get\+Class\+Name} (const char $\ast$name, int idx=0) const
+\item 
+void $\ast$ \textbf{ Get\+Object} (const char $\ast$name, const char $\ast$classname=\char`\"{}\char`\"{}) const
+\item 
+{\footnotesize template$<$typename T $>$ }\\bool \textbf{ Get} (const char $\ast$name, const vector$<$ const T $\ast$$>$ $\ast$\&buf) const
+\item 
+{\footnotesize template$<$typename T $>$ }\\bool \textbf{ Get} (const char $\ast$name, const vector$<$ T $\ast$$>$ $\ast$\&buf) const
+\item 
+{\footnotesize template$<$typename T $>$ }\\bool \textbf{ Get} (const char $\ast$name, const vector$<$ T $>$ $\ast$\&buf) const
+\item 
+{\footnotesize template$<$typename T $>$ }\\bool \textbf{ Get} (const char $\ast$name, const T $\ast$\&buf) const
+\item 
+void $\ast$ \textbf{ Register\+Object} (const char $\ast$name, const char $\ast$classname, int flags=0)
+\item 
+{\footnotesize template$<$typename T $>$ }\\bool \textbf{ Register} (const char $\ast$name, vector$<$ T $\ast$$>$ $\ast$\&buf, int flags=0)
+\item 
+{\footnotesize template$<$typename T $>$ }\\bool \textbf{ Register} (const char $\ast$name, vector$<$ T $>$ $\ast$\&buf, int flags=0)
+\item 
+{\footnotesize template$<$typename T $>$ }\\bool \textbf{ Register} (const char $\ast$name, T $\ast$\&buf, int flags=0)
+\item 
+void \textbf{ Print} () const
+\item 
+void \textbf{ Clear\+Objects} ()
+\item 
+virtual \textbf{ $\sim$\+Event\+Store} ()
+\item 
+const multimap$<$ string, \textbf{ lcfiplus\+::\+Event\+Store\+::\+Stored\+Entry} $>$ \& \textbf{ Get\+Object\+Map} () const
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void $\ast$const  \& \textbf{ Get\+Object\+Ref} (const char $\ast$name, const char $\ast$classname=\char`\"{}\char`\"{}) const
+\item 
+\textbf{ Event\+Store} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A simple named storage for event data. 
+
+To obtain data\+: use Get(name) (in compiled code) or Get\+Object(name) (in C\+I\+NT)
+
+C\+A\+U\+T\+I\+ON\+: \doxyref{Get\+Object()}{p.}{classlcfiplus_1_1EventStore_aeb2c132766ea83c19127a6bad0981721} does not have type-\/check.
+
+To register data\+: use Register(name) or Register\+Object(name, class) Use a pointer returned (cannot register a pointer from the caller). Any classes or vector of classes with Class\+Def() can be registered.
+
+\begin{DoxyAuthor}{Author}
+T. Suehara, I\+C\+E\+PP, The University of Tokyo 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+\$\+Id\$ 
+\end{DoxyVersion}
+
+
+\subsection{Member Enumeration Documentation}
+\mbox{\label{classlcfiplus_1_1EventStore_a6b971b335bce75d19579cf0d9313878f}} 
+\subsubsection{anonymous enum}
+{\footnotesize\ttfamily anonymous enum}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{D\+O\+\_\+\+N\+O\+T\+\_\+\+D\+E\+L\+E\+TE@{D\+O\+\_\+\+N\+O\+T\+\_\+\+D\+E\+L\+E\+TE}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!D\+O\+\_\+\+N\+O\+T\+\_\+\+D\+E\+L\+E\+TE@{D\+O\+\_\+\+N\+O\+T\+\_\+\+D\+E\+L\+E\+TE}}}\mbox{\label{classlcfiplus_1_1EventStore_a6b971b335bce75d19579cf0d9313878fa081715e1747df1fe9c75a320803c5ee1}} 
+D\+O\+\_\+\+N\+O\+T\+\_\+\+D\+E\+L\+E\+TE&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{P\+E\+R\+S\+I\+ST@{P\+E\+R\+S\+I\+ST}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!P\+E\+R\+S\+I\+ST@{P\+E\+R\+S\+I\+ST}}}\mbox{\label{classlcfiplus_1_1EventStore_a6b971b335bce75d19579cf0d9313878faae90e2741e7e6e6687814bc34540d695}} 
+P\+E\+R\+S\+I\+ST&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{J\+E\+T\+\_\+\+W\+R\+I\+T\+E\+\_\+\+V\+E\+R\+T\+EX@{J\+E\+T\+\_\+\+W\+R\+I\+T\+E\+\_\+\+V\+E\+R\+T\+EX}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!J\+E\+T\+\_\+\+W\+R\+I\+T\+E\+\_\+\+V\+E\+R\+T\+EX@{J\+E\+T\+\_\+\+W\+R\+I\+T\+E\+\_\+\+V\+E\+R\+T\+EX}}}\mbox{\label{classlcfiplus_1_1EventStore_a6b971b335bce75d19579cf0d9313878fab41d7f557575ae7c97207f74cd727c29}} 
+J\+E\+T\+\_\+\+W\+R\+I\+T\+E\+\_\+\+V\+E\+R\+T\+EX&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\label{classlcfiplus_1_1EventStore_adb15eb43c0a69bf92bfd5ac414d4c2f4}} 
+\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!````~Event\+Store@{$\sim$\+Event\+Store}}
+\index{````~Event\+Store@{$\sim$\+Event\+Store}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+\subsubsection{$\sim$\+Event\+Store()}
+{\footnotesize\ttfamily lcfiplus\+::\+Event\+Store\+::$\sim$\+Event\+Store (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+\mbox{\label{classlcfiplus_1_1EventStore_a221074c0fc374a7165cf2b627b03c897}} 
+\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!Event\+Store@{Event\+Store}}
+\index{Event\+Store@{Event\+Store}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+\subsubsection{Event\+Store()}
+{\footnotesize\ttfamily lcfiplus\+::\+Event\+Store\+::\+Event\+Store (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\label{classlcfiplus_1_1EventStore_a1a72eb2332cf2f7c763f484213e29a15}} 
+\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!Clear\+Objects@{Clear\+Objects}}
+\index{Clear\+Objects@{Clear\+Objects}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+\subsubsection{Clear\+Objects()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Event\+Store\+::\+Clear\+Objects (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+Event\+Store\+::\+Stored\+Entry\+::classname, lcfiplus\+::\+Event\+Store\+::\+Stored\+Entry\+::flag, and lcfiplus\+::\+Event\+Store\+::\+Stored\+Entry\+::obj.
+
+\mbox{\label{classlcfiplus_1_1EventStore_a2f3b1c1b873b33a9a46ca5500a57a81a}} 
+\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!Count@{Count}}
+\index{Count@{Count}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+\subsubsection{Count()}
+{\footnotesize\ttfamily int lcfiplus\+::\+Event\+Store\+::\+Count (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name }\end{DoxyParamCaption}) const}
+
+\mbox{\label{classlcfiplus_1_1EventStore_a7cbfced3e34a050ee4762e3b4aaf6f88}} 
+\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!Get@{Get}}
+\index{Get@{Get}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+\subsubsection{Get()\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+bool lcfiplus\+::\+Event\+Store\+::\+Get (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{const vector$<$ const T $\ast$$>$ $\ast$\&}]{buf }\end{DoxyParamCaption}) const}
+
+
+
+Referenced by lcfiplus\+::\+Jet\+Clustering\+::init(), lcfiplus\+::\+Build\+Up\+Vertex\+::process(), lcfiplus\+::\+Jet\+Clustering\+::process(), lcfiplus\+::\+Z\+H\+H\+Algo\+::process(), lcfiplus\+::\+Test\+Algo\+::process(), lcfiplus\+::\+Vertex\+Analysis\+::process(), lcfiplus\+::\+Flavtag\+Reader\+::process(), and lcfiplus\+::\+Test\+Algo\+V0\+::process().
+
+\mbox{\label{classlcfiplus_1_1EventStore_aab910e7b7998e595b2778f3dceb02c18}} 
+\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!Get@{Get}}
+\index{Get@{Get}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+\subsubsection{Get()\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+bool lcfiplus\+::\+Event\+Store\+::\+Get (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{const vector$<$ T $\ast$$>$ $\ast$\&}]{buf }\end{DoxyParamCaption}) const}
+
+\mbox{\label{classlcfiplus_1_1EventStore_a8c3ccc5bc390123d70eaa14a83797553}} 
+\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!Get@{Get}}
+\index{Get@{Get}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+\subsubsection{Get()\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+bool lcfiplus\+::\+Event\+Store\+::\+Get (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{const vector$<$ T $>$ $\ast$\&}]{buf }\end{DoxyParamCaption}) const}
+
+\mbox{\label{classlcfiplus_1_1EventStore_a5342da6d95b22884d6e03d91d039d2ed}} 
+\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!Get@{Get}}
+\index{Get@{Get}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+\subsubsection{Get()\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+bool lcfiplus\+::\+Event\+Store\+::\+Get (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{const T $\ast$\&}]{buf }\end{DoxyParamCaption}) const}
+
+\mbox{\label{classlcfiplus_1_1EventStore_a080c2bfd8bc996b8f86f384fb7476750}} 
+\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!Get\+Class\+Name@{Get\+Class\+Name}}
+\index{Get\+Class\+Name@{Get\+Class\+Name}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+\subsubsection{Get\+Class\+Name()}
+{\footnotesize\ttfamily const char $\ast$ lcfiplus\+::\+Event\+Store\+::\+Get\+Class\+Name (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{int}]{idx = {\ttfamily 0} }\end{DoxyParamCaption}) const}
+
+
+
+Referenced by lcfiplus\+::\+Tree\+Storer\+::\+Register().
+
+\mbox{\label{classlcfiplus_1_1EventStore_aeb2c132766ea83c19127a6bad0981721}} 
+\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!Get\+Object@{Get\+Object}}
+\index{Get\+Object@{Get\+Object}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+\subsubsection{Get\+Object()}
+{\footnotesize\ttfamily void $\ast$ lcfiplus\+::\+Event\+Store\+::\+Get\+Object (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{const char $\ast$}]{classname = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption}) const}
+
+
+
+Referenced by lcfiplus\+::\+Event\+::get\+Primary\+Vertex(), and lcfiplus\+::\+Tree\+Storer\+::\+Register().
+
+\mbox{\label{classlcfiplus_1_1EventStore_a8065e0d7825b3350d020819d56220810}} 
+\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!Get\+Object\+Map@{Get\+Object\+Map}}
+\index{Get\+Object\+Map@{Get\+Object\+Map}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+\subsubsection{Get\+Object\+Map()}
+{\footnotesize\ttfamily const multimap$<$string, \textbf{ lcfiplus\+::\+Event\+Store\+::\+Stored\+Entry} $>$\& lcfiplus\+::\+Event\+Store\+::\+Get\+Object\+Map (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by lcfiplus\+::\+L\+C\+I\+O\+Storer\+::\+Auto\+Convert().
+
+\mbox{\label{classlcfiplus_1_1EventStore_af605bbfd684ce4ea9627a0fc072413af}} 
+\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!Get\+Object\+Ref@{Get\+Object\+Ref}}
+\index{Get\+Object\+Ref@{Get\+Object\+Ref}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+\subsubsection{Get\+Object\+Ref()}
+{\footnotesize\ttfamily void $\ast$const  \& lcfiplus\+::\+Event\+Store\+::\+Get\+Object\+Ref (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{const char $\ast$}]{classname = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Referenced by lcfiplus\+::\+Event\+::get\+Jets(), lcfiplus\+::\+Event\+::get\+M\+C\+Color\+Singlets(), lcfiplus\+::\+Event\+::get\+M\+C\+Particles(), lcfiplus\+::\+Event\+::get\+Neutrals(), lcfiplus\+::\+Event\+::get\+Secondary\+Vertices(), and lcfiplus\+::\+Event\+::get\+Tracks().
+
+\mbox{\label{classlcfiplus_1_1EventStore_a7c12c4a6c6d9f3e9bd07becf9cb7e93e}} 
+\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!Is\+Exist@{Is\+Exist}}
+\index{Is\+Exist@{Is\+Exist}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+\subsubsection{Is\+Exist()\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily bool lcfiplus\+::\+Event\+Store\+::\+Is\+Exist (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1EventStore_a1bbeb40042a0dbefe71628f9bbaae21e}} 
+\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!Is\+Exist@{Is\+Exist}}
+\index{Is\+Exist@{Is\+Exist}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+\subsubsection{Is\+Exist()\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily bool lcfiplus\+::\+Event\+Store\+::\+Is\+Exist (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{const char $\ast$}]{classname }\end{DoxyParamCaption}) const}
+
+\mbox{\label{classlcfiplus_1_1EventStore_a7469c836d7dea9c4f7078a84a637e519}} 
+\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!Print@{Print}}
+\index{Print@{Print}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+\subsubsection{Print()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Event\+Store\+::\+Print (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\mbox{\label{classlcfiplus_1_1EventStore_a9e19b9886d348e1f0ba859b2129e5f93}} 
+\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!Register@{Register}}
+\index{Register@{Register}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+\subsubsection{Register()\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+bool lcfiplus\+::\+Event\+Store\+::\+Register (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{vector$<$ T $\ast$$>$ $\ast$\&}]{buf,  }\item[{int}]{flags = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Mass\+Recovery\+::init(), lcfiplus\+::\+Primary\+Vertex\+Finder\+::init(), lcfiplus\+::\+Vertex\+Findingwith\+D\+L\+::init(), lcfiplus\+::\+Build\+Up\+Vertex\+::init(), lcfiplus\+::\+Jet\+Clustering\+::init(), and lcfiplus\+::\+Jet\+Vertex\+Refiner\+::init().
+
+\mbox{\label{classlcfiplus_1_1EventStore_a9eef473240c352825b5922e754910549}} 
+\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!Register@{Register}}
+\index{Register@{Register}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+\subsubsection{Register()\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+bool lcfiplus\+::\+Event\+Store\+::\+Register (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{vector$<$ T $>$ $\ast$\&}]{buf,  }\item[{int}]{flags = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+\mbox{\label{classlcfiplus_1_1EventStore_afe257c1895c21c377618b33969d1b5f1}} 
+\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!Register@{Register}}
+\index{Register@{Register}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+\subsubsection{Register()\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+bool lcfiplus\+::\+Event\+Store\+::\+Register (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{T $\ast$\&}]{buf,  }\item[{int}]{flags = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+\mbox{\label{classlcfiplus_1_1EventStore_aece2d39bd060a0203c9f2500d134c163}} 
+\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!Register\+Object@{Register\+Object}}
+\index{Register\+Object@{Register\+Object}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+\subsubsection{Register\+Object()}
+{\footnotesize\ttfamily void $\ast$ lcfiplus\+::\+Event\+Store\+::\+Register\+Object (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{const char $\ast$}]{classname,  }\item[{int}]{flags = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+Referenced by lcfiplus\+::\+Tree\+Storer\+::\+Register().
+
+\mbox{\label{classlcfiplus_1_1EventStore_a625ea9622ba8fcf5d60f64f4d6af27f8}} 
+\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!Register\+Observer@{Register\+Observer}}
+\index{Register\+Observer@{Register\+Observer}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+\subsubsection{Register\+Observer()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Event\+Store\+::\+Register\+Observer (\begin{DoxyParamCaption}\item[{\textbf{ Event\+Store\+Observer} $\ast$}]{observer }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1EventStore_af8933131ed4cee27b7169f03aa6153a9}} 
+\index{lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}!Unregister\+Observer@{Unregister\+Observer}}
+\index{Unregister\+Observer@{Unregister\+Observer}!lcfiplus\+::\+Event\+Store@{lcfiplus\+::\+Event\+Store}}
+\subsubsection{Unregister\+Observer()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Event\+Store\+::\+Unregister\+Observer (\begin{DoxyParamCaption}\item[{\textbf{ Event\+Store\+Observer} $\ast$}]{observer }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ Event\+Store.\+h}\item 
+\textbf{ Event\+Store.\+cc}\end{DoxyCompactItemize}

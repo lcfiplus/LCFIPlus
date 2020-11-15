@@ -1,0 +1,106 @@
+\section{lcfiplus\+:\+:Flavor\+Tag Class Reference}
+\label{classlcfiplus_1_1FlavorTag}\index{lcfiplus\+::\+Flavor\+Tag@{lcfiplus\+::\+Flavor\+Tag}}
+
+
+Controls the event data and registers and holds algorithms for the computation of flavor tagging variables.  
+
+
+
+
+{\ttfamily \#include $<$Flavor\+Tag.\+h$>$}
+
+Inheritance diagram for lcfiplus\+:\+:Flavor\+Tag\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classlcfiplus_1_1FlavorTag}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\textbf{ Flavor\+Tag} ()
+\item 
+virtual \textbf{ $\sim$\+Flavor\+Tag} ()
+\item 
+void \textbf{ init} (\textbf{ Parameters} $\ast$param)
+\item 
+void \textbf{ process} ()
+\item 
+void \textbf{ end} ()
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Controls the event data and registers and holds algorithms for the computation of flavor tagging variables. 
+
+This algorithm must be included in the algorithm tag of the X\+ML steering file when using any of the flavor tagging features, e.\+g. ntuple production, T\+M\+VA training, and evaluation.
+
+\begin{DoxyAuthor}{Author}
+T. Tanabe, I\+C\+E\+PP, The University of Tokyo 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+\$\+Id\$ 
+\end{DoxyVersion}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\label{classlcfiplus_1_1FlavorTag_a14c03cd001e5a3f7899b9cc4c3d03f39}} 
+\index{lcfiplus\+::\+Flavor\+Tag@{lcfiplus\+::\+Flavor\+Tag}!Flavor\+Tag@{Flavor\+Tag}}
+\index{Flavor\+Tag@{Flavor\+Tag}!lcfiplus\+::\+Flavor\+Tag@{lcfiplus\+::\+Flavor\+Tag}}
+\subsubsection{Flavor\+Tag()}
+{\footnotesize\ttfamily lcfiplus\+::\+Flavor\+Tag\+::\+Flavor\+Tag (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1FlavorTag_ad8077e1d901a7ea3c4f1c6e92a032320}} 
+\index{lcfiplus\+::\+Flavor\+Tag@{lcfiplus\+::\+Flavor\+Tag}!````~Flavor\+Tag@{$\sim$\+Flavor\+Tag}}
+\index{````~Flavor\+Tag@{$\sim$\+Flavor\+Tag}!lcfiplus\+::\+Flavor\+Tag@{lcfiplus\+::\+Flavor\+Tag}}
+\subsubsection{$\sim$\+Flavor\+Tag()}
+{\footnotesize\ttfamily virtual lcfiplus\+::\+Flavor\+Tag\+::$\sim$\+Flavor\+Tag (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\label{classlcfiplus_1_1FlavorTag_abd9ac826b60d9c51d3ed8d7cf02de074}} 
+\index{lcfiplus\+::\+Flavor\+Tag@{lcfiplus\+::\+Flavor\+Tag}!end@{end}}
+\index{end@{end}!lcfiplus\+::\+Flavor\+Tag@{lcfiplus\+::\+Flavor\+Tag}}
+\subsubsection{end()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Flavor\+Tag\+::end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \textbf{ lcfiplus\+::\+Algorithm} \doxyref{}{p.}{classlcfiplus_1_1Algorithm_a4276b93869d614f59eef92b8c728ef60}.
+
+\mbox{\label{classlcfiplus_1_1FlavorTag_aa872596e47fd0e4ac56b70e144d9408e}} 
+\index{lcfiplus\+::\+Flavor\+Tag@{lcfiplus\+::\+Flavor\+Tag}!init@{init}}
+\index{init@{init}!lcfiplus\+::\+Flavor\+Tag@{lcfiplus\+::\+Flavor\+Tag}}
+\subsubsection{init()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Flavor\+Tag\+::init (\begin{DoxyParamCaption}\item[{\textbf{ Parameters} $\ast$}]{param }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \textbf{ lcfiplus\+::\+Algorithm} \doxyref{}{p.}{classlcfiplus_1_1Algorithm_a178a273b9976b87f182190f4250cac9e}.
+
+
+
+References lcfiplus\+::\+Parameters\+::get(), lcfiplus\+::\+F\+T\+Manager\+::get\+Instance(), lcfiplus\+::\+Algorithm\+::init(), lcfiplus\+::\+F\+T\+Manager\+::init\+Vars(), lcfiplus\+::\+Event\+::\+Instance(), and lcfiplus\+::\+Event\+::set\+Default\+Primary\+Vertex().
+
+\mbox{\label{classlcfiplus_1_1FlavorTag_a44be9eb8162b2daabd06907c39098d33}} 
+\index{lcfiplus\+::\+Flavor\+Tag@{lcfiplus\+::\+Flavor\+Tag}!process@{process}}
+\index{process@{process}!lcfiplus\+::\+Flavor\+Tag@{lcfiplus\+::\+Flavor\+Tag}}
+\subsubsection{process()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Flavor\+Tag\+::process (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Implements \textbf{ lcfiplus\+::\+Algorithm} \doxyref{}{p.}{classlcfiplus_1_1Algorithm_a628e1509b55b2cda1e2640b58be6ce6f}.
+
+
+
+References lcfiplus\+::\+F\+T\+Manager\+::get\+Instance(), lcfiplus\+::\+Event\+::\+Instance(), lcfiplus\+::\+F\+T\+Manager\+::process(), lcfiplus\+::\+F\+T\+Manager\+::set\+Auxiliary(), and lcfiplus\+::\+F\+T\+Manager\+::set\+I\+P\+Prob\+Holder().
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ Flavor\+Tag.\+h}\item 
+\textbf{ Flavor\+Tag.\+cc}\end{DoxyCompactItemize}

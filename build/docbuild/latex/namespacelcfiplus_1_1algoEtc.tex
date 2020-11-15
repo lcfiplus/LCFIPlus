@@ -1,0 +1,120 @@
+\section{lcfiplus\+:\+:algo\+Etc Namespace Reference}
+\label{namespacelcfiplus_1_1algoEtc}\index{lcfiplus\+::algo\+Etc@{lcfiplus\+::algo\+Etc}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \textbf{ make\+Beam\+Tracks} (\textbf{ Track} $\ast$\&t1, \textbf{ Track} $\ast$\&t2, bool smear=true)
+\item 
+void \textbf{ make\+Beam\+Vertex} (\textbf{ Vertex} $\ast$\&vtx, bool smear=true)
+\item 
+void \textbf{ connect\+Vertices\+To\+Jets} (const \textbf{ Jet\+Vec} \&jets, const vector$<$ \textbf{ Vertex} $\ast$$>$ \&vtcs, vector$<$ vector$<$ \textbf{ Vertex} $\ast$$>$ $>$ \&jet\+Vertices, vector$<$ vector$<$ const \textbf{ Track} $\ast$$>$ $>$ \&jet\+Residual\+Tracks, const \textbf{ Vertex} $\ast$ip=0)
+\item 
+vector$<$ const \textbf{ Track} $\ast$ $>$ \textbf{ extract\+Tracks} (\textbf{ Vertex\+Vec} \&vtx)
+\item 
+double \textbf{ calc\+Thrust} (vector$<$ T\+Vector3 $>$ \&list, T\+Vector3 \&taxis)
+\item 
+bool \textbf{ Simple\+Sec\+Muon\+Finder} (const \textbf{ Track} $\ast$tr, double d0sigth, double z0sigth, double maxpos, double mudepmin, double ecaldepmin, double ecaldepmax, double hcaldepmin, double hcaldepmax, double maxclusterpertrackenergy=10., const \textbf{ Vertex} $\ast$ip=0)
+\item 
+bool \textbf{ Simple\+Sec\+Electron\+Finder} (const \textbf{ Track} $\ast$tr, double d0sigth, double z0sigth, double maxpos, double emin, double minfracecal, double minecalpertrackenergy, double maxecalpertrackenergy, const \textbf{ Vertex} $\ast$ip=0)
+\item 
+int \textbf{ min} (int a, int b)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\mbox{\label{namespacelcfiplus_1_1algoEtc_a0ef5e0af0d59d32c2ebdd05a99128eb6}} 
+\index{lcfiplus\+::algo\+Etc@{lcfiplus\+::algo\+Etc}!calc\+Thrust@{calc\+Thrust}}
+\index{calc\+Thrust@{calc\+Thrust}!lcfiplus\+::algo\+Etc@{lcfiplus\+::algo\+Etc}}
+\subsubsection{calc\+Thrust()}
+{\footnotesize\ttfamily double lcfiplus\+::algo\+Etc\+::calc\+Thrust (\begin{DoxyParamCaption}\item[{vector$<$ T\+Vector3 $>$ \&}]{list,  }\item[{T\+Vector3 \&}]{taxis }\end{DoxyParamCaption})}
+
+
+
+References min().
+
+
+
+Referenced by lcfiplus\+::\+Z\+H\+H\+Algo\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1algoEtc_a7328dfd3eef6db40f96b389c6c39d555}} 
+\index{lcfiplus\+::algo\+Etc@{lcfiplus\+::algo\+Etc}!connect\+Vertices\+To\+Jets@{connect\+Vertices\+To\+Jets}}
+\index{connect\+Vertices\+To\+Jets@{connect\+Vertices\+To\+Jets}!lcfiplus\+::algo\+Etc@{lcfiplus\+::algo\+Etc}}
+\subsubsection{connect\+Vertices\+To\+Jets()}
+{\footnotesize\ttfamily void lcfiplus\+::algo\+Etc\+::connect\+Vertices\+To\+Jets (\begin{DoxyParamCaption}\item[{const \textbf{ Jet\+Vec} \&}]{jets,  }\item[{const vector$<$ \textbf{ Vertex} $\ast$$>$ \&}]{vtcs,  }\item[{vector$<$ vector$<$ \textbf{ Vertex} $\ast$$>$ $>$ \&}]{jet\+Vertices,  }\item[{vector$<$ vector$<$ const \textbf{ Track} $\ast$$>$ $>$ \&}]{jet\+Residual\+Tracks,  }\item[{const \textbf{ Vertex} $\ast$}]{ip = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+References extract\+Tracks(), and lcfiplus\+::\+Vertex\+::get\+Tracks().
+
+\mbox{\label{namespacelcfiplus_1_1algoEtc_a48f75f12d0bf702688e2824e35ee283c}} 
+\index{lcfiplus\+::algo\+Etc@{lcfiplus\+::algo\+Etc}!extract\+Tracks@{extract\+Tracks}}
+\index{extract\+Tracks@{extract\+Tracks}!lcfiplus\+::algo\+Etc@{lcfiplus\+::algo\+Etc}}
+\subsubsection{extract\+Tracks()}
+{\footnotesize\ttfamily vector$<$ const \textbf{ Track} $\ast$ $>$ lcfiplus\+::algo\+Etc\+::extract\+Tracks (\begin{DoxyParamCaption}\item[{\textbf{ Vertex\+Vec} \&}]{vtx }\end{DoxyParamCaption})}
+
+
+
+Referenced by connect\+Vertices\+To\+Jets().
+
+\mbox{\label{namespacelcfiplus_1_1algoEtc_a41719db5de88ab2db9315924620f9ae3}} 
+\index{lcfiplus\+::algo\+Etc@{lcfiplus\+::algo\+Etc}!make\+Beam\+Tracks@{make\+Beam\+Tracks}}
+\index{make\+Beam\+Tracks@{make\+Beam\+Tracks}!lcfiplus\+::algo\+Etc@{lcfiplus\+::algo\+Etc}}
+\subsubsection{make\+Beam\+Tracks()}
+{\footnotesize\ttfamily void lcfiplus\+::algo\+Etc\+::make\+Beam\+Tracks (\begin{DoxyParamCaption}\item[{\textbf{ Track} $\ast$\&}]{t1,  }\item[{\textbf{ Track} $\ast$\&}]{t2,  }\item[{bool}]{smear = {\ttfamily true} }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::tpar\+::covN, lcfiplus\+::tpar\+::d0, lcfiplus\+::tpar\+::d0d0, lcfiplus\+::\+Globals\+::get\+Beam\+Size\+X(), lcfiplus\+::\+Globals\+::get\+Beam\+Size\+Z(), lcfiplus\+::\+Globals\+::get\+B\+Field(), lcfiplus\+::\+Globals\+::\+Instance(), lcfiplus\+::tpar\+::om, lcfiplus\+::tpar\+::omom, lcfiplus\+::tpar\+::parN, lcfiplus\+::tpar\+::ph, lcfiplus\+::tpar\+::phph, lcfiplus\+::\+Track\+::set\+Cov\+Matrix(), lcfiplus\+::\+Track\+::set\+Helix(), lcfiplus\+::\+Track\+::set\+Id(), lcfiplus\+::tpar\+::td, lcfiplus\+::tpar\+::tdtd, lcfiplus\+::tpar\+::z0, and lcfiplus\+::tpar\+::z0z0.
+
+\mbox{\label{namespacelcfiplus_1_1algoEtc_a4a38aaaefd3e8503824ccf9d81237723}} 
+\index{lcfiplus\+::algo\+Etc@{lcfiplus\+::algo\+Etc}!make\+Beam\+Vertex@{make\+Beam\+Vertex}}
+\index{make\+Beam\+Vertex@{make\+Beam\+Vertex}!lcfiplus\+::algo\+Etc@{lcfiplus\+::algo\+Etc}}
+\subsubsection{make\+Beam\+Vertex()}
+{\footnotesize\ttfamily void lcfiplus\+::algo\+Etc\+::make\+Beam\+Vertex (\begin{DoxyParamCaption}\item[{\textbf{ Vertex} $\ast$\&}]{vtx,  }\item[{bool}]{smear = {\ttfamily true} }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+Globals\+::get\+Beam\+Size\+X(), lcfiplus\+::\+Globals\+::get\+Beam\+Size\+Y(), lcfiplus\+::\+Globals\+::get\+Beam\+Size\+Z(), lcfiplus\+::\+Globals\+::\+Instance(), lcfiplus\+::\+Vertex\+::xx, lcfiplus\+::\+Vertex\+::xy, lcfiplus\+::\+Vertex\+::xz, lcfiplus\+::\+Vertex\+::yy, lcfiplus\+::\+Vertex\+::yz, and lcfiplus\+::\+Vertex\+::zz.
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Finder\+Suehara\+::associate\+I\+P\+Tracks\+A\+V\+F(), lcfiplus\+::find\+Primary\+Vertex(), and test\+Tomohiko().
+
+\mbox{\label{namespacelcfiplus_1_1algoEtc_aae88816dd58310d90c39512aa706c2ba}} 
+\index{lcfiplus\+::algo\+Etc@{lcfiplus\+::algo\+Etc}!min@{min}}
+\index{min@{min}!lcfiplus\+::algo\+Etc@{lcfiplus\+::algo\+Etc}}
+\subsubsection{min()}
+{\footnotesize\ttfamily int lcfiplus\+::algo\+Etc\+::min (\begin{DoxyParamCaption}\item[{int}]{a,  }\item[{int}]{b }\end{DoxyParamCaption})}
+
+
+
+Referenced by calc\+Thrust(), lcfiplus\+::\+Helix\+::\+Close\+Point(), lcfiplus\+::\+Jet\+Finder\+::func\+Durham(), lcfiplus\+::\+Jet\+Finder\+::func\+Durham\+Cheat(), lcfiplus\+::\+Jet\+Finder\+::func\+Kt(), lcfiplus\+::\+Jet\+Finder\+::func\+Valencia(), lcfiplus\+::\+Vertex\+Finder\+Suehara\+::\+Get\+Vertex\+List(), lcfiplus\+::\+Helix\+::\+Log\+Likelihood(), lcfiplus\+::\+Vertex\+Line\+::\+Log\+Likelihood(), lcfiplus\+::\+Geometry\+Handler\+::\+Point\+Fit(), lcfiplus\+::\+Make\+R\+O\+O\+T\+File\+C\+C\+::process(), lcfiplus\+::\+Make\+R\+O\+O\+T\+File\+B\+B\+::process(), and lcfiplus\+::\+Jet\+Finder\+::run().
+
+\mbox{\label{namespacelcfiplus_1_1algoEtc_a928ed8058f3609e3bed237387067dc9c}} 
+\index{lcfiplus\+::algo\+Etc@{lcfiplus\+::algo\+Etc}!Simple\+Sec\+Electron\+Finder@{Simple\+Sec\+Electron\+Finder}}
+\index{Simple\+Sec\+Electron\+Finder@{Simple\+Sec\+Electron\+Finder}!lcfiplus\+::algo\+Etc@{lcfiplus\+::algo\+Etc}}
+\subsubsection{Simple\+Sec\+Electron\+Finder()}
+{\footnotesize\ttfamily bool lcfiplus\+::algo\+Etc\+::\+Simple\+Sec\+Electron\+Finder (\begin{DoxyParamCaption}\item[{const \textbf{ Track} $\ast$}]{tr,  }\item[{double}]{d0sigth,  }\item[{double}]{z0sigth,  }\item[{double}]{maxpos,  }\item[{double}]{emin,  }\item[{double}]{minfracecal,  }\item[{double}]{minecalpertrackenergy,  }\item[{double}]{maxecalpertrackenergy,  }\item[{const \textbf{ Vertex} $\ast$}]{ip = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::tpar\+::d0d0, lcfiplus\+::tpar\+::ecal, lcfiplus\+::\+Track\+::get\+Calo\+Edep(), lcfiplus\+::\+Track\+::get\+Cov\+Matrix(), lcfiplus\+::\+Track\+::get\+D0(), lcfiplus\+::\+Vertex\+::get\+Z(), lcfiplus\+::\+Track\+::get\+Z0(), lcfiplus\+::tpar\+::hcal, lcfiplus\+::tpar\+::z0, and lcfiplus\+::tpar\+::z0z0.
+
+
+
+Referenced by lcfiplus\+::\+Ft\+N\+Electron\+::process().
+
+\mbox{\label{namespacelcfiplus_1_1algoEtc_a14bff996c096faffbc15115b9e921d0e}} 
+\index{lcfiplus\+::algo\+Etc@{lcfiplus\+::algo\+Etc}!Simple\+Sec\+Muon\+Finder@{Simple\+Sec\+Muon\+Finder}}
+\index{Simple\+Sec\+Muon\+Finder@{Simple\+Sec\+Muon\+Finder}!lcfiplus\+::algo\+Etc@{lcfiplus\+::algo\+Etc}}
+\subsubsection{Simple\+Sec\+Muon\+Finder()}
+{\footnotesize\ttfamily bool lcfiplus\+::algo\+Etc\+::\+Simple\+Sec\+Muon\+Finder (\begin{DoxyParamCaption}\item[{const \textbf{ Track} $\ast$}]{tr,  }\item[{double}]{d0sigth,  }\item[{double}]{z0sigth,  }\item[{double}]{maxpos,  }\item[{double}]{mudepmin,  }\item[{double}]{ecaldepmin,  }\item[{double}]{ecaldepmax,  }\item[{double}]{hcaldepmin,  }\item[{double}]{hcaldepmax,  }\item[{double}]{maxclusterpertrackenergy = {\ttfamily 10.},  }\item[{const \textbf{ Vertex} $\ast$}]{ip = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::tpar\+::d0d0, lcfiplus\+::tpar\+::ecal, lcfiplus\+::\+Track\+::get\+Calo\+Edep(), lcfiplus\+::\+Track\+::get\+Cov\+Matrix(), lcfiplus\+::\+Track\+::get\+D0(), lcfiplus\+::\+Vertex\+::get\+Z(), lcfiplus\+::\+Track\+::get\+Z0(), lcfiplus\+::tpar\+::hcal, lcfiplus\+::tpar\+::yoke, lcfiplus\+::tpar\+::z0, and lcfiplus\+::tpar\+::z0z0.
+
+
+
+Referenced by lcfiplus\+::\+Jet\+Finder\+::prerun(), and lcfiplus\+::\+Ft\+N\+Muon\+::process().
+

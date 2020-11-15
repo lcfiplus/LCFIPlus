@@ -1,0 +1,260 @@
+\section{lcfiplus\+:\+:Read\+M\+VA Class Reference}
+\label{classlcfiplus_1_1ReadMVA}\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+
+
+Lcfiplus algorithm for reading training data from T\+M\+VA.  
+
+
+
+
+{\ttfamily \#include $<$Read\+M\+V\+A.\+h$>$}
+
+Inheritance diagram for lcfiplus\+:\+:Read\+M\+VA\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classlcfiplus_1_1ReadMVA}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\textbf{ Read\+M\+VA} ()
+\item 
+\textbf{ $\sim$\+Read\+M\+VA} ()
+\item 
+void \textbf{ init} (\textbf{ Parameters} $\ast$param)
+\item 
+void \textbf{ process} ()
+\item 
+void \textbf{ end} ()
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\textbf{ Class\+Def} (\textbf{ Read\+M\+VA}, 1)
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+bool \textbf{ \+\_\+verbose}
+\item 
+T\+String \textbf{ \+\_\+input\+FileB}
+\item 
+T\+String \textbf{ \+\_\+input\+FileC}
+\item 
+T\+String \textbf{ \+\_\+input\+FileO}
+\item 
+T\+String \textbf{ \+\_\+tree\+NameB}
+\item 
+T\+String \textbf{ \+\_\+tree\+NameC}
+\item 
+T\+String \textbf{ \+\_\+tree\+NameO}
+\item 
+T\+String \textbf{ \+\_\+cutB}
+\item 
+T\+String \textbf{ \+\_\+cutC}
+\item 
+T\+String \textbf{ \+\_\+cutO}
+\item 
+T\+String \textbf{ \+\_\+output\+Directory}
+\item 
+T\+String \textbf{ \+\_\+output\+Prefix}
+\item 
+T\+String \textbf{ \+\_\+tree\+Name}
+\item 
+T\+M\+V\+A\+::\+Types\+::\+E\+M\+VA \textbf{ \+\_\+tmva\+Book\+Type}
+\item 
+T\+String \textbf{ \+\_\+tmva\+Book\+Name}
+\item 
+T\+String \textbf{ \+\_\+tmva\+Book\+Options}
+\item 
+vector$<$ \textbf{ Flavtag\+Category} $>$ \textbf{ \+\_\+categories}
+\item 
+vector$<$ T\+M\+V\+A\+::\+Reader $\ast$ $>$ \textbf{ \+\_\+readers}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Lcfiplus algorithm for reading training data from T\+M\+VA. 
+
+\begin{DoxyAuthor}{Author}
+T. Tanabe, I\+C\+E\+PP, The University of Tokyo 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+\$\+Id\$ 
+\end{DoxyVersion}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\label{classlcfiplus_1_1ReadMVA_ae860199a001915dea46167374ee16445}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!Read\+M\+VA@{Read\+M\+VA}}
+\index{Read\+M\+VA@{Read\+M\+VA}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{Read\+M\+V\+A()}
+{\footnotesize\ttfamily lcfiplus\+::\+Read\+M\+V\+A\+::\+Read\+M\+VA (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1ReadMVA_aa4bc1809d78357466654485d5146183d}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!````~Read\+M\+VA@{$\sim$\+Read\+M\+VA}}
+\index{````~Read\+M\+VA@{$\sim$\+Read\+M\+VA}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{$\sim$\+Read\+M\+V\+A()}
+{\footnotesize\ttfamily lcfiplus\+::\+Read\+M\+V\+A\+::$\sim$\+Read\+M\+VA (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\label{classlcfiplus_1_1ReadMVA_a7f96fb19218eb3eb9410212142e967e0}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!Class\+Def@{Class\+Def}}
+\index{Class\+Def@{Class\+Def}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{Class\+Def()}
+{\footnotesize\ttfamily lcfiplus\+::\+Read\+M\+V\+A\+::\+Class\+Def (\begin{DoxyParamCaption}\item[{\textbf{ Read\+M\+VA}}]{,  }\item[{1}]{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\label{classlcfiplus_1_1ReadMVA_a897b05f08ac46041c404391c12c9d41c}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!end@{end}}
+\index{end@{end}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{end()}
+{\footnotesize\ttfamily void Read\+M\+V\+A\+::end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \textbf{ lcfiplus\+::\+Algorithm} \doxyref{}{p.}{classlcfiplus_1_1Algorithm_a4276b93869d614f59eef92b8c728ef60}.
+
+\mbox{\label{classlcfiplus_1_1ReadMVA_a14c659f3c03cead1f981302e1ff46496}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!init@{init}}
+\index{init@{init}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{init()}
+{\footnotesize\ttfamily void Read\+M\+V\+A\+::init (\begin{DoxyParamCaption}\item[{\textbf{ Parameters} $\ast$}]{param }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \textbf{ lcfiplus\+::\+Algorithm} \doxyref{}{p.}{classlcfiplus_1_1Algorithm_a178a273b9976b87f182190f4250cac9e}.
+
+
+
+References lcfiplus\+::\+F\+T\+Manager\+::add\+Reader(), lcfiplus\+::\+Flavtag\+Category\+::definition, lcfiplus\+::\+Parameters\+::fetch\+Array(), lcfiplus\+::\+Parameters\+::get(), lcfiplus\+::\+F\+T\+Manager\+::get\+Instance(), lcfiplus\+::\+F\+T\+Manager\+::get\+Var\+Address(), lcfiplus\+::\+Algorithm\+::init(), lcfiplus\+::\+F\+T\+Manager\+::open\+Tree(), lcfiplus\+::\+Flavtag\+Category\+::preselection, lcfiplus\+::\+F\+T\+Manager\+::set\+Eval(), lcfiplus\+::\+F\+T\+Manager\+::set\+Param\+Name(), lcfiplus\+::\+Flavtag\+Category\+::spec, and lcfiplus\+::\+Flavtag\+Category\+::vars.
+
+\mbox{\label{classlcfiplus_1_1ReadMVA_a71eb4cee7adb1cf0a8bbe94f28896a56}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!process@{process}}
+\index{process@{process}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{process()}
+{\footnotesize\ttfamily void Read\+M\+V\+A\+::process (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Implements \textbf{ lcfiplus\+::\+Algorithm} \doxyref{}{p.}{classlcfiplus_1_1Algorithm_a628e1509b55b2cda1e2640b58be6ce6f}.
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\label{classlcfiplus_1_1ReadMVA_a1a05261a6eedcf0d5c7533506c04bb9d}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!\+\_\+categories@{\+\_\+categories}}
+\index{\+\_\+categories@{\+\_\+categories}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{\+\_\+categories}
+{\footnotesize\ttfamily vector$<$\textbf{ Flavtag\+Category}$>$ lcfiplus\+::\+Read\+M\+V\+A\+::\+\_\+categories\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\label{classlcfiplus_1_1ReadMVA_ac35f67fa7a716a63f237f7d123e38bb2}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!\+\_\+cutB@{\+\_\+cutB}}
+\index{\+\_\+cutB@{\+\_\+cutB}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{\+\_\+cutB}
+{\footnotesize\ttfamily T\+String lcfiplus\+::\+Read\+M\+V\+A\+::\+\_\+cutB\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\label{classlcfiplus_1_1ReadMVA_a7d69f94ce747e0cd993c30453d6fc7a2}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!\+\_\+cutC@{\+\_\+cutC}}
+\index{\+\_\+cutC@{\+\_\+cutC}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{\+\_\+cutC}
+{\footnotesize\ttfamily T\+String lcfiplus\+::\+Read\+M\+V\+A\+::\+\_\+cutC\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\label{classlcfiplus_1_1ReadMVA_a5e03d6ea914657af9eed5e1cad0c987e}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!\+\_\+cutO@{\+\_\+cutO}}
+\index{\+\_\+cutO@{\+\_\+cutO}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{\+\_\+cutO}
+{\footnotesize\ttfamily T\+String lcfiplus\+::\+Read\+M\+V\+A\+::\+\_\+cutO\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\label{classlcfiplus_1_1ReadMVA_aa4c5de05e2d3da16f7c338c929d36184}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!\+\_\+input\+FileB@{\+\_\+input\+FileB}}
+\index{\+\_\+input\+FileB@{\+\_\+input\+FileB}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{\+\_\+input\+FileB}
+{\footnotesize\ttfamily T\+String lcfiplus\+::\+Read\+M\+V\+A\+::\+\_\+input\+FileB\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\label{classlcfiplus_1_1ReadMVA_a1bc01f6b531ed0aceac5da2f033f3bf4}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!\+\_\+input\+FileC@{\+\_\+input\+FileC}}
+\index{\+\_\+input\+FileC@{\+\_\+input\+FileC}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{\+\_\+input\+FileC}
+{\footnotesize\ttfamily T\+String lcfiplus\+::\+Read\+M\+V\+A\+::\+\_\+input\+FileC\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\label{classlcfiplus_1_1ReadMVA_affbbc85adbb3b272b0788cb916de7652}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!\+\_\+input\+FileO@{\+\_\+input\+FileO}}
+\index{\+\_\+input\+FileO@{\+\_\+input\+FileO}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{\+\_\+input\+FileO}
+{\footnotesize\ttfamily T\+String lcfiplus\+::\+Read\+M\+V\+A\+::\+\_\+input\+FileO\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\label{classlcfiplus_1_1ReadMVA_a2598813a37eb111181a2f2865bff6694}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!\+\_\+output\+Directory@{\+\_\+output\+Directory}}
+\index{\+\_\+output\+Directory@{\+\_\+output\+Directory}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{\+\_\+output\+Directory}
+{\footnotesize\ttfamily T\+String lcfiplus\+::\+Read\+M\+V\+A\+::\+\_\+output\+Directory\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\label{classlcfiplus_1_1ReadMVA_a223ec720d0f21e81f84984de4f2e6f0c}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!\+\_\+output\+Prefix@{\+\_\+output\+Prefix}}
+\index{\+\_\+output\+Prefix@{\+\_\+output\+Prefix}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{\+\_\+output\+Prefix}
+{\footnotesize\ttfamily T\+String lcfiplus\+::\+Read\+M\+V\+A\+::\+\_\+output\+Prefix\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\label{classlcfiplus_1_1ReadMVA_aa2399a9fbf59e1ba2cb7938ced608b9d}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!\+\_\+readers@{\+\_\+readers}}
+\index{\+\_\+readers@{\+\_\+readers}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{\+\_\+readers}
+{\footnotesize\ttfamily vector$<$T\+M\+V\+A\+::\+Reader$\ast$$>$ lcfiplus\+::\+Read\+M\+V\+A\+::\+\_\+readers\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\label{classlcfiplus_1_1ReadMVA_a88d494a0909aee1ff7ce8bee68a537c3}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!\+\_\+tmva\+Book\+Name@{\+\_\+tmva\+Book\+Name}}
+\index{\+\_\+tmva\+Book\+Name@{\+\_\+tmva\+Book\+Name}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{\+\_\+tmva\+Book\+Name}
+{\footnotesize\ttfamily T\+String lcfiplus\+::\+Read\+M\+V\+A\+::\+\_\+tmva\+Book\+Name\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\label{classlcfiplus_1_1ReadMVA_a2e586b60109d7de2d4034db8dbafe238}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!\+\_\+tmva\+Book\+Options@{\+\_\+tmva\+Book\+Options}}
+\index{\+\_\+tmva\+Book\+Options@{\+\_\+tmva\+Book\+Options}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{\+\_\+tmva\+Book\+Options}
+{\footnotesize\ttfamily T\+String lcfiplus\+::\+Read\+M\+V\+A\+::\+\_\+tmva\+Book\+Options\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\label{classlcfiplus_1_1ReadMVA_a5dd33a27ba5cd67f8740c065857a621a}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!\+\_\+tmva\+Book\+Type@{\+\_\+tmva\+Book\+Type}}
+\index{\+\_\+tmva\+Book\+Type@{\+\_\+tmva\+Book\+Type}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{\+\_\+tmva\+Book\+Type}
+{\footnotesize\ttfamily T\+M\+V\+A\+::\+Types\+::\+E\+M\+VA lcfiplus\+::\+Read\+M\+V\+A\+::\+\_\+tmva\+Book\+Type\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\label{classlcfiplus_1_1ReadMVA_a5c15b6945b0a920975fc4e82736a5286}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!\+\_\+tree\+Name@{\+\_\+tree\+Name}}
+\index{\+\_\+tree\+Name@{\+\_\+tree\+Name}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{\+\_\+tree\+Name}
+{\footnotesize\ttfamily T\+String lcfiplus\+::\+Read\+M\+V\+A\+::\+\_\+tree\+Name\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\label{classlcfiplus_1_1ReadMVA_a85aa4a20c6806c1e736f7d1efa4ff05f}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!\+\_\+tree\+NameB@{\+\_\+tree\+NameB}}
+\index{\+\_\+tree\+NameB@{\+\_\+tree\+NameB}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{\+\_\+tree\+NameB}
+{\footnotesize\ttfamily T\+String lcfiplus\+::\+Read\+M\+V\+A\+::\+\_\+tree\+NameB\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\label{classlcfiplus_1_1ReadMVA_aa32c07bc6f6aca1a8841f80cd48a5e7c}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!\+\_\+tree\+NameC@{\+\_\+tree\+NameC}}
+\index{\+\_\+tree\+NameC@{\+\_\+tree\+NameC}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{\+\_\+tree\+NameC}
+{\footnotesize\ttfamily T\+String lcfiplus\+::\+Read\+M\+V\+A\+::\+\_\+tree\+NameC\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\label{classlcfiplus_1_1ReadMVA_a8f27678f3d182fb7ebfd1ec21921ece1}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!\+\_\+tree\+NameO@{\+\_\+tree\+NameO}}
+\index{\+\_\+tree\+NameO@{\+\_\+tree\+NameO}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{\+\_\+tree\+NameO}
+{\footnotesize\ttfamily T\+String lcfiplus\+::\+Read\+M\+V\+A\+::\+\_\+tree\+NameO\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\label{classlcfiplus_1_1ReadMVA_ac4eed2c0772386b63baa2cb2f1e21a97}} 
+\index{lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}!\+\_\+verbose@{\+\_\+verbose}}
+\index{\+\_\+verbose@{\+\_\+verbose}!lcfiplus\+::\+Read\+M\+VA@{lcfiplus\+::\+Read\+M\+VA}}
+\subsubsection{\+\_\+verbose}
+{\footnotesize\ttfamily bool lcfiplus\+::\+Read\+M\+V\+A\+::\+\_\+verbose\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ Read\+M\+V\+A.\+h}\item 
+\textbf{ Read\+M\+V\+A.\+cc}\end{DoxyCompactItemize}

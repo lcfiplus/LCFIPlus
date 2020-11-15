@@ -1,0 +1,154 @@
+\section{lcfiplus\+:\+:Point Class Reference}
+\label{classlcfiplus_1_1Point}\index{lcfiplus\+::\+Point@{lcfiplus\+::\+Point}}
+
+
+{\ttfamily \#include $<$geometry.\+h$>$}
+
+Inheritance diagram for lcfiplus\+:\+:Point\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classlcfiplus_1_1Point}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+typedef R\+O\+O\+T\+::\+Math\+::\+S\+Vector$<$ double, 3 $>$ \textbf{ S\+Vector3}
+\item 
+typedef R\+O\+O\+T\+::\+Math\+::\+S\+Matrix$<$ double, 3, 3, R\+O\+O\+T\+::\+Math\+::\+Mat\+Rep\+Sym$<$ double, 3 $>$ $>$ \textbf{ S\+Matrix\+Sym3}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+double \textbf{ Log\+Likelihood} (const T\+Vector3 \&p) const
+\item 
+void \textbf{ Log\+Likelihood\+Deriv} (const T\+Vector3 \&p, double $\ast$output) const
+\item 
+\textbf{ Point} (\textbf{ F\+I\+T\+F\+L\+AG} flag)
+\item 
+\textbf{ Point} (const \textbf{ S\+Vector3} \&pos, const \textbf{ S\+Matrix\+Sym3} \&err, \textbf{ F\+I\+T\+F\+L\+AG} flag)
+\item 
+\textbf{ Point} (const \textbf{ Point} \&ref, \textbf{ F\+I\+T\+F\+L\+AG} flag)
+\item 
+\textbf{ Point} (const \textbf{ Vertex} $\ast$vtx, \textbf{ F\+I\+T\+F\+L\+AG} flag)
+\item 
+\textbf{ $\sim$\+Point} ()
+\item 
+void \textbf{ Set\+Pos\+Err} (const \textbf{ S\+Vector3} \&pos, const \textbf{ S\+Matrix\+Sym3} \&err)
+\item 
+double \textbf{ Get\+Err} (int i, int j) const
+\item 
+T\+Vector3 \textbf{ Get\+Pos} () const
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Member Typedef Documentation}
+\mbox{\label{classlcfiplus_1_1Point_ab34b5e53bc1b949c61d30e555d1964f6}} 
+\index{lcfiplus\+::\+Point@{lcfiplus\+::\+Point}!S\+Matrix\+Sym3@{S\+Matrix\+Sym3}}
+\index{S\+Matrix\+Sym3@{S\+Matrix\+Sym3}!lcfiplus\+::\+Point@{lcfiplus\+::\+Point}}
+\subsubsection{S\+Matrix\+Sym3}
+{\footnotesize\ttfamily typedef R\+O\+O\+T\+::\+Math\+::\+S\+Matrix$<$double, 3,3,R\+O\+O\+T\+::\+Math\+::\+Mat\+Rep\+Sym$<$double,3$>$ $>$ \textbf{ lcfiplus\+::\+Point\+::\+S\+Matrix\+Sym3}}
+
+\mbox{\label{classlcfiplus_1_1Point_aa1caa274330e92944bc50f472355f227}} 
+\index{lcfiplus\+::\+Point@{lcfiplus\+::\+Point}!S\+Vector3@{S\+Vector3}}
+\index{S\+Vector3@{S\+Vector3}!lcfiplus\+::\+Point@{lcfiplus\+::\+Point}}
+\subsubsection{S\+Vector3}
+{\footnotesize\ttfamily typedef R\+O\+O\+T\+::\+Math\+::\+S\+Vector$<$double, 3$>$ \textbf{ lcfiplus\+::\+Point\+::\+S\+Vector3}}
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\label{classlcfiplus_1_1Point_af7475aeff3fdd6957739f46fb4faa73e}} 
+\index{lcfiplus\+::\+Point@{lcfiplus\+::\+Point}!Point@{Point}}
+\index{Point@{Point}!lcfiplus\+::\+Point@{lcfiplus\+::\+Point}}
+\subsubsection{Point()\hspace{0.1cm}{\footnotesize\ttfamily [1/4]}}
+{\footnotesize\ttfamily lcfiplus\+::\+Point\+::\+Point (\begin{DoxyParamCaption}\item[{\textbf{ F\+I\+T\+F\+L\+AG}}]{flag }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1Point_a5afac9afffbb13ccab34553e322d49ca}} 
+\index{lcfiplus\+::\+Point@{lcfiplus\+::\+Point}!Point@{Point}}
+\index{Point@{Point}!lcfiplus\+::\+Point@{lcfiplus\+::\+Point}}
+\subsubsection{Point()\hspace{0.1cm}{\footnotesize\ttfamily [2/4]}}
+{\footnotesize\ttfamily lcfiplus\+::\+Point\+::\+Point (\begin{DoxyParamCaption}\item[{const \textbf{ S\+Vector3} \&}]{pos,  }\item[{const \textbf{ S\+Matrix\+Sym3} \&}]{err,  }\item[{\textbf{ F\+I\+T\+F\+L\+AG}}]{flag }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1Point_a32ab7e1179055bfa648f6e309c385394}} 
+\index{lcfiplus\+::\+Point@{lcfiplus\+::\+Point}!Point@{Point}}
+\index{Point@{Point}!lcfiplus\+::\+Point@{lcfiplus\+::\+Point}}
+\subsubsection{Point()\hspace{0.1cm}{\footnotesize\ttfamily [3/4]}}
+{\footnotesize\ttfamily lcfiplus\+::\+Point\+::\+Point (\begin{DoxyParamCaption}\item[{const \textbf{ Point} \&}]{ref,  }\item[{\textbf{ F\+I\+T\+F\+L\+AG}}]{flag }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1Point_a0cb199f7ce99b73d00f572cd43218e8f}} 
+\index{lcfiplus\+::\+Point@{lcfiplus\+::\+Point}!Point@{Point}}
+\index{Point@{Point}!lcfiplus\+::\+Point@{lcfiplus\+::\+Point}}
+\subsubsection{Point()\hspace{0.1cm}{\footnotesize\ttfamily [4/4]}}
+{\footnotesize\ttfamily lcfiplus\+::\+Point\+::\+Point (\begin{DoxyParamCaption}\item[{const \textbf{ Vertex} $\ast$}]{vtx,  }\item[{\textbf{ F\+I\+T\+F\+L\+AG}}]{flag }\end{DoxyParamCaption})}
+
+
+
+References lcfiplus\+::\+Vertex\+::get\+Cov(), lcfiplus\+::\+Vertex\+::get\+X(), lcfiplus\+::\+Vertex\+::get\+Y(), lcfiplus\+::\+Vertex\+::get\+Z(), lcfiplus\+::\+Vertex\+::xx, lcfiplus\+::\+Vertex\+::xy, lcfiplus\+::\+Vertex\+::xz, lcfiplus\+::\+Vertex\+::yy, lcfiplus\+::\+Vertex\+::yz, and lcfiplus\+::\+Vertex\+::zz.
+
+\mbox{\label{classlcfiplus_1_1Point_a9f79389d4de6cd259c362eca9d713f4c}} 
+\index{lcfiplus\+::\+Point@{lcfiplus\+::\+Point}!````~Point@{$\sim$\+Point}}
+\index{````~Point@{$\sim$\+Point}!lcfiplus\+::\+Point@{lcfiplus\+::\+Point}}
+\subsubsection{$\sim$\+Point()}
+{\footnotesize\ttfamily lcfiplus\+::\+Point\+::$\sim$\+Point (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\label{classlcfiplus_1_1Point_afdf612575f99e0202d90dde091786983}} 
+\index{lcfiplus\+::\+Point@{lcfiplus\+::\+Point}!Get\+Err@{Get\+Err}}
+\index{Get\+Err@{Get\+Err}!lcfiplus\+::\+Point@{lcfiplus\+::\+Point}}
+\subsubsection{Get\+Err()}
+{\footnotesize\ttfamily double lcfiplus\+::\+Point\+::\+Get\+Err (\begin{DoxyParamCaption}\item[{int}]{i,  }\item[{int}]{j }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Fitter\+Simple$<$ Iterator $>$\+::operator()().
+
+\mbox{\label{classlcfiplus_1_1Point_a16e2cb77f580f7a6d5d63e5800ff4d6a}} 
+\index{lcfiplus\+::\+Point@{lcfiplus\+::\+Point}!Get\+Pos@{Get\+Pos}}
+\index{Get\+Pos@{Get\+Pos}!lcfiplus\+::\+Point@{lcfiplus\+::\+Point}}
+\subsubsection{Get\+Pos()}
+{\footnotesize\ttfamily T\+Vector3 lcfiplus\+::\+Point\+::\+Get\+Pos (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by lcfiplus\+::\+Vertex\+Fitter\+Simple$<$ Iterator $>$\+::get\+Chi2(), lcfiplus\+::\+Geometry\+Handler\+::\+Helix\+Point\+Fit(), lcfiplus\+::\+Helix\+::\+Longitudinal\+Deviation(), and lcfiplus\+::\+Vertex\+Fitter\+Simple$<$ Iterator $>$\+::operator()().
+
+\mbox{\label{classlcfiplus_1_1Point_a7b922e49563a7d97962192e299c6cd91}} 
+\index{lcfiplus\+::\+Point@{lcfiplus\+::\+Point}!Log\+Likelihood@{Log\+Likelihood}}
+\index{Log\+Likelihood@{Log\+Likelihood}!lcfiplus\+::\+Point@{lcfiplus\+::\+Point}}
+\subsubsection{Log\+Likelihood()}
+{\footnotesize\ttfamily double lcfiplus\+::\+Point\+::\+Log\+Likelihood (\begin{DoxyParamCaption}\item[{const T\+Vector3 \&}]{p }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Implements \textbf{ lcfiplus\+::\+Point\+Base} \doxyref{}{p.}{classlcfiplus_1_1PointBase_ae23cbb155b71a6da8057936384605278}.
+
+\mbox{\label{classlcfiplus_1_1Point_abf643022d0363e356308747cf343efe7}} 
+\index{lcfiplus\+::\+Point@{lcfiplus\+::\+Point}!Log\+Likelihood\+Deriv@{Log\+Likelihood\+Deriv}}
+\index{Log\+Likelihood\+Deriv@{Log\+Likelihood\+Deriv}!lcfiplus\+::\+Point@{lcfiplus\+::\+Point}}
+\subsubsection{Log\+Likelihood\+Deriv()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Point\+::\+Log\+Likelihood\+Deriv (\begin{DoxyParamCaption}\item[{const T\+Vector3 \&}]{p,  }\item[{double $\ast$}]{output }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Implements \textbf{ lcfiplus\+::\+Point\+Base} \doxyref{}{p.}{classlcfiplus_1_1PointBase_a98789168bf825ba0f4326c7aa0f9a43f}.
+
+\mbox{\label{classlcfiplus_1_1Point_ac775f168fcaa6cd432c876c33079dab4}} 
+\index{lcfiplus\+::\+Point@{lcfiplus\+::\+Point}!Set\+Pos\+Err@{Set\+Pos\+Err}}
+\index{Set\+Pos\+Err@{Set\+Pos\+Err}!lcfiplus\+::\+Point@{lcfiplus\+::\+Point}}
+\subsubsection{Set\+Pos\+Err()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Point\+::\+Set\+Pos\+Err (\begin{DoxyParamCaption}\item[{const \textbf{ S\+Vector3} \&}]{pos,  }\item[{const \textbf{ S\+Matrix\+Sym3} \&}]{err }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by lcfiplus\+::\+Geometry\+Handler\+::\+Point\+Fit().
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ geometry.\+h}\item 
+\textbf{ geometry.\+cc}\end{DoxyCompactItemize}

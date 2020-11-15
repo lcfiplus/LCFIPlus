@@ -1,0 +1,134 @@
+\section{lcfiplus\+:\+:Point\+Base Class Reference}
+\label{classlcfiplus_1_1PointBase}\index{lcfiplus\+::\+Point\+Base@{lcfiplus\+::\+Point\+Base}}
+
+
+{\ttfamily \#include $<$geometry.\+h$>$}
+
+Inheritance diagram for lcfiplus\+:\+:Point\+Base\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classlcfiplus_1_1PointBase}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \textbf{ F\+I\+T\+F\+L\+AG} \{ \textbf{ N\+O\+T\+U\+S\+ED}, 
+\textbf{ P\+R\+I\+V\+TX}, 
+\textbf{ S\+E\+C\+V\+TX}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual double \textbf{ Log\+Likelihood} (const T\+Vector3 \&p) const =0
+\item 
+virtual void \textbf{ Log\+Likelihood\+Deriv} (const T\+Vector3 \&p, double $\ast$output) const =0
+\item 
+virtual \textbf{ $\sim$\+Point\+Base} ()
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\textbf{ Point\+Base} (\textbf{ F\+I\+T\+F\+L\+AG} flag)
+\item 
+\textbf{ F\+I\+T\+F\+L\+AG} \textbf{ Get\+Flag} () const
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\textbf{ F\+I\+T\+F\+L\+AG} \textbf{ \+\_\+fitflag}
+\end{DoxyCompactItemize}
+
+
+\subsection{Member Enumeration Documentation}
+\mbox{\label{classlcfiplus_1_1PointBase_aec738d64f7251da4deaceeb14bf98573}} 
+\index{lcfiplus\+::\+Point\+Base@{lcfiplus\+::\+Point\+Base}!F\+I\+T\+F\+L\+AG@{F\+I\+T\+F\+L\+AG}}
+\index{F\+I\+T\+F\+L\+AG@{F\+I\+T\+F\+L\+AG}!lcfiplus\+::\+Point\+Base@{lcfiplus\+::\+Point\+Base}}
+\subsubsection{F\+I\+T\+F\+L\+AG}
+{\footnotesize\ttfamily enum \textbf{ lcfiplus\+::\+Point\+Base\+::\+F\+I\+T\+F\+L\+AG}}
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{N\+O\+T\+U\+S\+ED@{N\+O\+T\+U\+S\+ED}!lcfiplus\+::\+Point\+Base@{lcfiplus\+::\+Point\+Base}}\index{lcfiplus\+::\+Point\+Base@{lcfiplus\+::\+Point\+Base}!N\+O\+T\+U\+S\+ED@{N\+O\+T\+U\+S\+ED}}}\mbox{\label{classlcfiplus_1_1PointBase_aec738d64f7251da4deaceeb14bf98573acf656b6e5f6f12885597146c84cfc8f4}} 
+N\+O\+T\+U\+S\+ED&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{P\+R\+I\+V\+TX@{P\+R\+I\+V\+TX}!lcfiplus\+::\+Point\+Base@{lcfiplus\+::\+Point\+Base}}\index{lcfiplus\+::\+Point\+Base@{lcfiplus\+::\+Point\+Base}!P\+R\+I\+V\+TX@{P\+R\+I\+V\+TX}}}\mbox{\label{classlcfiplus_1_1PointBase_aec738d64f7251da4deaceeb14bf98573a22ed07b3860a74051cf8e54a40b132e0}} 
+P\+R\+I\+V\+TX&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{S\+E\+C\+V\+TX@{S\+E\+C\+V\+TX}!lcfiplus\+::\+Point\+Base@{lcfiplus\+::\+Point\+Base}}\index{lcfiplus\+::\+Point\+Base@{lcfiplus\+::\+Point\+Base}!S\+E\+C\+V\+TX@{S\+E\+C\+V\+TX}}}\mbox{\label{classlcfiplus_1_1PointBase_aec738d64f7251da4deaceeb14bf98573a83b45c66a0d04daa318d7067070d3f04}} 
+S\+E\+C\+V\+TX&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\label{classlcfiplus_1_1PointBase_a0bd0cb4157b6e7e9a371b3eca3368308}} 
+\index{lcfiplus\+::\+Point\+Base@{lcfiplus\+::\+Point\+Base}!````~Point\+Base@{$\sim$\+Point\+Base}}
+\index{````~Point\+Base@{$\sim$\+Point\+Base}!lcfiplus\+::\+Point\+Base@{lcfiplus\+::\+Point\+Base}}
+\subsubsection{$\sim$\+Point\+Base()}
+{\footnotesize\ttfamily virtual lcfiplus\+::\+Point\+Base\+::$\sim$\+Point\+Base (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+\mbox{\label{classlcfiplus_1_1PointBase_ae702215ade2998e2a6e5256258f01e09}} 
+\index{lcfiplus\+::\+Point\+Base@{lcfiplus\+::\+Point\+Base}!Point\+Base@{Point\+Base}}
+\index{Point\+Base@{Point\+Base}!lcfiplus\+::\+Point\+Base@{lcfiplus\+::\+Point\+Base}}
+\subsubsection{Point\+Base()}
+{\footnotesize\ttfamily lcfiplus\+::\+Point\+Base\+::\+Point\+Base (\begin{DoxyParamCaption}\item[{\textbf{ F\+I\+T\+F\+L\+AG}}]{flag }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\label{classlcfiplus_1_1PointBase_a5b998c9b9fd5088d19c0b118d17af1d4}} 
+\index{lcfiplus\+::\+Point\+Base@{lcfiplus\+::\+Point\+Base}!Get\+Flag@{Get\+Flag}}
+\index{Get\+Flag@{Get\+Flag}!lcfiplus\+::\+Point\+Base@{lcfiplus\+::\+Point\+Base}}
+\subsubsection{Get\+Flag()}
+{\footnotesize\ttfamily \textbf{ F\+I\+T\+F\+L\+AG} lcfiplus\+::\+Point\+Base\+::\+Get\+Flag (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}
+
+
+
+References \+\_\+fitflag.
+
+
+
+Referenced by lcfiplus\+::\+Helix\+::\+Log\+Likelihood().
+
+\mbox{\label{classlcfiplus_1_1PointBase_ae23cbb155b71a6da8057936384605278}} 
+\index{lcfiplus\+::\+Point\+Base@{lcfiplus\+::\+Point\+Base}!Log\+Likelihood@{Log\+Likelihood}}
+\index{Log\+Likelihood@{Log\+Likelihood}!lcfiplus\+::\+Point\+Base@{lcfiplus\+::\+Point\+Base}}
+\subsubsection{Log\+Likelihood()}
+{\footnotesize\ttfamily virtual double lcfiplus\+::\+Point\+Base\+::\+Log\+Likelihood (\begin{DoxyParamCaption}\item[{const T\+Vector3 \&}]{p }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \textbf{ lcfiplus\+::\+Vertex\+Line} \doxyref{}{p.}{classlcfiplus_1_1VertexLine_aa3366dafc37738540b2bef3efbcd18a8}, \textbf{ lcfiplus\+::\+Helix} \doxyref{}{p.}{classlcfiplus_1_1Helix_a7424a26a03322af2502fcf759a734dfa}, and \textbf{ lcfiplus\+::\+Point} \doxyref{}{p.}{classlcfiplus_1_1Point_a7b922e49563a7d97962192e299c6cd91}.
+
+\mbox{\label{classlcfiplus_1_1PointBase_a98789168bf825ba0f4326c7aa0f9a43f}} 
+\index{lcfiplus\+::\+Point\+Base@{lcfiplus\+::\+Point\+Base}!Log\+Likelihood\+Deriv@{Log\+Likelihood\+Deriv}}
+\index{Log\+Likelihood\+Deriv@{Log\+Likelihood\+Deriv}!lcfiplus\+::\+Point\+Base@{lcfiplus\+::\+Point\+Base}}
+\subsubsection{Log\+Likelihood\+Deriv()}
+{\footnotesize\ttfamily virtual void lcfiplus\+::\+Point\+Base\+::\+Log\+Likelihood\+Deriv (\begin{DoxyParamCaption}\item[{const T\+Vector3 \&}]{p,  }\item[{double $\ast$}]{output }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \textbf{ lcfiplus\+::\+Vertex\+Line} \doxyref{}{p.}{classlcfiplus_1_1VertexLine_a78d3e4326d8b1bcd258f990eebd6caeb}, \textbf{ lcfiplus\+::\+Helix} \doxyref{}{p.}{classlcfiplus_1_1Helix_a51d130ea12702150f771862be607f6e5}, and \textbf{ lcfiplus\+::\+Point} \doxyref{}{p.}{classlcfiplus_1_1Point_abf643022d0363e356308747cf343efe7}.
+
+
+
+\subsection{Member Data Documentation}
+\mbox{\label{classlcfiplus_1_1PointBase_a4033da823df2442183cb1ea84d22efb3}} 
+\index{lcfiplus\+::\+Point\+Base@{lcfiplus\+::\+Point\+Base}!\+\_\+fitflag@{\+\_\+fitflag}}
+\index{\+\_\+fitflag@{\+\_\+fitflag}!lcfiplus\+::\+Point\+Base@{lcfiplus\+::\+Point\+Base}}
+\subsubsection{\+\_\+fitflag}
+{\footnotesize\ttfamily \textbf{ F\+I\+T\+F\+L\+AG} lcfiplus\+::\+Point\+Base\+::\+\_\+fitflag\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Referenced by Get\+Flag().
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ geometry.\+h}\end{DoxyCompactItemize}

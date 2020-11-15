@@ -1,0 +1,367 @@
+\section{lcfiplus\+:\+:Event Class Reference}
+\label{classlcfiplus_1_1Event}\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+
+
+{\ttfamily \#include $<$lcfiplus.\+h$>$}
+
+Inheritance diagram for lcfiplus\+:\+:Event\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classlcfiplus_1_1Event}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\textbf{ $\sim$\+Event} ()
+\item 
+const vector$<$ const \textbf{ Track} $\ast$ $>$ \& \textbf{ get\+Tracks} (const char $\ast$trackname=0) const
+\item 
+const vector$<$ const \textbf{ Neutral} $\ast$ $>$ \& \textbf{ get\+Neutrals} (const char $\ast$neutralname=0) const
+\item 
+const vector$<$ const \textbf{ M\+C\+Particle} $\ast$ $>$ \& \textbf{ get\+M\+C\+Particles} (const char $\ast$mcpname=0) const
+\item 
+const vector$<$ const \textbf{ M\+C\+Color\+Singlet} $\ast$ $>$ \& \textbf{ get\+M\+C\+Color\+Singlets} (const char $\ast$mcpname=0) const
+\item 
+const \textbf{ Vertex} $\ast$ \textbf{ get\+Primary\+Vertex} (const char $\ast$privtxname=0) const
+\item 
+const vector$<$ const \textbf{ Vertex} $\ast$ $>$ \& \textbf{ get\+Secondary\+Vertices} (const char $\ast$secvtxname=0) const
+\item 
+const vector$<$ const \textbf{ Jet} $\ast$ $>$ \& \textbf{ get\+Jets} (const char $\ast$jetname=0) const
+\item 
+void \textbf{ set\+Default\+Tracks} (const char $\ast$name)
+\item 
+void \textbf{ set\+Default\+Neutrals} (const char $\ast$name)
+\item 
+void \textbf{ set\+Default\+M\+C\+Particles} (const char $\ast$name)
+\item 
+void \textbf{ set\+Default\+Primary\+Vertex} (const char $\ast$name)
+\item 
+void \textbf{ set\+Default\+Secondary\+Vertices} (const char $\ast$name)
+\item 
+void \textbf{ set\+Default\+Jets} (const char $\ast$name)
+\item 
+const char $\ast$ \textbf{ get\+Default\+Tracks} () const
+\item 
+const char $\ast$ \textbf{ get\+Default\+Neutrals} () const
+\item 
+const char $\ast$ \textbf{ get\+Default\+M\+C\+Particles} () const
+\item 
+const char $\ast$ \textbf{ get\+Default\+Primary\+Vertex} () const
+\item 
+const char $\ast$ \textbf{ get\+Default\+Secondary\+Vertices} () const
+\item 
+const char $\ast$ \textbf{ get\+Default\+Jets} () const
+\item 
+const \textbf{ M\+C\+Particle} $\ast$ \textbf{ get\+M\+C\+Particle} (int id) const
+\item 
+const \textbf{ M\+C\+Particle} $\ast$ \textbf{ get\+M\+C\+Particle} (const \textbf{ Track} $\ast$trk) const
+\item 
+vector$<$ const \textbf{ M\+C\+Particle} $\ast$ $>$ \textbf{ mc\+Get\+Color\+Strings} () const
+\item 
+int \textbf{ mc\+Number\+OfB} () const
+\item 
+int \textbf{ mc\+Number\+OfC} () const
+\item 
+vector$<$ const \textbf{ M\+C\+Particle} $\ast$ $>$ \textbf{ mc\+Get\+Semi\+Stable\+Bs} () const
+\item 
+vector$<$ const \textbf{ M\+C\+Particle} $\ast$ $>$ \textbf{ mc\+Get\+Semi\+Stable\+Cs} () const
+\item 
+vector$<$ const \textbf{ M\+C\+Particle} $\ast$ $>$ \textbf{ mc\+Get\+Semi\+Stable\+B\+Cs} (bool separatebc) const
+\item 
+int \textbf{ mc\+Find\+Parent} (\textbf{ M\+C\+Particle\+Vec} \&vec, const \textbf{ M\+C\+Particle} $\ast$p) const
+\end{DoxyCompactItemize}
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \textbf{ Event} $\ast$ \textbf{ Instance} ()
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\label{classlcfiplus_1_1Event_a947199c20186456a74bc387e0daa2ade}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!````~Event@{$\sim$\+Event}}
+\index{````~Event@{$\sim$\+Event}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{$\sim$\+Event()}
+{\footnotesize\ttfamily lcfiplus\+::\+Event\+::$\sim$\+Event (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\label{classlcfiplus_1_1Event_a0cbf574c8a8313d99d1962b668a6ff3b}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!get\+Default\+Jets@{get\+Default\+Jets}}
+\index{get\+Default\+Jets@{get\+Default\+Jets}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{get\+Default\+Jets()}
+{\footnotesize\ttfamily const char$\ast$ lcfiplus\+::\+Event\+::get\+Default\+Jets (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1Event_ac3417913e8c9ccd145a99a333f0b25ba}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!get\+Default\+M\+C\+Particles@{get\+Default\+M\+C\+Particles}}
+\index{get\+Default\+M\+C\+Particles@{get\+Default\+M\+C\+Particles}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{get\+Default\+M\+C\+Particles()}
+{\footnotesize\ttfamily const char$\ast$ lcfiplus\+::\+Event\+::get\+Default\+M\+C\+Particles (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1Event_a05b4f6ccc75654c997d9ccc15384365d}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!get\+Default\+Neutrals@{get\+Default\+Neutrals}}
+\index{get\+Default\+Neutrals@{get\+Default\+Neutrals}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{get\+Default\+Neutrals()}
+{\footnotesize\ttfamily const char$\ast$ lcfiplus\+::\+Event\+::get\+Default\+Neutrals (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1Event_a2047beac08ff21095a9e9b4abd34f903}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!get\+Default\+Primary\+Vertex@{get\+Default\+Primary\+Vertex}}
+\index{get\+Default\+Primary\+Vertex@{get\+Default\+Primary\+Vertex}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{get\+Default\+Primary\+Vertex()}
+{\footnotesize\ttfamily const char$\ast$ lcfiplus\+::\+Event\+::get\+Default\+Primary\+Vertex (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1Event_ade5600634d9f4fdebd427a31c771024e}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!get\+Default\+Secondary\+Vertices@{get\+Default\+Secondary\+Vertices}}
+\index{get\+Default\+Secondary\+Vertices@{get\+Default\+Secondary\+Vertices}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{get\+Default\+Secondary\+Vertices()}
+{\footnotesize\ttfamily const char$\ast$ lcfiplus\+::\+Event\+::get\+Default\+Secondary\+Vertices (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1Event_acfd8b91ed87a2680d199c1241b574a85}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!get\+Default\+Tracks@{get\+Default\+Tracks}}
+\index{get\+Default\+Tracks@{get\+Default\+Tracks}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{get\+Default\+Tracks()}
+{\footnotesize\ttfamily const char$\ast$ lcfiplus\+::\+Event\+::get\+Default\+Tracks (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1Event_aed3f0ece39d3b2e98b1ff8caee22c50f}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!get\+Jets@{get\+Jets}}
+\index{get\+Jets@{get\+Jets}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{get\+Jets()}
+{\footnotesize\ttfamily const vector$<$ const \textbf{ Jet} $\ast$ $>$ \& lcfiplus\+::\+Event\+::get\+Jets (\begin{DoxyParamCaption}\item[{const char $\ast$}]{jetname = {\ttfamily 0} }\end{DoxyParamCaption}) const}
+
+
+
+References lcfiplus\+::\+Event\+Store\+::\+Get\+Object\+Ref().
+
+\mbox{\label{classlcfiplus_1_1Event_a84eb9b9cb1fd347e6d2569d93ee342a3}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!get\+M\+C\+Color\+Singlets@{get\+M\+C\+Color\+Singlets}}
+\index{get\+M\+C\+Color\+Singlets@{get\+M\+C\+Color\+Singlets}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{get\+M\+C\+Color\+Singlets()}
+{\footnotesize\ttfamily \textbf{ M\+C\+Color\+Singlet\+Vec} \& lcfiplus\+::\+Event\+::get\+M\+C\+Color\+Singlets (\begin{DoxyParamCaption}\item[{const char $\ast$}]{mcpname = {\ttfamily 0} }\end{DoxyParamCaption}) const}
+
+
+
+References lcfiplus\+::\+Event\+Store\+::\+Get\+Object\+Ref().
+
+\mbox{\label{classlcfiplus_1_1Event_a424b7d450747ff99b5a79f648502f4b5}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!get\+M\+C\+Particle@{get\+M\+C\+Particle}}
+\index{get\+M\+C\+Particle@{get\+M\+C\+Particle}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{get\+M\+C\+Particle()\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily const \textbf{ M\+C\+Particle} $\ast$ lcfiplus\+::\+Event\+::get\+M\+C\+Particle (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption}) const}
+
+
+
+References lcfiplus\+::\+M\+C\+Particle\+::get\+Id(), and get\+M\+C\+Particles().
+
+
+
+Referenced by lcfiplus\+::find\+Tear\+Down\+Vertices(), and match\+Mc\+Vertex\+Jet().
+
+\mbox{\label{classlcfiplus_1_1Event_ac34bb72ffd39b8c5fdbf3337749e716d}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!get\+M\+C\+Particle@{get\+M\+C\+Particle}}
+\index{get\+M\+C\+Particle@{get\+M\+C\+Particle}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{get\+M\+C\+Particle()\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily const \textbf{ M\+C\+Particle} $\ast$ lcfiplus\+::\+Event\+::get\+M\+C\+Particle (\begin{DoxyParamCaption}\item[{const \textbf{ Track} $\ast$}]{trk }\end{DoxyParamCaption}) const}
+
+
+
+References lcfiplus\+::\+Track\+::get\+Mcp().
+
+\mbox{\label{classlcfiplus_1_1Event_a32142d29f1b981a3a821a988e2c49535}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!get\+M\+C\+Particles@{get\+M\+C\+Particles}}
+\index{get\+M\+C\+Particles@{get\+M\+C\+Particles}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{get\+M\+C\+Particles()}
+{\footnotesize\ttfamily \textbf{ M\+C\+Particle\+Vec} \& lcfiplus\+::\+Event\+::get\+M\+C\+Particles (\begin{DoxyParamCaption}\item[{const char $\ast$}]{mcpname = {\ttfamily 0} }\end{DoxyParamCaption}) const}
+
+
+
+References lcfiplus\+::\+Event\+Store\+::\+Get\+Object\+Ref().
+
+
+
+Referenced by get\+M\+C\+Particle(), mc\+Get\+Color\+Strings(), mc\+Get\+Semi\+Stable\+B\+Cs(), mc\+Get\+Semi\+Stable\+Bs(), mc\+Get\+Semi\+Stable\+Cs(), mc\+Number\+Of\+B(), mc\+Number\+Of\+C(), lcfiplus\+::\+Z\+H\+H\+Algo\+::process(), and lcfiplus\+::\+Vertex\+Analysis\+::process().
+
+\mbox{\label{classlcfiplus_1_1Event_a2327801662cdbd8b09e1dcc4a39968e7}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!get\+Neutrals@{get\+Neutrals}}
+\index{get\+Neutrals@{get\+Neutrals}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{get\+Neutrals()}
+{\footnotesize\ttfamily \textbf{ Neutral\+Vec} \& lcfiplus\+::\+Event\+::get\+Neutrals (\begin{DoxyParamCaption}\item[{const char $\ast$}]{neutralname = {\ttfamily 0} }\end{DoxyParamCaption}) const}
+
+
+
+References lcfiplus\+::\+Event\+Store\+::\+Get\+Object\+Ref().
+
+
+
+Referenced by match\+Mc\+Vertex\+Reco\+V0(), and lcfiplus\+::\+Z\+H\+H\+Algo\+::process().
+
+\mbox{\label{classlcfiplus_1_1Event_af426826c87899c58c2d8675634717efa}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!get\+Primary\+Vertex@{get\+Primary\+Vertex}}
+\index{get\+Primary\+Vertex@{get\+Primary\+Vertex}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{get\+Primary\+Vertex()}
+{\footnotesize\ttfamily const \textbf{ Vertex} $\ast$ lcfiplus\+::\+Event\+::get\+Primary\+Vertex (\begin{DoxyParamCaption}\item[{const char $\ast$}]{privtxname = {\ttfamily 0} }\end{DoxyParamCaption}) const}
+
+
+
+References lcfiplus\+::\+Event\+Store\+::\+Get\+Object().
+
+
+
+Referenced by lcfiplus\+::\+Jet\+::get\+All\+Tracks(), lcfiplus\+::\+Z\+H\+H\+Algo\+::process(), lcfiplus\+::\+Test\+Algo\+::process(), and lcfiplus\+::\+Vertex\+Analysis\+::process().
+
+\mbox{\label{classlcfiplus_1_1Event_a9a9eab7dac50f9c51229f027b2f9ad7c}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!get\+Secondary\+Vertices@{get\+Secondary\+Vertices}}
+\index{get\+Secondary\+Vertices@{get\+Secondary\+Vertices}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{get\+Secondary\+Vertices()}
+{\footnotesize\ttfamily const vector$<$ const \textbf{ Vertex} $\ast$ $>$ \& lcfiplus\+::\+Event\+::get\+Secondary\+Vertices (\begin{DoxyParamCaption}\item[{const char $\ast$}]{secvtxname = {\ttfamily 0} }\end{DoxyParamCaption}) const}
+
+
+
+References lcfiplus\+::\+Event\+Store\+::\+Get\+Object\+Ref().
+
+\mbox{\label{classlcfiplus_1_1Event_a0f46a9a7a97efe6ef8d07aae7cf86a4b}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!get\+Tracks@{get\+Tracks}}
+\index{get\+Tracks@{get\+Tracks}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{get\+Tracks()}
+{\footnotesize\ttfamily \textbf{ Track\+Vec} \& lcfiplus\+::\+Event\+::get\+Tracks (\begin{DoxyParamCaption}\item[{const char $\ast$}]{trackname = {\ttfamily 0} }\end{DoxyParamCaption}) const}
+
+
+
+References lcfiplus\+::\+Event\+Store\+::\+Get\+Object\+Ref().
+
+
+
+Referenced by lcfiplus\+::\+Jet\+M\+C\+Match(), match\+Mc\+Vertex(), match\+Mc\+Vertex\+Jet(), lcfiplus\+::\+Z\+H\+H\+Algo\+::process(), and lcfiplus\+::\+Vertex\+Analysis\+::process().
+
+\mbox{\label{classlcfiplus_1_1Event_a2b3279db0def68be064f2b7b6752b74b}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!Instance@{Instance}}
+\index{Instance@{Instance}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{Instance()}
+{\footnotesize\ttfamily \textbf{ Event} $\ast$ lcfiplus\+::\+Event\+::\+Instance (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Referenced by lcfiplus\+::\+Event\+Navigator\+::\+Fwd(), lcfiplus\+::\+Jet\+::get\+All\+Tracks(), lcfiplus\+::\+Vertex\+Mass\+Recovery\+::init(), lcfiplus\+::\+Primary\+Vertex\+Finder\+::init(), lcfiplus\+::\+Vertex\+Findingwith\+D\+L\+::init(), lcfiplus\+::\+Vertex\+Ntuple\+::init(), lcfiplus\+::\+Track\+Ntuple\+::init(), lcfiplus\+::\+Flavor\+Tag\+::init(), lcfiplus\+::\+Build\+Up\+Vertex\+::init(), lcfiplus\+::\+Jet\+Clustering\+::init(), lcfiplus\+::\+Jet\+Vertex\+Refiner\+::init(), lcfiplus\+::\+Test\+Algo\+::init(), lcfiplus\+::\+Flavtag\+Reader\+::init(), lcfiplus\+::\+Jet\+M\+C\+Match(), lcfiplus\+::\+Vertex\+Mass\+Recovery\+::process(), lcfiplus\+::\+Primary\+Vertex\+Finder\+::process(), lcfiplus\+::\+Make\+R\+O\+O\+T\+File\+C\+C\+::process(), lcfiplus\+::\+Vertex\+Findingwith\+D\+L\+::process(), lcfiplus\+::\+Vertex\+Ntuple\+::process(), lcfiplus\+::\+Track\+Ntuple\+::process(), lcfiplus\+::\+Flavor\+Tag\+::process(), lcfiplus\+::\+Build\+Up\+Vertex\+::process(), lcfiplus\+::\+Jet\+Clustering\+::process(), lcfiplus\+::\+Jet\+Vertex\+Refiner\+::process(), lcfiplus\+::\+Make\+R\+O\+O\+T\+File\+B\+B\+::process(), lcfiplus\+::\+Z\+H\+H\+Algo\+::process(), lcfiplus\+::\+Test\+Algo\+::process(), lcfiplus\+::\+Vertex\+Analysis\+::process(), lcfiplus\+::\+Flavtag\+Reader\+::process(), lcfiplus\+::\+Test\+Algo\+V0\+::process(), lcfiplus\+::\+Tree\+Storer\+::\+Register(), test\+Suehara(), and test\+Tomohiko().
+
+\mbox{\label{classlcfiplus_1_1Event_a506aa0b852dc9af66217407ffa01a874}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!mc\+Find\+Parent@{mc\+Find\+Parent}}
+\index{mc\+Find\+Parent@{mc\+Find\+Parent}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{mc\+Find\+Parent()}
+{\footnotesize\ttfamily int lcfiplus\+::\+Event\+::mc\+Find\+Parent (\begin{DoxyParamCaption}\item[{\textbf{ M\+C\+Particle\+Vec} \&}]{vec,  }\item[{const \textbf{ M\+C\+Particle} $\ast$}]{p }\end{DoxyParamCaption}) const}
+
+
+
+References lcfiplus\+::\+M\+C\+Particle\+::is\+Parent().
+
+\mbox{\label{classlcfiplus_1_1Event_abcfaa8eb8507d984ed68b08e6292ee9a}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!mc\+Get\+Color\+Strings@{mc\+Get\+Color\+Strings}}
+\index{mc\+Get\+Color\+Strings@{mc\+Get\+Color\+Strings}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{mc\+Get\+Color\+Strings()}
+{\footnotesize\ttfamily vector$<$ const \textbf{ M\+C\+Particle} $\ast$ $>$ lcfiplus\+::\+Event\+::mc\+Get\+Color\+Strings (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+References lcfiplus\+::\+M\+C\+Particle\+::get\+Color\+String(), and get\+M\+C\+Particles().
+
+\mbox{\label{classlcfiplus_1_1Event_a6ebdae493ab5e2e264efbf97dfb03ed4}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!mc\+Get\+Semi\+Stable\+B\+Cs@{mc\+Get\+Semi\+Stable\+B\+Cs}}
+\index{mc\+Get\+Semi\+Stable\+B\+Cs@{mc\+Get\+Semi\+Stable\+B\+Cs}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{mc\+Get\+Semi\+Stable\+B\+Cs()}
+{\footnotesize\ttfamily vector$<$ const \textbf{ M\+C\+Particle} $\ast$ $>$ lcfiplus\+::\+Event\+::mc\+Get\+Semi\+Stable\+B\+Cs (\begin{DoxyParamCaption}\item[{bool}]{separatebc }\end{DoxyParamCaption}) const}
+
+
+
+References get\+M\+C\+Particles(), lcfiplus\+::\+M\+C\+Particle\+::get\+Semi\+Stable\+B\+Parent(), and lcfiplus\+::\+M\+C\+Particle\+::get\+Semi\+Stable\+C\+Parent().
+
+\mbox{\label{classlcfiplus_1_1Event_a83c6b19918f2d2af8e453526938ccd42}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!mc\+Get\+Semi\+Stable\+Bs@{mc\+Get\+Semi\+Stable\+Bs}}
+\index{mc\+Get\+Semi\+Stable\+Bs@{mc\+Get\+Semi\+Stable\+Bs}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{mc\+Get\+Semi\+Stable\+Bs()}
+{\footnotesize\ttfamily vector$<$ const \textbf{ M\+C\+Particle} $\ast$ $>$ lcfiplus\+::\+Event\+::mc\+Get\+Semi\+Stable\+Bs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+References get\+M\+C\+Particles(), and lcfiplus\+::\+M\+C\+Particle\+::get\+Semi\+Stable\+B\+Parent().
+
+\mbox{\label{classlcfiplus_1_1Event_a949c601a2283a1f82843edc3ff82b909}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!mc\+Get\+Semi\+Stable\+Cs@{mc\+Get\+Semi\+Stable\+Cs}}
+\index{mc\+Get\+Semi\+Stable\+Cs@{mc\+Get\+Semi\+Stable\+Cs}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{mc\+Get\+Semi\+Stable\+Cs()}
+{\footnotesize\ttfamily vector$<$ const \textbf{ M\+C\+Particle} $\ast$ $>$ lcfiplus\+::\+Event\+::mc\+Get\+Semi\+Stable\+Cs (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+References get\+M\+C\+Particles(), and lcfiplus\+::\+M\+C\+Particle\+::get\+Semi\+Stable\+C\+Parent().
+
+\mbox{\label{classlcfiplus_1_1Event_a483418f83bcc351c438211747880de02}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!mc\+Number\+OfB@{mc\+Number\+OfB}}
+\index{mc\+Number\+OfB@{mc\+Number\+OfB}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{mc\+Number\+Of\+B()}
+{\footnotesize\ttfamily int lcfiplus\+::\+Event\+::mc\+Number\+OfB (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+References get\+M\+C\+Particles(), and lcfiplus\+::\+M\+C\+Particle\+::is\+Semi\+Stable\+B().
+
+\mbox{\label{classlcfiplus_1_1Event_afa93eea370d3db244886dd60129cd085}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!mc\+Number\+OfC@{mc\+Number\+OfC}}
+\index{mc\+Number\+OfC@{mc\+Number\+OfC}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{mc\+Number\+Of\+C()}
+{\footnotesize\ttfamily int lcfiplus\+::\+Event\+::mc\+Number\+OfC (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+
+
+References get\+M\+C\+Particles(), and lcfiplus\+::\+M\+C\+Particle\+::is\+Semi\+Stable\+C().
+
+\mbox{\label{classlcfiplus_1_1Event_ab90cea4f3273359ffd244263fb760f71}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!set\+Default\+Jets@{set\+Default\+Jets}}
+\index{set\+Default\+Jets@{set\+Default\+Jets}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{set\+Default\+Jets()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Event\+::set\+Default\+Jets (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1Event_ada8f2072bbe3623b101f9727c0d0b771}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!set\+Default\+M\+C\+Particles@{set\+Default\+M\+C\+Particles}}
+\index{set\+Default\+M\+C\+Particles@{set\+Default\+M\+C\+Particles}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{set\+Default\+M\+C\+Particles()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Event\+::set\+Default\+M\+C\+Particles (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1Event_a80317cd29fa92ec7342615aee64f5cf6}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!set\+Default\+Neutrals@{set\+Default\+Neutrals}}
+\index{set\+Default\+Neutrals@{set\+Default\+Neutrals}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{set\+Default\+Neutrals()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Event\+::set\+Default\+Neutrals (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1Event_af7e191ebef047562f2b0c2f8bcefaf4e}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!set\+Default\+Primary\+Vertex@{set\+Default\+Primary\+Vertex}}
+\index{set\+Default\+Primary\+Vertex@{set\+Default\+Primary\+Vertex}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{set\+Default\+Primary\+Vertex()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Event\+::set\+Default\+Primary\+Vertex (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by lcfiplus\+::\+Primary\+Vertex\+Finder\+::init(), lcfiplus\+::\+Vertex\+Findingwith\+D\+L\+::init(), lcfiplus\+::\+Vertex\+Ntuple\+::init(), lcfiplus\+::\+Track\+Ntuple\+::init(), lcfiplus\+::\+Flavor\+Tag\+::init(), lcfiplus\+::\+Build\+Up\+Vertex\+::init(), lcfiplus\+::\+Test\+Algo\+::init(), and lcfiplus\+::\+Flavtag\+Reader\+::init().
+
+\mbox{\label{classlcfiplus_1_1Event_a88a081cd465016e4f2f8102832ab10e9}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!set\+Default\+Secondary\+Vertices@{set\+Default\+Secondary\+Vertices}}
+\index{set\+Default\+Secondary\+Vertices@{set\+Default\+Secondary\+Vertices}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{set\+Default\+Secondary\+Vertices()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Event\+::set\+Default\+Secondary\+Vertices (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Referenced by lcfiplus\+::\+Test\+Algo\+::init().
+
+\mbox{\label{classlcfiplus_1_1Event_a6124eb2d97edee392df2b2066be790dd}} 
+\index{lcfiplus\+::\+Event@{lcfiplus\+::\+Event}!set\+Default\+Tracks@{set\+Default\+Tracks}}
+\index{set\+Default\+Tracks@{set\+Default\+Tracks}!lcfiplus\+::\+Event@{lcfiplus\+::\+Event}}
+\subsubsection{set\+Default\+Tracks()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Event\+::set\+Default\+Tracks (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ lcfiplus.\+h}\item 
+\textbf{ lcfiplus.\+cc}\end{DoxyCompactItemize}

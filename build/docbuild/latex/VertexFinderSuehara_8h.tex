@@ -1,0 +1,51 @@
+\section{Vertex\+Finder\+Suehara.\+h File Reference}
+\label{VertexFinderSuehara_8h}\index{Vertex\+Finder\+Suehara.\+h@{Vertex\+Finder\+Suehara.\+h}}
+{\ttfamily \#include \char`\"{}lcfiplus.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$list$>$}\newline
+{\ttfamily \#include $<$vector$>$}\newline
+{\ttfamily \#include $<$functional$>$}\newline
+{\ttfamily \#include \char`\"{}algo\+Sig\+Prob.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Vertex\+Selector.\+h\char`\"{}}\newline
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \textbf{ lcfiplus\+::\+Vertex\+Finder\+Suehara\+::\+Sort\+Tracks\+By\+I\+P\+Sig}
+\item 
+class \textbf{ lcfiplus\+::\+Vertex\+Finder\+Suehara\+::\+Vertex\+Finder\+Suehara\+Config}
+\end{DoxyCompactItemize}
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \textbf{ lcfiplus}
+\item 
+ \textbf{ lcfiplus\+::\+Vertex\+Finder\+Suehara}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \textbf{ lcfiplus\+::\+Vertex\+Finder\+Suehara\+::\+Vertex\+Nearer} (const \textbf{ Vertex} $\ast$vtx1, const \textbf{ Vertex} $\ast$vtx2)
+\item 
+bool \textbf{ lcfiplus\+::\+Vertex\+Finder\+Suehara\+::\+Vertex\+Prob\+Larger} (const \textbf{ Vertex} $\ast$vtx1, const \textbf{ Vertex} $\ast$vtx2)
+\item 
+void \textbf{ lcfiplus\+::\+Vertex\+Finder\+Suehara\+::\+Get\+Vertex\+List} (list$<$ const \textbf{ Track} $\ast$$>$ \&tracks, const \textbf{ Vertex} $\ast$ip, vector$<$ \textbf{ Vertex} $\ast$$>$ \&vtx, vector$<$ \textbf{ Vertex} $\ast$$>$ \&v0vtx, \textbf{ Vertex\+Finder\+Suehara\+Config} \&cfg)
+\item 
+\textbf{ lcfiplus\+::\+Vertex} $\ast$ \textbf{ lcfiplus\+::\+Vertex\+Finder\+Suehara\+::associate\+Tracks} (\textbf{ Vertex} $\ast$vertex, const \textbf{ Vertex\+Vec} \&v0vtx, list$<$ const \textbf{ Track} $\ast$$>$ \&tracks, \textbf{ Vertex\+Finder\+Suehara\+Config} \&cfg, list$<$ const \textbf{ Track} $\ast$$>$ $\ast$residual\+Tracks=0)
+\item 
+void \textbf{ lcfiplus\+::\+Vertex\+Finder\+Suehara\+::associate\+I\+P\+Tracks} (vector$<$ \textbf{ Vertex} $\ast$$>$ \&vertices, \textbf{ Vertex} $\ast$ip, \textbf{ Vertex\+Finder\+Suehara\+Config} \&cfg)
+\item 
+void \textbf{ lcfiplus\+::\+Vertex\+Finder\+Suehara\+::associate\+I\+P\+Tracks\+A\+VF} (vector$<$ \textbf{ Vertex} $\ast$$>$ \&vertices, \textbf{ Vertex} $\ast$ip, \textbf{ Vertex\+Finder\+Suehara\+Config} \&cfg)
+\item 
+void \textbf{ lcfiplus\+::\+Vertex\+Finder\+Suehara\+::build\+Up} (\textbf{ Track\+Vec} \&tracks, vector$<$ \textbf{ Vertex} $\ast$$>$ \&vtx, vector$<$ \textbf{ Vertex} $\ast$$>$ \&v0vtx, double chi2thpri, \textbf{ Vertex\+Finder\+Suehara\+Config} \&cfg, \textbf{ Vertex} $\ast$$\ast$ip=0)
+\item 
+void \textbf{ lcfiplus\+::\+Vertex\+Finder\+Suehara\+::build\+Up\+For\+Jet\+Clustering} (\textbf{ Track\+Vec} \&tracks, vector$<$ \textbf{ Vertex} $\ast$$>$ \&vtx)
+\item 
+vector$<$ \textbf{ Vertex} $\ast$ $>$ \textbf{ lcfiplus\+::\+Vertex\+Finder\+Suehara\+::make\+Single\+Track\+Vertices} (\textbf{ Vertex\+Vec} \&vtcs, \textbf{ Track\+Vec} \&tracks, \textbf{ Vertex\+Vec} \&v0vtx, const \textbf{ Vertex} $\ast$ip, \textbf{ Vertex\+Finder\+Suehara\+Config} \&cfg)
+\item 
+vector$<$ \textbf{ Vertex} $\ast$ $>$ \textbf{ lcfiplus\+::\+Vertex\+Finder\+Suehara\+::make\+Single\+Track\+Vertices} (\textbf{ Jet} $\ast$jet, \textbf{ Track\+Vec} \&tracks, \textbf{ Vertex\+Vec} \&v0vtx, const \textbf{ Vertex} $\ast$ip, \textbf{ Vertex\+Finder\+Suehara\+Config} \&cfg)
+\item 
+void \textbf{ lcfiplus\+::\+Vertex\+Finder\+Suehara\+::recombine\+Vertices} (vector$<$ \textbf{ Vertex} $\ast$$>$ \&vertices, vector$<$ \textbf{ Vertex} $\ast$$>$ \&single\+Vertices)
+\item 
+void \textbf{ lcfiplus\+::\+Vertex\+Finder\+Suehara\+::recombine\+Vertices} (vector$<$ \textbf{ Vertex} $\ast$$>$ \&vertices, vector$<$ \textbf{ Vertex} $\ast$$>$ \&single\+Vertices, \textbf{ Vertex\+Finder\+Suehara\+Config} \&cfg)
+\item 
+void \textbf{ lcfiplus\+::\+Vertex\+Finder\+Suehara\+::optimize\+Two\+Vertices} (\textbf{ Vertex} $\ast$\&v1, \textbf{ Vertex} $\ast$\&v2, int nvr)
+\end{DoxyCompactItemize}

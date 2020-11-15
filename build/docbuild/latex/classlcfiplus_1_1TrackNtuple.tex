@@ -1,0 +1,106 @@
+\section{lcfiplus\+:\+:Track\+Ntuple Class Reference}
+\label{classlcfiplus_1_1TrackNtuple}\index{lcfiplus\+::\+Track\+Ntuple@{lcfiplus\+::\+Track\+Ntuple}}
+
+
+Making track d0/z0 ntuple needed for flavor tagging.  
+
+
+
+
+{\ttfamily \#include $<$Track\+Ntuple.\+h$>$}
+
+Inheritance diagram for lcfiplus\+:\+:Track\+Ntuple\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classlcfiplus_1_1TrackNtuple}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\textbf{ Track\+Ntuple} ()
+\item 
+virtual \textbf{ $\sim$\+Track\+Ntuple} ()
+\item 
+void \textbf{ init} (\textbf{ Parameters} $\ast$param)
+\item 
+void \textbf{ process} ()
+\item 
+void \textbf{ end} ()
+\end{DoxyCompactItemize}
+\subsection*{Additional Inherited Members}
+
+
+\subsection{Detailed Description}
+Making track d0/z0 ntuple needed for flavor tagging. 
+
+Should be rerun when vertex configuration is changed. Run Track\+Prob.\+C with hadded output files of this algorithm.
+
+\begin{DoxyAuthor}{Author}
+T. Suehara, Dept. of Physics, Kyushu University 
+\end{DoxyAuthor}
+\begin{DoxyVersion}{Version}
+\$\+Id\$ 
+\end{DoxyVersion}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\label{classlcfiplus_1_1TrackNtuple_aabae3b3e6f01cf409340800f817b1bed}} 
+\index{lcfiplus\+::\+Track\+Ntuple@{lcfiplus\+::\+Track\+Ntuple}!Track\+Ntuple@{Track\+Ntuple}}
+\index{Track\+Ntuple@{Track\+Ntuple}!lcfiplus\+::\+Track\+Ntuple@{lcfiplus\+::\+Track\+Ntuple}}
+\subsubsection{Track\+Ntuple()}
+{\footnotesize\ttfamily lcfiplus\+::\+Track\+Ntuple\+::\+Track\+Ntuple (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\label{classlcfiplus_1_1TrackNtuple_a3691b28d6e899e3081dc33275e3f3dcf}} 
+\index{lcfiplus\+::\+Track\+Ntuple@{lcfiplus\+::\+Track\+Ntuple}!````~Track\+Ntuple@{$\sim$\+Track\+Ntuple}}
+\index{````~Track\+Ntuple@{$\sim$\+Track\+Ntuple}!lcfiplus\+::\+Track\+Ntuple@{lcfiplus\+::\+Track\+Ntuple}}
+\subsubsection{$\sim$\+Track\+Ntuple()}
+{\footnotesize\ttfamily virtual lcfiplus\+::\+Track\+Ntuple\+::$\sim$\+Track\+Ntuple (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\label{classlcfiplus_1_1TrackNtuple_ab940f0c564373201bd99f64592e6c69e}} 
+\index{lcfiplus\+::\+Track\+Ntuple@{lcfiplus\+::\+Track\+Ntuple}!end@{end}}
+\index{end@{end}!lcfiplus\+::\+Track\+Ntuple@{lcfiplus\+::\+Track\+Ntuple}}
+\subsubsection{end()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Track\+Ntuple\+::end (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \textbf{ lcfiplus\+::\+Algorithm} \doxyref{}{p.}{classlcfiplus_1_1Algorithm_a4276b93869d614f59eef92b8c728ef60}.
+
+\mbox{\label{classlcfiplus_1_1TrackNtuple_a8bfc0c42c42575aeac6969cdccb4358c}} 
+\index{lcfiplus\+::\+Track\+Ntuple@{lcfiplus\+::\+Track\+Ntuple}!init@{init}}
+\index{init@{init}!lcfiplus\+::\+Track\+Ntuple@{lcfiplus\+::\+Track\+Ntuple}}
+\subsubsection{init()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Track\+Ntuple\+::init (\begin{DoxyParamCaption}\item[{\textbf{ Parameters} $\ast$}]{param }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Reimplemented from \textbf{ lcfiplus\+::\+Algorithm} \doxyref{}{p.}{classlcfiplus_1_1Algorithm_a178a273b9976b87f182190f4250cac9e}.
+
+
+
+References lcfiplus\+::\+Parameters\+::get(), lcfiplus\+::\+Algorithm\+::init(), lcfiplus\+::\+Event\+::\+Instance(), and lcfiplus\+::\+Event\+::set\+Default\+Primary\+Vertex().
+
+\mbox{\label{classlcfiplus_1_1TrackNtuple_ae1e651a4d89e27ce1b104584ed271407}} 
+\index{lcfiplus\+::\+Track\+Ntuple@{lcfiplus\+::\+Track\+Ntuple}!process@{process}}
+\index{process@{process}!lcfiplus\+::\+Track\+Ntuple@{lcfiplus\+::\+Track\+Ntuple}}
+\subsubsection{process()}
+{\footnotesize\ttfamily void lcfiplus\+::\+Track\+Ntuple\+::process (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+Implements \textbf{ lcfiplus\+::\+Algorithm} \doxyref{}{p.}{classlcfiplus_1_1Algorithm_a628e1509b55b2cda1e2640b58be6ce6f}.
+
+
+
+References lcfiplus\+::\+Jet\+::get\+All\+Tracks(), lcfiplus\+::\+Event\+::\+Instance(), lcfiplus\+::algo\+Sig\+Prob\+::signed\+D0(), lcfiplus\+::algo\+Sig\+Prob\+::signed\+D0\+Significance(), lcfiplus\+::algo\+Sig\+Prob\+::signed\+Z0(), lcfiplus\+::algo\+Sig\+Prob\+::signed\+Z0\+Significance(), and lcfiplus\+::algo\+Sig\+Prob\+::track\+Selection\+For\+Flavor\+Tag().
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+\textbf{ Track\+Ntuple.\+h}\item 
+\textbf{ Track\+Ntuple.\+cc}\end{DoxyCompactItemize}
