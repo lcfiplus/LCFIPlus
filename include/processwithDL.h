@@ -30,6 +30,7 @@ class VertexFindingwithDL : public Algorithm {
  private:
   std::vector<Vertex*>* _primary_vertex;	//!
   std::vector<Vertex*>* _secondary_vertices;	//!
+  std::vector<Vertex*>* _v0vertices;		//!
 
   // parameters
   tensorflow::ConfigProto config;

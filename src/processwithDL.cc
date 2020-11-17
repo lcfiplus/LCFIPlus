@@ -41,10 +41,16 @@ void VertexFindingwithDL::init(Parameters* param) {
 
   _primary_vertex = 0;
 
-  std::string vpricolname = param->get("VertexFindingwithDL.PrimaryVertexCollectionName",string("PrimaryVertex"));
-  std::string vseccolname = param->get("VertexFindingwithDL.SecondaryVerticesCollectionName",string("BuildUpVertex"));
+  std::string vpricolname = param->get("VertexFindingwithDL.PrimaryVertexCollectionName", string("PrimaryVertex"));
+  std::string vseccolname = param->get("VertexFindingwithDL.SecondaryVerticesCollectionName", string("BuildUpVertex"));
   Event::Instance()->Register(vpricolname.c_str(), _primary_vertex, EventStore::PERSIST);
   Event::Instance()->Register(vseccolname.c_str(), _secondary_vertices, EventStore::PERSIST);
+
+  _v0vertices = 0;
+  std::string v0vcolname = param->get("VertexFindingwithDL.V0VertexCollectionName", string(""));
+  if (v0vcolname != "") {
+    Event::Instance()->Register(v0vcolname.c_str(), _v0vertices, EventStore::PERSIST);
+  }
 
   // default setting
   Event::Instance()->setDefaultPrimaryVertex(vpricolname.c_str());
@@ -63,10 +69,10 @@ void VertexFindingwithDL::init(Parameters* param) {
 
   debug = param->get("VertexFindingwithDL.Debug", bool(0));
 
-  pair_path = param->get("VertexFindingwithDL.PairModelPath", string("/home/goto/ILC/Deep_Learning/model/Pair_Model_vfdnn04_1Msamples_2500epochs"));
-  pair_pos_path = param->get("VertexFindingwithDL.PairPosModelPath", string("/home/goto/ILC/Deep_Learning/model/Pair_Pos_Model_vfdnn04_1Msamples_2500epochs"));
-  lstm_path = param->get("VertexFindingwithDL.LSTMModelPath", string("/home/goto/ILC/Deep_Learning/model/Attention_Bidirectional_VLSTM_Model_vfdnn06_50000samples_100epochs"));
-  slstm_path = param->get("VertexFindingwithDL.SLSTMModelPath", string("/home/goto/ILC/Deep_Learning/model/Attention_Bidirectional_VLSTM_Model_vfdnn06_50000samples_100epochs_ps_100epochs_s"));
+  pair_path = param->get("VertexFindingwithDL.PairModelPath", std::string("/home/goto/ILC/Deep_Learning/model/Pair_Model_vfdnn04_1Msamples_2500epochs"));
+  pair_pos_path = param->get("VertexFindingwithDL.PairPosModelPath", std::string("/home/goto/ILC/Deep_Learning/model/Pair_Pos_Model_vfdnn04_1Msamples_2500epochs"));
+  lstm_path = param->get("VertexFindingwithDL.LSTMModelPath", std::string("/home/goto/ILC/Deep_Learning/model/Attention_Bidirectional_VLSTM_Model_vfdnn06_50000samples_100epochs"));
+  slstm_path = param->get("VertexFindingwithDL.SLSTMModelPath", std::string("/home/goto/ILC/Deep_Learning/model/Attention_Bidirectional_VLSTM_Model_vfdnn06_50000samples_100epochs_ps_100epochs_s"));
 
   session_options = tensorflow::SessionOptions();
   run_options = tensorflow::RunOptions();
