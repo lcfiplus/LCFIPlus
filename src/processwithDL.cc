@@ -58,27 +58,25 @@ void VertexFindingwithDL::init(Parameters* param) {
   NEventNumber = 0;
   MaxTrack = param->get("VertexFindingwithDL.MaxTrack", int(53));
   NTrackVariable = param->get("VertexFindingwithDL.NTrackVariable", int(22));
-  MaxPrimaryVertexLoop = param->get("VertexFindingwithDL.MaxPrimaryVertexLoop", int(3));
+  MaxPrimaryVertexLoop = param->get("VertexFindingwithDL.MaxPrimaryVertexLoop", int(2));
 
   ThresholdPairSecondaryScoreBBCC = param->get("VertexFindingwithDL.ThresholdPairSecondaryScoreBBCC", double(0.6));
-  ThresholdPairSecondaryScore = param->get("VertexFindingwithDL.ThresholdPairSecondaryScore", double(0.8));
-  ThresholdPairPosScore = param->get("VertexFindingwithDL.ThresholdPairPosScore", double(5));
+  ThresholdPairSecondaryScore = param->get("VertexFindingwithDL.ThresholdPairSecondaryScore", double(0.9));
+  ThresholdPairPosScore = param->get("VertexFindingwithDL.ThresholdPairPosScore", double(10));
 
-  ThresholdPrimaryScore = param->get("VertexFindingwithDL.ThresholdPrimaryScore", double(0.5));
+  ThresholdPrimaryScore = param->get("VertexFindingwithDL.ThresholdPrimaryScore", double(0.75));
   ThresholdSecondaryScore = param->get("VertexFindingwithDL.ThresholdSecondaryScore", double(0.8));
 
   debug = param->get("VertexFindingwithDL.Debug", bool(0));
 
-  pair_path = param->get("VertexFindingwithDL.PairModelPath", std::string("/home/goto/ILC/Deep_Learning/model/Pair_Model_vfdnn04_1Msamples_2500epochs"));
-  pair_pos_path = param->get("VertexFindingwithDL.PairPosModelPath", std::string("/home/goto/ILC/Deep_Learning/model/Pair_Pos_Model_vfdnn04_1Msamples_2500epochs"));
-  lstm_path = param->get("VertexFindingwithDL.LSTMModelPath", std::string("/home/goto/ILC/Deep_Learning/model/Attention_Bidirectional_VLSTM_Model_vfdnn06_50000samples_100epochs"));
-  slstm_path = param->get("VertexFindingwithDL.SLSTMModelPath", std::string("/home/goto/ILC/Deep_Learning/model/Attention_Bidirectional_VLSTM_Model_vfdnn06_50000samples_100epochs_ps_100epochs_s"));
+  pair_path = param->get("VertexFindingwithDL.PairModelPath", std::string("/home/goto/ILC/VertexFinderwithDL/models/Pair_Model_Standard"));
+  lstm_path = param->get("VertexFindingwithDL.LSTMModelPath", std::string("/home/goto/ILC/VertexFinderwithDL/models/Attention_VLSTM_Model_PV_FineTune_100Epochs"));
+  slstm_path = param->get("VertexFindingwithDL.SLSTMModelPath", std::string("/home/goto/ILC/VertexFinderwithDL/models/Attention_VLSTM_Model_SV_FineTune_100Epochs"));
 
   session_options = tensorflow::SessionOptions();
   run_options = tensorflow::RunOptions();
 
   tensorflow::Status pair_status = LoadSavedModel(session_options, run_options, pair_path, {tensorflow::kSavedModelTagServe}, &pair_model_bundle);
-  tensorflow::Status pair_pos_status = LoadSavedModel(session_options, run_options, pair_pos_path, {tensorflow::kSavedModelTagServe}, &pair_pos_model_bundle);
   tensorflow::Status lstm_status = LoadSavedModel(session_options, run_options, lstm_path, {tensorflow::kSavedModelTagServe}, &lstm_model_bundle);
   tensorflow::Status slstm_status = LoadSavedModel(session_options, run_options, slstm_path, {tensorflow::kSavedModelTagServe}, &slstm_model_bundle);
 
@@ -108,7 +106,7 @@ void VertexFindingwithDL::process() {
   if(debug==true) VertexFinderwithDL::DebugPrintVariableSize(pairs, encoder_tracks, decoder_tracks);
 
   if(verbose==true) std::cout << "Get Event Data ..." << std::endl;
-  std::vector<std::vector<double> > event_data = VertexFinderwithDL::GetEventData(debug, index, pairs, pair_model_bundle, pair_pos_model_bundle);
+  std::vector<std::vector<double> > event_data = VertexFinderwithDL::GetEventData(debug, index, pairs, pair_model_bundle);
   if(debug==true) VertexFinderwithDL::DebugPrintGetTracks(encoder_tracks);
 
   // Secondary Seed Selection

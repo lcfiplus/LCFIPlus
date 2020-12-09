@@ -511,6 +511,7 @@ void MakeROOTFileBB::process() {
   Event* event = Event::Instance();
   const TrackVec& track_list = event->getTracks();
 	  
+  std::cout << "Event " << nEvt << std::endl;
   for (unsigned int i=0; i < track_list.size(); ++i) {
 
     int tr1ssssid = -999;
@@ -756,12 +757,16 @@ void MakeROOTFileBB::process() {
     
       _data.lcfiplustag = 0; // 0: NC, 1: secondary, 2: primary
       const Vertex *ip = event->getPrimaryVertex();
+      /*
       TrackVec &iptracks = ip->getTracks();
+      std::cout << "check 0" << std::endl;
       if(std::find(iptracks.begin(), iptracks.end(), track1) != iptracks.end()
-        && std::find(iptracks.begin(), iptracks.end(), track2) != iptracks.end())
-          _data.lcfiplustag = 2; // primary tracks
+        && std::find(iptracks.begin(), iptracks.end(), track2) != iptracks.end()){
+        _data.lcfiplustag = 2; // primary tracks
+      }
       else{
         // track selection
+        std::cout << "check 1" << std::endl;
         if(sel.passesCut(track1, cfgtrack) && sel.passesCut(track2, cfgtrack)){
           // mass, chi2, vpos, v0 selection
           TLorentzVector v1 = *track1;
@@ -775,6 +780,7 @@ void MakeROOTFileBB::process() {
           }
         }
       }
+      */
 
       if(sel.passesCut(track1, cfgtrack)) _data.tr1selection = 1;
       else _data.tr1selection = 0;
@@ -793,6 +799,205 @@ void MakeROOTFileBB::process() {
 }
 
 void MakeROOTFileBB::end() {
+  _file->Write();
+  _file->Close();
+}
+
+// ================================================================================================================ //
+// ================================================================================================================ //
+// ================================================================================================================ //
+void MakeROOTFileTracks::init(Parameters* param) {
+  Algorithm::init(param);
+  
+  string filename = param->get("MakeROOTFileTracks.RootFileName", string("my_track1.root"));
+  
+  _file = new TFile(filename.c_str(), "RECREATE");
+  
+  _ntp = new TTree("track0", "track0");
+
+  nEvt = 0;
+  ntr1Trk = 0;
+
+  TracksData& d = _data;
+  _ntp->Branch("nevent", &nEvt, "nevent/I"); // Event number
+  _ntp->Branch("ntr1track", &ntr1Trk, "ntr1track/I"); // Event number
+  // Track1 low data
+  _ntp->Branch("tr1d0", &d.tr1d0, "tr1d0/D"); // Impact paramter of the track in (r-phi)
+  _ntp->Branch("tr1z0", &d.tr1z0, "tr1z0/D"); // mpact paramter of the track in (r-z)
+  _ntp->Branch("tr1phi", &d.tr1phi, "tr1phi/D"); // Phi of the track at the reference point
+  _ntp->Branch("tr1omega", &d.tr1omega, "tr1omega/D"); // Omega is the signed curvature of the track in [1/mm]
+  _ntp->Branch("tr1tanlam", &d.tr1tanlam, "tr1tanlam/D"); // Lambda is the dip angle of the track in r-z at the reference point
+  _ntp->Branch("tr1x", &d.tr1x, "tr1x/D");
+  _ntp->Branch("tr1y", &d.tr1y, "tr1y/D");
+  _ntp->Branch("tr1z", &d.tr1z, "tr1z/D");
+  _ntp->Branch("tr1charge", &d.tr1charge, "tr1charge/I");
+  _ntp->Branch("tr1energy", &d.tr1energy, "tr1energy/D");
+  _ntp->Branch("tr1covmatrixd0d0", &d.tr1covmatrixd0d0, "tr1covmatrixd0d0/D"); // Covariance matrix of the track parameters
+  _ntp->Branch("tr1covmatrixd0z0", &d.tr1covmatrixd0z0, "tr1covmatrixd0z0/D"); // Covariance matrix of the track parameters
+  _ntp->Branch("tr1covmatrixd0ph", &d.tr1covmatrixd0ph, "tr1covmatrixd0ph/D"); // Covariance matrix of the track parameters
+  _ntp->Branch("tr1covmatrixd0om", &d.tr1covmatrixd0om, "tr1covmatrixd0om/D"); // Covariance matrix of the track parameters
+  _ntp->Branch("tr1covmatrixd0tl", &d.tr1covmatrixd0tl, "tr1covmatrixd0tl/D"); // Covariance matrix of the track parameters
+  _ntp->Branch("tr1covmatrixz0z0", &d.tr1covmatrixz0z0, "tr1covmatrixz0z0/D"); // Covariance matrix of the track parameters
+  _ntp->Branch("tr1covmatrixz0ph", &d.tr1covmatrixz0ph, "tr1covmatrixz0ph/D"); // Covariance matrix of the track parameters
+  _ntp->Branch("tr1covmatrixz0om", &d.tr1covmatrixz0om, "tr1covmatrixz0om/D"); // Covariance matrix of the track parameters
+  _ntp->Branch("tr1covmatrixz0tl", &d.tr1covmatrixz0tl, "tr1covmatrixz0tl/D"); // Covariance matrix of the track parameters
+  _ntp->Branch("tr1covmatrixphph", &d.tr1covmatrixphph, "tr1covmatrixphph/D"); // Covariance matrix of the track parameters
+  _ntp->Branch("tr1covmatrixphom", &d.tr1covmatrixphom, "tr1covmatrixphom/D"); // Covariance matrix of the track parameters
+  _ntp->Branch("tr1covmatrixphtl", &d.tr1covmatrixphtl, "tr1covmatrixphtl/D"); // Covariance matrix of the track parameters
+  _ntp->Branch("tr1covmatrixomom", &d.tr1covmatrixomom, "tr1covmatrixomom/D"); // Covariance matrix of the track parameters
+  _ntp->Branch("tr1covmatrixomtl", &d.tr1covmatrixomtl, "tr1covmatrixomtl/D"); // Covariance matrix of the track parameters
+  _ntp->Branch("tr1covmatrixtltl", &d.tr1covmatrixtltl, "tr1covmatrixtltl/D"); // Covariance matrix of the track parameters
+  // ======================================================= //
+  // Track1 MC particle data
+  _ntp->Branch("tr1mcx", &d.tr1mcx, "tr1mcx/D"); // the production vertex of the particle in [mm].
+  _ntp->Branch("tr1mcy", &d.tr1mcy, "tr1mcy/D"); // the production vertex of the particle in [mm].
+  _ntp->Branch("tr1mcz", &d.tr1mcz, "tr1mcz/D"); // the production vertex of the particle in [mm].
+  _ntp->Branch("tr1id", &d.tr1id, "tr1id/I"); // the number of MC ID for this particle - 0 if other
+  _ntp->Branch("tr1pdg", &d.tr1pdg, "tr1pdg/I"); // the number of MC PDG for this particle - 0 if other
+  _ntp->Branch("tr1ssid", &tr1ssid, "tr1ssid/I"); // the number of MC ID for ss parent particle - 0 if other
+  _ntp->Branch("tr1sspdg", &tr1sspdg, "tr1sspdg/I"); // the number of MC PDG for ss parent particle - 0 if other
+  _ntp->Branch("tr1ssc", &tr1ssc, "tr1ssc/I"); // semistable c : 1, not : 0
+  _ntp->Branch("tr1ssb", &tr1ssb, "tr1ssb/I"); // semistable b : 1, not : 0
+  _ntp->Branch("tr1oth", &tr1oth, "tr1oth/I"); // other : 1, not : 0
+  _ntp->Branch("tr1pri", &tr1pri, "tr1pri/I"); // primary : 1, not : 0
+  // ======================================================= //
+  _ntp->Branch("tr1selection", &d.tr1selection, "tr1selection/I"); // track selection
+}
+
+void MakeROOTFileTracks::process() {
+
+  Event* event = Event::Instance();
+  const TrackVec& track_list = event->getTracks();
+
+  std::cout << "Event " << nEvt << std::endl;
+	  
+  for (unsigned int i=0; i < track_list.size(); ++i) {
+
+    int tr1ssssid = -999;
+    int tr1sssspdg = -999;
+    int tr2ssssid = -999;
+    int tr2sssspdg = -999;
+    
+    ntr1Trk = i;
+    const Track* track1 = track_list[i];
+    if (!track1) continue;
+    const MCParticle* mcpc1 = event->getMCParticle(track1);
+    _hel1 = new lcfiplus::Helix(track1, PointBase::NOTUSED);
+
+    memset(&_data,0,sizeof(_data));
+
+    _data.tr1d0 = track1->getD0();
+    _data.tr1z0 = track1->getZ0();
+    _data.tr1phi = track1->getPhi();
+    _data.tr1omega = track1->getOmega();
+    _data.tr1tanlam = track1->getTanLambda();
+
+    _data.tr1charge = (int)track1->getCharge();
+
+    _data.tr1x = _hel1->GetPos(0.).X();
+    _data.tr1y = _hel1->GetPos(0.).Y();
+    _data.tr1z = _hel1->GetPos(0.).Z();
+
+    TLorentzVector tr1tlv = *track1;
+    _data.tr1energy = tr1tlv.E();
+
+    const double* cov1 = track1->getCovMatrix();
+    
+    _data.tr1covmatrixd0d0 = cov1[0]; // d0d0
+    _data.tr1covmatrixd0z0 = cov1[1]; // d0z0
+    _data.tr1covmatrixd0ph = cov1[2]; // d0ph
+    _data.tr1covmatrixd0om = cov1[3]; // d0om
+    _data.tr1covmatrixd0tl = cov1[4]; // d0tl
+    _data.tr1covmatrixz0z0 = cov1[5]; // z0z0
+    _data.tr1covmatrixz0ph = cov1[6]; // z0ph
+    _data.tr1covmatrixz0om = cov1[7]; // z0om
+    _data.tr1covmatrixz0tl = cov1[8]; // z0tl
+    _data.tr1covmatrixphph = cov1[9]; // phph
+    _data.tr1covmatrixphom = cov1[10]; // phom
+    _data.tr1covmatrixphtl = cov1[11]; // phtl
+    _data.tr1covmatrixomom = cov1[12]; // omom
+    _data.tr1covmatrixomtl = cov1[13]; // omtl
+    _data.tr1covmatrixtltl = cov1[14]; // tltl
+    
+    if (mcpc1){
+      _data.tr1mcx = mcpc1->getVertex().X();
+      _data.tr1mcy = mcpc1->getVertex().Y();
+      _data.tr1mcz = mcpc1->getVertex().Z();
+      _data.tr1id = mcpc1->getId();
+      _data.tr1pdg = mcpc1->getPDG();
+
+      const MCParticle* ssmcpc1 = mcpc1->getSemiStableParent();
+
+      if (ssmcpc1==0){
+	tr1ssc = 0;
+	tr1ssb = 0;
+	tr1oth = 0;
+	tr1pri = 1;
+	tr1ssid = 0;
+	tr1sspdg = 0;
+      }
+      if (ssmcpc1){
+        tr1ssid = ssmcpc1->getId();
+        tr1sspdg = ssmcpc1->getPDG();
+        if (ssmcpc1->getParent()->getId()==0){
+	  tr1ssc = 0;
+	  tr1ssb = 0;
+	  tr1oth = 0;
+	  tr1pri = 1;
+        }
+	else if (ssmcpc1->isSemiStableC()){
+	  tr1ssc = 1;
+	  tr1ssb = 0;
+	  tr1oth = 0;
+	  tr1pri = 0;
+	  tr1ssssid = ssmcpc1->getSemiStableParent()->getId();
+	  tr1sssspdg = ssmcpc1->getSemiStableParent()->getPDG();
+        }
+	else if (ssmcpc1->isSemiStableB()){
+	  tr1ssc = 0;
+	  tr1ssb = 1;
+	  tr1oth = 0;
+	  tr1pri = 0;
+        }
+        else {
+	  tr1ssc = 0;
+	  tr1ssb = 0;
+	  tr1oth = 1;
+	  tr1pri = 0;
+        }
+	/*
+	cout << "SSC : " << tr1ssc << ", ID : " << ssmcpc1->getId() << ", PDG : " << ssmcpc1->getPDG() << 
+	", Parent : " << ssmcpc1->getParent()->getId() << endl;
+	*/
+      }
+    }
+
+    TrackSelectorConfig cfgtrack;
+    cfgtrack.maxD0 = 10.;
+    cfgtrack.maxZ0 = 20.;
+    cfgtrack.minPt = 0.1;
+    cfgtrack.maxInnermostHitRadius = 1e10;
+    
+    cfgtrack.maxD0Err = 0.1;
+    cfgtrack.maxZ0Err = 0.1;
+
+    cfgtrack.minTpcHits = 20;
+    cfgtrack.minFtdHits = 3;
+    cfgtrack.minVtxHits = 3;
+    cfgtrack.minVtxPlusFtdHits = 1;
+    
+    VertexFinderSuehara::VertexFinderSueharaConfig cfgvtx;
+
+    TrackSelector sel;
+    if(sel.passesCut(track1, cfgtrack)) _data.tr1selection = 1;
+    else _data.tr1selection = 0;
+
+    _ntp->Fill();
+  }
+  nEvt++;
+}
+
+void MakeROOTFileTracks::end() {
   _file->Write();
   _file->Close();
 }

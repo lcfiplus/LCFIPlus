@@ -36,7 +36,7 @@ void DebugPrintGetTracks(std::vector<std::vector<double> > tracks);
 void DebugPrintVLSTMPrediction(std::vector<std::vector<std::vector<double> > > scores);
 
 std::vector<std::vector<double> > GetEventData(bool debug, std::vector<std::vector<double> > index, std::vector<std::vector<double> > variables,
-                                               tensorflow::SavedModelBundleLite& pair_model_bundle, tensorflow::SavedModelBundleLite& pair_pos_model_bundle);
+                                               tensorflow::SavedModelBundleLite& pair_model_bundle);
 
 std::vector<std::vector<double> > GetRemainDecoderTracks(std::vector<std::vector<double> > decoder_tracks, std::vector<int> track_list);
 

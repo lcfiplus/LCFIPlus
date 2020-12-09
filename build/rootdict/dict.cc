@@ -1105,6 +1105,40 @@ namespace ROOT {
    static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::lcfiplus::MakeROOTFileBB*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
 } // end of namespace ROOT
 
+namespace ROOT {
+   static void *new_lcfipluscLcLMakeROOTFileTracks(void *p = 0);
+   static void *newArray_lcfipluscLcLMakeROOTFileTracks(Long_t size, void *p);
+   static void delete_lcfipluscLcLMakeROOTFileTracks(void *p);
+   static void deleteArray_lcfipluscLcLMakeROOTFileTracks(void *p);
+   static void destruct_lcfipluscLcLMakeROOTFileTracks(void *p);
+   static void streamer_lcfipluscLcLMakeROOTFileTracks(TBuffer &buf, void *obj);
+
+   // Function generating the singleton type initializer
+   static TGenericClassInfo *GenerateInitInstanceLocal(const ::lcfiplus::MakeROOTFileTracks*)
+   {
+      ::lcfiplus::MakeROOTFileTracks *ptr = 0;
+      static ::TVirtualIsAProxy* isa_proxy = new ::TInstrumentedIsAProxy< ::lcfiplus::MakeROOTFileTracks >(0);
+      static ::ROOT::TGenericClassInfo 
+         instance("lcfiplus::MakeROOTFileTracks", ::lcfiplus::MakeROOTFileTracks::Class_Version(), "include/makerootfileforDL.h", 250,
+                  typeid(::lcfiplus::MakeROOTFileTracks), ::ROOT::Internal::DefineBehavior(ptr, ptr),
+                  &::lcfiplus::MakeROOTFileTracks::Dictionary, isa_proxy, 16,
+                  sizeof(::lcfiplus::MakeROOTFileTracks) );
+      instance.SetNew(&new_lcfipluscLcLMakeROOTFileTracks);
+      instance.SetNewArray(&newArray_lcfipluscLcLMakeROOTFileTracks);
+      instance.SetDelete(&delete_lcfipluscLcLMakeROOTFileTracks);
+      instance.SetDeleteArray(&deleteArray_lcfipluscLcLMakeROOTFileTracks);
+      instance.SetDestructor(&destruct_lcfipluscLcLMakeROOTFileTracks);
+      instance.SetStreamerFunc(&streamer_lcfipluscLcLMakeROOTFileTracks);
+      return &instance;
+   }
+   TGenericClassInfo *GenerateInitInstance(const ::lcfiplus::MakeROOTFileTracks*)
+   {
+      return GenerateInitInstanceLocal((::lcfiplus::MakeROOTFileTracks*)0);
+   }
+   // Static variable to force the class initialization
+   static ::ROOT::TGenericClassInfo *_R__UNIQUE_DICT_(Init) = GenerateInitInstanceLocal((const ::lcfiplus::MakeROOTFileTracks*)0x0); R__UseDummy(_R__UNIQUE_DICT_(Init));
+} // end of namespace ROOT
+
 namespace lcfiplus {
 //______________________________________________________________________________
 atomic_TClass_ptr EventStoreObserver::fgIsA(0);  // static to hold class pointer
@@ -2174,6 +2208,43 @@ TClass *MakeROOTFileBB::Dictionary()
 TClass *MakeROOTFileBB::Class()
 {
    if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::lcfiplus::MakeROOTFileBB*)0x0)->GetClass(); }
+   return fgIsA;
+}
+
+} // namespace lcfiplus
+namespace lcfiplus {
+//______________________________________________________________________________
+atomic_TClass_ptr MakeROOTFileTracks::fgIsA(0);  // static to hold class pointer
+
+//______________________________________________________________________________
+const char *MakeROOTFileTracks::Class_Name()
+{
+   return "lcfiplus::MakeROOTFileTracks";
+}
+
+//______________________________________________________________________________
+const char *MakeROOTFileTracks::ImplFileName()
+{
+   return ::ROOT::GenerateInitInstanceLocal((const ::lcfiplus::MakeROOTFileTracks*)0x0)->GetImplFileName();
+}
+
+//______________________________________________________________________________
+int MakeROOTFileTracks::ImplFileLine()
+{
+   return ::ROOT::GenerateInitInstanceLocal((const ::lcfiplus::MakeROOTFileTracks*)0x0)->GetImplFileLine();
+}
+
+//______________________________________________________________________________
+TClass *MakeROOTFileTracks::Dictionary()
+{
+   fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::lcfiplus::MakeROOTFileTracks*)0x0)->GetClass();
+   return fgIsA;
+}
+
+//______________________________________________________________________________
+TClass *MakeROOTFileTracks::Class()
+{
+   if (!fgIsA.load()) { R__LOCKGUARD(gInterpreterMutex); fgIsA = ::ROOT::GenerateInitInstanceLocal((const ::lcfiplus::MakeROOTFileTracks*)0x0)->GetClass(); }
    return fgIsA;
 }
 
@@ -3844,13 +3915,11 @@ void VertexFindingwithDL::Streamer(TBuffer &R__b)
       R__b >> ThresholdSecondaryScore;
       R__b >> debug;
       R__b.StreamObject(&(pair_path),typeid(pair_path));
-      R__b.StreamObject(&(pair_pos_path),typeid(pair_pos_path));
       R__b.StreamObject(&(lstm_path),typeid(lstm_path));
       R__b.StreamObject(&(slstm_path),typeid(slstm_path));
       R__b.StreamObject(&(session_options),typeid(session_options));
       R__b.StreamObject(&(run_options),typeid(run_options));
       R__b.StreamObject(&(pair_model_bundle),typeid(pair_model_bundle));
-      R__b.StreamObject(&(pair_pos_model_bundle),typeid(pair_pos_model_bundle));
       R__b.StreamObject(&(lstm_model_bundle),typeid(lstm_model_bundle));
       R__b.StreamObject(&(slstm_model_bundle),typeid(slstm_model_bundle));
       R__b.CheckByteCount(R__s, R__c, thisClass::IsA());
@@ -3871,13 +3940,11 @@ void VertexFindingwithDL::Streamer(TBuffer &R__b)
       R__b << ThresholdSecondaryScore;
       R__b << debug;
       R__b.StreamObject(&(pair_path),typeid(pair_path));
-      R__b.StreamObject(&(pair_pos_path),typeid(pair_pos_path));
       R__b.StreamObject(&(lstm_path),typeid(lstm_path));
       R__b.StreamObject(&(slstm_path),typeid(slstm_path));
       R__b.StreamObject(&(session_options),typeid(session_options));
       R__b.StreamObject(&(run_options),typeid(run_options));
       R__b.StreamObject(&(pair_model_bundle),typeid(pair_model_bundle));
-      R__b.StreamObject(&(pair_pos_model_bundle),typeid(pair_pos_model_bundle));
       R__b.StreamObject(&(lstm_model_bundle),typeid(lstm_model_bundle));
       R__b.StreamObject(&(slstm_model_bundle),typeid(slstm_model_bundle));
       R__b.SetByteCount(R__c, kTRUE);
@@ -4081,6 +4148,84 @@ namespace ROOT {
       ((::lcfiplus::MakeROOTFileBB*)obj)->::lcfiplus::MakeROOTFileBB::Streamer(buf);
    }
 } // end of namespace ROOT for class ::lcfiplus::MakeROOTFileBB
+
+namespace lcfiplus {
+//______________________________________________________________________________
+void MakeROOTFileTracks::Streamer(TBuffer &R__b)
+{
+   // Stream an object of class lcfiplus::MakeROOTFileTracks.
+
+   //This works around a msvc bug and should be harmless on other platforms
+   typedef ::lcfiplus::MakeROOTFileTracks thisClass;
+   UInt_t R__s, R__c;
+   if (R__b.IsReading()) {
+      Version_t R__v = R__b.ReadVersion(&R__s, &R__c); if (R__v) { }
+      //This works around a msvc bug and should be harmless on other platforms
+      typedef lcfiplus::Algorithm baseClass0;
+      baseClass0::Streamer(R__b);
+      R__b >> _ntp;
+      R__b >> _file;
+      R__b >> _hel1;
+      R__b >> _hel2;
+      R__b >> nEvt;
+      R__b >> ntr1Trk;
+      R__b >> tr1ssid;
+      R__b >> tr1sspdg;
+      R__b >> tr1ssc;
+      R__b >> tr1ssb;
+      R__b >> tr1oth;
+      R__b >> tr1pri;
+      R__b >> xyz;
+      R__b.StreamObject(&(_data),typeid(_data));
+      R__b.CheckByteCount(R__s, R__c, thisClass::IsA());
+   } else {
+      R__c = R__b.WriteVersion(thisClass::IsA(), kTRUE);
+      //This works around a msvc bug and should be harmless on other platforms
+      typedef lcfiplus::Algorithm baseClass0;
+      baseClass0::Streamer(R__b);
+      R__b << _ntp;
+      R__b << _file;
+      R__b << _hel1;
+      R__b << _hel2;
+      R__b << nEvt;
+      R__b << ntr1Trk;
+      R__b << tr1ssid;
+      R__b << tr1sspdg;
+      R__b << tr1ssc;
+      R__b << tr1ssb;
+      R__b << tr1oth;
+      R__b << tr1pri;
+      R__b << xyz;
+      R__b.StreamObject(&(_data),typeid(_data));
+      R__b.SetByteCount(R__c, kTRUE);
+   }
+}
+
+} // namespace lcfiplus
+namespace ROOT {
+   // Wrappers around operator new
+   static void *new_lcfipluscLcLMakeROOTFileTracks(void *p) {
+      return  p ? ::new((::ROOT::Internal::TOperatorNewHelper*)p) ::lcfiplus::MakeROOTFileTracks : new ::lcfiplus::MakeROOTFileTracks;
+   }
+   static void *newArray_lcfipluscLcLMakeROOTFileTracks(Long_t nElements, void *p) {
+      return p ? ::new((::ROOT::Internal::TOperatorNewHelper*)p) ::lcfiplus::MakeROOTFileTracks[nElements] : new ::lcfiplus::MakeROOTFileTracks[nElements];
+   }
+   // Wrapper around operator delete
+   static void delete_lcfipluscLcLMakeROOTFileTracks(void *p) {
+      delete ((::lcfiplus::MakeROOTFileTracks*)p);
+   }
+   static void deleteArray_lcfipluscLcLMakeROOTFileTracks(void *p) {
+      delete [] ((::lcfiplus::MakeROOTFileTracks*)p);
+   }
+   static void destruct_lcfipluscLcLMakeROOTFileTracks(void *p) {
+      typedef ::lcfiplus::MakeROOTFileTracks current_t;
+      ((current_t*)p)->~current_t();
+   }
+   // Wrapper around a custom streamer member function.
+   static void streamer_lcfipluscLcLMakeROOTFileTracks(TBuffer &buf, void *obj) {
+      ((::lcfiplus::MakeROOTFileTracks*)obj)->::lcfiplus::MakeROOTFileTracks::Streamer(buf);
+   }
+} // end of namespace ROOT for class ::lcfiplus::MakeROOTFileTracks
 
 namespace ROOT {
    static TClass *vectorlElcfipluscLcLVertexmUgR_Dictionary();
@@ -5605,6 +5750,7 @@ namespace lcfiplus{class __attribute__((annotate("$clingAutoload$/home/goto/ILC/
 namespace lcfiplus{class __attribute__((annotate("$clingAutoload$/home/goto/ILC/LCFIPlus/include/processwithDL.h")))  VertexFindingwithDL;}
 namespace lcfiplus{class __attribute__((annotate("$clingAutoload$/home/goto/ILC/LCFIPlus/include/makerootfileforDL.h")))  MakeROOTFileCC;}
 namespace lcfiplus{class __attribute__((annotate("$clingAutoload$/home/goto/ILC/LCFIPlus/include/makerootfileforDL.h")))  MakeROOTFileBB;}
+namespace lcfiplus{class __attribute__((annotate("$clingAutoload$/home/goto/ILC/LCFIPlus/include/makerootfileforDL.h")))  MakeROOTFileTracks;}
 )DICTFWDDCLS";
     static const char* payloadCode = R"DICTPAYLOAD(
 #line 1 "dict dictionary payload"
@@ -5648,6 +5794,7 @@ namespace lcfiplus{class __attribute__((annotate("$clingAutoload$/home/goto/ILC/
 "lcfiplus::MakeNtuple", payloadCode, "@",
 "lcfiplus::MakeROOTFileBB", payloadCode, "@",
 "lcfiplus::MakeROOTFileCC", payloadCode, "@",
+"lcfiplus::MakeROOTFileTracks", payloadCode, "@",
 "lcfiplus::Neutral", payloadCode, "@",
 "lcfiplus::PrimaryVertexFinder", payloadCode, "@",
 "lcfiplus::ReadMVA", payloadCode, "@",

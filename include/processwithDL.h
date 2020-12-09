@@ -43,10 +43,10 @@ class VertexFindingwithDL : public Algorithm {
   double ThresholdPrimaryScore, ThresholdSecondaryScore;
   bool debug;
 
-  tensorflow::string pair_path, pair_pos_path, lstm_path, slstm_path;
+  tensorflow::string pair_path, lstm_path, slstm_path;
   tensorflow::SessionOptions session_options;
   tensorflow::RunOptions run_options;
-  tensorflow::SavedModelBundleLite pair_model_bundle, pair_pos_model_bundle, lstm_model_bundle, slstm_model_bundle;
+  tensorflow::SavedModelBundleLite pair_model_bundle, lstm_model_bundle, slstm_model_bundle;
 
   //tensorflow::Status pair_status, pair_pos_status, lstm_status, slstm_status;
 

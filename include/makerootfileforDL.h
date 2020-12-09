@@ -247,6 +247,70 @@ class MakeROOTFileBB : public Algorithm {
   TracksData _data;
 };
 
+class MakeROOTFileTracks : public Algorithm {
+ public:
+  MakeROOTFileTracks() {}
+  virtual ~MakeROOTFileTracks() {}
+  void init(Parameters* param);
+  void process();
+  void end();
+  ClassDef(MakeROOTFileTracks,1);
+ private:
+  TTree* _ntp;
+  TFile* _file;
+  Helix* _hel1;
+  Helix* _hel2;
+  int nEvt;
+  int ntr1Trk;
+  int tr1ssid = -999;
+  int tr1sspdg = -999;
+  int tr1ssc = -999;
+  int tr1ssb = -999;
+  int tr1oth = -999;
+  int tr1pri = -999;
+
+  TVector3* xyz;
+  //enum par : int;
+  //enum tpar : int;
+  struct TracksData {
+    double tr1d0 = -999;
+    double tr1z0 = -999;
+    double tr1phi = -999;
+    double tr1omega = -999;
+    double tr1tanlam = -999;
+    double tr1x = -999;
+    double tr1y = -999;
+    double tr1z = -999;
+    int tr1charge = -999;
+    double tr1energy = -999;
+    double tr1covmatrixd0d0 = -999;
+    double tr1covmatrixd0z0 = -999;
+    double tr1covmatrixd0ph = -999;
+    double tr1covmatrixd0om = -999;
+    double tr1covmatrixd0tl = -999;
+    double tr1covmatrixz0z0 = -999;
+    double tr1covmatrixz0ph = -999;
+    double tr1covmatrixz0om = -999;
+    double tr1covmatrixz0tl = -999;
+    double tr1covmatrixphph = -999;
+    double tr1covmatrixphom = -999;
+    double tr1covmatrixphtl = -999;
+    double tr1covmatrixomom = -999;
+    double tr1covmatrixomtl = -999;
+    double tr1covmatrixtltl = -999;
+    double tr1mcx = -999;
+    double tr1mcy = -999;
+    double tr1mcz = -999;
+    int tr1id = -999;
+    int tr1pdg = -999;
+    double tr1tlvx = -999;
+    double tr1tlvy = -999;
+    double tr1tlvz = -999;
+    int tr1selection = -999;
+  };
+  TracksData _data;
+};
+
 }
 
 #endif

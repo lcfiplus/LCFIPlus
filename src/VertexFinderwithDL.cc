@@ -216,8 +216,8 @@ void VertexFinderwithDL::GetPairsEncoderDecoderTracks(TrackVec& tracks, int NTra
 
     const double* cov = track->getCovMatrix();
     for(int c=0; c<15; c++){
-      tmptrack.push_back(-tanh(8000 * (cov[c] + 0.0005)));
-      tmppair1.push_back(-tanh(8000 * (cov[c] + 0.0005)));
+      tmptrack.push_back(tanh(8000 * (cov[c] - 0.0005)));
+      tmppair1.push_back(tanh(8000 * (cov[c] - 0.0005)));
     }
     // One track
     encoder_tracks.push_back(tmptrack);
@@ -264,8 +264,7 @@ void VertexFinderwithDL::GetPairsEncoderDecoderTracks(TrackVec& tracks, int NTra
 }
 
 std::vector<std::vector<double> > VertexFinderwithDL::GetEventData(bool debug, std::vector<std::vector<double> > index, std::vector<std::vector<double> > variables,
-                                                                   tensorflow::SavedModelBundleLite& pair_model_bundle,
-								   tensorflow::SavedModelBundleLite& pair_pos_model_bundle){
+                                                                   tensorflow::SavedModelBundleLite& pair_model_bundle){
 
   tensorflow::Tensor tvariables = VertexFinderwithDL::N2DVector2Tensor(variables);
   std::vector<tensorflow::Tensor> tmppair_outputs;
@@ -273,16 +272,11 @@ std::vector<std::vector<double> > VertexFinderwithDL::GetEventData(bool debug, s
 				          		                  {"StatefulPartitionedCall:0"},
 						                          {}, &tmppair_outputs);
   std::vector<std::vector<double> > _labels = VertexFinderwithDL::Tensor2N2DVector(tmppair_outputs[0]);
-
-  std::vector<tensorflow::Tensor> tmppair_pos_outputs;
-  tensorflow::Status pair_pos_runStatus = pair_pos_model_bundle.GetSession()->Run({{"serving_default_input_1:0", tvariables}},
-				          		                          {"StatefulPartitionedCall:0"},
-						                                  {}, &tmppair_pos_outputs);
-  std::vector<std::vector<double> > _positions = VertexFinderwithDL::Tensor2N2DVector(tmppair_pos_outputs[0]);
+  std::vector<std::vector<double> > _positions = VertexFinderwithDL::Tensor2N2DVector(tmppair_outputs[1]);
 
   std::vector<std::vector<double> > _index_variables = VertexFinderwithDL::ConcatN2DVector(index, variables); // 0,1:Track Num 2-45:Var
-  std::vector<std::vector<double> > _variables_labels = VertexFinderwithDL::ConcatN2DVector(_index_variables, _labels); // 46:NC 47:PV 48CC 49BB 50BC
-  std::vector<std::vector<double> > event_data = VertexFinderwithDL::ConcatN2DVector(_variables_labels, _positions); // 51Pos
+  std::vector<std::vector<double> > _variables_labels = VertexFinderwithDL::ConcatN2DVector(_index_variables, _labels); // 46:NC 47:PV 48SVCC 49SVBB 50TVCC 51SVBC 52Others
+  std::vector<std::vector<double> > event_data = VertexFinderwithDL::ConcatN2DVector(_variables_labels, _positions); // 53Pos
 
   if(debug==true){
     int iMax = variables.size();
@@ -290,12 +284,12 @@ std::vector<std::vector<double> > VertexFinderwithDL::GetEventData(bool debug, s
     for(int i=0; i<iMax; i++){
       std::cout << "Track 1 " << event_data.at(i).at(0) << " Track 2 " << event_data.at(i).at(1)
 	        << " NC " << event_data.at(i).at(46) << " PV " << event_data.at(i).at(47)
-	        << " SV CC " << event_data.at(i).at(48) << " BB " << event_data.at(i).at(49) << " BC " << event_data.at(i).at(50)
-	        << " Position " << event_data.at(i).at(51) << std::endl;
+	        << " SVCC " << event_data.at(i).at(48) << " SVBB " << event_data.at(i).at(49) << " TVCC " << event_data.at(i).at(50)
+	        << " SVBC " << event_data.at(i).at(51) << " Others " << event_data.at(i).at(52) << " Position " << event_data.at(i).at(53) << std::endl;
       std::cout << "Track 1 " << index.at(i).at(0) << " Track 2 " << index.at(i).at(1)
 	        << " NC " << _labels.at(i).at(0) << " PV " << _labels.at(i).at(1)
-	        << " SV CC " << _labels.at(i).at(2) << " BB " << _labels.at(i).at(3) << " BC " << _labels.at(i).at(4)
-	        << " Position " << _positions.at(i).at(0) << std::endl;
+	        << " SVCC " << _labels.at(i).at(2) << " SVBB " << _labels.at(i).at(3) << " TVCC " << _labels.at(i).at(4)
+	        << " SVBC " << _labels.at(i).at(5) << " Others " << _labels.at(i).at(6) << " Position " << _positions.at(i).at(0) << std::endl;
     }
   }
   return event_data;
@@ -314,18 +308,23 @@ std::vector<std::vector<double> > VertexFinderwithDL::GetRemainDecoderTracks(std
 std::vector<std::vector<double> > VertexFinderwithDL::SecondarySeedSelection(std::vector<std::vector<double> > event_data, int ThresholdPairSecondaryScore, int ThresholdPairPosScore){
   std::vector<std::vector<double> > secondary_event_data;
   for(std::size_t i=0; i<event_data.size(); i++){
-    double tmp_secondary_score = event_data.at(i).at(48) + event_data.at(i).at(49) + event_data.at(i).at(50);
+    double tmp_secondary_score = event_data.at(i).at(48) + event_data.at(i).at(49) + event_data.at(i).at(50) + event_data.at(i).at(51);
     if((event_data.at(i).at(46) > event_data.at(i).at(47) and event_data.at(i).at(46) > event_data.at(i).at(48) and
-	event_data.at(i).at(46) > event_data.at(i).at(49) and event_data.at(i).at(46) > event_data.at(i).at(50)) or
+	event_data.at(i).at(46) > event_data.at(i).at(49) and event_data.at(i).at(46) > event_data.at(i).at(50) and
+	event_data.at(i).at(46) > event_data.at(i).at(51) and event_data.at(i).at(46) > event_data.at(i).at(52)) or //Not Connected
        (event_data.at(i).at(47) > event_data.at(i).at(46) and event_data.at(i).at(47) > event_data.at(i).at(48) and
-        event_data.at(i).at(47) > event_data.at(i).at(49) and event_data.at(i).at(47) > event_data.at(i).at(50))) continue;
+        event_data.at(i).at(47) > event_data.at(i).at(49) and event_data.at(i).at(47) > event_data.at(i).at(50) and
+        event_data.at(i).at(47) > event_data.at(i).at(51) and event_data.at(i).at(47) > event_data.at(i).at(52)) or //Primary Vertex
+       (event_data.at(i).at(52) > event_data.at(i).at(46) and event_data.at(i).at(52) > event_data.at(i).at(47) and
+        event_data.at(i).at(52) > event_data.at(i).at(48) and event_data.at(i).at(52) > event_data.at(i).at(49) and
+        event_data.at(i).at(52) > event_data.at(i).at(50) and event_data.at(i).at(52) > event_data.at(i).at(51))) continue; //Others
     //if((event_data.at(i).at(48) > ThresholdPairSecondaryScoreBBCC) or (event_data.at(i).at(49) > ThresholdPairSecondaryScoreBBCC)) continue;
     if(tmp_secondary_score < ThresholdPairSecondaryScore) continue;
-    if(event_data.at(i).at(51) > ThresholdPairPosScore) continue;
+    if(event_data.at(i).at(53) > ThresholdPairPosScore) continue;
     secondary_event_data.push_back(event_data.at(i));
   }
   sort(secondary_event_data.begin(), secondary_event_data.end(), [](const std::vector<double> &alpha, const std::vector<double> &beta){
-    return alpha.at(48)+alpha.at(49)+alpha.at(50) > beta.at(48)+beta.at(49)+beta.at(50);
+    return alpha.at(48)+alpha.at(49)+alpha.at(50)+alpha.at(51) > beta.at(48)+beta.at(49)+beta.at(50)+beta.at(51);
   });
   return secondary_event_data;
 }
