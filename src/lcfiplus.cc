@@ -89,7 +89,11 @@ const Vertex* Event::getPrimaryVertex(const char* privtxname) const {
   if(primaryVertices.size() > 0 ){
     return primaryVertices[0];
   } else {
-    return nullptr;
+    // Primary vertex is used for adapting vertex z-position deviation from 0 and thus always required.
+    // A dummy vertex with position(0.,0.,0.) and errors{0.,0.,0.,0.,0.,0.} actually dose nothing.
+    double dz = static_cast<double>(Globals::Instance()->getBeamSizeZ());
+    static Vertex defaultVertex(0.,0.,0.,0.,dz,static_cast<const double*>(0),false);
+    return &defaultVertex;
   }
 }
 
