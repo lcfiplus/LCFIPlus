@@ -1,3 +1,11 @@
+# v00-10-01
+
+* 2021-11-19 YONAMINE Ryo ([PR#61](https://github.com/lcfiplus/LCFIPlus/pull/61))
+  - add dummy primary-vertex to avoid accessing null pointer unless actual one is found.
+
+* 2020-12-09 Tomohiko Tanabe ([PR#54](https://github.com/lcfiplus/LCFIPlus/pull/54))
+  - Fix typos in reading input values for the FlavorTag algorithm related to the number of VTX hits used for computing joint probabilities
+
 # v00-08
 
 * 2019-09-04 Andre Sailer ([PR#51](https://github.com/LCFIPlus/LCFIPlus/pull/51))
