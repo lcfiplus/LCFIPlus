@@ -141,6 +141,10 @@ void BuildUpVertex::init(Parameters* param) {
   _avf = param->get("BuildUpVertex.UseAVF", true);
   //AVF parameter
   _temperature = param->get("BuildUpVertex.AVFTemperature", 5.0);
+
+  // primary vertex refitting parameters
+  _beamspotConstraint = param->get("PrimaryVertexFinder.BeamspotConstraint", true);
+  _beamspotSmearing = param->get("PrimaryVertexFinder.BeamspotSmearing", true);
 }
 
 void BuildUpVertex::process() {
@@ -188,6 +192,10 @@ void BuildUpVertex::process() {
   //flag AVF/chi2
   cfg.avf=_avf;
   cfg.temperature=_temperature;
+
+  //flag primary vertex refitting
+  cfg.beamspotConstraint = _beamspotConstraint;
+  cfg.beamspotSmearing = _beamspotSmearing;
 
   // build up vertexing
   vector<Vertex*> v0tmp;

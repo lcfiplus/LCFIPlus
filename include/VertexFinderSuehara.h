@@ -80,6 +80,10 @@ class VertexFinderSueharaConfig {
   double cutBNess;  //parameter for BNess
   double cutBNessE1;  //parameter for BNess
 
+  //flg for primary vertex refitting options
+  bool beamspotConstraint;
+  bool beamspotSmearing;
+
   // default values
   VertexFinderSueharaConfig() {
     v0selTrack.setV0Tight();

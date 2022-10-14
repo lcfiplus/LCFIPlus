@@ -72,6 +72,9 @@ class BuildUpVertex : public Algorithm {
   bool _avf; //flag AVF/chi2
   double _temperature;  //AVF parameter
 
+  // primary vertex finding parameters
+  bool _beamspotConstraint;
+  bool _beamspotSmearing;
 };
 
 class JetClustering : public Algorithm {
