@@ -438,6 +438,11 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
         track->SetE(pfo->getEnergy());
         TVector3 pTrack(pfo->getMomentum());
         track->SetVect(pTrack);
+	
+	//<JP
+	if(pfo->getTracks().size() > 1) track->setIsUnique(false);
+	else track->setIsUnique(true);
+	//JP>
 
 	//PIDs
 	try{

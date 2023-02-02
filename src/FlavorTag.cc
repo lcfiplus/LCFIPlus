@@ -1748,6 +1748,71 @@ class FtNBNess : public FTAlgo {
   }
 };
 
+  //<Added by JP
+  class dEdxRatioPionOverKaonPri : public FTAlgo {
+  public:
+    dEdxRatioPionOverKaonPri() : FTAlgo("dEdxRatioPionOverKaonPri") {}
+    void process() {
+      _result=dEdxKDSRatioPri( _privtx, string("PionOverKaon"));
+    } 
+  };
+
+  class dEdxRatioKaonOverProtonPri : public FTAlgo {
+  public:
+    dEdxRatioKaonOverProtonPri() : FTAlgo("dEdxRatioKaonOverProtonPri") {}
+    void process() {
+      _result=dEdxKDSRatioPri( _privtx, string("KaonOverProton"));
+    }
+  };
+
+  class dEdxRatioPionOverProtonPri : public FTAlgo {
+  public:
+    dEdxRatioPionOverProtonPri() : FTAlgo("dEdxRatioPionOverProtonPri") {}
+    void process() {
+      _result=dEdxKDSRatioPri( _privtx, string("PionOverProton"));
+    }
+  };
+
+  class dEdxRatioPionOverKaonSec : public FTAlgo {
+  public:
+    dEdxRatioPionOverKaonSec() : FTAlgo("dEdxRatioPionOverKaonSec") {}
+    void process() {
+      _result = -2; //Entry in -2 means no secondary vtx
+    
+      const VertexVec& vtxList = _jet->getVertices(); //getVerticesForFT()?
+      // I believe getVertices gets you all and getVerticesForFT don't count pseudovtx      
+      if(vtxList.size()>0){
+	_result=dEdxKDSRatioSec( vtxList, string("PionOverKaon"));
+      }
+    }
+  };
+
+  class dEdxRatioKaonOverProtonSec : public FTAlgo {
+  public:
+    dEdxRatioKaonOverProtonSec() : FTAlgo("dEdxRatioKaonOverProtonSec") {}
+    void process() {
+      _result = -2;
+      const VertexVec& vtxList = _jet->getVertices();
+      if(vtxList.size()>0){
+        _result=dEdxKDSRatioSec( vtxList, string("KaonOverProton"));
+      }
+    }
+  };
+
+  class dEdxRatioPionOverProtonSec : public FTAlgo {
+  public:
+    dEdxRatioPionOverProtonSec() : FTAlgo("dEdxRatioPionOverProtonSec") {}
+    void process() {
+      _result = -2;
+      const VertexVec& vtxList = _jet->getVertices();
+      if(vtxList.size()>0){
+        _result=dEdxKDSRatioSec( vtxList, string("PionOverProton"));
+      }
+    }
+  };
+
+  //Added by JP>
+
 void FTManager::initVars() {
   if (_initialized)return;
   _initialized = true;
@@ -1890,7 +1955,17 @@ void FTManager::initVars() {
   add( new FtBNess3() ); 
   add( new FtBNessMass() ); 
   add( new FtNBNess() ); 
+
+  //dEdx Variables
+  add( new dEdxRatioPionOverKaonSec() );
+  add( new dEdxRatioKaonOverProtonSec() );
+  add( new dEdxRatioPionOverProtonSec() );
+  add( new dEdxRatioPionOverKaonPri() );
+  add( new dEdxRatioKaonOverProtonPri() );
+  add( new dEdxRatioPionOverProtonPri() );
 }
+
+
 
 void FlavorTag::init(Parameters* param) {
   Algorithm::init(param);

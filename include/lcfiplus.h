@@ -414,6 +414,15 @@ class Track : public TLorentzVector {//, protected TrackData {//, public EventPo
     _pdg = pdg;
   }
 
+  //<JP
+  bool getIsUnique() const {
+    return _isunique;
+  }
+  void setIsUnique(bool isunique) {
+    _isunique = isunique;
+  }
+  //JP>
+
   double getCharge() const {
     return _charge;
   }
@@ -587,6 +596,11 @@ class Track : public TLorentzVector {//, protected TrackData {//, public EventPo
 
   //BNess
   double _bness, _cness;
+
+  //<JP
+  //dEdx
+  bool _isunique;
+  //JP>
 
   ClassDef(lcfiplus::Track, 2);
 };
