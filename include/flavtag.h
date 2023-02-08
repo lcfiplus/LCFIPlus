@@ -42,9 +42,6 @@ class FTAlgo {
   void setNHitsJointProbZ0(int value);
   void setNHitsMostSignificantTrack(int value);
   float getValue();
-  //<JP
-  
-  //JP>
 
   const string& getName() const {
     return _name;

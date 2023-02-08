@@ -591,7 +591,7 @@ class Track : public TLorentzVector {//, protected TrackData {//, public EventPo
   //ParticleID posterior probability
   map<string, double> _pidProbability;
   double _correnergy;
-  // For avoid double-counting in dEdx
+  //To avoid double-counting in dEdx
   bool _isMultiTrack;
 
   //BNess

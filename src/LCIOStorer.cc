@@ -445,7 +445,6 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
 
 	//PIDs
 	try{
-	  
 	  int pidAlgoID = PID.getAlgorithmID(_pidAlgoName);
 	  //pdg value
 	  track->setPDG(PID.getParticleID(pfo,pidAlgoID).getPDG());
@@ -458,7 +457,7 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
 	  //cal. corrected mass
 	  track->setCorrEnergy(pmass[PID.getParticleID(pfo,pidAlgoID).getPDG()]);
 	  //track->swapEnergy();  //really temporal need flag...
-	
+	  throw(Exception("PID Collection not found."));
 	}catch(UTIL::UnknownAlgorithm e){
 	}
 	

@@ -95,8 +95,6 @@ class LcfiplusProcessor : public Processor, public lcfiplus::EventStoreObserver 
 
   //Particle ID Algorithm Name
   string _pidAlgoName;
-  //dEdx parameters
-
 } ;
 
 #endif
