@@ -28,9 +28,8 @@ extern double jointProbZ0(const Jet* jet, const Vertex* pri, int minhitcut, doub
 extern double jointProb2D0(const Jet* jet, const Vertex* pri, int minhitcut, double maxd0sigcut, bool useVertexTracks, const TH1* jh1, const TH1* jh2);
 extern double jointProb2Z0(const Jet* jet, const Vertex* pri, int minhitcut, double maxz0sigcut, bool useVertexTracks, const TH1* jh1, const TH1* jh2);
 
-//dEdx
- extern double dEdxKDSRatioPri(const Vertex* pri, string P1overP2);
- extern double dEdxKDSRatioSec(const VertexVec& vtxList, string P1overP2);
+extern double dEdxKDSRatioPri(const Vertex* pri, string P1overP2, float GausWidth, float MaxMom, float MaxAngle);
+extern double dEdxKDSRatioSec(const VertexVec& vtxList, string P1overP2, float GausWidth, float MaxMom, float MaxAngle);
 }
 }
 

@@ -439,13 +439,13 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
         TVector3 pTrack(pfo->getMomentum());
         track->SetVect(pTrack);
 	
-	//<JP
-	if(pfo->getTracks().size() > 1) track->setIsUnique(false);
-	else track->setIsUnique(true);
-	//JP>
+	// To avoid double-counting in dEdx
+	if(pfo->getTracks().size() > 1) track->setMultiTrack(true);
+	else track->setMultiTrack(false);
 
 	//PIDs
 	try{
+	  
 	  int pidAlgoID = PID.getAlgorithmID(_pidAlgoName);
 	  //pdg value
 	  track->setPDG(PID.getParticleID(pfo,pidAlgoID).getPDG());
@@ -458,6 +458,7 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
 	  //cal. corrected mass
 	  track->setCorrEnergy(pmass[PID.getParticleID(pfo,pidAlgoID).getPDG()]);
 	  //track->swapEnergy();  //really temporal need flag...
+	
 	}catch(UTIL::UnknownAlgorithm e){
 	}
 	

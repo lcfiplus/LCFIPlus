@@ -42,6 +42,10 @@ class FTAlgo {
   void setNHitsJointProbZ0(int value);
   void setNHitsMostSignificantTrack(int value);
   float getValue();
+  //<JP
+  
+  //JP>
+
   const string& getName() const {
     return _name;
   }
@@ -56,6 +60,7 @@ class FTAlgo {
   int _nhitsJointProbD0;
   int _nhitsJointProbZ0;
   int _nhitsMostSignificantTrack;
+  double _kdsGausWidth, _kdsMinMom, _kdsMaxAng;
   float _result;
   string _name;
 

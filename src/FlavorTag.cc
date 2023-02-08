@@ -1748,12 +1748,11 @@ class FtNBNess : public FTAlgo {
   }
 };
 
-  //<Added by JP
   class dEdxRatioPionOverKaonPri : public FTAlgo {
   public:
     dEdxRatioPionOverKaonPri() : FTAlgo("dEdxRatioPionOverKaonPri") {}
     void process() {
-      _result=dEdxKDSRatioPri( _privtx, string("PionOverKaon"));
+      _result=dEdxKDSRatioPri( _privtx, string("PionOverKaon"), _kdsGausWidth, _kdsMinMom, _kdsMaxAng);
     } 
   };
 
@@ -1761,7 +1760,7 @@ class FtNBNess : public FTAlgo {
   public:
     dEdxRatioKaonOverProtonPri() : FTAlgo("dEdxRatioKaonOverProtonPri") {}
     void process() {
-      _result=dEdxKDSRatioPri( _privtx, string("KaonOverProton"));
+      _result=dEdxKDSRatioPri( _privtx, string("KaonOverProton"), _kdsGausWidth, _kdsMinMom, _kdsMaxAng);
     }
   };
 
@@ -1769,7 +1768,7 @@ class FtNBNess : public FTAlgo {
   public:
     dEdxRatioPionOverProtonPri() : FTAlgo("dEdxRatioPionOverProtonPri") {}
     void process() {
-      _result=dEdxKDSRatioPri( _privtx, string("PionOverProton"));
+      _result=dEdxKDSRatioPri( _privtx, string("PionOverProton"), _kdsGausWidth, _kdsMinMom, _kdsMaxAng);
     }
   };
 
@@ -1778,11 +1777,9 @@ class FtNBNess : public FTAlgo {
     dEdxRatioPionOverKaonSec() : FTAlgo("dEdxRatioPionOverKaonSec") {}
     void process() {
       _result = -2; //Entry in -2 means no secondary vtx
-    
-      const VertexVec& vtxList = _jet->getVertices(); //getVerticesForFT()?
-      // I believe getVertices gets you all and getVerticesForFT don't count pseudovtx      
+      const VertexVec& vtxList = _jet->getVertices(); //We also count pseudo-vtx
       if(vtxList.size()>0){
-	_result=dEdxKDSRatioSec( vtxList, string("PionOverKaon"));
+	_result=dEdxKDSRatioSec( vtxList, string("PionOverKaon"), _kdsGausWidth, _kdsMinMom, _kdsMaxAng);
       }
     }
   };
@@ -1794,7 +1791,7 @@ class FtNBNess : public FTAlgo {
       _result = -2;
       const VertexVec& vtxList = _jet->getVertices();
       if(vtxList.size()>0){
-        _result=dEdxKDSRatioSec( vtxList, string("KaonOverProton"));
+        _result=dEdxKDSRatioSec( vtxList, string("KaonOverProton"), _kdsGausWidth, _kdsMinMom, _kdsMaxAng);
       }
     }
   };
@@ -1806,12 +1803,10 @@ class FtNBNess : public FTAlgo {
       _result = -2;
       const VertexVec& vtxList = _jet->getVertices();
       if(vtxList.size()>0){
-        _result=dEdxKDSRatioSec( vtxList, string("PionOverProton"));
+        _result=dEdxKDSRatioSec( vtxList, string("PionOverProton"), _kdsGausWidth, _kdsMinMom, _kdsMaxAng);
       }
     }
   };
-
-  //Added by JP>
 
 void FTManager::initVars() {
   if (_initialized)return;
@@ -1965,8 +1960,6 @@ void FTManager::initVars() {
   add( new dEdxRatioPionOverProtonPri() );
 }
 
-
-
 void FlavorTag::init(Parameters* param) {
   Algorithm::init(param);
 
@@ -1984,7 +1977,11 @@ void FlavorTag::init(Parameters* param) {
   _nhitsJointProbD0 = param->get("FlavorTag.NVTXhitsJointProbD0", int(4));
   _nhitsJointProbZ0 = param->get("FlavorTag.NVTXhitsJointProbZ0", int(4));
   _nhitsMostSignificantTrack = param->get("FlavorTag.NhitsMostSignificantTrack", int(4));
-
+  //dEdx-KDS 
+  _kdsGausWidth = param->get("FlavorTag.KDSGaussianWidth",double(4));
+  _kdsMinMom = param->get("FlavorTag.KDSMinMomentum",double(3));
+  _kdsMaxAng = param->get("FlavorTag.KDSMaxAngle",double(0.95));
+  
   //string outputFilename = param->get("TrainNtupleFile",string("lcfiplus.root"));
   //_nJet = (int)param->get("TrainNJet",float(2));
 

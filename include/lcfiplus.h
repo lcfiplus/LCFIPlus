@@ -414,14 +414,12 @@ class Track : public TLorentzVector {//, protected TrackData {//, public EventPo
     _pdg = pdg;
   }
 
-  //<JP
-  bool getIsUnique() const {
-    return _isunique;
+  bool isMultiTrack() const {
+    return _isMultiTrack;
   }
-  void setIsUnique(bool isunique) {
-    _isunique = isunique;
+  void setMultiTrack(bool multi) {
+    _isMultiTrack = multi;
   }
-  //JP>
 
   double getCharge() const {
     return _charge;
@@ -593,14 +591,11 @@ class Track : public TLorentzVector {//, protected TrackData {//, public EventPo
   //ParticleID posterior probability
   map<string, double> _pidProbability;
   double _correnergy;
+  // For avoid double-counting in dEdx
+  bool _isMultiTrack;
 
   //BNess
   double _bness, _cness;
-
-  //<JP
-  //dEdx
-  bool _isunique;
-  //JP>
 
   ClassDef(lcfiplus::Track, 2);
 };
