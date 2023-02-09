@@ -165,6 +165,13 @@ void FTManager::process(const Event* event, const Vertex* privtx, int nhitsJoint
   }
 }
 
+//KDS Parameters 
+void FTManager::setKDSParameters(const double gaus, const double mom, const double ang) {
+  _kdsGausWidth = gaus;
+  _kdsMinMom = mom;
+  _kdsMaxAng = ang;
+}
+
 float* FTManager::getVarAddress(const string& varname) {
   std::vector<FTAlgo*>::iterator iter;
   for (iter = _algoList.begin(); iter != _algoList.end(); ++iter) {

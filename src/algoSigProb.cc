@@ -495,30 +495,31 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
     sigVec[5] = 0;
   }
 }
-
-  double dEdxKDSRatioPri(const Vertex* pri, string P1overP2, float GausWidth, float MaxMom, float MaxAngle) {
+  // Functions to fill observables using the Kaon dEdx istance in PID processors
+  // Jesus Marquez Hernandez (IFIC-CSIC/UV)
+  double dEdxKDSRatioPri(const Vertex* pri, string P1overP2, float GausWidth, float MinMom, float MaxAngle) {
 
     double ratio=-3; // If a -3 appear, something went wrong
-    double neg_counter=0; // Estimated protons                                                                                                                                                           
+    double neg_counter=0; // Estimated protons                                       
     double null_counter=0; // Estimated kaons
     double pos_counter=0; // Estimated pion
     TrackVec& vtxTracks = pri->getTracks(); // We load the primary vtx
     try{
       for(unsigned int i=0;i<vtxTracks.size();i++){
-	double KDS=vtxTracks.at(i)->getParticleIDProbability("kaon_dEdxdistance"); // Following my steps, KDS:Kaon Distance Significance                                                     
+	double KDS=vtxTracks.at(i)->getParticleIDProbability("kaon_dEdxdistance"); // Following my steps, KDS:Kaon Distance Significance
 	double mom=vtxTracks.at(i)->P();
 	double costheta=vtxTracks.at(i)->CosTheta();
 	bool isMultiTrack=vtxTracks.at(i)->isMultiTrack();
 	if(KDS == 0) continue; // Initialization issue
-	if(mom < MaxMom) continue; // Energy cut
+	if(mom < MinMom) continue; // Energy cut
 	if(abs(costheta) > MaxAngle) continue; // Angle cut
-	if(isMultiTrack == true) continue;
-	
+	if(isMultiTrack == true) continue; // Remove possible multitracks
+	// Fill the particle counters
 	if(KDS > -1.5*GausWidth && KDS < -0.5*GausWidth) neg_counter++;
 	if(KDS > -0.5*GausWidth && KDS < 0.5*GausWidth) null_counter++;
 	if(KDS > 0.5*GausWidth && KDS < 1.5*GausWidth) pos_counter++;
       }
-      // Now we fill the ratio:
+      // Fill the ratios:
       if(P1overP2 == "PionOverKaon"){
 	if(null_counter==0)ratio=-1; // Initialize to not divide by 0
 	else ratio=pos_counter/null_counter;
@@ -538,7 +539,7 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
     
   }
   
-  double dEdxKDSRatioSec(const VertexVec& vtxList, string P1overP2, float GausWidth, float MaxMom, float MaxAngle) {
+  double dEdxKDSRatioSec(const VertexVec& vtxList, string P1overP2, float GausWidth, float MinMom, float MaxAngle) {
     
     double ratio=-3;
     double neg_counter=0; //estimated protons
@@ -553,16 +554,16 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
 	  double costheta=vtxTracks.at(i)->CosTheta();
 	  bool isMultiTrack=vtxTracks.at(i)->isMultiTrack();
 	  if(KDS == 0) continue; // Initialization issue
-	  if(mom < MaxMom) continue; // Energy cut
+	  if(mom < MinMom) continue; // Energy cut
 	  if(abs(costheta) > MaxAngle) continue; // Angle cut
-	  if(isMultiTrack == true) continue;
-
+	  if(isMultiTrack == true) continue;  // Remove possible multitracks
+	  // Fill the particle counters
 	  if(KDS > -1.5*GausWidth && KDS < -0.5*GausWidth) neg_counter++;
 	  if(KDS > -0.5*GausWidth && KDS < 0.5*GausWidth) null_counter++;
 	  if(KDS > 0.5*GausWidth && KDS < 1.5*GausWidth) pos_counter++;
 	}
       }
-      // Now we fill the ratio:
+      // Fill the ratios:
       if(P1overP2 == "PionOverKaon"){
         if(null_counter==0)ratio=-1; // Initialize to not divide by 0
         else ratio=pos_counter/null_counter;

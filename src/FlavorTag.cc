@@ -1648,12 +1648,9 @@ class FtBNess0 : public FTAlgo {
 	bness.push_back(tracks[i]->getBNess());
  	//bness.push_back(0.5*tracks[i]->getBNess()+0.5*tracks[i]->getCNess());
       }
-      
       std::sort(bness.begin(), bness.end());
-      
       _result = bness[tracks.size()-1];
     }
-
   }
 };
 
@@ -1668,13 +1665,10 @@ class FtBNess1 : public FTAlgo {
       for(unsigned int i=0;i<tracks.size();i++){
 	bness.push_back(tracks[i]->getBNess());
  	//bness.push_back(0.5*tracks[i]->getBNess()+0.5*tracks[i]->getCNess());
-      }
-      
+      } 
       std::sort(bness.begin(), bness.end());
-      
       _result = bness[tracks.size()-2];
     }
-	
   }
 };
 
@@ -1690,12 +1684,9 @@ class FtBNess2 : public FTAlgo {
 	bness.push_back(tracks[i]->getBNess());
  	//bness.push_back(0.5*tracks[i]->getBNess()+0.5*tracks[i]->getCNess());
       }
-      
-      std::sort(bness.begin(), bness.end());
-      
+      std::sort(bness.begin(), bness.end()); 
       _result = bness[tracks.size()-3];
-    }
-	
+    }	
   }
 };
 
@@ -1711,12 +1702,9 @@ class FtBNess3 : public FTAlgo {
 	bness.push_back(tracks[i]->getBNess());
  	//bness.push_back(0.5*tracks[i]->getBNess()+0.5*tracks[i]->getCNess());
       }
-      
-      std::sort(bness.begin(), bness.end());
-      
+      std::sort(bness.begin(), bness.end()); 
       _result = bness[tracks.size()-4];
-    }
-	
+    }	
   }
 };
 
@@ -1730,7 +1718,6 @@ class FtBNessMass : public FTAlgo {
     for(unsigned int i=0;i<tracks.size();i++){
       if(tracks[i]->getBNess()>=0.5) bnessvec += (*tracks[i]);
     }
-
     _result = bnessvec.M();
   }
 };
@@ -1744,7 +1731,6 @@ class FtNBNess : public FTAlgo {
     for(unsigned int i=0;i<tracks.size();i++){
       if(tracks[i]->getBNess()>=0.5) _result ++;
     }
-       
   }
 };
 
@@ -1752,7 +1738,10 @@ class FtNBNess : public FTAlgo {
   public:
     dEdxRatioPionOverKaonPri() : FTAlgo("dEdxRatioPionOverKaonPri") {}
     void process() {
-      _result=dEdxKDSRatioPri( _privtx, string("PionOverKaon"), _kdsGausWidth, _kdsMinMom, _kdsMaxAng);
+      double gaus = FTManager::getInstance().getKDSGausWidth();
+      double mom = FTManager::getInstance().getKDSMinMom();
+      double ang = FTManager::getInstance().getKDSMaxAng();
+      _result=dEdxKDSRatioPri( _privtx, string("PionOverKaon"), gaus, mom, ang);
     } 
   };
 
@@ -1760,7 +1749,10 @@ class FtNBNess : public FTAlgo {
   public:
     dEdxRatioKaonOverProtonPri() : FTAlgo("dEdxRatioKaonOverProtonPri") {}
     void process() {
-      _result=dEdxKDSRatioPri( _privtx, string("KaonOverProton"), _kdsGausWidth, _kdsMinMom, _kdsMaxAng);
+      double gaus = FTManager::getInstance().getKDSGausWidth();
+      double mom = FTManager::getInstance().getKDSMinMom();
+      double ang = FTManager::getInstance().getKDSMaxAng();
+      _result=dEdxKDSRatioPri( _privtx, string("KaonOverProton"), gaus, mom, ang);
     }
   };
 
@@ -1768,7 +1760,10 @@ class FtNBNess : public FTAlgo {
   public:
     dEdxRatioPionOverProtonPri() : FTAlgo("dEdxRatioPionOverProtonPri") {}
     void process() {
-      _result=dEdxKDSRatioPri( _privtx, string("PionOverProton"), _kdsGausWidth, _kdsMinMom, _kdsMaxAng);
+      double gaus = FTManager::getInstance().getKDSGausWidth();
+      double mom = FTManager::getInstance().getKDSMinMom();
+      double ang = FTManager::getInstance().getKDSMaxAng();
+      _result=dEdxKDSRatioPri( _privtx, string("PionOverProton"), gaus, mom, ang);
     }
   };
 
@@ -1779,7 +1774,10 @@ class FtNBNess : public FTAlgo {
       _result = -2; //Entry in -2 means no secondary vtx
       const VertexVec& vtxList = _jet->getVertices(); //We also count pseudo-vtx
       if(vtxList.size()>0){
-	_result=dEdxKDSRatioSec( vtxList, string("PionOverKaon"), _kdsGausWidth, _kdsMinMom, _kdsMaxAng);
+	double gaus = FTManager::getInstance().getKDSGausWidth();
+	double mom = FTManager::getInstance().getKDSMinMom();
+	double ang = FTManager::getInstance().getKDSMaxAng();
+	_result=dEdxKDSRatioSec( vtxList, string("PionOverKaon"), gaus, mom, ang);
       }
     }
   };
@@ -1791,7 +1789,10 @@ class FtNBNess : public FTAlgo {
       _result = -2;
       const VertexVec& vtxList = _jet->getVertices();
       if(vtxList.size()>0){
-        _result=dEdxKDSRatioSec( vtxList, string("KaonOverProton"), _kdsGausWidth, _kdsMinMom, _kdsMaxAng);
+	double gaus = FTManager::getInstance().getKDSGausWidth();
+	double mom = FTManager::getInstance().getKDSMinMom();
+	double ang = FTManager::getInstance().getKDSMaxAng();
+        _result=dEdxKDSRatioSec( vtxList, string("KaonOverProton"), gaus, mom, ang);
       }
     }
   };
@@ -1803,7 +1804,10 @@ class FtNBNess : public FTAlgo {
       _result = -2;
       const VertexVec& vtxList = _jet->getVertices();
       if(vtxList.size()>0){
-        _result=dEdxKDSRatioSec( vtxList, string("PionOverProton"), _kdsGausWidth, _kdsMinMom, _kdsMaxAng);
+	double gaus = FTManager::getInstance().getKDSGausWidth();
+	double mom = FTManager::getInstance().getKDSMinMom();
+	double ang = FTManager::getInstance().getKDSMaxAng();
+        _result=dEdxKDSRatioSec( vtxList, string("PionOverProton"), gaus, mom, ang);
       }
     }
   };
@@ -2015,6 +2019,7 @@ void FlavorTag::process() {
   mgr.setIPProbHolder(_holder);
 
   mgr.process(event, privtx, _nhitsJointProbD0, _nhitsJointProbZ0, _nhitsMostSignificantTrack, jets);
+  mgr.setKDSParameters(_kdsGausWidth, _kdsMinMom, _kdsMaxAng);
 }
 
 void FlavorTag::end() {

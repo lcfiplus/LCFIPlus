@@ -42,7 +42,7 @@ class FTAlgo {
   void setNHitsJointProbZ0(int value);
   void setNHitsMostSignificantTrack(int value);
   float getValue();
-
+  
   const string& getName() const {
     return _name;
   }
@@ -57,7 +57,6 @@ class FTAlgo {
   int _nhitsJointProbD0;
   int _nhitsJointProbZ0;
   int _nhitsMostSignificantTrack;
-  double _kdsGausWidth, _kdsMinMom, _kdsMaxAng;
   float _result;
   string _name;
 
@@ -89,6 +88,8 @@ class FTManager {
   void openFile(const char* filename);
   void closeFile();
   void process(const Event* event, const Vertex* privtx, int nhitsJointProbD0, int nhitsJointProbZ0, int nhitsMostSignificantTrack, JetVec& jets);
+  //dEdx-KDS
+  void setKDSParameters(const double gaus, const double mom, const double ang);
 
   float* getVarAddress(const string& varname);
   void setEval(bool seteval, bool exportAllVars) {
@@ -116,6 +117,18 @@ class FTManager {
   void setAuxiliary(double aux) {
     _aux = aux;
   }
+  
+  double getKDSGausWidth()const {
+    return _kdsGausWidth;
+  }
+
+  double getKDSMinMom()const {
+    return _kdsMinMom;
+  }
+
+  double getKDSMaxAng()const {
+    return _kdsMaxAng;
+  }
 
  private:
   void add(FTAlgo* v); // 121214 moved to private
@@ -138,9 +151,11 @@ class FTManager {
   // variables for flavor tagging
   FtIPProbHolder* _holder;
   double _aux;
+  // dEdx-KDS
+  double _kdsGausWidth, _kdsMinMom, _kdsMaxAng;
 };
 
-// historgram holder for d0/z0 probability
+// histogram holder for d0/z0 probability
 class FtD0bProb;
 class FtD0cProb;
 class FtD0qProb;
