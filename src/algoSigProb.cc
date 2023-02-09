@@ -531,7 +531,6 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
 	if(neg_counter==0)ratio=-1; // Initialize to not divide by 0      
 	else ratio=pos_counter/neg_counter;
       }
-      throw(Exception("PID Collection not found. Don't use dEdx observables."));
     }
     catch (lcfiplus::Exception& e) {
     }
@@ -576,7 +575,6 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
         if(neg_counter==0)ratio=-1; // Initialize to not divide by 0
         else ratio=pos_counter/neg_counter;
       }
-      throw(Exception("PID Collection not found. Don't use dEdx observables."));
     }
     catch (lcfiplus::Exception& e) {
     }
