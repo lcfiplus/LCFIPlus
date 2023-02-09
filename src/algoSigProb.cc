@@ -516,7 +516,7 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
 	if(isMultiTrack == true) continue; // Remove possible multitracks
 	// Fill the particle counters
 	if(KDS > -3*GausWidth && KDS < -GausWidth) neg_counter++;
-	if(KDS > GausWidth && KDS < GausWidth) null_counter++;
+	if(KDS > -GausWidth && KDS < GausWidth) null_counter++;
 	if(KDS > GausWidth && KDS < 3*GausWidth) pos_counter++;
       }
       // Fill the ratios:
@@ -559,7 +559,7 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
 	  if(isMultiTrack == true) continue;  // Remove possible multitracks
 	  // Fill the particle counters
 	  if(KDS > -3*GausWidth && KDS < -GausWidth) neg_counter++;
-	  if(KDS > GausWidth && KDS < GausWidth) null_counter++;
+	  if(KDS > -GausWidth && KDS < GausWidth) null_counter++;
 	  if(KDS > GausWidth && KDS < 3*GausWidth) pos_counter++;
 	}
       }
