@@ -515,9 +515,9 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
 	if(abs(costheta) > MaxAngle) continue; // Angle cut
 	if(isMultiTrack == true) continue; // Remove possible multitracks
 	// Fill the particle counters
-	if(KDS > -3*GausWidth && KDS < -GausWidth) neg_counter++;
+	if(KDS > -10 && KDS < -GausWidth) neg_counter++;
 	if(KDS > -GausWidth && KDS < GausWidth) null_counter++;
-	if(KDS > GausWidth && KDS < 3*GausWidth) pos_counter++;
+	if(KDS > GausWidth && KDS < 10) pos_counter++;
       }
       // Fill the ratios:
       if(P1overP2 == "PionOverKaon"){
@@ -558,9 +558,9 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
 	  if(abs(costheta) > MaxAngle) continue; // Angle cut
 	  if(isMultiTrack == true) continue;  // Remove possible multitracks
 	  // Fill the particle counters
-	  if(KDS > -3*GausWidth && KDS < -GausWidth) neg_counter++;
+	  if(KDS > -10 && KDS < -GausWidth) neg_counter++;
 	  if(KDS > -GausWidth && KDS < GausWidth) null_counter++;
-	  if(KDS > GausWidth && KDS < 3*GausWidth) pos_counter++;
+	  if(KDS > GausWidth && KDS < 10) pos_counter++;
 	}
       }
       // Fill the ratios:
