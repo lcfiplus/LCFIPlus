@@ -1734,83 +1734,169 @@ class FtNBNess : public FTAlgo {
   }
 };
 
-  class dEdxRatioPionOverKaonPri : public FTAlgo {
-  public:
-    dEdxRatioPionOverKaonPri() : FTAlgo("dEdxRatioPionOverKaonPri") {}
-    void process() {
+  //dEdx
+class dEdxNKaonPri : public FTAlgo {
+ public:
+  dEdxNKaonPri() : FTAlgo("dEdxNKaonPri") {}
+  void process() {
+    _result = -2;
+    const VertexVec& vtxList = _jet->getVertices();
+    double gaus = FTManager::getInstance().getKDSGausWidth();
+    double mom = FTManager::getInstance().getKDSMinMom();
+    double ang = FTManager::getInstance().getKDSMaxAng();
+    _result=dEdxNPartPri( _privtx, string("Kaon"), gaus, mom, ang);
+  }
+};
+  
+class dEdxNPionPri : public FTAlgo {
+ public:
+  dEdxNPionPri() : FTAlgo("dEdxNPionPri") {}
+  void process() {
+    _result = -2;
+    const VertexVec& vtxList = _jet->getVertices();
+    double gaus = FTManager::getInstance().getKDSGausWidth();
+    double mom = FTManager::getInstance().getKDSMinMom();
+    double ang = FTManager::getInstance().getKDSMaxAng();
+    _result=dEdxNPartPri( _privtx, string("Pion"), gaus, mom, ang);
+  }
+};
+
+class dEdxNProtonPri : public FTAlgo {
+ public:
+  dEdxNProtonPri() : FTAlgo("dEdxNProtonPri") {}
+  void process() {
+    _result = -2;
+    const VertexVec& vtxList = _jet->getVertices();
+    double gaus = FTManager::getInstance().getKDSGausWidth();
+    double mom = FTManager::getInstance().getKDSMinMom();
+    double ang = FTManager::getInstance().getKDSMaxAng();
+    _result=dEdxNPartPri( _privtx, string("Proton"), gaus, mom, ang);
+  }
+};
+
+class dEdxNKaonSec : public FTAlgo {
+ public:
+  dEdxNKaonSec() : FTAlgo("dEdxNKaonSec") {}
+  void process() {
+    _result = -2;
+    const VertexVec& vtxList = _jet->getVertices();
+    if(vtxList.size()>0){
       double gaus = FTManager::getInstance().getKDSGausWidth();
       double mom = FTManager::getInstance().getKDSMinMom();
       double ang = FTManager::getInstance().getKDSMaxAng();
-      _result=dEdxKDSRatioPri( _privtx, string("PionOverKaon"), gaus, mom, ang);
-    } 
-  };
-
-  class dEdxRatioKaonOverProtonPri : public FTAlgo {
-  public:
-    dEdxRatioKaonOverProtonPri() : FTAlgo("dEdxRatioKaonOverProtonPri") {}
-    void process() {
+      _result=dEdxNPartSec( vtxList, string("Kaon"), gaus, mom, ang);
+    }
+  }
+};
+  
+class dEdxNPionSec : public FTAlgo {
+public:
+  dEdxNPionSec() : FTAlgo("dEdxNPionSec") {}
+  void process() {
+    _result = -2;
+    const VertexVec& vtxList = _jet->getVertices();
+    if(vtxList.size()>0){
       double gaus = FTManager::getInstance().getKDSGausWidth();
       double mom = FTManager::getInstance().getKDSMinMom();
+      double ang = FTManager::getInstance().getKDSMaxAng();
+      _result=dEdxNPartSec( vtxList, string("Pion"), gaus, mom, ang);
+    }
+  }
+};
+  
+class dEdxNProtonSec : public FTAlgo {
+public:
+  dEdxNProtonSec() : FTAlgo("dEdxNProtonSec") {}
+  void process() {
+    _result = -2;
+    const VertexVec& vtxList = _jet->getVertices();
+    if(vtxList.size()>0){
+      double gaus = FTManager::getInstance().getKDSGausWidth();
+      double mom = FTManager::getInstance().getKDSMinMom();
+      double ang = FTManager::getInstance().getKDSMaxAng();
+      _result=dEdxNPartSec( vtxList, string("Proton"), gaus, mom, ang);
+    }
+  }
+};
+  
+  //dEdx Ratios
+class dEdxRatioPionOverKaonPri : public FTAlgo {
+ public:
+  dEdxRatioPionOverKaonPri() : FTAlgo("dEdxRatioPionOverKaonPri") {}
+  void process() {
+    double gaus = FTManager::getInstance().getKDSGausWidth();
+    double mom = FTManager::getInstance().getKDSMinMom();
+    double ang = FTManager::getInstance().getKDSMaxAng();
+    _result=dEdxKDSRatioPri( _privtx, string("PionOverKaon"), gaus, mom, ang);
+  } 
+};
+
+class dEdxRatioKaonOverProtonPri : public FTAlgo {
+ public:
+  dEdxRatioKaonOverProtonPri() : FTAlgo("dEdxRatioKaonOverProtonPri") {}
+  void process() {
+    double gaus = FTManager::getInstance().getKDSGausWidth();
+    double mom = FTManager::getInstance().getKDSMinMom();
       double ang = FTManager::getInstance().getKDSMaxAng();
       _result=dEdxKDSRatioPri( _privtx, string("KaonOverProton"), gaus, mom, ang);
-    }
-  };
+  }
+};
 
-  class dEdxRatioPionOverProtonPri : public FTAlgo {
-  public:
-    dEdxRatioPionOverProtonPri() : FTAlgo("dEdxRatioPionOverProtonPri") {}
-    void process() {
+class dEdxRatioPionOverProtonPri : public FTAlgo {
+ public:
+  dEdxRatioPionOverProtonPri() : FTAlgo("dEdxRatioPionOverProtonPri") {}
+  void process() {
+    double gaus = FTManager::getInstance().getKDSGausWidth();
+    double mom = FTManager::getInstance().getKDSMinMom();
+    double ang = FTManager::getInstance().getKDSMaxAng();
+    _result=dEdxKDSRatioPri( _privtx, string("PionOverProton"), gaus, mom, ang);
+    }
+};
+
+class dEdxRatioPionOverKaonSec : public FTAlgo {
+ public:
+  dEdxRatioPionOverKaonSec() : FTAlgo("dEdxRatioPionOverKaonSec") {}
+  void process() {
+    _result = -2; //Entry in -2 means no secondary vtx
+    const VertexVec& vtxList = _jet->getVertices(); //We also count pseudo-vtx
+    if(vtxList.size()>0){
       double gaus = FTManager::getInstance().getKDSGausWidth();
       double mom = FTManager::getInstance().getKDSMinMom();
       double ang = FTManager::getInstance().getKDSMaxAng();
-      _result=dEdxKDSRatioPri( _privtx, string("PionOverProton"), gaus, mom, ang);
+      _result=dEdxKDSRatioSec( vtxList, string("PionOverKaon"), gaus, mom, ang);
     }
-  };
-
-  class dEdxRatioPionOverKaonSec : public FTAlgo {
-  public:
-    dEdxRatioPionOverKaonSec() : FTAlgo("dEdxRatioPionOverKaonSec") {}
-    void process() {
-      _result = -2; //Entry in -2 means no secondary vtx
-      const VertexVec& vtxList = _jet->getVertices(); //We also count pseudo-vtx
-      if(vtxList.size()>0){
-	double gaus = FTManager::getInstance().getKDSGausWidth();
-	double mom = FTManager::getInstance().getKDSMinMom();
-	double ang = FTManager::getInstance().getKDSMaxAng();
-	_result=dEdxKDSRatioSec( vtxList, string("PionOverKaon"), gaus, mom, ang);
-      }
-    }
-  };
-
-  class dEdxRatioKaonOverProtonSec : public FTAlgo {
-  public:
-    dEdxRatioKaonOverProtonSec() : FTAlgo("dEdxRatioKaonOverProtonSec") {}
-    void process() {
-      _result = -2;
-      const VertexVec& vtxList = _jet->getVertices();
+  }
+};
+  
+class dEdxRatioKaonOverProtonSec : public FTAlgo {
+ public:
+  dEdxRatioKaonOverProtonSec() : FTAlgo("dEdxRatioKaonOverProtonSec") {}
+  void process() {
+    _result = -2;
+    const VertexVec& vtxList = _jet->getVertices();
       if(vtxList.size()>0){
 	double gaus = FTManager::getInstance().getKDSGausWidth();
 	double mom = FTManager::getInstance().getKDSMinMom();
 	double ang = FTManager::getInstance().getKDSMaxAng();
         _result=dEdxKDSRatioSec( vtxList, string("KaonOverProton"), gaus, mom, ang);
       }
-    }
-  };
+  }
+};
 
-  class dEdxRatioPionOverProtonSec : public FTAlgo {
-  public:
-    dEdxRatioPionOverProtonSec() : FTAlgo("dEdxRatioPionOverProtonSec") {}
-    void process() {
-      _result = -2;
-      const VertexVec& vtxList = _jet->getVertices();
-      if(vtxList.size()>0){
-	double gaus = FTManager::getInstance().getKDSGausWidth();
-	double mom = FTManager::getInstance().getKDSMinMom();
-	double ang = FTManager::getInstance().getKDSMaxAng();
-        _result=dEdxKDSRatioSec( vtxList, string("PionOverProton"), gaus, mom, ang);
-      }
+class dEdxRatioPionOverProtonSec : public FTAlgo {
+ public:
+  dEdxRatioPionOverProtonSec() : FTAlgo("dEdxRatioPionOverProtonSec") {}
+  void process() {
+    _result = -2;
+    const VertexVec& vtxList = _jet->getVertices();
+    if(vtxList.size()>0){
+      double gaus = FTManager::getInstance().getKDSGausWidth();
+      double mom = FTManager::getInstance().getKDSMinMom();
+      double ang = FTManager::getInstance().getKDSMaxAng();
+      _result=dEdxKDSRatioSec( vtxList, string("PionOverProton"), gaus, mom, ang);
     }
-  };
+  }
+};
 
 void FTManager::initVars() {
   if (_initialized)return;
@@ -1956,6 +2042,13 @@ void FTManager::initVars() {
   add( new FtNBNess() ); 
 
   //dEdx Variables
+  add( new dEdxNKaonPri() );
+  add( new dEdxNPionPri() );
+  add( new dEdxNProtonPri() );
+  add( new dEdxNKaonSec() );
+  add( new dEdxNPionSec() );
+  add( new dEdxNProtonSec() );
+  add( new dEdxRatioPionOverKaonSec() );
   add( new dEdxRatioPionOverKaonSec() );
   add( new dEdxRatioKaonOverProtonSec() );
   add( new dEdxRatioPionOverProtonSec() );

@@ -497,6 +497,55 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
 }
   // Functions to fill observables using the Kaon dEdx istance in PID processors
   // Jesus Marquez Hernandez (IFIC-CSIC/UV)
+  double dEdxNPartPri(const Vertex* pri, string particle, float GausWidth, float MinMom, float MaxAngle) {
+    double counter=0; 
+    TrackVec& vtxTracks = pri->getTracks(); // We load the primary vtx                                                                                                                                  
+    try{
+      for(unsigned int i=0;i<vtxTracks.size();i++){
+        string PID_name=particle+"_dEdxdistance";
+	double KDS=vtxTracks.at(i)->getParticleIDProbability(PID_name);
+        double mom=vtxTracks.at(i)->P();
+        double costheta=vtxTracks.at(i)->CosTheta();
+        bool isMultiTrack=vtxTracks.at(i)->isMultiTrack();
+        if(KDS == 0) continue; // Initialization issue                                                                                                                                                  
+        if(mom < MinMom) continue; // Energy cut                                                                                                                                                        
+        if(abs(costheta) > MaxAngle) continue; // Angle cut                                                                                                                                             
+        if(isMultiTrack == true) continue; // Remove possible multitracks                                                                                                                               
+        // Fill the particle counter                                                                                                                                                                      
+	if(distance > -GausWidth && distance < GausWidth) counter++;
+      }
+    }
+    catch (lcfiplus::Exception& e) {
+    }
+    return counter; 
+  }
+
+  double dEdxNPartSec(const VertexVec& vtxList, string particle, float GausWidth, float MinMom, float MaxAngle) {
+    double counter=0;
+    try{
+      for (unsigned int j=0; j<vtxList.size(); ++j) {
+        TrackVec& vtxTracks = vtxList[j]->getTracks();
+        for(unsigned int i=0;i<vtxTracks.size();i++){
+	  string PID_name=particle+"_dEdxdistance";
+          double distance=vtxTracks.at(i)->getParticleIDProbability(PID_name);
+          double mom=vtxTracks.at(i)->P();
+          double costheta=vtxTracks.at(i)->CosTheta();
+          bool isMultiTrack=vtxTracks.at(i)->isMultiTrack();
+          if(KDS == 0) continue; // Initialization issue
+          if(mom < MinMom) continue; // Energy cut
+          if(abs(costheta) > MaxAngle) continue; // Angle cut
+          if(isMultiTrack == true) continue;  // Remove possible multitracks
+          // Fill the particle counter
+          if(distance > -GausWidth && distance < GausWidth) counter++;
+	}
+      }
+    }
+    catch (lcfiplus::Exception& e) {
+    }
+    return counter;
+  }
+
+  //Ratios
   double dEdxKDSRatioPri(const Vertex* pri, string P1overP2, float GausWidth, float MinMom, float MaxAngle) {
 
     double ratio=-3; // If a -3 appear, something went wrong
