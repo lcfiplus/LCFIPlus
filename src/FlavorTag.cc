@@ -1739,12 +1739,11 @@ class dEdxNKaonPri : public FTAlgo {
  public:
   dEdxNKaonPri() : FTAlgo("dEdxNKaonPri") {}
   void process() {
-    _result = -2;
-    const VertexVec& vtxList = _jet->getVertices();
+    _result = 0;
     double gaus = FTManager::getInstance().getKDSGausWidth();
     double mom = FTManager::getInstance().getKDSMinMom();
     double ang = FTManager::getInstance().getKDSMaxAng();
-    _result=dEdxNPartPri( _privtx, string("Kaon"), gaus, mom, ang);
+    _result=dEdxNPartPri( _privtx, string("kaon"), gaus, mom, ang);
   }
 };
   
@@ -1752,12 +1751,11 @@ class dEdxNPionPri : public FTAlgo {
  public:
   dEdxNPionPri() : FTAlgo("dEdxNPionPri") {}
   void process() {
-    _result = -2;
-    const VertexVec& vtxList = _jet->getVertices();
+    _result = 0;
     double gaus = FTManager::getInstance().getKDSGausWidth();
     double mom = FTManager::getInstance().getKDSMinMom();
     double ang = FTManager::getInstance().getKDSMaxAng();
-    _result=dEdxNPartPri( _privtx, string("Pion"), gaus, mom, ang);
+    _result=dEdxNPartPri( _privtx, string("pion"), gaus, mom, ang);
   }
 };
 
@@ -1765,12 +1763,11 @@ class dEdxNProtonPri : public FTAlgo {
  public:
   dEdxNProtonPri() : FTAlgo("dEdxNProtonPri") {}
   void process() {
-    _result = -2;
-    const VertexVec& vtxList = _jet->getVertices();
+    _result = 0;
     double gaus = FTManager::getInstance().getKDSGausWidth();
     double mom = FTManager::getInstance().getKDSMinMom();
     double ang = FTManager::getInstance().getKDSMaxAng();
-    _result=dEdxNPartPri( _privtx, string("Proton"), gaus, mom, ang);
+    _result=dEdxNPartPri( _privtx, string("proton"), gaus, mom, ang);
   }
 };
 
@@ -1778,13 +1775,13 @@ class dEdxNKaonSec : public FTAlgo {
  public:
   dEdxNKaonSec() : FTAlgo("dEdxNKaonSec") {}
   void process() {
-    _result = -2;
+    _result = 0;
     const VertexVec& vtxList = _jet->getVertices();
     if(vtxList.size()>0){
       double gaus = FTManager::getInstance().getKDSGausWidth();
       double mom = FTManager::getInstance().getKDSMinMom();
       double ang = FTManager::getInstance().getKDSMaxAng();
-      _result=dEdxNPartSec( vtxList, string("Kaon"), gaus, mom, ang);
+      _result=dEdxNPartSec( vtxList, string("kaon"), gaus, mom, ang);
     }
   }
 };
@@ -1793,13 +1790,13 @@ class dEdxNPionSec : public FTAlgo {
 public:
   dEdxNPionSec() : FTAlgo("dEdxNPionSec") {}
   void process() {
-    _result = -2;
+    _result = 0;
     const VertexVec& vtxList = _jet->getVertices();
     if(vtxList.size()>0){
       double gaus = FTManager::getInstance().getKDSGausWidth();
       double mom = FTManager::getInstance().getKDSMinMom();
       double ang = FTManager::getInstance().getKDSMaxAng();
-      _result=dEdxNPartSec( vtxList, string("Pion"), gaus, mom, ang);
+      _result=dEdxNPartSec( vtxList, string("pion"), gaus, mom, ang);
     }
   }
 };
@@ -1808,13 +1805,13 @@ class dEdxNProtonSec : public FTAlgo {
 public:
   dEdxNProtonSec() : FTAlgo("dEdxNProtonSec") {}
   void process() {
-    _result = -2;
+    _result = 0;
     const VertexVec& vtxList = _jet->getVertices();
     if(vtxList.size()>0){
       double gaus = FTManager::getInstance().getKDSGausWidth();
       double mom = FTManager::getInstance().getKDSMinMom();
       double ang = FTManager::getInstance().getKDSMaxAng();
-      _result=dEdxNPartSec( vtxList, string("Proton"), gaus, mom, ang);
+      _result=dEdxNPartSec( vtxList, string("proton"), gaus, mom, ang);
     }
   }
 };

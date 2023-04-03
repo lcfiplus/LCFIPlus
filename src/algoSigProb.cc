@@ -502,12 +502,15 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
     TrackVec& vtxTracks = pri->getTracks(); // We load the primary vtx                                                                                                                                  
     try{
       for(unsigned int i=0;i<vtxTracks.size();i++){
-        string PID_name=particle+"_dEdxdistance";
-	double KDS=vtxTracks.at(i)->getParticleIDProbability(PID_name);
+	double distance=0;
+	if(particle=="kaon")distance=vtxTracks.at(i)->getParticleIDProbability("kaon_dEdxdistance");
+	else if(particle=="pion")distance=vtxTracks.at(i)->getParticleIDProbability("pion_dEdxdistance");
+	else if(particle=="proton")distance=vtxTracks.at(i)->getParticleIDProbability("proton_dEdxdistance");
         double mom=vtxTracks.at(i)->P();
         double costheta=vtxTracks.at(i)->CosTheta();
         bool isMultiTrack=vtxTracks.at(i)->isMultiTrack();
-        if(KDS == 0) continue; // Initialization issue                                                                                                                                                  
+        if(distance == 0) continue; // Initialization issue
+	if(distance > 100) continue; // Initialization issue if rewritten 
         if(mom < MinMom) continue; // Energy cut                                                                                                                                                        
         if(abs(costheta) > MaxAngle) continue; // Angle cut                                                                                                                                             
         if(isMultiTrack == true) continue; // Remove possible multitracks                                                                                                                               
@@ -526,12 +529,15 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
       for (unsigned int j=0; j<vtxList.size(); ++j) {
         TrackVec& vtxTracks = vtxList[j]->getTracks();
         for(unsigned int i=0;i<vtxTracks.size();i++){
-	  string PID_name=particle+"_dEdxdistance";
-          double distance=vtxTracks.at(i)->getParticleIDProbability(PID_name);
+	  double distance=0;
+	  if(particle=="kaon")distance=vtxTracks.at(i)->getParticleIDProbability("kaon_dEdxdistance");
+	  else if(particle=="pion")distance=vtxTracks.at(i)->getParticleIDProbability("pion_dEdxdistance");
+	  else if(particle=="proton")distance=vtxTracks.at(i)->getParticleIDProbability("proton_dEdxdistance");
           double mom=vtxTracks.at(i)->P();
           double costheta=vtxTracks.at(i)->CosTheta();
           bool isMultiTrack=vtxTracks.at(i)->isMultiTrack();
-          if(KDS == 0) continue; // Initialization issue
+          if(distance == 0) continue; // Initialization issue
+	  if(distance > 100) continue; // Initialization issue if rewritten
           if(mom < MinMom) continue; // Energy cut
           if(abs(costheta) > MaxAngle) continue; // Angle cut
           if(isMultiTrack == true) continue;  // Remove possible multitracks
@@ -560,6 +566,7 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
 	double costheta=vtxTracks.at(i)->CosTheta();
 	bool isMultiTrack=vtxTracks.at(i)->isMultiTrack();
 	if(KDS == 0) continue; // Initialization issue
+	if(KDS > 100) continue; // Initialization issue if rewritten
 	if(mom < MinMom) continue; // Energy cut
 	if(abs(costheta) > MaxAngle) continue; // Angle cut
 	if(isMultiTrack == true) continue; // Remove possible multitracks
@@ -603,6 +610,7 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
 	  double costheta=vtxTracks.at(i)->CosTheta();
 	  bool isMultiTrack=vtxTracks.at(i)->isMultiTrack();
 	  if(KDS == 0) continue; // Initialization issue
+	  if(KDS > 100) continue; // Initialization issue if rewritten
 	  if(mom < MinMom) continue; // Energy cut
 	  if(abs(costheta) > MaxAngle) continue; // Angle cut
 	  if(isMultiTrack == true) continue;  // Remove possible multitracks
