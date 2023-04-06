@@ -30,8 +30,8 @@ extern double jointProb2Z0(const Jet* jet, const Vertex* pri, int minhitcut, dou
 
 extern double dEdxNPartPri(const Vertex* pri, string particle, float GausWidth, float MaxMom, float MaxAngle);
 extern double dEdxNPartSec(const VertexVec& vtxList, string particle, float GausWidth, float MaxMom, float MaxAngle);
-extern double dEdxKDSRatioPri(const Vertex* pri, string P1overP2, float GausWidth, float MaxMom, float MaxAngle);
-extern double dEdxKDSRatioSec(const VertexVec& vtxList, string P1overP2, float GausWidth, float MaxMom, float MaxAngle);
+extern double dEdxRatioPri(const Vertex* pri, string P1overP2, float GausWidth, float MaxMom, float MaxAngle);
+extern double dEdxRatioSec(const VertexVec& vtxList, string P1overP2, float GausWidth, float MaxMom, float MaxAngle);
 }
 }
 

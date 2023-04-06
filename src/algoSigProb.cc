@@ -510,7 +510,7 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
         double costheta=vtxTracks.at(i)->CosTheta();
         bool isMultiTrack=vtxTracks.at(i)->isMultiTrack();
         if(distance == 0) continue; // Initialization issue
-	if(distance > 100) continue; // Initialization issue if rewritten 
+	if(abs(distance) > 100) continue; // Initialization issue if rewritten 
         if(mom < MinMom) continue; // Energy cut                                                                                                                                                        
         if(abs(costheta) > MaxAngle) continue; // Angle cut                                                                                                                                             
         if(isMultiTrack == true) continue; // Remove possible multitracks                                                                                                                               
@@ -537,7 +537,7 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
           double costheta=vtxTracks.at(i)->CosTheta();
           bool isMultiTrack=vtxTracks.at(i)->isMultiTrack();
           if(distance == 0) continue; // Initialization issue
-	  if(distance > 100) continue; // Initialization issue if rewritten
+	  if(abs(distance) > 100) continue; // Initialization issue if rewritten
           if(mom < MinMom) continue; // Energy cut
           if(abs(costheta) > MaxAngle) continue; // Angle cut
           if(isMultiTrack == true) continue;  // Remove possible multitracks
@@ -552,7 +552,7 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
   }
 
   //Ratios
-  double dEdxKDSRatioPri(const Vertex* pri, string P1overP2, float GausWidth, float MinMom, float MaxAngle) {
+  double dEdxRatioPri(const Vertex* pri, string P1overP2, float GausWidth, float MinMom, float MaxAngle) {
 
     double ratio=-3; // If a -3 appear, something went wrong
     double neg_counter=0; // Estimated protons                                       
@@ -566,7 +566,7 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
 	double costheta=vtxTracks.at(i)->CosTheta();
 	bool isMultiTrack=vtxTracks.at(i)->isMultiTrack();
 	if(KDS == 0) continue; // Initialization issue
-	if(KDS > 100) continue; // Initialization issue if rewritten
+	if(abs(KDS) > 100) continue; // Initialization issue if rewritten
 	if(mom < MinMom) continue; // Energy cut
 	if(abs(costheta) > MaxAngle) continue; // Angle cut
 	if(isMultiTrack == true) continue; // Remove possible multitracks
@@ -595,7 +595,7 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
     
   }
   
-  double dEdxKDSRatioSec(const VertexVec& vtxList, string P1overP2, float GausWidth, float MinMom, float MaxAngle) {
+  double dEdxRatioSec(const VertexVec& vtxList, string P1overP2, float GausWidth, float MinMom, float MaxAngle) {
     
     double ratio=-3;
     double neg_counter=0; //estimated protons
@@ -610,7 +610,7 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
 	  double costheta=vtxTracks.at(i)->CosTheta();
 	  bool isMultiTrack=vtxTracks.at(i)->isMultiTrack();
 	  if(KDS == 0) continue; // Initialization issue
-	  if(KDS > 100) continue; // Initialization issue if rewritten
+	  if(abs(KDS) > 100) continue; // Initialization issue if rewritten
 	  if(mom < MinMom) continue; // Energy cut
 	  if(abs(costheta) > MaxAngle) continue; // Angle cut
 	  if(isMultiTrack == true) continue;  // Remove possible multitracks

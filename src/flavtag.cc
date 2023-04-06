@@ -166,10 +166,10 @@ void FTManager::process(const Event* event, const Vertex* privtx, int nhitsJoint
 }
 
 //KDS Parameters 
-void FTManager::setKDSParameters(const double gaus, const double mom, const double ang) {
-  _kdsGausWidth = gaus;
-  _kdsMinMom = mom;
-  _kdsMaxAng = ang;
+void FTManager::setDEDXParameters(const double gaus, const double mom, const double ang) {
+  _dEdxGausWidth = gaus;
+  _dEdxMinMom = mom;
+  _dEdxMaxAng = ang;
 }
 
 float* FTManager::getVarAddress(const string& varname) {

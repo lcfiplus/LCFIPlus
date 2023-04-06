@@ -1740,9 +1740,9 @@ class dEdxNKaonPri : public FTAlgo {
   dEdxNKaonPri() : FTAlgo("dEdxNKaonPri") {}
   void process() {
     _result = 0;
-    double gaus = FTManager::getInstance().getKDSGausWidth();
-    double mom = FTManager::getInstance().getKDSMinMom();
-    double ang = FTManager::getInstance().getKDSMaxAng();
+    double gaus = FTManager::getInstance().getDEDXGausWidth();
+    double mom = FTManager::getInstance().getDEDXMinMom();
+    double ang = FTManager::getInstance().getDEDXMaxAng();
     _result=dEdxNPartPri( _privtx, string("kaon"), gaus, mom, ang);
   }
 };
@@ -1752,9 +1752,9 @@ class dEdxNPionPri : public FTAlgo {
   dEdxNPionPri() : FTAlgo("dEdxNPionPri") {}
   void process() {
     _result = 0;
-    double gaus = FTManager::getInstance().getKDSGausWidth();
-    double mom = FTManager::getInstance().getKDSMinMom();
-    double ang = FTManager::getInstance().getKDSMaxAng();
+    double gaus = FTManager::getInstance().getDEDXGausWidth();
+    double mom = FTManager::getInstance().getDEDXMinMom();
+    double ang = FTManager::getInstance().getDEDXMaxAng();
     _result=dEdxNPartPri( _privtx, string("pion"), gaus, mom, ang);
   }
 };
@@ -1764,9 +1764,9 @@ class dEdxNProtonPri : public FTAlgo {
   dEdxNProtonPri() : FTAlgo("dEdxNProtonPri") {}
   void process() {
     _result = 0;
-    double gaus = FTManager::getInstance().getKDSGausWidth();
-    double mom = FTManager::getInstance().getKDSMinMom();
-    double ang = FTManager::getInstance().getKDSMaxAng();
+    double gaus = FTManager::getInstance().getDEDXGausWidth();
+    double mom = FTManager::getInstance().getDEDXMinMom();
+    double ang = FTManager::getInstance().getDEDXMaxAng();
     _result=dEdxNPartPri( _privtx, string("proton"), gaus, mom, ang);
   }
 };
@@ -1778,9 +1778,9 @@ class dEdxNKaonSec : public FTAlgo {
     _result = 0;
     const VertexVec& vtxList = _jet->getVertices();
     if(vtxList.size()>0){
-      double gaus = FTManager::getInstance().getKDSGausWidth();
-      double mom = FTManager::getInstance().getKDSMinMom();
-      double ang = FTManager::getInstance().getKDSMaxAng();
+      double gaus = FTManager::getInstance().getDEDXGausWidth();
+      double mom = FTManager::getInstance().getDEDXMinMom();
+      double ang = FTManager::getInstance().getDEDXMaxAng();
       _result=dEdxNPartSec( vtxList, string("kaon"), gaus, mom, ang);
     }
   }
@@ -1793,9 +1793,9 @@ public:
     _result = 0;
     const VertexVec& vtxList = _jet->getVertices();
     if(vtxList.size()>0){
-      double gaus = FTManager::getInstance().getKDSGausWidth();
-      double mom = FTManager::getInstance().getKDSMinMom();
-      double ang = FTManager::getInstance().getKDSMaxAng();
+      double gaus = FTManager::getInstance().getDEDXGausWidth();
+      double mom = FTManager::getInstance().getDEDXMinMom();
+      double ang = FTManager::getInstance().getDEDXMaxAng();
       _result=dEdxNPartSec( vtxList, string("pion"), gaus, mom, ang);
     }
   }
@@ -1808,9 +1808,9 @@ public:
     _result = 0;
     const VertexVec& vtxList = _jet->getVertices();
     if(vtxList.size()>0){
-      double gaus = FTManager::getInstance().getKDSGausWidth();
-      double mom = FTManager::getInstance().getKDSMinMom();
-      double ang = FTManager::getInstance().getKDSMaxAng();
+      double gaus = FTManager::getInstance().getDEDXGausWidth();
+      double mom = FTManager::getInstance().getDEDXMinMom();
+      double ang = FTManager::getInstance().getDEDXMaxAng();
       _result=dEdxNPartSec( vtxList, string("proton"), gaus, mom, ang);
     }
   }
@@ -1821,10 +1821,10 @@ class dEdxRatioPionOverKaonPri : public FTAlgo {
  public:
   dEdxRatioPionOverKaonPri() : FTAlgo("dEdxRatioPionOverKaonPri") {}
   void process() {
-    double gaus = FTManager::getInstance().getKDSGausWidth();
-    double mom = FTManager::getInstance().getKDSMinMom();
-    double ang = FTManager::getInstance().getKDSMaxAng();
-    _result=dEdxKDSRatioPri( _privtx, string("PionOverKaon"), gaus, mom, ang);
+    double gaus = FTManager::getInstance().getDEDXGausWidth();
+    double mom = FTManager::getInstance().getDEDXMinMom();
+    double ang = FTManager::getInstance().getDEDXMaxAng();
+    _result=dEdxRatioPri( _privtx, string("PionOverKaon"), gaus, mom, ang);
   } 
 };
 
@@ -1832,10 +1832,10 @@ class dEdxRatioKaonOverProtonPri : public FTAlgo {
  public:
   dEdxRatioKaonOverProtonPri() : FTAlgo("dEdxRatioKaonOverProtonPri") {}
   void process() {
-    double gaus = FTManager::getInstance().getKDSGausWidth();
-    double mom = FTManager::getInstance().getKDSMinMom();
-      double ang = FTManager::getInstance().getKDSMaxAng();
-      _result=dEdxKDSRatioPri( _privtx, string("KaonOverProton"), gaus, mom, ang);
+    double gaus = FTManager::getInstance().getDEDXGausWidth();
+    double mom = FTManager::getInstance().getDEDXMinMom();
+      double ang = FTManager::getInstance().getDEDXMaxAng();
+      _result=dEdxRatioPri( _privtx, string("KaonOverProton"), gaus, mom, ang);
   }
 };
 
@@ -1843,10 +1843,10 @@ class dEdxRatioPionOverProtonPri : public FTAlgo {
  public:
   dEdxRatioPionOverProtonPri() : FTAlgo("dEdxRatioPionOverProtonPri") {}
   void process() {
-    double gaus = FTManager::getInstance().getKDSGausWidth();
-    double mom = FTManager::getInstance().getKDSMinMom();
-    double ang = FTManager::getInstance().getKDSMaxAng();
-    _result=dEdxKDSRatioPri( _privtx, string("PionOverProton"), gaus, mom, ang);
+    double gaus = FTManager::getInstance().getDEDXGausWidth();
+    double mom = FTManager::getInstance().getDEDXMinMom();
+    double ang = FTManager::getInstance().getDEDXMaxAng();
+    _result=dEdxRatioPri( _privtx, string("PionOverProton"), gaus, mom, ang);
     }
 };
 
@@ -1857,10 +1857,10 @@ class dEdxRatioPionOverKaonSec : public FTAlgo {
     _result = -2; //Entry in -2 means no secondary vtx
     const VertexVec& vtxList = _jet->getVertices(); //We also count pseudo-vtx
     if(vtxList.size()>0){
-      double gaus = FTManager::getInstance().getKDSGausWidth();
-      double mom = FTManager::getInstance().getKDSMinMom();
-      double ang = FTManager::getInstance().getKDSMaxAng();
-      _result=dEdxKDSRatioSec( vtxList, string("PionOverKaon"), gaus, mom, ang);
+      double gaus = FTManager::getInstance().getDEDXGausWidth();
+      double mom = FTManager::getInstance().getDEDXMinMom();
+      double ang = FTManager::getInstance().getDEDXMaxAng();
+      _result=dEdxRatioSec( vtxList, string("PionOverKaon"), gaus, mom, ang);
     }
   }
 };
@@ -1872,10 +1872,10 @@ class dEdxRatioKaonOverProtonSec : public FTAlgo {
     _result = -2;
     const VertexVec& vtxList = _jet->getVertices();
       if(vtxList.size()>0){
-	double gaus = FTManager::getInstance().getKDSGausWidth();
-	double mom = FTManager::getInstance().getKDSMinMom();
-	double ang = FTManager::getInstance().getKDSMaxAng();
-        _result=dEdxKDSRatioSec( vtxList, string("KaonOverProton"), gaus, mom, ang);
+	double gaus = FTManager::getInstance().getDEDXGausWidth();
+	double mom = FTManager::getInstance().getDEDXMinMom();
+	double ang = FTManager::getInstance().getDEDXMaxAng();
+        _result=dEdxRatioSec( vtxList, string("KaonOverProton"), gaus, mom, ang);
       }
   }
 };
@@ -1887,10 +1887,10 @@ class dEdxRatioPionOverProtonSec : public FTAlgo {
     _result = -2;
     const VertexVec& vtxList = _jet->getVertices();
     if(vtxList.size()>0){
-      double gaus = FTManager::getInstance().getKDSGausWidth();
-      double mom = FTManager::getInstance().getKDSMinMom();
-      double ang = FTManager::getInstance().getKDSMaxAng();
-      _result=dEdxKDSRatioSec( vtxList, string("PionOverProton"), gaus, mom, ang);
+      double gaus = FTManager::getInstance().getDEDXGausWidth();
+      double mom = FTManager::getInstance().getDEDXMinMom();
+      double ang = FTManager::getInstance().getDEDXMaxAng();
+      _result=dEdxRatioSec( vtxList, string("PionOverProton"), gaus, mom, ang);
     }
   }
 };
@@ -2071,10 +2071,10 @@ void FlavorTag::init(Parameters* param) {
   _nhitsJointProbD0 = param->get("FlavorTag.NVTXhitsJointProbD0", int(4));
   _nhitsJointProbZ0 = param->get("FlavorTag.NVTXhitsJointProbZ0", int(4));
   _nhitsMostSignificantTrack = param->get("FlavorTag.NhitsMostSignificantTrack", int(4));
-  //dEdx-KDS 
-  _kdsGausWidth = param->get("FlavorTag.KDSGaussianWidth",double(4));
-  _kdsMinMom = param->get("FlavorTag.KDSMinMomentum",double(3));
-  _kdsMaxAng = param->get("FlavorTag.KDSMaxAngle",double(0.95));
+  //dEdx
+  _dEdxGausWidth = param->get("FlavorTag.DEDXGaussianWidth",double(4));
+  _dEdxMinMom = param->get("FlavorTag.DEDXMinMomentum",double(3));
+  _dEdxMaxAng = param->get("FlavorTag.DEDXMaxAngle",double(0.95));
   
   //string outputFilename = param->get("TrainNtupleFile",string("lcfiplus.root"));
   //_nJet = (int)param->get("TrainNJet",float(2));
@@ -2109,7 +2109,7 @@ void FlavorTag::process() {
   mgr.setIPProbHolder(_holder);
 
   mgr.process(event, privtx, _nhitsJointProbD0, _nhitsJointProbZ0, _nhitsMostSignificantTrack, jets);
-  mgr.setKDSParameters(_kdsGausWidth, _kdsMinMom, _kdsMaxAng);
+  mgr.setDEDXParameters(_dEdxGausWidth, _dEdxMinMom, _dEdxMaxAng);
 }
 
 void FlavorTag::end() {
