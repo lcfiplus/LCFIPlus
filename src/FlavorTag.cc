@@ -1735,42 +1735,6 @@ class FtNBNess : public FTAlgo {
 };
 
   //dEdx
-class dEdxNKaonPri : public FTAlgo {
- public:
-  dEdxNKaonPri() : FTAlgo("dEdxNKaonPri") {}
-  void process() {
-    _result = 0;
-    double gaus = FTManager::getInstance().getDEDXGausWidth();
-    double mom = FTManager::getInstance().getDEDXMinMom();
-    double ang = FTManager::getInstance().getDEDXMaxAng();
-    _result=dEdxNPartPri( _privtx, string("kaon"), gaus, mom, ang);
-  }
-};
-  
-class dEdxNPionPri : public FTAlgo {
- public:
-  dEdxNPionPri() : FTAlgo("dEdxNPionPri") {}
-  void process() {
-    _result = 0;
-    double gaus = FTManager::getInstance().getDEDXGausWidth();
-    double mom = FTManager::getInstance().getDEDXMinMom();
-    double ang = FTManager::getInstance().getDEDXMaxAng();
-    _result=dEdxNPartPri( _privtx, string("pion"), gaus, mom, ang);
-  }
-};
-
-class dEdxNProtonPri : public FTAlgo {
- public:
-  dEdxNProtonPri() : FTAlgo("dEdxNProtonPri") {}
-  void process() {
-    _result = 0;
-    double gaus = FTManager::getInstance().getDEDXGausWidth();
-    double mom = FTManager::getInstance().getDEDXMinMom();
-    double ang = FTManager::getInstance().getDEDXMaxAng();
-    _result=dEdxNPartPri( _privtx, string("proton"), gaus, mom, ang);
-  }
-};
-
 class dEdxNKaonSec : public FTAlgo {
  public:
   dEdxNKaonSec() : FTAlgo("dEdxNKaonSec") {}
@@ -1817,39 +1781,6 @@ public:
 };
   
   //dEdx Ratios
-class dEdxRatioPionOverKaonPri : public FTAlgo {
- public:
-  dEdxRatioPionOverKaonPri() : FTAlgo("dEdxRatioPionOverKaonPri") {}
-  void process() {
-    double gaus = FTManager::getInstance().getDEDXGausWidth();
-    double mom = FTManager::getInstance().getDEDXMinMom();
-    double ang = FTManager::getInstance().getDEDXMaxAng();
-    _result=dEdxRatioPri( _privtx, string("PionOverKaon"), gaus, mom, ang);
-  } 
-};
-
-class dEdxRatioKaonOverProtonPri : public FTAlgo {
- public:
-  dEdxRatioKaonOverProtonPri() : FTAlgo("dEdxRatioKaonOverProtonPri") {}
-  void process() {
-    double gaus = FTManager::getInstance().getDEDXGausWidth();
-    double mom = FTManager::getInstance().getDEDXMinMom();
-      double ang = FTManager::getInstance().getDEDXMaxAng();
-      _result=dEdxRatioPri( _privtx, string("KaonOverProton"), gaus, mom, ang);
-  }
-};
-
-class dEdxRatioPionOverProtonPri : public FTAlgo {
- public:
-  dEdxRatioPionOverProtonPri() : FTAlgo("dEdxRatioPionOverProtonPri") {}
-  void process() {
-    double gaus = FTManager::getInstance().getDEDXGausWidth();
-    double mom = FTManager::getInstance().getDEDXMinMom();
-    double ang = FTManager::getInstance().getDEDXMaxAng();
-    _result=dEdxRatioPri( _privtx, string("PionOverProton"), gaus, mom, ang);
-    }
-};
-
 class dEdxRatioPionOverKaonSec : public FTAlgo {
  public:
   dEdxRatioPionOverKaonSec() : FTAlgo("dEdxRatioPionOverKaonSec") {}
@@ -2006,7 +1937,6 @@ void FTManager::initVars() {
   add( new FtZ0qProb(false));
   add( new FtZ0bProbIP());
   add( new FtZ0cProbIP());
-
   add( new FtD0bProb2());
   add( new FtD0cProb2());
   add( new FtD0qProb2());
@@ -2039,9 +1969,6 @@ void FTManager::initVars() {
   add( new FtNBNess() ); 
 
   //dEdx Variables
-  add( new dEdxNKaonPri() );
-  add( new dEdxNPionPri() );
-  add( new dEdxNProtonPri() );
   add( new dEdxNKaonSec() );
   add( new dEdxNPionSec() );
   add( new dEdxNProtonSec() );
@@ -2049,9 +1976,6 @@ void FTManager::initVars() {
   add( new dEdxRatioPionOverKaonSec() );
   add( new dEdxRatioKaonOverProtonSec() );
   add( new dEdxRatioPionOverProtonSec() );
-  add( new dEdxRatioPionOverKaonPri() );
-  add( new dEdxRatioKaonOverProtonPri() );
-  add( new dEdxRatioPionOverProtonPri() );
 }
 
 void FlavorTag::init(Parameters* param) {
