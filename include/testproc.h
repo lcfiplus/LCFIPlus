@@ -231,6 +231,56 @@ class TestAlgo : public Algorithm {
 
 };
 
+class TrackPairTree : public Algorithm {
+ public:
+  TrackPairTree() {}
+  virtual ~TrackPairTree() {}
+
+  void init(Parameters* param);
+  void process();
+  void end();
+
+  ClassDef(TrackPairTree,1);
+
+ private:
+  int _nev;
+
+  TFile* _file;
+  TTree* _trackTree;
+  TTree* _vtxTree;
+
+  struct dataTrackTree{
+    int nev;
+    int njet;
+    int idx; // index of the track in the event
+    float d0;
+    float phi;
+    float omega;
+    float z0;
+    float tanLambda;
+    float covMatrix[15]; // 1+2+3+4+5, triangle matrix, order d0d0, d0phi, phiphi, ..., tanltanl
+    float chi2;
+    int ndf;
+  };
+  struct dataVtxTree{
+    int nev;
+    int njet;
+    int idx; // index of the vtx in the event
+    int tracks[2]; // index of the tracks
+    float pos[3]; // 3d position of the reconstructed vertex
+    float covMatrix[6]; // 1+2+3, should be xx, xy, yy, xz, yz, zz
+    float chi2;
+    float prob; // probability, not independent of chi2
+    int trueVtx;
+  };
+
+  dataTrackTree _dataTrack;
+  dataVtxTree _dataVtx;
+
+  string _privtxname;
+  string _jetname;
+};
+
 class VertexAnalysis : public Algorithm {
  public:
   VertexAnalysis() {}

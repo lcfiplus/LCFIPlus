@@ -89,7 +89,7 @@ void FTManager::openFile(const char* filename) {
 void FTManager::closeFile() {
   if (_file) {
     cout << "FTManager: closing file" << endl;
-    _tree->Write();
+    _file->Write();
     _file->Close();
     _file = 0;
   } else {

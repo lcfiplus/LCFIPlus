@@ -1411,6 +1411,144 @@ void TestAlgo::end() {
 }
 #endif
 
+void TrackPairTree::init(Parameters* param) {
+  Algorithm::init(param);
+  _privtxname = param->get("PrimaryVertexCollectionName",string("PrimaryVertex"));
+
+  _jetname = param->get("TrackPairTree.JetCollectionName",string("RefinedJets"));
+  string filename = param->get("TrackPairTree.FileName",string(""));
+
+  if(filename != "")
+    _file = new TFile(filename.c_str(),"RECREATE");
+  else
+    _file = 0;
+
+  _trackTree = new TTree("TrackTree","TrackTree");
+  _trackTree->Branch("nev",&_dataTrack.nev,"nev/I");
+  _trackTree->Branch("njet",&_dataTrack.njet,"njet/I");
+  _trackTree->Branch("idx",&_dataTrack.idx,"idx/I");
+  _trackTree->Branch("d0",&_dataTrack.d0,"d0/F");
+  _trackTree->Branch("phi",&_dataTrack.phi,"phi/F");
+  _trackTree->Branch("omega",&_dataTrack.omega,"omega/F");
+  _trackTree->Branch("z0",&_dataTrack.z0,"z0/F");
+  _trackTree->Branch("tanLambda",&_dataTrack.tanLambda,"tanLambda/F");
+  _trackTree->Branch("covMatrix",_dataTrack.covMatrix,"covMatrix[15]/F");
+  _trackTree->Branch("chi2",&_dataTrack.chi2,"chi2/F");
+  _trackTree->Branch("ndf",&_dataTrack.ndf,"ndf/I");
+
+  _vtxTree = new TTree("VtxTree","VtxTree");
+  _vtxTree->Branch("nev",&_dataVtx.nev,"nev/I");
+  _vtxTree->Branch("njet",&_dataVtx.njet,"njet/I");
+  _vtxTree->Branch("idx",&_dataVtx.idx,"idx/I");
+  _vtxTree->Branch("tracks",_dataVtx.tracks,"tracks[2]/I");
+  _vtxTree->Branch("pos",_dataVtx.pos,"pos[3]/F");
+  _vtxTree->Branch("covMatrix",_dataVtx.covMatrix,"covMatrix[6]/F");
+  _vtxTree->Branch("chi2",&_dataVtx.chi2,"chi2/F");
+  _vtxTree->Branch("prob",&_dataVtx.prob,"prob/F");
+  _vtxTree->Branch("trueVtx",&_dataVtx.trueVtx, "trueVtx/I");
+
+  _nev = 0;
+}
+
+void TrackPairTree::process(){
+  //TrackVec& tracks = Event::Instance()->getTracks();
+
+  JetVec *pjet = 0;
+  if (_jetname != "")
+    Event::Instance()->Get(_jetname.c_str(), pjet);
+
+  cout << "jetname " << _jetname << endl;
+
+  if(pjet == 0)return;
+
+  cout << "jet size " << pjet->size() << endl;
+
+  for(unsigned int nj=0;nj<pjet->size();nj++){
+    const Jet *jet = (*pjet)[nj];
+    TrackVec &tracks = jet->getAllTracks();
+  
+    for(unsigned int i=0;i<tracks.size();i++){
+      const Track *tr = tracks[i];
+      _dataTrack.nev = _nev;
+      _dataTrack.njet = nj;
+      _dataTrack.idx = i;
+      _dataTrack.d0 = tr->getD0();
+      _dataTrack.phi = tr->getPhi();
+      _dataTrack.omega = tr->getOmega();
+      _dataTrack.z0 = tr->getZ0();
+      _dataTrack.tanLambda = tr->getTanLambda();
+      for(int j=0;j<15;j++)
+	_dataTrack.covMatrix[j] = tr->getCovMatrix()[j];
+      _dataTrack.chi2 = tr->getChi2();
+      _dataTrack.ndf = tr->getNdf();
+      
+      _trackTree->Fill();
+    }
+
+    if(tracks.size()>1){
+      int n = 0;
+      for(unsigned int i=0;i<tracks.size()-1;i++){
+	for(unsigned int j=i+1;j<tracks.size();j++){
+	  vector<const Track *> trvec;
+	  trvec.push_back(tracks[i]);
+	  trvec.push_back(tracks[j]);
+	  Vertex *vtx = VertexFitterSimple_V() (trvec.begin(), trvec.end(),0);
+	  
+	  _dataVtx.nev = _nev;
+	  _dataVtx.njet = nj;
+	  _dataVtx.idx = n++;
+	  _dataVtx.tracks[0] = i;
+	  _dataVtx.tracks[1] = j;
+	  _dataVtx.pos[0] = vtx->getX();
+	  _dataVtx.pos[1] = vtx->getY();
+	  _dataVtx.pos[2] = vtx->getZ();
+	  for(int k=0;k<6;k++)
+	    _dataVtx.covMatrix[k] = vtx->getCov()[k];
+	  _dataVtx.chi2 = vtx->getChi2();
+	  _dataVtx.prob = vtx->getProb();
+	  _dataVtx.trueVtx = 0; // no assignment
+	  const MCParticle *mcp[2];
+	  const MCParticle *mcpp[2];
+	  if((mcp[0] = tracks[i]->getMcp()) && (mcp[1] = tracks[j]->getMcp())){
+	    if((mcp[0]->getSemiStableParent()) == 0 && (mcp[1]->getSemiStableParent()) == 0)
+	      _dataVtx.trueVtx = 1; // primary vertex
+	    else if((mcpp[0] = mcp[0]->getSemiStableParent()) == (mcpp[1] = mcp[1]->getSemiStableParent())){ // parent is same
+	      if(mcpp[0]->isSemiStableB()) _dataVtx.trueVtx = 2; // b, same
+	      else if(mcpp[0]->isSemiStableC()) _dataVtx.trueVtx = 3; // c, same
+	      else if(mcpp[0]->getId() <= 4) _dataVtx.trueVtx = 1; // primary, same (temporary solution)
+	      else _dataVtx.trueVtx = 4; // other, same
+
+	      cout << mcp[0]->getPDG() << " " << mcp[1]->getPDG() << " " << mcpp[0]->getPDG() << " " << mcpp[0]->E() << " " << _dataVtx.trueVtx << endl;
+	    }
+	    else if(mcp[0]->getSemiStableCParent() && mcp[0]->getSemiStableCParent() == mcp[1]->getSemiStableCParent() && mcp[0]->getSemiStableCParent()->isSemiStableC())
+	      _dataVtx.trueVtx = 13; // c, different
+	    else if(mcp[0]->getSemiStableBParent() && mcp[0]->getSemiStableBParent() == mcp[1]->getSemiStableBParent() && mcp[0]->getSemiStableBParent()->isSemiStableB())
+	      _dataVtx.trueVtx = 12; // b, different
+	    else _dataVtx.trueVtx = 0; // completely different
+	  }
+	  
+	  _vtxTree->Fill();
+	  
+	  delete vtx;
+	}
+      }
+    }
+  }
+
+  _nev ++;
+}
+
+void TrackPairTree::end(){
+  if(_file){
+    _file->Write();
+    _file->Close();
+  }else{
+    _vtxTree->Write();
+    _trackTree->Write();
+  }
+}
+
+
 void VertexAnalysis::init(Parameters* param) {
   Algorithm::init(param);
   _privtxname = param->get("PrimaryVertexCollectionName",string("PrimaryVertex"));

@@ -295,7 +295,7 @@ double Track::getY() const {
 }
 
 double Track::getZ() const {
-  return _par[tpar::z0] + _par[tpar::om]*_flt;
+  return _par[tpar::z0] + _par[tpar::td]*_flt;
 }
 
 void Track::setCovMatrix(double* mycov) {

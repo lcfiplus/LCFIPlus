@@ -47,7 +47,10 @@
 #pragma link C++ class lcfiplus::TestAlgo;
 #pragma link C++ class lcfiplus::FlavtagReader;
 #pragma link C++ class lcfiplus::VertexAnalysis;
+#pragma link C++ class lcfiplus::TrackPairTree;
 #pragma link C++ class lcfiplus::TestAlgoV0;
+#pragma link C++ class lcfiplus::VertexFinderDNNccbar;
+#pragma link C++ class lcfiplus::DNNProvider2;
 
 #endif
 
