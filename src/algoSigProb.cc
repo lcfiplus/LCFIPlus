@@ -495,7 +495,83 @@ void findMostSignificantTrack(const Jet* jet, const Vertex* pri, int minhitcut, 
     sigVec[5] = 0;
   }
 }
+  // Function to fill observables using the significance of the dEdx/dNdx distance wrt Bethe-Bloch estimation
+  // Reading particleIDProbability from the lcio files
+  // Two different options: Counting Number of particles or building ratios.
+  // Jesus Marquez Hernandez (IFIC-CSIC/UV)
 
+  double dEdxNPartSec(const VertexVec& vtxList, string particle, float GausWidth, float MinMom, float MaxAngle) {
+    double counter=0;
+    try{
+      for (unsigned int j=0; j<vtxList.size(); ++j) {
+        TrackVec& vtxTracks = vtxList[j]->getTracks();
+        for(unsigned int i=0;i<vtxTracks.size();i++){
+	  double distance=0;
+	  if(particle=="kaon")distance=vtxTracks.at(i)->getParticleIDProbability("kaon_dEdxdistance");
+	  else if(particle=="pion")distance=vtxTracks.at(i)->getParticleIDProbability("pion_dEdxdistance");
+	  else if(particle=="proton")distance=vtxTracks.at(i)->getParticleIDProbability("proton_dEdxdistance");
+          double mom=vtxTracks.at(i)->P();
+          double costheta=vtxTracks.at(i)->CosTheta();
+          bool isMultiTrack=vtxTracks.at(i)->isMultiTrack();
+          if(distance == 0) continue; // Initialization issue
+	  if(abs(distance) > 100) continue; // Initialization issue if rewritten
+          if(mom < MinMom) continue; // Energy cut
+          if(abs(costheta) > MaxAngle) continue; // Angle cut
+          if(isMultiTrack == true) continue;  // Remove possible multitracks
+          // Fill the particle counter
+          if(distance > -GausWidth && distance < GausWidth) counter++;
+	}
+      }
+    }
+    catch (lcfiplus::Exception& e) {
+    }
+    return counter;
+  }
+
+  // To use ratios of particles
+  
+  double dEdxRatioSec(const VertexVec& vtxList, string P1overP2, float GausWidth, float MinMom, float MaxAngle) {
+    double ratio=-3;
+    double neg_counter=0; //estimated protons
+    double null_counter=0; //estimated kaons
+    double pos_counter=0; //estimated pion
+    try{
+      for (unsigned int j=0; j<vtxList.size(); ++j) {
+	TrackVec& vtxTracks = vtxList[j]->getTracks();
+	for(unsigned int i=0;i<vtxTracks.size();i++){
+	  double KDS=vtxTracks.at(i)->getParticleIDProbability("kaon_dEdxdistance"); //Following my steps, KDS:Kaon Distance Significance
+	  double mom=vtxTracks.at(i)->P();
+	  double costheta=vtxTracks.at(i)->CosTheta();
+	  bool isMultiTrack=vtxTracks.at(i)->isMultiTrack();
+	  if(KDS == 0) continue; // Initialization issue
+	  if(abs(KDS) > 100) continue; // Initialization issue if rewritten
+	  if(mom < MinMom) continue; // Energy cut
+	  if(abs(costheta) > MaxAngle) continue; // Angle cut
+	  if(isMultiTrack == true) continue;  // Remove possible multitracks
+	  // Fill the particle counters
+	  if(KDS > -10 && KDS < -GausWidth) neg_counter++;
+	  if(KDS > -GausWidth && KDS < GausWidth) null_counter++;
+	  if(KDS > GausWidth && KDS < 10) pos_counter++;
+	}
+      }
+      // Fill the ratios:
+      if(P1overP2 == "PionOverKaon"){
+        if(null_counter==0)ratio=-1; // Initialize to not divide by 0
+        else ratio=pos_counter/null_counter;
+      }
+      else if(P1overP2 == "KaonOverProton"){
+        if(neg_counter==0)ratio=-1; // Initialize to not divide by 0
+        else ratio=null_counter/neg_counter;
+      }
+      else if(P1overP2 == "PionOverProton"){
+        if(neg_counter==0)ratio=-1; // Initialize to not divide by 0
+        else ratio=pos_counter/neg_counter;
+      }
+    }
+    catch (lcfiplus::Exception& e) {
+    }
+    return ratio;
+  }
+  
 }
 }
-

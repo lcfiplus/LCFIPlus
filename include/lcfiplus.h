@@ -414,6 +414,13 @@ class Track : public TLorentzVector {//, protected TrackData {//, public EventPo
     _pdg = pdg;
   }
 
+  bool isMultiTrack() const {
+    return _isMultiTrack;
+  }
+  void setMultiTrack(bool multi) {
+    _isMultiTrack = multi;
+  }
+
   double getCharge() const {
     return _charge;
   }
@@ -584,6 +591,8 @@ class Track : public TLorentzVector {//, protected TrackData {//, public EventPo
   //ParticleID posterior probability
   map<string, double> _pidProbability;
   double _correnergy;
+  //If a track is imported from a PFO having multiple tracks or not
+  bool _isMultiTrack;
 
   //BNess
   double _bness, _cness;
