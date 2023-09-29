@@ -1,6 +1,8 @@
 # LCFIPlus
 [![Build Status](https://travis-ci.org/lcfiplus/LCFIPlus.svg?branch=master)](https://travis-ci.org/lcfiplus/LCFIPlus)
 [![Build Status](https://scan.coverity.com/projects/14336/badge.svg)](https://scan.coverity.com/projects/lcfiplus-lcfiplus)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3909786.svg)](https://doi.org/10.5281/zenodo.3909786)
+
 
 Flavor tagging code for ILC detectors, for documentation consult confluence at [https://confluence.slac.stanford.edu/display/ilc/LCFIPlus](https://confluence.slac.stanford.edu/display/ilc/LCFIPlus)
 
@@ -21,3 +23,7 @@ You should have received a copy of the GNU General Public License long with this
 ## Release notes
 
 see: [./doc/ReleaseNotes.md](./doc/ReleaseNotes.md)
+
+Primary Vertices are built out of Tracks, then secondary vertices are found, in a further step vertices and jets are matched to each other to find classification probabilities that the jet originates from a b-quark, or a c-quark, or a light flavor quark
+
+JetFinderFix Version of the code evaluates methods which mix slightly different input collection for vertexing and jet clustering. The original code expected the inputs to be the same, thus it had to be modified to avoid double counting of inputs.

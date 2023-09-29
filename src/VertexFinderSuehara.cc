@@ -804,7 +804,7 @@ void VertexFinderSuehara::associateIPTracks(vector<Vertex*>& vertices, Vertex* i
   vector<const Track*>::const_iterator it;
 
   Vertex* vbeam;
-  algoEtc::makeBeamVertex(vbeam);
+  algoEtc::makeBeamVertex(vbeam,cfg.beamspotSmearing);
 
   for (unsigned int i=0; i<vertices.size(); i++) {
     if (vertices[i]->getPos().Mag()<cfg.minimumdistIP)continue;
@@ -870,7 +870,7 @@ void VertexFinderSuehara::associateIPTracksAVF(vector<Vertex *> &vertices, Verte
   vector<const Track *>::const_iterator it;
 
   Vertex *vbeam;
-  algoEtc::makeBeamVertex(vbeam);
+  algoEtc::makeBeamVertex(vbeam,cfg.beamspotSmearing);
 
   bool lflg=false;
   Vertex* ip2=ip;  //reserve ip                                                                                                                 
@@ -1033,7 +1033,7 @@ void VertexFinderSuehara::buildUp(TrackVec& tracks, vector<Vertex*>& vtx, vector
   std::unique_ptr<Vertex> nip;
   Vertex*& ip = *pIP;
   if (!ip) {
-    ip = findPrimaryVertex(tracks, chi2thpri);
+    ip = findPrimaryVertex(tracks, chi2thpri,cfg.beamspotConstraint,cfg.beamspotSmearing);
 //		vtx.push_back(ip);
   } else {
     nip = std::unique_ptr<Vertex>(new Vertex(ip->getChi2(), ip->getProb(), ip->getX(), ip->getY(), ip->getZ(), ip->getCov(), true));
