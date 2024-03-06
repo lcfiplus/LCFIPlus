@@ -64,6 +64,8 @@ class DNNProvider2 : public Algorithm {
     std::vector<float> dtheta_ilc;
     std::vector<float> dphi_ilc;
 
+    std::vector<float> dEdx;
+
     // covariant matrix of tracks
     std::vector<float> cov_d0;
     std::vector<float> cov_z0;

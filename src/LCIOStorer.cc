@@ -518,6 +518,8 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
 
         track->setChi2(trk->getChi2());
         track->setNdf(trk->getNdf());
+	track->setdEdx(trk->getdEdx());
+	//cout << "dEdx:" << trk->getdEdx() << endl;
 
         // store detector hit numbers
         int nhits[lcfiplus::tpar::hitN];

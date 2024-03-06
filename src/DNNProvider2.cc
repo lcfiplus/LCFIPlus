@@ -96,6 +96,8 @@ void DNNProvider2::init(Parameters* param) {
   _ntp->Branch("ip3d",&d.ip3d);
   _ntp->Branch("ip3dsig",&d.ip3dsig);
 
+  _ntp->Branch("dEdx",&d.dEdx);
+
   _ntp->Branch("pfcand_dxy",&d.dxy);
   _ntp->Branch("pfcand_dz",&d.dz);
   _ntp->Branch("pfcand_btagSip2dVal",&d.ip2d_fcc);
@@ -203,6 +205,8 @@ void DNNProvider2::process() {
     d.ip3d.resize(nall);
     d.ip3dsig.resize(nall);
 
+    d.dEdx.resize(nall);
+
     d.dxy.resize(nall);
     d.dz.resize(nall);
     d.ip2d_fcc.resize(nall);
@@ -281,6 +285,8 @@ void DNNProvider2::process() {
 
       d.ip3d[i] = sqrt(tr->getD0() * tr->getD0() + tr->getZ0() * tr->getZ0());
       d.ip3dsig[i] = d.ip3d[i] / sqrt(tr->getCovMatrix()[tpar::cov::d0d0] + tr->getCovMatrix()[tpar::cov::z0z0] + 2 * tr->getCovMatrix()[tpar::cov::d0z0]);
+
+      d.dEdx[i] = tr->getdEdx();
       
       d.dxy[i] = calc_dxy(tr->getD0(), tr->getZ0(), tr->getPhi(), tr->Vect(), privtx->getPos(), tr->getCharge());
       d.dz[i] = calc_dz(tr->getD0(), tr->getZ0(), tr->getPhi(), tr->Vect(), privtx->getPos(), tr->getCharge());

@@ -421,6 +421,13 @@ class Track : public TLorentzVector {//, protected TrackData {//, public EventPo
     _charge = charge;
   }
 
+  double getdEdx() const {
+    return _dEdx;
+  }
+  void setdEdx(double dEdx) {
+    _dEdx = dEdx;
+  }
+
   double getD0()         const {
     return _par[tpar::d0];
   }
@@ -569,6 +576,7 @@ class Track : public TLorentzVector {//, protected TrackData {//, public EventPo
   const lcfiplus::MCParticle* _mcp;
   int _pdg;
   double _charge;
+  double _dEdx;
 
   // track parameter
   double _par[tpar::parN];
