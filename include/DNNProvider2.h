@@ -53,6 +53,7 @@ class DNNProvider2 : public Algorithm {
     float jet_theta;
     float jet_phi;
 
+    // for charged hadrons
     std::vector<float> px;
     std::vector<float> py;
     std::vector<float> pz;
@@ -103,12 +104,37 @@ class DNNProvider2 : public Algorithm {
     std::vector<float> jetdistsig_fcc;
 
     std::vector<int> charge;
-    std::vector<int> ismuon;
-    std::vector<int> iselectron;
-    std::vector<int> isphoton;
-    std::vector<int> ischargedhadron;
-    std::vector<int> isneutralhadron;
+    std::vector<float> ismuon;
+    std::vector<float> iselectron;
+    std::vector<float> isphoton;
+    std::vector<float> ispion;
+    std::vector<float> iskaon;
+    std::vector<float> isproton;
+    std::vector<float> ischargedhadron;
+    std::vector<float> isneutralhadron;
+    std::vector<int> iskaon0;
     std::vector<int> pdg_pfa;
+    std::vector<int> mcpid;
+    std::vector<int> mcp_pdg;
+    std::vector<int> K_pdg_pfa; //20240203
+
+    // for PI3 (20240203)
+    std::vector<float> proton_K;
+    std::vector<float> pion_K;
+    std::vector<float> proton_Klike;
+    std::vector<float> pion_Klike;
+    std::vector<float> electron_dEdxdistance;
+    std::vector<float> muon_dEdxdistance;
+    std::vector<float> kaon_dEdxdistance;
+    std::vector<float> pion_dEdxdistance;
+    std::vector<float> proton_dEdxdistance;
+
+    std::vector<float> ismuonlike;
+    std::vector<float> iselectronlike;
+    std::vector<float> ispionlike;
+    std::vector<float> iskaonlike;
+    std::vector<float> isprotonlike;
+
 
     int mc_b;
     int mc_c;
@@ -117,6 +143,73 @@ class DNNProvider2 : public Algorithm {
     int mc_s;
     int mc_g;
     int mc_q;
+
+    // for neutral hadrons
+    std::vector<float> neu_px;
+    std::vector<float> neu_py;
+    std::vector<float> neu_pz;
+    std::vector<float> neu_e;
+    std::vector<float> neu_efrac;
+    std::vector<float> neu_erel_log;
+    std::vector<float> neu_dtheta;
+    std::vector<float> neu_dphi;
+    std::vector<float> neu_dtheta_ilc;
+    std::vector<float> neu_dphi_ilc;
+
+    // covariant matrix of tracks
+    std::vector<float> neu_cov_d0;
+    std::vector<float> neu_cov_z0;
+    std::vector<float> neu_cov_phi;
+    std::vector<float> neu_cov_omega;
+    std::vector<float> neu_cov_tanlambda;
+
+    std::vector<float> neu_cov_d0_z0;
+    std::vector<float> neu_cov_d0_phi;
+    std::vector<float> neu_cov_d0_omega;
+    std::vector<float> neu_cov_d0_tanlambda;
+
+    std::vector<float> neu_cov_z0_phi;
+    std::vector<float> neu_cov_z0_omega;
+    std::vector<float> neu_cov_z0_tanlambda;
+
+    std::vector<float> neu_cov_phi_omega;
+    std::vector<float> neu_cov_phi_tanlambda;
+    std::vector<float> neu_cov_omega_tanlambda;
+
+    std::vector<float> neu_d0;
+    std::vector<float> neu_d0sig;
+    std::vector<float> neu_z0;
+    std::vector<float> neu_z0sig;
+    std::vector<float> neu_ip3d;
+    std::vector<float> neu_ip3dsig;
+
+    std::vector<float> neu_dxy;
+    std::vector<float> neu_dz;
+    std::vector<float> neu_ip2d_fcc;
+    std::vector<float> neu_ip2dsig_fcc;
+    std::vector<float> neu_ip3d_fcc;
+    std::vector<float> neu_ip3dsig_fcc;
+    std::vector<float> neu_jetdist_fcc;
+    std::vector<float> neu_jetdistsig_fcc;
+
+    std::vector<int> neu_charge;
+    std::vector<float> neu_ismuon;
+    std::vector<float> neu_iselectron;
+    std::vector<float> neu_isphoton;
+    std::vector<float> neu_ispion;
+    std::vector<float> neu_iskaon;
+    std::vector<float> neu_isproton;
+    std::vector<float> neu_ischargedhadron;
+    std::vector<float> neu_isneutralhadron;
+    std::vector<int> neu_iskaon0;
+    std::vector<int> neu_pdg_pfa;
+    std::vector<int> neu_mcpid;
+    std::vector<int> neu_mcp_pdg;
+    std::vector<int> neu_K_pdg_pfa; //20240201
+
+
+
+
   };
   DNNData _data;
 };
