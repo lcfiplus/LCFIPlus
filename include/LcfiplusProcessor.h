@@ -66,6 +66,7 @@ class LcfiplusProcessor : public Processor, public lcfiplus::EventStoreObserver 
   std::string _pfoCollectionName;
   std::string _mcpCollectionName;
   std::string _mcpfoRelationName;
+  std::string _mctrkRelationName;
   std::vector<std::string> _algonames;
 
   std::vector<lcfiplus::Algorithm*> _algos;

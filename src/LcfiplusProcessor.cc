@@ -44,6 +44,8 @@ LcfiplusProcessor::LcfiplusProcessor() : Processor("LcfiplusProcessor") {
                           _mcpCollectionName, std::string(""));
   registerInputCollection(LCIO::LCRELATION, "MCPFORelation", "Relation between MC and PFO particles",
                           _mcpfoRelationName, std::string(""));
+  registerInputCollection(LCIO::LCRELATION, "MCTrackRelation", "Relation between MC and tracks, usually better in terms of assignment of tracks",
+                          _mctrkRelationName, std::string(""));
 
   registerProcessorParameter("Algorithms", "LCFIPlus algorithms to run", _algonames, vector<string>());
   registerProcessorParameter("ReadSubdetectorEnergies", "Read subdetector energies (ILD)", _readSubdetectorEnergies, int(1));
@@ -162,7 +164,7 @@ void LcfiplusProcessor::init() {
 
     // load basic collection
     if (_useMcp)
-      _lcio->InitMCPPFOCollections(_pfoCollectionName.c_str(), _mcpCollectionName.c_str(), _mcpfoRelationName.c_str());
+      _lcio->InitMCPPFOCollections(_pfoCollectionName.c_str(), _mcpCollectionName.c_str(), _mcpfoRelationName.c_str(), _mctrkRelationName.c_str());
     else
       _lcio->InitPFOCollections(_pfoCollectionName.c_str());
 
