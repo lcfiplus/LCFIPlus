@@ -140,6 +140,8 @@ class LCIOStorer : public TObject, public EventStoreObserver {
   bool _ignoreLackOfVertexRP;
   string _pidAlgoName;
 
+  std::vector<std::string> m_filterPIDAlgos{{"RefinedVertex"}};
+
   ClassDef(LCIOStorer,0);
 };
 

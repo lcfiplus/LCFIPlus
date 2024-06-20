@@ -1093,6 +1093,9 @@ void LCIOStorer::WriteAllPIDs(lcio::LCCollection* lciocol, lcio::ReconstructedPa
 
   map<string, Parameters>::const_iterator it;
   for (it = parammap.begin(); it != parammap.end(); it++) {
+    if (std::find(m_filterPIDAlgos.begin(), m_filterPIDAlgos.end(), it->first) != m_filterPIDAlgos.end()) {
+      continue;
+    }
     WritePID(lciocol, lciojet, lcfijet, it->first.c_str());
   }
 
