@@ -458,6 +458,7 @@ void DNNProvider2::process() {
         cout << "passedT" << endl;
         continue;
       }
+
       const Track *tr = tracks[order_tr[i].second];
       // const MCParticle *mcparticles = mcps[order_tr[i].second];
       // const Track *tr = tracks[i];
@@ -542,9 +543,11 @@ void DNNProvider2::process() {
       // if (index==4) d.isproton[i] = 1;
       // d.pdg_pfa[i] = tr->getPDG();
 
+
       // tracing LCFIPlus default
       d.isphoton[i] = 0;
       d.ismuon[i] = tr->getParticleIDProbability("muonProbability");
+
       d.iselectron[i] = tr->getParticleIDProbability("electronProbability");
       d.isphoton[i] = 0.0;
       d.ischargedhadron[i] = !(d.ismuon[i] || d.iselectron[i]);
@@ -553,18 +556,20 @@ void DNNProvider2::process() {
       d.iskaon[i] = tr->getParticleIDProbability("kaonProbability");
       d.isproton[i] = tr->getParticleIDProbability("protonProbability");
       d.pdg_pfa[i] = tr->getPDG();
-      d.mcpid[i] = (tr->getMcp())->getId();
-      d.mcp_pdg[i] = (tr->getMcp())->getPDG();
+
+      if(tr->getMcp()){
+	d.mcpid[i] = (tr->getMcp())->getId();
+	d.mcp_pdg[i] = (tr->getMcp())->getPDG();
+      }
+
       d.K_pdg_pfa[i] = 0;
       if (d.pdg_pfa[i]==321) d.K_pdg_pfa[i] = 1;
       if (d.pdg_pfa[i]==310) d.K_pdg_pfa[i] = 1;
-
       d.pion_K[i] = d.ispion[i] - d.iskaon[i];
       d.proton_K[i] = d.isproton[i] - d.iskaon[i];
       d.pion_Klike[i] = tr->getParticleIDProbability("pionLikelihood") - tr->getParticleIDProbability("kaonLikelihood");
       d.proton_Klike[i] = tr->getParticleIDProbability("protonLikelihood") - tr->getParticleIDProbability("kaonLikelihood");
       
-
       d.electron_dEdxdistance[i] = tr->getParticleIDProbability("electron_dEdxdistance");
       d.muon_dEdxdistance[i] = tr->getParticleIDProbability("muon_dEdxdist ance");
       d.pion_dEdxdistance[i] = tr->getParticleIDProbability("pion_dEdxdistance");
@@ -576,7 +581,6 @@ void DNNProvider2::process() {
       d.ispionlike[i] = tr->getParticleIDProbability("pionLikelihood");
       d.iskaonlike[i] = tr->getParticleIDProbability("kaonLikelihood");
       d.isprotonlike[i] = tr->getParticleIDProbability("protonLikelihood");
-
 
       // PDG ID
 
@@ -693,8 +697,10 @@ void DNNProvider2::process() {
       d.neu_isproton[i] = 0;
       // d.neu_iskaon0[i] = 0;
       d.neu_pdg_pfa[i] = neu->getPDG();
-      d.neu_mcpid[i] = (neu->getMcp())->getId();
-      d.neu_mcp_pdg[i] = (neu->getMcp())->getPDG();
+      if(neu->getMcp()){
+	d.neu_mcpid[i] = (neu->getMcp())->getId();
+	d.neu_mcp_pdg[i] = (neu->getMcp())->getPDG();
+      }
       d.neu_K_pdg_pfa[i] = 0;
       if (d.neu_pdg_pfa[i]==321) d.neu_K_pdg_pfa[i] = 1;
       if (d.neu_pdg_pfa[i]==310) d.neu_K_pdg_pfa[i] = 1;
