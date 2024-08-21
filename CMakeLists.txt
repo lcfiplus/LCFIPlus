@@ -15,7 +15,6 @@ SET( ${PROJECT_NAME}_VERSION_MINOR 10 )
 SET( ${PROJECT_NAME}_VERSION_PATCH 1 )
 
 
-
 ### DEPENDENCIES ############################################################
 
 FIND_PACKAGE( ILCUTIL COMPONENTS ILCSOFT_CMAKE_MODULES REQUIRED )
@@ -28,6 +27,7 @@ FIND_PACKAGE( Marlin 1.0 REQUIRED )
 FIND_PACKAGE( MarlinUtil REQUIRED )
 #FIND_PACKAGE( ROOT REQUIRED COMPONENTS Minuit2 TMVA TreePlayer )
 FIND_PACKAGE( ROOT REQUIRED COMPONENTS Minuit2 TMVA TreePlayer Gui Geom Eve Minuit XMLIO RGL Ged EG MLP )
+FIND_PACKAGE( Torch REQUIRED )
 FIND_PACKAGE( LCFIVertex REQUIRED )
 
 INCLUDE_DIRECTORIES( SYSTEM ${Marlin_INCLUDE_DIRS} )
@@ -59,6 +59,7 @@ SET( ROOT_DICT_INPUT_HEADERS
 		${PROJECT_SOURCE_DIR}/include/VertexNtuple.h
 		${PROJECT_SOURCE_DIR}/include/vertexfinderdnn.h
 		${PROJECT_SOURCE_DIR}/include/DNNProvider2.h
+		${PROJECT_SOURCE_DIR}/include/TorchInference.h
 		${PROJECT_SOURCE_DIR}/include/LinkDef.h
 )
 SET( ROOT_DICT_INCLUDE_DIRS ${Marlin_INCLUDE_DIRS} )
@@ -94,7 +95,7 @@ AUX_SOURCE_DIRECTORY( ./src library_sources )
 LIST( REMOVE_ITEM library_sources ${binary_sources} )
 ADD_SHARED_LIBRARY( ${libname} ${library_sources} )
 INSTALL_SHARED_LIBRARY( ${libname} DESTINATION lib )
-TARGET_LINK_LIBRARIES( ${libname} ${Marlin_LIBRARIES} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${MarlinUtil_LIBRARIES} ${LCFIVertex_LIBRARIES} )
+TARGET_LINK_LIBRARIES( ${libname} ${Marlin_LIBRARIES} torch ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${MarlinUtil_LIBRARIES} ${LCFIVertex_LIBRARIES} )
 
 ### EXECUTABLE MODE ########################################################
 
@@ -109,7 +110,7 @@ LIST(APPEND binary_sources ${ROOT_DICT_OUTPUT_SOURCES} )
 ADD_EXECUTABLE( lcfiplus_bin EXCLUDE_FROM_ALL ${binary_sources} )
 
 SET_TARGET_PROPERTIES( lcfiplus_bin PROPERTIES COMPILE_FLAGS "-DBUILD_EVE" OUTPUT_NAME lcfiplus )
-TARGET_LINK_LIBRARIES( lcfiplus_bin ${libname} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} )
+TARGET_LINK_LIBRARIES( lcfiplus_bin ${libname} torch ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} )
 
 # display some variables and write them to cache
 DISPLAY_STD_VARIABLES()
