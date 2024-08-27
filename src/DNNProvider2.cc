@@ -563,8 +563,8 @@ void DNNProvider2::process() {
       }
 
       d.K_pdg_pfa[i] = 0;
-      if (d.pdg_pfa[i]==321) d.K_pdg_pfa[i] = 1;
-      if (d.pdg_pfa[i]==310) d.K_pdg_pfa[i] = 1;
+      if (abs(d.pdg_pfa[i])==321) d.K_pdg_pfa[i] = 1;
+      if (abs(d.pdg_pfa[i]==310)) d.K_pdg_pfa[i] = 1;
       d.pion_K[i] = d.ispion[i] - d.iskaon[i];
       d.proton_K[i] = d.isproton[i] - d.iskaon[i];
       d.pion_Klike[i] = tr->getParticleIDProbability("pionLikelihood") - tr->getParticleIDProbability("kaonLikelihood");

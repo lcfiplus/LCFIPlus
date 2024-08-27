@@ -52,6 +52,7 @@
 #pragma link C++ class lcfiplus::VertexFinderDNNccbar;
 #pragma link C++ class lcfiplus::DNNProvider2;
 #pragma link C++ class lcfiplus::TorchInference;
+#pragma link C++ class lcfiplus::MLMakeNtuple;
 
 #endif
 
