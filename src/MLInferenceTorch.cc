@@ -4,7 +4,7 @@
 #include "lcfiplus.h"
 #include "process.h"
 #include "MLInputGenerator.h"
-#include "TorchInference.h"
+#include "MLInferenceTorch.h"
 
 #undef ClassDef
 #include <torch/script.h>
@@ -14,7 +14,7 @@
 
 using namespace lcfiplus;
 
-void TorchInference::init(Parameters* param){
+void MLInferenceTorch::init(Parameters* param){
     Algorithm::init(param);
 
     auto _torchScriptFileName = "/data/suehara/part/training/unprocessed/ilc_nnqq_default/net_best_epoch_state.pt";
@@ -35,10 +35,10 @@ void TorchInference::init(Parameters* param){
 
 }
 
-void TorchInference::process() {
+void MLInferenceTorch::process() {
 
 }
 
-void TorchInference::end() {
+void MLInferenceTorch::end() {
 
 }
