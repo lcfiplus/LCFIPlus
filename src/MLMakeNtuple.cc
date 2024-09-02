@@ -11,40 +11,41 @@
 #include <typeinfo>
 
 using namespace lcfiplus;
-namespace lcfiplus {
-
 using namespace MLInputGenerator;
 
-struct MLData {
-  vector<float> data;
-  vector< vector<float> > dataVec;
+namespace lcfiplus {
 
-  MLData() {
-    data.reserve(20);
-    dataVec.reserve(100);
-  }
+float& MLMakeNtuple::MLData::newData(const string& key) {
+  auto const& inserted = _mapData.insert({key, float()});
+  auto const& iter = inserted.first;
+  return iter->second;
+}
 
-  float& newData() {
-    float d;
-    data.push_back(d);
-    return data.back();
-  }
+vector<float>& MLMakeNtuple::MLData::newDataVec(const string& key) {
+  auto const& inserted = _mapDataVec.insert({key, vector<float>()});
+  auto const& iter = inserted.first;
+  return iter->second;
+}
 
-  vector<float>& newDataVec() {
-    vector<float> vec;
-    dataVec.push_back(vec);
-    return dataVec.back();
-  }
-};
+void MLMakeNtuple::MLData::setData(const string& key, const float& val) {
+  _mapData[key] = val;
+}
 
-// Relation to DNNProvider2:
-//   It does the same thing but cleaner implementation
-//
-// Relation to MakeNtuple + FTManager:
-//   It is a modernized implementation for input variable output
+void MLMakeNtuple::MLData::addDataVec(const string& key, const float& val) {
+  _mapDataVec[key].push_back(val);
+}
+
+void MLMakeNtuple::MLData::resetData() {
+  for (auto& d: _mapData) d.second = 0;
+  for (auto& d: _mapDataVec) d.second.clear();
+}
 
 void MLMakeNtuple::init(Parameters* param) {
   Algorithm::init(param);
+  _jetname = param->get("MLMakeNtuple.JetCollectionName",string("RefinedJets"));
+  string privtx = param->get("PrimaryVertexCollectionName",string("PrimaryVertex"));
+  Event::Instance()->setDefaultPrimaryVertex(privtx.c_str());
+
   string outputFilename = param->get("MLMakeNtuple.OutputRootFileName",string("ml_flavtag.root"));
   string treeName = param->get("MLMakeNtuple.TTreeName",string("ntp"));
   
@@ -56,24 +57,108 @@ void MLMakeNtuple::init(Parameters* param) {
 
   MLInputGenerator::init();
 
-  MLData d;
-
-  for (auto v : calcInput) {
-    auto key = v.first;
-    _tree->Branch( key.c_str(), &d.newDataVec() );
-  }
-
+  // TODO: implement labels
 #if 0
-  char buf[1024];
-  for ( vector<FTAlgo*>::iterator iter = _algoList.begin(); iter != _algoList.end(); ++iter ) {
-    FTAlgo* algo = *iter;
-    snprintf( buf, 1000, "%s/F", algo->getName().c_str() );
-    _tree->Branch( algo->getName().c_str(), algo->getValueAddress(), buf );
+  // label
+  _tree->Branch("mc_b",&d.mc_b,"mc_b/I");
+  _tree->Branch("mc_c",&d.mc_c,"mc_c/I");
+  _tree->Branch("mc_u",&d.mc_u,"mc_u/I");
+  _tree->Branch("mc_d",&d.mc_d,"mc_d/I");
+  _tree->Branch("mc_s",&d.mc_s,"mc_s/I");
+  _tree->Branch("mc_g",&d.mc_g,"mc_g/I");
+  _tree->Branch("mc_q",&d.mc_q,"mc_q/I"); // usdg
 #endif
+
+  for (const auto& v: calcInput) {
+    const auto& key = v.first;
+    if (std::holds_alternative<function<double(const Jet*)> >(v.second)) {
+      string buf = key + "/F";
+      _tree->Branch( key.c_str(), &_data.newData(key), buf.c_str() );
+    } else {
+      _tree->Branch( key.c_str(), &_data.newDataVec(key) );
+    }
+  }
 }
 
-void MLMakeNtuple::process() {
+//template<typename ...Ts> struct overloaded : Ts... { using Ts::operator()...; };
+//template<typename ...Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
+void MLMakeNtuple::process() {
+  Event* event = Event::Instance();
+  const Vertex* privtx = Event::Instance()->getPrimaryVertex();
+  JetVec* jetsPtr(0);
+  bool success = event->Get(_jetname.c_str(), jetsPtr);
+  if (!success) {
+    cout << "jets could not be found" << endl;
+    return;
+  }
+  JetVec& jets = *jetsPtr;
+
+  for (unsigned int njet = 0; njet < jets.size(); ++njet) {
+    _data.resetData();
+    const Jet* jet = jets[njet];
+    TrackVec tracks = jet->getAllTracks(true);
+    NeutralVec neutrals = jet->getNeutrals();
+
+    for (const auto& v: calcInput) {
+      const auto& key = v.first;
+
+      if (std::holds_alternative<function<double(const Jet*)> >(v.second)) {
+        auto f = std::get<function<double(const Jet*)> >(v.second);
+        double ret = f(jet);
+        _data.setData(key,ret);
+      }
+
+      if (std::holds_alternative<function<double(const Track*)> >(v.second)) {
+        auto f = std::get<function<double(const Track*)> >(v.second);
+        for (auto tr: tracks) {
+          double ret = f(tr);
+          _data.addDataVec(key,ret);
+        }
+      }
+
+      if (std::holds_alternative<function<double(const Track*, const Jet*)> >(v.second)) {
+        auto f = std::get<function<double(const Track*, const Jet*)> >(v.second);
+        for (auto tr: tracks) {
+          double ret = f(tr,jet);
+          _data.addDataVec(key,ret);
+        }
+      }
+
+      if (std::holds_alternative<function<double(const Track*, const Vertex*)> >(v.second)) {
+        auto f = std::get<function<double(const Track*, const Vertex*)> >(v.second);
+        for (auto tr: tracks) {
+          double ret = f(tr,privtx);
+          _data.addDataVec(key,ret);
+        }
+      }
+
+      if (std::holds_alternative<function<double(const Neutral*)> >(v.second)) {
+        auto f = std::get<function<double(const Neutral*)> >(v.second);
+        for (auto neu: neutrals) {
+          double ret = f(neu);
+          _data.addDataVec(key,ret);
+        }
+      }
+
+      if (std::holds_alternative<function<double(const Neutral*, const Jet*)> >(v.second)) {
+        auto f = std::get<function<double(const Neutral*, const Jet*)> >(v.second);
+        for (auto neu: neutrals) {
+          double ret = f(neu,jet);
+          _data.addDataVec(key,ret);
+        }
+      }
+
+      if (std::holds_alternative<function<double(const Neutral*, const Vertex*)> >(v.second)) {
+        auto f = std::get<function<double(const Neutral*, const Vertex*)> >(v.second);
+        for (auto neu: neutrals) {
+          double ret = f(neu,privtx);
+          _data.addDataVec(key,ret);
+        }
+      }
+    }
+    _tree->Fill();
+  }
 }
 
 void MLMakeNtuple::end() {
