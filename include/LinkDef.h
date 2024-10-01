@@ -51,8 +51,8 @@
 #pragma link C++ class lcfiplus::TestAlgoV0;
 #pragma link C++ class lcfiplus::VertexFinderDNNccbar;
 #pragma link C++ class lcfiplus::DNNProvider2;
-#pragma link C++ class lcfiplus::TorchInference;
 #pragma link C++ class lcfiplus::MLMakeNtuple;
+//#pragma link C++ class lcfiplus::MLInferenceTorch;
 
 #endif
 

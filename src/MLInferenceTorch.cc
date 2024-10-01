@@ -1,3 +1,5 @@
+#include <functional>
+#include <map>
 #include <string>
 #include <sstream>
 
@@ -6,21 +8,16 @@
 #include "MLInputGenerator.h"
 #include "MLInferenceTorch.h"
 
-#undef ClassDef
-#include <torch/script.h>
-
-#include <map>
-#include <functional>
-
 using namespace lcfiplus;
 
 void MLInferenceTorch::init(Parameters* param){
     Algorithm::init(param);
 
-    auto _torchScriptFileName = "/data/suehara/part/training/unprocessed/ilc_nnqq_default/net_best_epoch_state.pt";
+    string _torchScriptFileName = "/data/suehara/part/training/unprocessed/ilc_nnqq_default/net_best_epoch_state.pt";
 
     try {
-        auto _model = torch::jit::load(_torchScriptFileName);
+        //torch::jit::script::Module _model;
+        _model = torch::jit::load(_torchScriptFileName);
         _model.to(torch::kCPU);
         _model.eval();
     } catch (const c10::Error& e) {

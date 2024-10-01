@@ -1,7 +1,7 @@
 ########################################################
 # cmake file for building LCFIPlus package
 # @author Tomohiko Tanabe (ICEPP, The University of Tokyo)
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5 FATAL_ERROR)
 ########################################################
 
 
@@ -13,7 +13,6 @@ PROJECT( LCFIPlus )
 SET( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 SET( ${PROJECT_NAME}_VERSION_MINOR 10 )
 SET( ${PROJECT_NAME}_VERSION_PATCH 1 )
-
 
 ### DEPENDENCIES ############################################################
 
@@ -29,6 +28,10 @@ FIND_PACKAGE( MarlinUtil REQUIRED )
 FIND_PACKAGE( ROOT REQUIRED COMPONENTS Minuit2 TMVA TreePlayer Gui Geom Eve Minuit XMLIO RGL Ged EG MLP )
 FIND_PACKAGE( Torch REQUIRED )
 FIND_PACKAGE( LCFIVertex REQUIRED )
+FIND_PACKAGE( onnxruntime )
+
+set(JSON_BuildTests OFF CACHE INTERNAL "")
+add_subdirectory(nlohmann_json)
 
 INCLUDE_DIRECTORIES( SYSTEM ${Marlin_INCLUDE_DIRS} )
 ADD_DEFINITIONS ( ${Marlin_DEFINITIONS} )
@@ -36,8 +39,11 @@ INCLUDE_DIRECTORIES( SYSTEM ${MarlinUtil_INCLUDE_DIRS} )
 ADD_DEFINITIONS ( ${MarlinUtil_DEFINITIONS} )
 INCLUDE_DIRECTORIES( SYSTEM ${ROOT_INCLUDE_DIRS} )
 INCLUDE_DIRECTORIES( SYSTEM ${LCFIVertex_INCLUDE_DIRS} )
+INCLUDE_DIRECTORIES( SYSTEM ${TORCH_INCLUDE_DIRS} )
 # left here for backwards compatibility
 INCLUDE_DIRECTORIES( SYSTEM ${LCFIVertex_ROOT}/vertex_lcfi ${LCFIVertex_ROOT}/boost )
+
+INCLUDE_DIRECTORIES( SYSTEM ${onnxruntime_INCLUDE_DIRS} )
 
 #INCLUDE( ${ROOT_DICT_MACROS_FILE} )
 INCLUDE( "${ILCUTIL_ROOT}/cmakemodules/MacroRootDict.cmake" )
@@ -59,12 +65,11 @@ SET( ROOT_DICT_INPUT_HEADERS
 		${PROJECT_SOURCE_DIR}/include/VertexNtuple.h
 		${PROJECT_SOURCE_DIR}/include/vertexfinderdnn.h
 		${PROJECT_SOURCE_DIR}/include/DNNProvider2.h
-		${PROJECT_SOURCE_DIR}/include/TorchInference.h
 		${PROJECT_SOURCE_DIR}/include/MLInputGenerator.h
 		${PROJECT_SOURCE_DIR}/include/MLMakeNtuple.h
 		${PROJECT_SOURCE_DIR}/include/LinkDef.h
 )
-SET( ROOT_DICT_INCLUDE_DIRS ${Marlin_INCLUDE_DIRS} )
+SET( ROOT_DICT_INCLUDE_DIRS ${Marlin_INCLUDE_DIRS} ${TORCH_INCLUDE_DIRS} )
 GEN_ROOT_DICT_SOURCES( dict.cc )
 INSTALL(FILES ${ROOT_DICT_OUTPUT_DIR}/dict_rdict.pcm DESTINATION lib)
 LIST(APPEND library_sources ${ROOT_DICT_OUTPUT_SOURCES} )
@@ -97,7 +102,16 @@ AUX_SOURCE_DIRECTORY( ./src library_sources )
 LIST( REMOVE_ITEM library_sources ${binary_sources} )
 ADD_SHARED_LIBRARY( ${libname} ${library_sources} )
 INSTALL_SHARED_LIBRARY( ${libname} DESTINATION lib )
-TARGET_LINK_LIBRARIES( ${libname} ${Marlin_LIBRARIES} torch ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${MarlinUtil_LIBRARIES} ${LCFIVertex_LIBRARIES} )
+TARGET_LINK_LIBRARIES( ${libname}
+	${Marlin_LIBRARIES}
+	torch
+	${ROOT_LIBRARIES}
+	${ROOT_COMPONENT_LIBRARIES}
+	${MarlinUtil_LIBRARIES}
+	${LCFIVertex_LIBRARIES}
+	nlohmann_json::nlohmann_json
+	${onnxruntime_LIBRARIES}
+)
 
 ### EXECUTABLE MODE ########################################################
 

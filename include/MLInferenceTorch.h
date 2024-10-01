@@ -5,6 +5,11 @@
 
 #include "lcfiplus.h"
 
+#undef ClassDef
+#include <torch/script.h>
+//namespace torch::jit::script { struct Module; }
+//namespace torch::jit { struct Module; }
+
 namespace lcfiplus {
 
 class MLInferenceTorch : public Algorithm {
@@ -15,8 +20,12 @@ class MLInferenceTorch : public Algorithm {
   void init(Parameters* param);
   void process();
   void end();
+  
  private:
-  ClassDef(MLInferenceTorch,1);
+  torch::jit::script::Module _model;
+  //torch::jit::script::Module* _model; //!
+  //ClassDef(MLInferenceTorch,1);
+
 };
 
 }
