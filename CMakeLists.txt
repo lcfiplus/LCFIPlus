@@ -67,6 +67,7 @@ SET( ROOT_DICT_INPUT_HEADERS
 		${PROJECT_SOURCE_DIR}/include/DNNProvider2.h
 		${PROJECT_SOURCE_DIR}/include/MLInputGenerator.h
 		${PROJECT_SOURCE_DIR}/include/MLMakeNtuple.h
+		${PROJECT_SOURCE_DIR}/include/MLInferenceWeaver.h
 		${PROJECT_SOURCE_DIR}/include/LinkDef.h
 )
 SET( ROOT_DICT_INCLUDE_DIRS ${Marlin_INCLUDE_DIRS} ${TORCH_INCLUDE_DIRS} )

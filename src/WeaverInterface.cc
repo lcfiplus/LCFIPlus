@@ -6,6 +6,8 @@
 #include <fstream>
 #include <iostream>
 
+using namespace lcfiplus;
+
 WeaverInterface::WeaverInterface(const std::string& onnx_filename,
                                  const std::string& json_filename,
                                  const rv::RVec<std::string>& vars)

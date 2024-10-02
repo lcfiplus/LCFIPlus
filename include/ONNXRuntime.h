@@ -10,6 +10,8 @@
 #include <map>
 #include <memory>
 
+namespace lcfiplus {
+
 class ONNXRuntime {
 public:
   explicit ONNXRuntime(const std::string& = "", const std::vector<std::string>& = {});
@@ -38,4 +40,5 @@ private:
   std::map<std::string, std::vector<int64_t>> input_node_dims_, output_node_dims_;
 };
 
+}
 #endif

@@ -5,6 +5,8 @@
 #include <numeric>
 #include <algorithm>
 
+using namespace lcfiplus;
+
 ONNXRuntime::ONNXRuntime(const std::string& model_path, const std::vector<std::string>& input_names)
     : env_(new Ort::Env(OrtLoggingLevel::ORT_LOGGING_LEVEL_WARNING, "onnx_runtime")),
       memoryInfo_(Ort::MemoryInfo::CreateCpu(OrtAllocatorType::OrtArenaAllocator, OrtMemTypeDefault)),

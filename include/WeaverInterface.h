@@ -8,6 +8,8 @@
 
 namespace rv = ROOT::VecOps;
 
+namespace lcfiplus {
+
 class WeaverInterface {
 public:
   using ConstituentVars = rv::RVec<float>;
@@ -71,4 +73,5 @@ private:
   ONNXRuntime::Tensor<float> data_;
 };
 
+}
 #endif
