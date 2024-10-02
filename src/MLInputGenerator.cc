@@ -48,42 +48,51 @@ namespace MLInputGenerator {
       return;
     }
     _initialized = true;
-    cout << "MLInputGenerator: preparing functions for input variables" << endl;
+    //cout << "MLInputGenerator: preparing functions for input variables" << endl;
 
-    calcInput["jet_px"] = [](const Jet* jet){ return jet->Px(); };
-    calcInput["tr_efrac"] = [](const Track* tr, const Jet* jet){ return tr->E() / jet->E(); };
-    calcInput["neu_px"] = [](const Neutral* neu){ return neu->Px(); };
+    //const string _jet_prefix = "jet_";
+    //const string _trk_prefix = "tr_";
+    //const string _neu_prefix = "neu_";
+
+    const string _jet_prefix = "pfcand_";
+    const string _trk_prefix = "pfcand_";
+    const string _neu_prefix = "pfcand_";
+
+
+    calcInput[_jet_prefix+"px"] = [](const Jet* jet){ return jet->Px(); };
+    calcInput[_trk_prefix+"efrac"] = [](const Track* tr, const Jet* jet){ return tr->E() / jet->E(); };
+    calcInput[_neu_prefix+"px"] = [](const Neutral* neu){ return neu->Px(); };
 
     // jet inputs
-    calcInput["jet_px"] = [](const Jet* jet){ return jet->Px(); };
-    calcInput["jet_py"] = [](const Jet* jet){ return jet->Py(); };
-    calcInput["jet_pz"] = [](const Jet* jet){ return jet->Pz(); };
-    calcInput["jet_mass"] = [](const Jet* jet){ return jet->M(); };
-    calcInput["jet_ntracks"] = [](const Jet* jet){ return jet->getAllTracks().size(); };
-    calcInput["jet_nneutrals"] = [](const Jet* jet){ return jet->getNeutrals().size(); };
-    calcInput["jet_phi"] = [](const Jet* jet){ return jet->Phi(); };
-    calcInput["jet_theta"] = [](const Jet* jet){ return jet->Theta(); };
+    calcInput[_jet_prefix+"px"] = [](const Jet* jet){ return jet->Px(); };
+    calcInput[_jet_prefix+"py"] = [](const Jet* jet){ return jet->Py(); };
+    calcInput[_jet_prefix+"pz"] = [](const Jet* jet){ return jet->Pz(); };
+    calcInput[_jet_prefix+"mass"] = [](const Jet* jet){ return jet->M(); };
+    calcInput[_jet_prefix+"ntracks"] = [](const Jet* jet){ return jet->getAllTracks().size(); };
+    calcInput[_jet_prefix+"nneutrals"] = [](const Jet* jet){ return jet->getNeutrals().size(); };
+    calcInput[_jet_prefix+"phi"] = [](const Jet* jet){ return jet->Phi(); };
+    calcInput[_jet_prefix+"theta"] = [](const Jet* jet){ return jet->Theta(); };
 
     // track inputs
     // particle kinematics
-    calcInput["tr_px"] = [](const Track* tr){ return tr->Px(); };
-    calcInput["tr_py"] = [](const Track* tr){ return tr->Py(); };
-    calcInput["tr_pz"] = [](const Track* tr){ return tr->Pz(); };
-    calcInput["tr_e"] = [](const Track* tr){ return tr->E(); };
-    calcInput["tr_efrac"] = [](const Track* tr, const Jet* jet){ return tr->E() / jet->E(); };
-    calcInput["tr_erel_log"] = [](const Track* tr, const Jet* jet){ return log10( tr->E() / jet->E() ); };
-    calcInput["tr_thetarel"] = [](const Track* tr, const Jet* jet){
+    calcInput[_trk_prefix+"px"] = [](const Track* tr){ return tr->Px(); };
+    calcInput[_trk_prefix+"py"] = [](const Track* tr){ return tr->Py(); };
+    calcInput[_trk_prefix+"pz"] = [](const Track* tr){ return tr->Pz(); };
+    calcInput[_trk_prefix+"e"] = [](const Track* tr){ return tr->E(); };
+    calcInput[_trk_prefix+"efrac"] = [](const Track* tr, const Jet* jet){ return tr->E() / jet->E(); };
+    calcInput[_trk_prefix+"erel_log"] = [](const Track* tr, const Jet* jet){ return log10( tr->E() / jet->E() ); };
+    calcInput[_trk_prefix+"thetarel"] = [](const Track* tr, const Jet* jet){
       float theta, phi;
       calc_thetaphi( tr->Vect(), jet->Vect(), theta, phi);
       return theta;
     };
-    calcInput["tr_phirel"] = [](const Track* tr, const Jet* jet){
+    calcInput[_trk_prefix+"phirel"] = [](const Track* tr, const Jet* jet){
       float theta, phi;
       calc_thetaphi( tr->Vect(), jet->Vect(), theta, phi);
       return phi;
     };
-    calcInput["tr_thetarel_ilc"] = [](const Track* tr, const Jet* jet){ return tr->Theta() - jet->Theta(); };
-    calcInput["tr_phirel_ilc"] = [](const Track* tr, const Jet* jet){
+    calcInput[_trk_prefix+"thetarel_ilc"] = [](const Track* tr, const Jet* jet){ return tr->Theta() - jet->Theta(); };
+    calcInput[_trk_prefix+"phirel_ilc"] = [](const Track* tr, const Jet* jet){
       auto ret = tr->Phi() - jet->Phi();
       if(ret < -TMath::Pi()) ret += TMath::Pi() * 2;
       if(ret > TMath::Pi()) ret -= TMath::Pi() * 2;
@@ -91,146 +100,146 @@ namespace MLInputGenerator {
     };
 
     // track errors
-    calcInput["tr_dptdpt"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::omom]; };
-    calcInput["tr_detadeta"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::tdtd]; };
-    calcInput["tr_dphidphi"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::phph]; };
-    calcInput["tr_dxydxy"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::d0d0]; };
-    calcInput["tr_dzdz"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::z0z0]; };
-    calcInput["tr_dxydz"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::d0z0]; };
-    calcInput["tr_dphidxy"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::d0ph]; };
-    calcInput["tr_dlambdadz"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::z0td]; };
-    calcInput["tr_dxyc"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::d0om]; };
-    calcInput["tr_dxyctgtheta"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::d0td]; };
-    calcInput["tr_phic"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::phom]; };
-    calcInput["tr_phidz"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::z0ph]; };
-    calcInput["tr_phictgtheta"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::phtd]; };
-    calcInput["tr_cdz"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::z0om]; };
-    calcInput["tr_cctgtheta"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::omtd]; };
+    calcInput[_trk_prefix+"dptdpt"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::omom]; };
+    calcInput[_trk_prefix+"detadeta"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::tdtd]; };
+    calcInput[_trk_prefix+"dphidphi"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::phph]; };
+    calcInput[_trk_prefix+"dxydxy"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::d0d0]; };
+    calcInput[_trk_prefix+"dzdz"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::z0z0]; };
+    calcInput[_trk_prefix+"dxydz"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::d0z0]; };
+    calcInput[_trk_prefix+"dphidxy"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::d0ph]; };
+    calcInput[_trk_prefix+"dlambdadz"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::z0td]; };
+    calcInput[_trk_prefix+"dxyc"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::d0om]; };
+    calcInput[_trk_prefix+"dxyctgtheta"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::d0td]; };
+    calcInput[_trk_prefix+"phic"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::phom]; };
+    calcInput[_trk_prefix+"phidz"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::z0ph]; };
+    calcInput[_trk_prefix+"phictgtheta"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::phtd]; };
+    calcInput[_trk_prefix+"cdz"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::z0om]; };
+    calcInput[_trk_prefix+"cctgtheta"] = [](const Track* tr){ return tr->getCovMatrix()[tpar::omtd]; };
 
     // particle displacements
-    calcInput["tr_d0"] = [](const Track* tr){ return tr->getD0(); };
-    calcInput["tr_d0sig"] = [](const Track* tr){ return tr->getD0() / sqrt(tr->getCovMatrix()[tpar::cov::d0d0]); };
-    calcInput["tr_z0"] = [](const Track* tr){ return tr->getZ0(); };
-    calcInput["tr_z0sig"] = [](const Track* tr){ return tr->getZ0() / sqrt(tr->getCovMatrix()[tpar::cov::z0z0]); };
+    calcInput[_trk_prefix+"d0"] = [](const Track* tr){ return tr->getD0(); };
+    calcInput[_trk_prefix+"d0sig"] = [](const Track* tr){ return tr->getD0() / sqrt(tr->getCovMatrix()[tpar::cov::d0d0]); };
+    calcInput[_trk_prefix+"z0"] = [](const Track* tr){ return tr->getZ0(); };
+    calcInput[_trk_prefix+"z0sig"] = [](const Track* tr){ return tr->getZ0() / sqrt(tr->getCovMatrix()[tpar::cov::z0z0]); };
 
-    calcInput["tr_ip3d"] = [](const Track* tr){
+    calcInput[_trk_prefix+"ip3d"] = [](const Track* tr){
       return sqrt(tr->getD0() * tr->getD0() + tr->getZ0() * tr->getZ0());
     };
 
-    calcInput["tr_ip3dsig"] = [](const Track* tr){
+    calcInput[_trk_prefix+"ip3dsig"] = [](const Track* tr){
       auto ip3d = sqrt(tr->getD0() * tr->getD0() + tr->getZ0() * tr->getZ0());
       return ip3d / sqrt(tr->getCovMatrix()[tpar::cov::d0d0] + tr->getCovMatrix()[tpar::cov::z0z0] + 2 * tr->getCovMatrix()[tpar::cov::d0z0]);
     };
 
-    calcInput["tr_dxy"] = [](const Track* tr, const Vertex* privtx){
+    calcInput[_trk_prefix+"dxy"] = [](const Track* tr, const Vertex* privtx){
       return calc_dxy(tr->getD0(), tr->getZ0(), tr->getPhi(), tr->Vect(), privtx->getPos(), tr->getCharge());
     };
 
-    calcInput["tr_dz"] = [](const Track* tr, const Vertex* privtx){
+    calcInput[_trk_prefix+"dz"] = [](const Track* tr, const Vertex* privtx){
       return calc_dz(tr->getD0(), tr->getZ0(), tr->getPhi(), tr->Vect(), privtx->getPos(), tr->getCharge());
     };
 
-    calcInput["tr_btagSip2dVal"] = [](const Track* tr, const Jet* jet){
+    calcInput[_trk_prefix+"btagSip2dVal"] = [](const Track* tr, const Jet* jet){
       return calc_sip2d(tr->getD0(), tr->getPhi(), jet->Px(), jet->Py());
     };
 
-    calcInput["tr_btagSip2dSig"] = [](const Track* tr, const Jet* jet){
+    calcInput[_trk_prefix+"btagSip2dSig"] = [](const Track* tr, const Jet* jet){
 
       return calc_sip2d(tr->getD0(), tr->getPhi(), jet->Px(), jet->Py()) / sqrt( tr->getCovMatrix()[tpar::d0d0] );
     };
 
-    calcInput["tr_btagSip3dVal"] = [](const Track* tr, const Jet* jet){
+    calcInput[_trk_prefix+"btagSip3dVal"] = [](const Track* tr, const Jet* jet){
       return calc_sip3d(tr->getD0(), tr->getZ0(), tr->getPhi(), jet->Vect());
     };
 
-    calcInput["tr_btagSip3dSig"] = [](const Track* tr, const Jet* jet){
+    calcInput[_trk_prefix+"btagSip3dSig"] = [](const Track* tr, const Jet* jet){
       return calc_sip3d(tr->getD0(), tr->getZ0(), tr->getPhi(), jet->Vect()) / sqrt( tr->getCovMatrix()[tpar::d0d0] + tr->getCovMatrix()[tpar::z0z0] );
     };
 
-    calcInput["tr_btagJetDistVal"] = [](const Track* tr, const Jet* jet){
+    calcInput[_trk_prefix+"btagJetDistVal"] = [](const Track* tr, const Jet* jet){
       return calc_jetDist(tr->getD0(), tr->getZ0(), tr->getPhi(), tr->Vect(), jet->Vect());
     };
 
-    calcInput["tr_btagJetDistSig"] = [](const Track* tr, const Jet* jet){
+    calcInput[_trk_prefix+"btagJetDistSig"] = [](const Track* tr, const Jet* jet){
       return calc_jetDist(tr->getD0(), tr->getZ0(), tr->getPhi(), tr->Vect(), jet->Vect()) / sqrt( tr->getCovMatrix()[tpar::d0d0] + tr->getCovMatrix()[tpar::z0z0] );
     };
 
     // particle ID
-    calcInput["tr_dEdx"] = [](const Track* tr){ return tr->getdEdx(); };
-    calcInput["tr_charge"] = [](const Track* tr){ return tr->getCharge(); };
-    calcInput["tr_isMu"] = [](const Track* tr){ return tr->getParticleIDProbability("muonProbability"); };
-    calcInput["tr_isEl"] = [](const Track* tr){ return tr->getParticleIDProbability("electronProbability"); };
-    calcInput["tr_isGamma"] = [](const Track*){ return 0.; };
-    calcInput["tr_isChargedHad"] = [](const Track* tr){
+    calcInput[_trk_prefix+"dEdx"] = [](const Track* tr){ return tr->getdEdx(); };
+    calcInput[_trk_prefix+"charge"] = [](const Track* tr){ return tr->getCharge(); };
+    calcInput[_trk_prefix+"isMu"] = [](const Track* tr){ return tr->getParticleIDProbability("muonProbability"); };
+    calcInput[_trk_prefix+"isEl"] = [](const Track* tr){ return tr->getParticleIDProbability("electronProbability"); };
+    calcInput[_trk_prefix+"isGamma"] = [](const Track*){ return 0.; };
+    calcInput[_trk_prefix+"isChargedHad"] = [](const Track* tr){
       auto isMu = tr->getParticleIDProbability("muonProbability");
       auto isEl = tr->getParticleIDProbability("electronProbability");
       return !(isMu || isEl);
     };
-    calcInput["tr_isNeutralHad"] = [](const Track*){ return 0.; };
-    calcInput["tr_type"] = [](const Track* tr){ return tr->getPDG(); };
-    calcInput["tr_mcpid"] = [](const Track* tr){ return (tr->getMcp()) ? tr->getMcp()->getId() : 0.; };
-    calcInput["tr_mcp_pdg"] = [](const Track* tr){ return (tr->getMcp()) ? tr->getMcp()->getPDG() : 0.; };
-    calcInput["tr_Ktype"] = [](const Track* tr){
+    calcInput[_trk_prefix+"isNeutralHad"] = [](const Track*){ return 0.; };
+    calcInput[_trk_prefix+"type"] = [](const Track* tr){ return tr->getPDG(); };
+    calcInput[_trk_prefix+"mcpid"] = [](const Track* tr){ return (tr->getMcp()) ? tr->getMcp()->getId() : 0.; };
+    calcInput[_trk_prefix+"mcp_pdg"] = [](const Track* tr){ return (tr->getMcp()) ? tr->getMcp()->getPDG() : 0.; };
+    calcInput[_trk_prefix+"Ktype"] = [](const Track* tr){
       auto pdg = abs(tr->getPDG());
       if (pdg==321 || pdg==310) return 1;
       return 0;
     };
-    calcInput["tr_isPion"] = [](const Track* tr){ return tr->getParticleIDProbability("pionProbability"); };
-    calcInput["tr_isKaon"] = [](const Track* tr){ return tr->getParticleIDProbability("kaonProbability"); };
-    calcInput["tr_isProton"] = [](const Track* tr){ return tr->getParticleIDProbability("protonProbability"); };
+    calcInput[_trk_prefix+"isPion"] = [](const Track* tr){ return tr->getParticleIDProbability("pionProbability"); };
+    calcInput[_trk_prefix+"isKaon"] = [](const Track* tr){ return tr->getParticleIDProbability("kaonProbability"); };
+    calcInput[_trk_prefix+"isProton"] = [](const Track* tr){ return tr->getParticleIDProbability("protonProbability"); };
 
     // for PI3 (20240203)
-    calcInput["tr_proton_K"] = [](const Track* tr){ 
+    calcInput[_trk_prefix+"proton_K"] = [](const Track* tr){ 
       auto isproton = tr->getParticleIDProbability("protonProbability");
       auto iskaon = tr->getParticleIDProbability("kaonProbability");
       return isproton-iskaon;
     };
-    calcInput["tr_pion_K"] = [](const Track* tr){ 
+    calcInput[_trk_prefix+"pion_K"] = [](const Track* tr){ 
       auto ispion = tr->getParticleIDProbability("pionProbability");
       auto iskaon = tr->getParticleIDProbability("kaonProbability");
       return ispion-iskaon;
     };
-    calcInput["tr_proton_Klike"] = [](const Track* tr){ 
+    calcInput[_trk_prefix+"proton_Klike"] = [](const Track* tr){ 
       auto isproton = tr->getParticleIDProbability("protonLikelihood");
       auto iskaon = tr->getParticleIDProbability("kaonLikelihood");
       return isproton-iskaon;
     };
-    calcInput["tr_pion_Klike"] = [](const Track* tr){ 
+    calcInput[_trk_prefix+"pion_Klike"] = [](const Track* tr){ 
       auto ispion = tr->getParticleIDProbability("pionLikelihood");
       auto iskaon = tr->getParticleIDProbability("kaonLikelihood");
       return ispion-iskaon;
     };
-    calcInput["tr_dEdxEl"] = [](const Track* tr){ return tr->getParticleIDProbability("electron_dEdxdistance"); };
-    calcInput["tr_dEdxMu"] = [](const Track* tr){ return tr->getParticleIDProbability("muon_dEdxdistance"); };
-    calcInput["tr_dEdxPion"] = [](const Track* tr){ return tr->getParticleIDProbability("pion_dEdxdistance"); };
-    calcInput["tr_dEdxKaon"] = [](const Track* tr){ return tr->getParticleIDProbability("kaon_dEdxdistance"); };
-    calcInput["tr_dEdxProton"] = [](const Track* tr){ return tr->getParticleIDProbability("proton_dEdxdistance"); };
-    calcInput["tr_iselectronlike"] = [](const Track* tr){ return tr->getParticleIDProbability("electronLikelihood"); };
-    calcInput["tr_ismuonlike"] = [](const Track* tr){ return tr->getParticleIDProbability("muonLikelihood"); };
-    calcInput["tr_ispionlike"] = [](const Track* tr){ return tr->getParticleIDProbability("pionLikelihood"); };
-    calcInput["tr_iskaonlike"] = [](const Track* tr){ return tr->getParticleIDProbability("kaonLikelihood"); };
-    calcInput["tr_isprotonlike"] = [](const Track* tr){ return tr->getParticleIDProbability("protonLikelihood"); };
+    calcInput[_trk_prefix+"dEdxEl"] = [](const Track* tr){ return tr->getParticleIDProbability("electron_dEdxdistance"); };
+    calcInput[_trk_prefix+"dEdxMu"] = [](const Track* tr){ return tr->getParticleIDProbability("muon_dEdxdistance"); };
+    calcInput[_trk_prefix+"dEdxPion"] = [](const Track* tr){ return tr->getParticleIDProbability("pion_dEdxdistance"); };
+    calcInput[_trk_prefix+"dEdxKaon"] = [](const Track* tr){ return tr->getParticleIDProbability("kaon_dEdxdistance"); };
+    calcInput[_trk_prefix+"dEdxProton"] = [](const Track* tr){ return tr->getParticleIDProbability("proton_dEdxdistance"); };
+    calcInput[_trk_prefix+"iselectronlike"] = [](const Track* tr){ return tr->getParticleIDProbability("electronLikelihood"); };
+    calcInput[_trk_prefix+"ismuonlike"] = [](const Track* tr){ return tr->getParticleIDProbability("muonLikelihood"); };
+    calcInput[_trk_prefix+"ispionlike"] = [](const Track* tr){ return tr->getParticleIDProbability("pionLikelihood"); };
+    calcInput[_trk_prefix+"iskaonlike"] = [](const Track* tr){ return tr->getParticleIDProbability("kaonLikelihood"); };
+    calcInput[_trk_prefix+"isprotonlike"] = [](const Track* tr){ return tr->getParticleIDProbability("protonLikelihood"); };
 
     // for neutrals
     // particle kinematics
-    calcInput["neu_px"] = [](const Neutral* neu){ return neu->Px(); };
-    calcInput["neu_py"] = [](const Neutral* neu){ return neu->Py(); };
-    calcInput["neu_pz"] = [](const Neutral* neu){ return neu->Pz(); };
-    calcInput["neu_e"] = [](const Neutral* neu){ return neu->E(); };
-    calcInput["neu_efrac"] = [](const Neutral* neu, const Jet* jet){ return neu->E() / jet->E(); };
-    calcInput["neu_erel_log"] = [](const Neutral* neu, const Jet* jet){ return log10(neu->E() / jet->E()); };
-    calcInput["neu_thetarel"] = [](const Neutral* neu, const Jet* jet){
+    calcInput[_neu_prefix+"px"] = [](const Neutral* neu){ return neu->Px(); };
+    calcInput[_neu_prefix+"py"] = [](const Neutral* neu){ return neu->Py(); };
+    calcInput[_neu_prefix+"pz"] = [](const Neutral* neu){ return neu->Pz(); };
+    calcInput[_neu_prefix+"e"] = [](const Neutral* neu){ return neu->E(); };
+    calcInput[_neu_prefix+"efrac"] = [](const Neutral* neu, const Jet* jet){ return neu->E() / jet->E(); };
+    calcInput[_neu_prefix+"erel_log"] = [](const Neutral* neu, const Jet* jet){ return log10(neu->E() / jet->E()); };
+    calcInput[_neu_prefix+"thetarel"] = [](const Neutral* neu, const Jet* jet){
       float theta, phi;
       calc_thetaphi(jet->Vect(), neu->Vect(), theta, phi);
       return theta;
     };
-    calcInput["neu_phirel"] = [](const Neutral* neu, const Jet* jet){
+    calcInput[_neu_prefix+"phirel"] = [](const Neutral* neu, const Jet* jet){
       float theta, phi;
       calc_thetaphi(jet->Vect(), neu->Vect(), theta, phi);
       return phi;
     };
-    calcInput["neu_thetarel_ilc"] = [](const Neutral* neu, const Jet* jet){ return neu->Theta() - jet->Theta(); };
-    calcInput["neu_phirel_ilc"] = [](const Neutral* neu, const Jet* jet){
+    calcInput[_neu_prefix+"thetarel_ilc"] = [](const Neutral* neu, const Jet* jet){ return neu->Theta() - jet->Theta(); };
+    calcInput[_neu_prefix+"phirel_ilc"] = [](const Neutral* neu, const Jet* jet){
       auto ret = neu->Phi() - jet->Phi();
       if(ret < -TMath::Pi()) ret += TMath::Pi() * 2;
       if(ret > TMath::Pi()) ret -= TMath::Pi() * 2;
@@ -238,67 +247,67 @@ namespace MLInputGenerator {
     };
 
     // track errors -- why are these implemented for neutrals?
-    calcInput["neu_dptdpt"] = [](const Neutral*){ return -9; };
-    calcInput["neu_detadeta"] = [](const Neutral*){ return -9; };
-    calcInput["neu_dphidphi"] = [](const Neutral*){ return -9; };
-    calcInput["neu_dxydxy"] = [](const Neutral*){ return -9; };
-    calcInput["neu_dzdz"] = [](const Neutral*){ return -9; };
-    calcInput["neu_dxydz"] = [](const Neutral*){ return -9; };
-    calcInput["neu_dphidxy"] = [](const Neutral*){ return -9; };
-    calcInput["neu_dlambdadz"] = [](const Neutral*){ return -9; };
-    calcInput["neu_dxyc"] = [](const Neutral*){ return -9; };
-    calcInput["neu_dxyctgtheta"] = [](const Neutral*){ return -9; };
-    calcInput["neu_phic"] = [](const Neutral*){ return -9; };
-    calcInput["neu_phidz"] = [](const Neutral*){ return -9; };
-    calcInput["neu_phictgtheta"] = [](const Neutral*){ return -9; };
-    calcInput["neu_cdz"] = [](const Neutral*){ return -9; };
-    calcInput["neu_cctgtheta"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"dptdpt"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"detadeta"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"dphidphi"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"dxydxy"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"dzdz"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"dxydz"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"dphidxy"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"dlambdadz"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"dxyc"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"dxyctgtheta"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"phic"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"phidz"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"phictgtheta"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"cdz"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"cctgtheta"] = [](const Neutral*){ return -9; };
 
     // particle displacements -- why are these implemented for neutrals?
-    calcInput["neu_d0"] = [](const Neutral*){ return -9; };
-    calcInput["neu_d0sig"] = [](const Neutral*){ return -9; };
-    calcInput["neu_z0"] = [](const Neutral*){ return -9; };
-    calcInput["neu_z0sig"] = [](const Neutral*){ return -9; };
-    calcInput["neu_ip3d"] = [](const Neutral*){ return -9; };
-    calcInput["neu_ip3dsig"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"d0"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"d0sig"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"z0"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"z0sig"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"ip3d"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"ip3dsig"] = [](const Neutral*){ return -9; };
 
-    calcInput["neu_dxy"] = [](const Neutral*){ return -9; };
-    calcInput["neu_dz"] = [](const Neutral*){ return -9; };
-    calcInput["neu_btagSip2dVal"] = [](const Neutral*){ return -9; };
-    calcInput["neu_btagSip2dSig"] = [](const Neutral*){ return -9; };
-    calcInput["neu_btagSip3dVal"] = [](const Neutral*){ return -9; };
-    calcInput["neu_btagSip3dSig"] = [](const Neutral*){ return -9; };
-    calcInput["neu_btagJetDistVal"] = [](const Neutral*){ return -9; };
-    calcInput["neu_btagJetDistSig"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"dxy"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"dz"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"btagSip2dVal"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"btagSip2dSig"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"btagSip3dVal"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"btagSip3dSig"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"btagJetDistVal"] = [](const Neutral*){ return -9; };
+    calcInput[_neu_prefix+"btagJetDistSig"] = [](const Neutral*){ return -9; };
 
     // particle ID
-    calcInput["neu_charge"] = [](const Neutral*){ return 0; };
-    calcInput["neu_isMu"] = [](const Neutral*){ return 0; };
-    calcInput["neu_isEl"] = [](const Neutral*){ return 0; };
-    calcInput["neu_isGamma"] = [](const Neutral* neu){
+    calcInput[_neu_prefix+"charge"] = [](const Neutral*){ return 0; };
+    calcInput[_neu_prefix+"isMu"] = [](const Neutral*){ return 0; };
+    calcInput[_neu_prefix+"isEl"] = [](const Neutral*){ return 0; };
+    calcInput[_neu_prefix+"isGamma"] = [](const Neutral* neu){
       // simple photon finder
       double ecaldep = neu->getCaloEdep()[tpar::ecal];
       double hcaldep = neu->getCaloEdep()[tpar::hcal];
       return (ecaldep / (ecaldep + hcaldep) > 0.98);
     };
-    calcInput["neu_isChargedHad"] = [](const Neutral*){ return 0; };
-    calcInput["neu_isNeutralHad"] = [](const Neutral* neu){ 
+    calcInput[_neu_prefix+"isChargedHad"] = [](const Neutral*){ return 0; };
+    calcInput[_neu_prefix+"isNeutralHad"] = [](const Neutral* neu){ 
       // simple photon finder
       double ecaldep = neu->getCaloEdep()[tpar::ecal];
       double hcaldep = neu->getCaloEdep()[tpar::hcal];
       return !(ecaldep / (ecaldep + hcaldep) > 0.98);
     };
-    calcInput["neu_type"] = [](const Neutral* neu){ return neu->getPDG(); };
-    calcInput["neu_mcpid"] = [](const Neutral* neu){ return (neu->getMcp()) ? neu->getMcp()->getId() : 0.; };
-    calcInput["neu_mcp_pdg"] = [](const Neutral* neu){ return (neu->getMcp()) ? neu->getMcp()->getPDG() : 0.; };
+    calcInput[_neu_prefix+"type"] = [](const Neutral* neu){ return neu->getPDG(); };
+    calcInput[_neu_prefix+"mcpid"] = [](const Neutral* neu){ return (neu->getMcp()) ? neu->getMcp()->getId() : 0.; };
+    calcInput[_neu_prefix+"mcp_pdg"] = [](const Neutral* neu){ return (neu->getMcp()) ? neu->getMcp()->getPDG() : 0.; };
 
-    calcInput["neu_Ktype"] = [](const Neutral* neu){
+    calcInput[_neu_prefix+"Ktype"] = [](const Neutral* neu){
       auto pdg = abs(neu->getPDG());
       return ( (pdg==321 || pdg==310) );
     };
-    calcInput["neu_isPion"] = [](const Neutral*){ return 0; };
-    calcInput["neu_isKaon"] = [](const Neutral*){ return 0; };
-    calcInput["neu_isProton"] = [](const Neutral*){ return 0; };
+    calcInput[_neu_prefix+"isPion"] = [](const Neutral*){ return 0; };
+    calcInput[_neu_prefix+"isKaon"] = [](const Neutral*){ return 0; };
+    calcInput[_neu_prefix+"isProton"] = [](const Neutral*){ return 0; };
 
   }
 

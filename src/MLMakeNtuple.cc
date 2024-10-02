@@ -7,6 +7,7 @@
 #include "JetFinder.h"
 
 #include "TROOT.h"
+#include <variant>
 #include <string>
 #include <typeinfo>
 
