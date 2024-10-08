@@ -54,10 +54,9 @@ namespace MLInputGenerator {
     //const string _trk_prefix = "tr_";
     //const string _neu_prefix = "neu_";
 
-    const string _jet_prefix = "pfcand_";
+    const string _jet_prefix = "jet_";
     const string _trk_prefix = "pfcand_";
-    const string _neu_prefix = "pfcand_";
-
+    const string _neu_prefix = "neu_pfcand_";
 
     calcInput[_jet_prefix+"px"] = [](const Jet* jet){ return jet->Px(); };
     calcInput[_trk_prefix+"efrac"] = [](const Track* tr, const Jet* jet){ return tr->E() / jet->E(); };
@@ -165,7 +164,11 @@ namespace MLInputGenerator {
     };
 
     // particle ID
-    calcInput[_trk_prefix+"dEdx"] = [](const Track* tr){ return tr->getdEdx(); };
+
+    // no prefix in existing weight files
+    //calcInput[_trk_prefix+"dEdx"] = [](const Track* tr){ return tr->getdEdx(); };
+    calcInput["dEdx"] = [](const Track* tr){ return tr->getdEdx(); };
+
     calcInput[_trk_prefix+"charge"] = [](const Track* tr){ return tr->getCharge(); };
     calcInput[_trk_prefix+"isMu"] = [](const Track* tr){ return tr->getParticleIDProbability("muonProbability"); };
     calcInput[_trk_prefix+"isEl"] = [](const Track* tr){ return tr->getParticleIDProbability("electronProbability"); };
