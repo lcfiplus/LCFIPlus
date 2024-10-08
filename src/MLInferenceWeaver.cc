@@ -110,7 +110,10 @@ void MLInferenceWeaver::process() {
     }
     out.emplace_back(_weaver->run(vars));
   }
-  std::cout << out << std::endl;
+
+  for (unsigned int i=0; i<out.size(); ++i) {
+    std::cout << "  j[" << i << "]: " << out[i] << std::endl;
+  }
 }
 
 void MLInferenceWeaver::end() {
