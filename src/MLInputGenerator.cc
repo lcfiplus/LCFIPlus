@@ -58,14 +58,11 @@ namespace MLInputGenerator {
     const string _trk_prefix = "pfcand_";
     const string _neu_prefix = "neu_pfcand_";
 
-    calcInput[_jet_prefix+"px"] = [](const Jet* jet){ return jet->Px(); };
-    calcInput[_trk_prefix+"efrac"] = [](const Track* tr, const Jet* jet){ return tr->E() / jet->E(); };
-    calcInput[_neu_prefix+"px"] = [](const Neutral* neu){ return neu->Px(); };
-
     // jet inputs
     calcInput[_jet_prefix+"px"] = [](const Jet* jet){ return jet->Px(); };
     calcInput[_jet_prefix+"py"] = [](const Jet* jet){ return jet->Py(); };
     calcInput[_jet_prefix+"pz"] = [](const Jet* jet){ return jet->Pz(); };
+    calcInput[_jet_prefix+"e"] = [](const Jet* jet){ return jet->E(); };
     calcInput[_jet_prefix+"mass"] = [](const Jet* jet){ return jet->M(); };
     calcInput[_jet_prefix+"ntracks"] = [](const Jet* jet){ return jet->getAllTracks().size(); };
     calcInput[_jet_prefix+"nneutrals"] = [](const Jet* jet){ return jet->getNeutrals().size(); };
