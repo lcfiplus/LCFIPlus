@@ -1039,6 +1039,44 @@ void FlavtagReader::end() {
   _file->Close();
 }
 
+void WeaverReader::init(Parameters* param) {
+  Algorithm::init(param);
+
+  string filename = param->get("WeaverReader.FileName",string("test.root"));
+  _jetname = param->get("WeaverReader.JetCollectionName",string("RefinedJets"));
+  string primvtxcolname = param->get("PrimaryVertexCollectionName",string("PrimaryVertex"));
+  Event::Instance()->setDefaultPrimaryVertex(primvtxcolname.c_str());
+
+  _file = new TFile(filename.c_str(),"RECREATE");
+  _nt = new TNtupleD("nt","nt","nev:nj:e:px:py:pz:tag1:tag2:tag3:tag4:tag5:tag6");
+  //_ntev = new TNtupleD("ntev","ntev","nev:btag1:btag2:btag3:btag4:btag5:btag6:ctag1:ctag2:ctag3:ctag4:ctag5:ctag6");
+
+  _jets = 0;
+  _nev = 0;
+}
+
+void WeaverReader::process() {
+  if (!_jets) {
+    Event::Instance()->Get(_jetname.c_str(), _jets);
+  }
+  //const Vertex * privtx = Event::Instance()->getPrimaryVertex();
+
+  for (unsigned int nj = 0; nj < _jets->size(); nj++) {
+    const Jet* j = (*_jets)[nj];
+
+    const Parameters* para = j->getParam("weaver");
+    _nt->Fill(_nev, nj, j->E(), j->Px(), j->Py(), j->Pz(),
+              para->get<float>("mc_b"), para->get<float>("mc_c"), para->get<float>("mc_s"),  para->get<float>("mc_u"),  para->get<float>("mc_d"),  para->get<float>("mc_g"));
+  }
+
+  _nev ++;
+}
+
+void WeaverReader::end() {
+  _file->Write();
+  _file->Close();
+}
+
 #if 0
 
 void TestAlgo::init(Parameters* param) {

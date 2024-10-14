@@ -46,6 +46,7 @@
 #pragma link C++ class lcfiplus::ZHHAlgo;
 #pragma link C++ class lcfiplus::TestAlgo;
 #pragma link C++ class lcfiplus::FlavtagReader;
+#pragma link C++ class lcfiplus::WeaverReader;
 #pragma link C++ class lcfiplus::VertexAnalysis;
 #pragma link C++ class lcfiplus::TrackPairTree;
 #pragma link C++ class lcfiplus::TestAlgoV0;
