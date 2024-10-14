@@ -101,54 +101,46 @@ void MLInferenceWeaver::process() {
         exit(1);
       }
       const auto& func = calcInput[name];
-      
-      for (auto tr: tracks) {
-      
-        float val(0.);
 
-        if (std::holds_alternative<function<double(const Jet*)> >(func)) {
-          auto f = std::get<function<double(const Jet*)> >(func);
-          val = f(jet);
-        }
-
-        if (std::holds_alternative<function<double(const Track*)> >(func)) {
-          auto f = std::get<function<double(const Track*)> >(func);
-          val = f(tr);
-        }
-
-        if (std::holds_alternative<function<double(const Track*, const Jet*)> >(func)) {
-          auto f = std::get<function<double(const Track*, const Jet*)> >(func);
-          val = f(tr,jet);
-        }
-
-        if (std::holds_alternative<function<double(const Track*, const Vertex*)> >(func)) {
-          auto f = std::get<function<double(const Track*, const Vertex*)> >(func);
-          val = f(tr,privtx);
-        }
-
-        cand_vars.push_back(val);
+      if (std::holds_alternative<function<double(const Jet*)> >(func)) {
+        auto f = std::get<function<double(const Jet*)> >(func);
+        cand_vars.push_back( f(jet) );
       }
-
-      for (auto neu: neutrals) {
-
-        float val(0.);
-
-        if (std::holds_alternative<function<double(const Neutral*)> >(func)) {
-          auto f = std::get<function<double(const Neutral*)> >(func);
-          val = f(neu);
+      else if (std::holds_alternative<function<double(const Track*)> >(func)) {
+        auto f = std::get<function<double(const Track*)> >(func);
+        for (const auto& tr: tracks) {
+          cand_vars.push_back( f(tr) );
         }
-
-        if (std::holds_alternative<function<double(const Neutral*, const Jet*)> >(func)) {
-          auto f = std::get<function<double(const Neutral*, const Jet*)> >(func);
-          val = f(neu,jet);
+      }
+      else if (std::holds_alternative<function<double(const Track*, const Jet*)> >(func)) {
+        auto f = std::get<function<double(const Track*, const Jet*)> >(func);
+        for (const auto& tr: tracks) {
+          cand_vars.push_back( f(tr,jet) );
         }
-
-        if (std::holds_alternative<function<double(const Neutral*, const Vertex*)> >(func)) {
-          auto f = std::get<function<double(const Neutral*, const Vertex*)> >(func);
-          val = f(neu,privtx);
+      }
+      else if (std::holds_alternative<function<double(const Track*, const Vertex*)> >(func)) {
+        auto f = std::get<function<double(const Track*, const Vertex*)> >(func);
+        for (const auto& tr: tracks) {
+          cand_vars.push_back( f(tr,privtx) );
         }
-
-        cand_vars.push_back(val);
+      }
+      else if (std::holds_alternative<function<double(const Neutral*)> >(func)) {
+        auto f = std::get<function<double(const Neutral*)> >(func);
+        for (const auto& neu: neutrals) {
+          cand_vars.push_back( f(neu) );
+        }
+      }
+      else if (std::holds_alternative<function<double(const Neutral*, const Jet*)> >(func)) {
+        auto f = std::get<function<double(const Neutral*, const Jet*)> >(func);
+        for (const auto& neu: neutrals) {
+          cand_vars.push_back( f(neu,jet) );
+        }
+      }
+      else if (std::holds_alternative<function<double(const Neutral*, const Vertex*)> >(func)) {
+        auto f = std::get<function<double(const Neutral*, const Vertex*)> >(func);
+        for (const auto& neu: neutrals) {
+          cand_vars.push_back( f(neu,privtx) );
+        }
       }
 
       vars.push_back(cand_vars);
@@ -171,7 +163,7 @@ void MLInferenceWeaver::process() {
   for (unsigned int i=0; i<out.size(); ++i) {
     std::cout << "  j[" << i << "]: " << out[i] << std::endl;
   }
-  */
+  */  
 }
 
 void MLInferenceWeaver::end() {
