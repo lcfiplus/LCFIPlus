@@ -237,7 +237,7 @@ namespace MLInputGenerator {
     calcInput[_trk_prefix+"ispionprob"] = [](const Track* tr){ return tr->getParticleIDProbability("pionProbability"); };
     calcInput[_trk_prefix+"iskaonprob"] = [](const Track* tr){ return tr->getParticleIDProbability("kaonProbability"); };
     calcInput[_trk_prefix+"isprotonprob"] = [](const Track* tr){ return tr->getParticleIDProbability("protonProbability"); };
-    calcInput[_trk_prefix+"isGamma"] = [](const Track* tr){ return 0.; };
+    calcInput[_trk_prefix+"isGamma"] = [](const Track* ){ return 0.; };
     
     // for neutrals
     // particle kinematics
