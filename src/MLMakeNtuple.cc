@@ -98,8 +98,38 @@ void MLMakeNtuple::process() {
   for (unsigned int njet = 0; njet < jets.size(); ++njet) {
     _data.resetData();
     const Jet* jet = jets[njet];
-    TrackVec tracks = jet->getAllTracks(true);
-    NeutralVec neutrals = jet->getNeutrals();
+    TrackVec tracks_unsorted = jet->getAllTracks(true);
+    NeutralVec neutrals_unsorted = jet->getNeutrals();
+
+    // order particles by energy
+    vector<std::pair<float, int> > order_tr;
+    order_tr.resize(tracks_unsorted.size());
+    vector<std::pair<float, int> > order_n;
+    order_n.resize(neutrals_unsorted.size());
+    for(size_t i=0; i<tracks_unsorted.size(); ++i){
+      order_tr[i] = std::pair<float, int>(tracks_unsorted[i]->E(), i);
+    }
+    for(size_t i=0; i<neutrals_unsorted.size(); ++i) {
+      order_n[i] = std::pair<float, int>(neutrals_unsorted[i]->E(), i);
+    }
+    std::sort(order_tr.begin(),order_tr.end(),[](std::pair<float,int>a,std::pair<float,int> b){
+	    return a.first > b.first;
+    });
+    std::sort(order_n.begin(),order_n.end(),[](std::pair<float,int>a,std::pair<float,int> b){
+	    return a.first > b.first;
+    });
+
+    vector<const Track*> tracks;
+    tracks.resize(tracks_unsorted.size());
+    vector<const Neutral*> neutrals;
+    neutrals.resize(neutrals_unsorted.size());
+
+    for (size_t i=0; i<tracks_unsorted.size(); ++i) {
+      tracks[i] = tracks_unsorted[order_tr[i].second];
+    }
+    for (size_t i=0; i<neutrals_unsorted.size(); ++i) {
+      neutrals[i] = neutrals_unsorted[order_n[i].second];
+    }
 
     for (const auto& v: calcInput) {
       const auto& key = v.first;
