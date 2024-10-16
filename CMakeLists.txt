@@ -21,6 +21,17 @@ FIND_PACKAGE( ILCUTIL COMPONENTS ILCSOFT_CMAKE_MODULES REQUIRED )
 # load default settings from ILCSOFT_CMAKE_MODULES
 INCLUDE( ilcsoft_default_settings )
 
+# Set up C++ Standard
+# ``-DCMAKE_CXX_STANDARD=<standard>`` when invoking CMake
+set(CMAKE_CXX_STANDARD 17 CACHE STRING "")
+
+if(NOT CMAKE_CXX_STANDARD MATCHES "17|20")
+  message(FATAL_ERROR "Unsupported C++ standard: ${CMAKE_CXX_STANDARD}")
+endif()
+
+# Prevent CMake falls back to the latest standard the compiler does support
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 
 FIND_PACKAGE( Marlin 1.0 REQUIRED )
 FIND_PACKAGE( MarlinUtil REQUIRED )
@@ -28,10 +39,11 @@ FIND_PACKAGE( MarlinUtil REQUIRED )
 FIND_PACKAGE( ROOT REQUIRED COMPONENTS Minuit2 TMVA TreePlayer Gui Geom Eve Minuit XMLIO RGL Ged EG MLP )
 #FIND_PACKAGE( Torch REQUIRED )
 FIND_PACKAGE( LCFIVertex REQUIRED )
-FIND_PACKAGE( onnxruntime )
+FIND_PACKAGE( onnxruntime 1.19.2 REQUIRED)
+FIND_PACKAGE( nlohmann_json REQUIRED)
 
-set(JSON_BuildTests OFF CACHE INTERNAL "")
-add_subdirectory(nlohmann_json)
+#set(JSON_BuildTests OFF CACHE INTERNAL "")
+#add_subdirectory(nlohmann_json)
 
 INCLUDE_DIRECTORIES( SYSTEM ${Marlin_INCLUDE_DIRS} )
 ADD_DEFINITIONS ( ${Marlin_DEFINITIONS} )
@@ -70,7 +82,7 @@ SET( ROOT_DICT_INPUT_HEADERS
 		${PROJECT_SOURCE_DIR}/include/MLInferenceWeaver.h
 		${PROJECT_SOURCE_DIR}/include/LinkDef.h
 )
-SET( ROOT_DICT_INCLUDE_DIRS ${Marlin_INCLUDE_DIRS} ${TORCH_INCLUDE_DIRS} )
+SET( ROOT_DICT_INCLUDE_DIRS ${Marlin_INCLUDE_DIRS} )
 GEN_ROOT_DICT_SOURCES( dict.cc )
 INSTALL(FILES ${ROOT_DICT_OUTPUT_DIR}/dict_rdict.pcm DESTINATION lib)
 LIST(APPEND library_sources ${ROOT_DICT_OUTPUT_SOURCES} )
@@ -89,11 +101,13 @@ ENDIF()
 
 # include directories
 INCLUDE_DIRECTORIES( "./include" )
+#LINK_DIRECTORIES( "./lib" )
 
 # definitions to pass to the compiler
-ADD_DEFINITIONS( "-Wno-effc++ -Wno-shadow" )
-ADD_DEFINITIONS( "-Wno-long-long" )
-ADD_DEFINITIONS( "-Wno-strict-aliasing" ) # avoid warnings in dict.cc
+#ADD_DEFINITIONS( "-Wno-effc++ -Wno-shadow" )
+#ADD_DEFINITIONS( "-Wno-long-long" )
+#ADD_DEFINITIONS( "-Wno-strict-aliasing" ) # avoid warnings in dict.cc
+
 # shut up warnings in boost
 #ADD_DEFINITIONS( "-Wno-unused-local-typedefs" )
 
@@ -110,7 +124,7 @@ TARGET_LINK_LIBRARIES( ${libname}
 	${MarlinUtil_LIBRARIES}
 	${LCFIVertex_LIBRARIES}
 	nlohmann_json::nlohmann_json
-	${onnxruntime_LIBRARIES}
+	${onnxruntime_LIBRARY}
 )
 
 ### EXECUTABLE MODE ########################################################
