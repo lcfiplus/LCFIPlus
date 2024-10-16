@@ -23,12 +23,31 @@ FIND_PACKAGE( ILCUTIL COMPONENTS ILCSOFT_CMAKE_MODULES REQUIRED )
 # load default settings from ILCSOFT_CMAKE_MODULES
 INCLUDE( ilcsoft_default_settings )
 
+# Set up C++ Standard
+# ``-DCMAKE_CXX_STANDARD=<standard>`` when invoking CMake
+set(CMAKE_CXX_STANDARD 17 CACHE STRING "")
+
+if(NOT CMAKE_CXX_STANDARD MATCHES "17|20")
+  message(FATAL_ERROR "Unsupported C++ standard: ${CMAKE_CXX_STANDARD}")
+endif()
+
+# Prevent CMake falls back to the latest standard the compiler does support
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 
 FIND_PACKAGE( Marlin 1.0 REQUIRED )
 FIND_PACKAGE( MarlinUtil REQUIRED )
 #FIND_PACKAGE( ROOT REQUIRED COMPONENTS Minuit2 TMVA TreePlayer )
 FIND_PACKAGE( ROOT REQUIRED COMPONENTS Minuit2 TMVA TreePlayer Gui Geom Eve Minuit XMLIO RGL Ged EG MLP )
 FIND_PACKAGE( LCFIVertex REQUIRED )
+<<<<<<< HEAD
+=======
+FIND_PACKAGE( onnxruntime 1.19.2 REQUIRED)
+FIND_PACKAGE( nlohmann_json REQUIRED)
+
+#set(JSON_BuildTests OFF CACHE INTERNAL "")
+#add_subdirectory(nlohmann_json)
+>>>>>>> 08d2926 (CMakeLists modified)
 
 INCLUDE_DIRECTORIES( SYSTEM ${Marlin_INCLUDE_DIRS} )
 ADD_DEFINITIONS ( ${Marlin_DEFINITIONS} )
@@ -80,11 +99,13 @@ ENDIF()
 
 # include directories
 INCLUDE_DIRECTORIES( "./include" )
+#LINK_DIRECTORIES( "./lib" )
 
 # definitions to pass to the compiler
-ADD_DEFINITIONS( "-Wno-effc++ -Wno-shadow" )
-ADD_DEFINITIONS( "-Wno-long-long" )
-ADD_DEFINITIONS( "-Wno-strict-aliasing" ) # avoid warnings in dict.cc
+#ADD_DEFINITIONS( "-Wno-effc++ -Wno-shadow" )
+#ADD_DEFINITIONS( "-Wno-long-long" )
+#ADD_DEFINITIONS( "-Wno-strict-aliasing" ) # avoid warnings in dict.cc
+
 # shut up warnings in boost
 #ADD_DEFINITIONS( "-Wno-unused-local-typedefs" )
 
@@ -94,7 +115,19 @@ AUX_SOURCE_DIRECTORY( ./src library_sources )
 LIST( REMOVE_ITEM library_sources ${binary_sources} )
 ADD_SHARED_LIBRARY( ${libname} ${library_sources} )
 INSTALL_SHARED_LIBRARY( ${libname} DESTINATION lib )
+<<<<<<< HEAD
 TARGET_LINK_LIBRARIES( ${libname} ${Marlin_LIBRARIES} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${MarlinUtil_LIBRARIES} ${LCFIVertex_LIBRARIES} )
+=======
+TARGET_LINK_LIBRARIES( ${libname}
+	${Marlin_LIBRARIES}
+	${ROOT_LIBRARIES}
+	${ROOT_COMPONENT_LIBRARIES}
+	${MarlinUtil_LIBRARIES}
+	${LCFIVertex_LIBRARIES}
+	nlohmann_json::nlohmann_json
+	${onnxruntime_LIBRARY}
+)
+>>>>>>> 08d2926 (CMakeLists modified)
 
 ### EXECUTABLE MODE ########################################################
 
