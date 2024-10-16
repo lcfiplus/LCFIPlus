@@ -165,11 +165,16 @@ namespace MLInputGenerator {
     auto trk_pid_index = [](const Track* tr) {
       std::vector<float> charged(5);
       charged.clear();
-      charged.push_back( tr->getParticleIDProbability("muonProbability") );
-      charged.push_back( tr->getParticleIDProbability("electronProbability") );
-      charged.push_back( tr->getParticleIDProbability("pionProbability") );
-      charged.push_back( tr->getParticleIDProbability("kaonProbability") );
-      charged.push_back( tr->getParticleIDProbability("protonProbability") );
+      // charged.push_back( tr->getParticleIDProbability("electronProbability") );
+      // charged.push_back( tr->getParticleIDProbability("muonProbability") );
+      // charged.push_back( tr->getParticleIDProbability("pionProbability") );
+      // charged.push_back( tr->getParticleIDProbability("kaonProbability") );
+      // charged.push_back( tr->getParticleIDProbability("protonProbability") );
+      charged.push_back( tr->getParticleIDProbability("11-ness") );
+      charged.push_back( tr->getParticleIDProbability("13-ness") );
+      charged.push_back( tr->getParticleIDProbability("211-ness") );
+      charged.push_back( tr->getParticleIDProbability("321-ness") );
+      charged.push_back( tr->getParticleIDProbability("2212-ness") );
       auto iter = std::max_element(charged.begin(), charged.end());
       int index = std::distance(charged.begin(), iter);
       return index;
@@ -190,21 +195,25 @@ namespace MLInputGenerator {
       return 0;
     };
 
-    calcInput[_trk_prefix+"isMu"] = [trk_pid_index](const Track* tr){ return trk_pid_index(tr) == 0; };
-    calcInput[_trk_prefix+"isEl"] = [trk_pid_index](const Track* tr){ return trk_pid_index(tr) == 1; };
+    calcInput[_trk_prefix+"isEl"] = [trk_pid_index](const Track* tr){ return trk_pid_index(tr) == 0; };
+    calcInput[_trk_prefix+"isMu"] = [trk_pid_index](const Track* tr){ return trk_pid_index(tr) == 1; };
     calcInput[_trk_prefix+"isPion"] = [trk_pid_index](const Track* tr){ return trk_pid_index(tr) == 2; };
     calcInput[_trk_prefix+"isKaon"] = [trk_pid_index](const Track* tr){ return trk_pid_index(tr) == 3; };
     calcInput[_trk_prefix+"isProton"] = [trk_pid_index](const Track* tr){ return trk_pid_index(tr) == 4; };
 
     // for PI3 (20240203)
     calcInput[_trk_prefix+"proton_K"] = [](const Track* tr){ 
-      auto isproton = tr->getParticleIDProbability("protonProbability");
-      auto iskaon = tr->getParticleIDProbability("kaonProbability");
+      //auto isproton = tr->getParticleIDProbability("protonProbability");
+      //auto iskaon = tr->getParticleIDProbability("kaonProbability");
+      auto isproton = tr->getParticleIDProbability("2212-ness");
+      auto iskaon = tr->getParticleIDProbability("321-ness");
       return isproton-iskaon;
     };
     calcInput[_trk_prefix+"pion_K"] = [](const Track* tr){ 
-      auto ispion = tr->getParticleIDProbability("pionProbability");
-      auto iskaon = tr->getParticleIDProbability("kaonProbability");
+      //auto ispion = tr->getParticleIDProbability("pionProbability");
+      //auto iskaon = tr->getParticleIDProbability("kaonProbability");
+      auto ispion = tr->getParticleIDProbability("211-ness");
+      auto iskaon = tr->getParticleIDProbability("321-ness");
       return ispion-iskaon;
     };
     calcInput[_trk_prefix+"proton_Klike"] = [](const Track* tr){ 
@@ -227,11 +236,16 @@ namespace MLInputGenerator {
     calcInput[_trk_prefix+"ispionlike"] = [](const Track* tr){ return tr->getParticleIDProbability("pionLikelihood"); };
     calcInput[_trk_prefix+"iskaonlike"] = [](const Track* tr){ return tr->getParticleIDProbability("kaonLikelihood"); };
     calcInput[_trk_prefix+"isprotonlike"] = [](const Track* tr){ return tr->getParticleIDProbability("protonLikelihood"); };
-    calcInput[_trk_prefix+"iselectronprob"] = [](const Track* tr){ return tr->getParticleIDProbability("electronProbability"); };
-    calcInput[_trk_prefix+"ismuonprob"] = [](const Track* tr){ return tr->getParticleIDProbability("muonProbability"); };
-    calcInput[_trk_prefix+"ispionprob"] = [](const Track* tr){ return tr->getParticleIDProbability("pionProbability"); };
-    calcInput[_trk_prefix+"iskaonprob"] = [](const Track* tr){ return tr->getParticleIDProbability("kaonProbability"); };
-    calcInput[_trk_prefix+"isprotonprob"] = [](const Track* tr){ return tr->getParticleIDProbability("protonProbability"); };
+    // calcInput[_trk_prefix+"iselectronprob"] = [](const Track* tr){ return tr->getParticleIDProbability("electronProbability"); };
+    // calcInput[_trk_prefix+"ismuonprob"] = [](const Track* tr){ return tr->getParticleIDProbability("muonProbability"); };
+    // calcInput[_trk_prefix+"ispionprob"] = [](const Track* tr){ return tr->getParticleIDProbability("pionProbability"); };
+    // calcInput[_trk_prefix+"iskaonprob"] = [](const Track* tr){ return tr->getParticleIDProbability("kaonProbability"); };
+    // calcInput[_trk_prefix+"isprotonprob"] = [](const Track* tr){ return tr->getParticleIDProbability("protonProbability"); };
+    calcInput[_trk_prefix+"iselectronprob"] = [](const Track* tr){ return tr->getParticleIDProbability("11-ness"); };
+    calcInput[_trk_prefix+"ismuonprob"] = [](const Track* tr){ return tr->getParticleIDProbability("13-ness"); };
+    calcInput[_trk_prefix+"ispionprob"] = [](const Track* tr){ return tr->getParticleIDProbability("211-ness"); };
+    calcInput[_trk_prefix+"iskaonprob"] = [](const Track* tr){ return tr->getParticleIDProbability("321-ness"); };
+    calcInput[_trk_prefix+"isprotonprob"] = [](const Track* tr){ return tr->getParticleIDProbability("2212-ness"); };
     calcInput[_trk_prefix+"isGamma"] = [](const Track* ){ return 0.; };
     
     // for neutrals
