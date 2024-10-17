@@ -1048,7 +1048,7 @@ void WeaverReader::init(Parameters* param) {
   Event::Instance()->setDefaultPrimaryVertex(primvtxcolname.c_str());
 
   _file = new TFile(filename.c_str(),"RECREATE");
-  _nt = new TNtupleD("nt","nt","nev:nj:e:px:py:pz:tag1:tag2:tag3:tag4:tag5:tag6");
+  _nt = new TNtupleD("nt","nt","nev:nj:e:px:py:pz:mc_b:mc_c:mc_s:mc_u:mc_d:mc_g");
   //_ntev = new TNtupleD("ntev","ntev","nev:btag1:btag2:btag3:btag4:btag5:btag6:ctag1:ctag2:ctag3:ctag4:ctag5:ctag6");
 
   _jets = 0;
@@ -1066,7 +1066,7 @@ void WeaverReader::process() {
 
     const Parameters* para = j->getParam("weaver");
     _nt->Fill(_nev, nj, j->E(), j->Px(), j->Py(), j->Pz(),
-              para->get<float>("mc_b"), para->get<float>("mc_c"), para->get<float>("mc_s"),  para->get<float>("mc_u"),  para->get<float>("mc_d"),  para->get<float>("mc_g"));
+              para->get<double>("mc_b"), para->get<double>("mc_c"), para->get<double>("mc_s"),  para->get<double>("mc_u"),  para->get<double>("mc_d"),  para->get<double>("mc_g"));
   }
 
   _nev ++;

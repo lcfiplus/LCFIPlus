@@ -991,6 +991,8 @@ void LCIOStorer::WriteVertices(VertexVec* pvvtx, const char* newName, const char
 }
 
 void LCIOStorer::WriteJets(const char* jetName, const char* newName, bool writeVertex, const char* vtxName, const char* relName) {
+  //cout << "WriteJets" << endl;
+  
   if (!_event) {
     cerr << "LCIOStorer::ConvertJet: LCIO event has not been initialized." << endl;
     return ;
@@ -1150,6 +1152,7 @@ void LCIOStorer::WriteAllPIDs(lcio::LCCollection* lciocol, lcio::ReconstructedPa
 
   map<string, Parameters>::const_iterator it;
   for (it = parammap.begin(); it != parammap.end(); it++) {
+    //cout << "Writing PID " << it->first << endl;
     WritePID(lciocol, lciojet, lcfijet, it->first.c_str());
   }
 

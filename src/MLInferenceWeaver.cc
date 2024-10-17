@@ -153,7 +153,8 @@ void MLInferenceWeaver::process() {
 
     Parameters param;
     for (size_t i=0; i<res.size(); ++i) {
-      param.add( _outputVariables[i].data(), res[i] );
+      //param.add( _outputVariables[i].data(), res[i] );
+      param.add( _outputVariables[i].data(), (double)res[i] );
     }
     //param.add( "Category", (double)category );
     jet->addParam( _outputParameterName.data(), param );
