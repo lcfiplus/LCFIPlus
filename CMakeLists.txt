@@ -102,12 +102,12 @@ INCLUDE_DIRECTORIES( "./include" )
 #LINK_DIRECTORIES( "./lib" )
 
 # definitions to pass to the compiler
-#ADD_DEFINITIONS( "-Wno-effc++ -Wno-shadow" )
-#ADD_DEFINITIONS( "-Wno-long-long" )
-#ADD_DEFINITIONS( "-Wno-strict-aliasing" ) # avoid warnings in dict.cc
+ADD_DEFINITIONS( "-Wno-effc++ -Wno-shadow" )
+ADD_DEFINITIONS( "-Wno-long-long" )
+ADD_DEFINITIONS( "-Wno-strict-aliasing" ) # avoid warnings in dict.cc
 
 # shut up warnings in boost
-#ADD_DEFINITIONS( "-Wno-unused-local-typedefs" )
+ADD_DEFINITIONS( "-Wno-unused-local-typedefs" )
 
 # add library
 SET( libname ${PROJECT_NAME} )
