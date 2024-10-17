@@ -320,10 +320,14 @@ namespace MLInputGenerator {
     };
     calcInput[_neu_prefix+"isChargedHad"] = [](const Neutral*){ return 0; };
     calcInput[_neu_prefix+"isNeutralHad"] = [](const Neutral* neu){ 
+      // FIXME: match bug of current training
+      return 1;
+      /*
       // simple photon finder
       double ecaldep = neu->getCaloEdep()[tpar::ecal];
       double hcaldep = neu->getCaloEdep()[tpar::hcal];
       return (ecaldep / (ecaldep + hcaldep) <= 0.98);
+      */
     };
     calcInput[_neu_prefix+"type"] = [](const Neutral* neu){ return neu->getPDG(); };
     calcInput[_neu_prefix+"mcpid"] = [](const Neutral* neu){ return (neu->getMcp()) ? neu->getMcp()->getId() : 0.; };
