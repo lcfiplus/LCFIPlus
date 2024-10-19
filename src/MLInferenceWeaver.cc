@@ -60,6 +60,9 @@ void MLInferenceWeaver::init(Parameters* param) {
   _jsonFileName = param->get("MLInferenceWeaver.JsonFileName",string("preprocess.json"));
   _onnxFileName = param->get("MLInferenceWeaver.OnnxFileName",string("test.onnx"));
   _outputParameterName = param->get("MLInferenceWeaver.OutputParameterName",string("weaver"));
+
+  // event classification (true) vs. jet classification (false; default)
+  _eventClassification = param->get("MLInferenceWeaver.EventClassification",false);
   
   parseJSON(_jsonFileName);
   _weaver = new WeaverInterface(_onnxFileName, _jsonFileName, _variables);
@@ -67,6 +70,14 @@ void MLInferenceWeaver::init(Parameters* param) {
 }
 
 void MLInferenceWeaver::process() {
+  if (_eventClassification) {
+    processEvent();
+  } else {
+    processJet();
+  }
+}
+
+void MLInferenceWeaver::processJet() {
 
   Event* event = Event::Instance();
   const Vertex* privtx = Event::Instance()->getPrimaryVertex();
@@ -84,8 +95,8 @@ void MLInferenceWeaver::process() {
   // loop over jets
   for (unsigned int njet = 0; njet < jets.size(); ++njet) {
     const Jet* jet = jets[njet];
-    TrackVec tracks = jet->getAllTracks(true);
-    NeutralVec neutrals = jet->getNeutrals();
+    TrackVec tracks = jet->getAllTracksSorted(true);
+    NeutralVec neutrals = jet->getNeutralsSorted();
 
     // prepare input
     rv::RVec< rv::RVec<float> > vars;
@@ -160,13 +171,80 @@ void MLInferenceWeaver::process() {
     jet->addParam( _outputParameterName.data(), param );
   }
 
-  /*
-  for (unsigned int i=0; i<out.size(); ++i) {
-    std::cout << "  j[" << i << "]: " << out[i] << std::endl;
+}
+
+void MLInferenceWeaver::processEvent() {
+
+  Event* event = Event::Instance();
+  const Vertex* privtx = Event::Instance()->getPrimaryVertex();
+
+  // output vector to hold the weights for every jet
+  rv::RVec< rv::RVec<float> > out;
+
+  // loop over jets
+  TrackVec tracks = event->getTracks();
+  NeutralVec neutrals = event->getNeutrals();
+
+  // prepare input
+  rv::RVec< rv::RVec<float> > vars;
+  for (size_t i=0; i<_variables.size(); ++i) {
+      
+    // hold computed variable for all the candidates in a jet
+    rv::RVec<float> cand_vars;
+
+    // find function provided by MLInputGenerator; first check if it exists
+    const auto& name = _variables[i];
+    if (calcInput.find(name) == calcInput.end()) {
+      cerr << "MLInferenceWeaver: no function to compute input variable " << name << endl;
+      exit(1);
+    }
+    const auto& func = calcInput[name];
+
+    if (std::holds_alternative<function<double(const Track*)> >(func)) {
+      auto f = std::get<function<double(const Track*)> >(func);
+      for (const auto& tr: tracks) {
+        cand_vars.push_back( f(tr) );
+      }
+    }
+    else if (std::holds_alternative<function<double(const Track*, const Vertex*)> >(func)) {
+      auto f = std::get<function<double(const Track*, const Vertex*)> >(func);
+      for (const auto& tr: tracks) {
+        cand_vars.push_back( f(tr,privtx) );
+      }
+    }
+    else if (std::holds_alternative<function<double(const Neutral*)> >(func)) {
+      auto f = std::get<function<double(const Neutral*)> >(func);
+      for (const auto& neu: neutrals) {
+        cand_vars.push_back( f(neu) );
+      }
+    }
+    else if (std::holds_alternative<function<double(const Neutral*, const Vertex*)> >(func)) {
+      auto f = std::get<function<double(const Neutral*, const Vertex*)> >(func);
+      for (const auto& neu: neutrals) {
+        cand_vars.push_back( f(neu,privtx) );
+      }
+    }
+
+    vars.push_back(cand_vars);
   }
-  */  
+
+  rv::RVec<float> res = _weaver->run(vars);
+  out.emplace_back(res);
+
+  assert(res.size() == _outputVariables.size());
+
+  Parameters param;
+  for (size_t i=0; i<res.size(); ++i) {
+    //param.add( _outputVariables[i].data(), res[i] );
+    param.add( _outputVariables[i].data(), (double)res[i] );
+  }
+  //param.add( "Category", (double)category );
+
+  // TODO: implement add parameter output for Event class  
+  //event->addParam( _outputParameterName.data(), param );
+
 }
 
 void MLInferenceWeaver::end() {
-
+  // do nothing
 }

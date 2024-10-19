@@ -1015,6 +1015,9 @@ class Jet : public TLorentzVector {
   const vector<const Neutral*>& getNeutrals() const {
     return _neutrals;
   }
+  // get all neutrals sorted by energy
+  vector<const Neutral*> getNeutralsSorted() const;
+
   const vector<const Vertex*>& getVertices() const {
     return _vertices;
   }
@@ -1026,6 +1029,8 @@ class Jet : public TLorentzVector {
   	if withoutV0 is true, skip tracks which are identified as v0 (default: false)
    */
   vector<const Track*> getAllTracks(bool withoutV0=false) const;
+  // get all tracks sorted by energy
+  vector<const Track*> getAllTracksSorted(bool withoutV0=false) const;
 
   // methods
   void add(const Jet& jet);
