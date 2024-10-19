@@ -1270,6 +1270,51 @@ vector<const Track*> Jet::getAllTracks(bool withoutV0) const {
   return ret;
 }
 
+vector<const Track*> Jet::getAllTracksSorted(bool withoutV0) const {
+  vector<const Track*> tracks_unsorted = getAllTracks(withoutV0);
+
+  // order particles by energy
+  vector<std::pair<float, int> > order_tr;
+  order_tr.resize(tracks_unsorted.size());
+  for(size_t i=0; i<tracks_unsorted.size(); ++i){
+    order_tr[i] = std::pair<float, int>(tracks_unsorted[i]->E(), i);
+  }
+  std::sort(order_tr.begin(),order_tr.end(),[](std::pair<float,int>a,std::pair<float,int> b){
+    return a.first > b.first;
+  });
+
+  vector<const Track*> tracks;
+  tracks.resize(tracks_unsorted.size());
+
+  for (size_t i=0; i<tracks_unsorted.size(); ++i) {
+    tracks[i] = tracks_unsorted[order_tr[i].second];
+  }
+  return tracks;
+}
+
+vector<const Neutral*> Jet::getNeutralsSorted() const {
+  vector<const Neutral*> neutrals_unsorted = getNeutrals();
+
+  // order particles by energy
+  vector<std::pair<float, int> > order_n;
+  order_n.resize(neutrals_unsorted.size());
+  for(size_t i=0; i<neutrals_unsorted.size(); ++i) {
+    order_n[i] = std::pair<float, int>(neutrals_unsorted[i]->E(), i);
+  }
+  std::sort(order_n.begin(),order_n.end(),[](std::pair<float,int>a,std::pair<float,int> b){
+    return a.first > b.first;
+  });
+
+  vector<const Neutral*> neutrals;
+  neutrals.resize(neutrals_unsorted.size());
+
+  for (size_t i=0; i<neutrals_unsorted.size(); ++i) {
+    neutrals[i] = neutrals_unsorted[order_n[i].second];
+  }
+
+  return neutrals;
+}
+
 vector<const Vertex*> Jet::getVerticesForFT() const {
 
   vector<const Vertex*> ret;
