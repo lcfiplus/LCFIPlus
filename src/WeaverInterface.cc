@@ -95,6 +95,49 @@ size_t WeaverInterface::variablePos(const std::string& var_name) const {
   return var_it - variables_names_.begin();
 }
 
+#ifdef DUMP_WEAVER_INPUT
+void WeaverInterface::writeToFile(const rv::RVec< rv::RVec<float> >& vars) {
+  static size_t cnt(0);
+  ++cnt;
+  char buf[1024];
+  sprintf(buf,"pre%05ld.txt",cnt);
+  std::ofstream out(buf);
+  for (size_t i=0; i<vars.size(); ++i) {
+    const rv::RVec<float>& row = vars[i];
+    //const auto& var_name = params.var_names.at(i);
+    for (size_t j=0; j<row.size(); ++j) {
+      out << row[j];
+      if (j!=row.size()-1)
+        out << ",";
+    }
+    out << std::endl;
+  }
+  out.close();
+}
+
+void WeaverInterface::writeToFile(const std::vector< std::vector<float> >& vars) {
+  static size_t cnt(0);
+  ++cnt;
+  char buf[1024];
+  sprintf(buf,"norm%05ld.txt",cnt);
+  std::ofstream out(buf);
+  out << "input_sizes_.size()=" << input_sizes_.size() << std::endl;
+  out << "col size=" << vars.size() << std::endl;
+  for (size_t i=0; i<vars.size(); ++i) {
+    const std::vector<float>& row = vars[i];
+    out << "row size=" << row.size() << std::endl;
+    for (size_t j=0; j<row.size(); ++j) {
+      out << row[j];
+      if (j!=row.size()-1)
+        out << ",";
+    }
+    out << std::endl;
+  }
+  out.close();
+}
+#endif
+
+
 rv::RVec<float> WeaverInterface::run(const rv::RVec<ConstituentVars>& constituents) {
   size_t i = 0;
   for (const auto& name : onnx_->inputNames()) {
@@ -131,6 +174,10 @@ rv::RVec<float> WeaverInterface::run(const rv::RVec<ConstituentVars>& constituen
     values.resize(it_pos);
     ++i;
   }
+#ifdef DUMP_WEAVER_INPUT
+  writeToFile(constituents);
+  writeToFile(data_);
+#endif
   return onnx_->run<float>(data_, input_shapes_)[0];
 }
 

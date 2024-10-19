@@ -6,6 +6,8 @@
 #include "ONNXRuntime.h"
 #include "ROOT/RVec.hxx"
 
+#define DUMP_WEAVER_INPUT 1
+
 namespace rv = ROOT::VecOps;
 
 namespace lcfiplus {
@@ -71,6 +73,10 @@ private:
   std::vector<unsigned int> input_sizes_;
   std::unordered_map<std::string, PreprocessParams> prep_info_map_;
   ONNXRuntime::Tensor<float> data_;
+#ifdef DUMP_WEAVER_INPUT
+  void writeToFile(const rv::RVec< rv::RVec<float> >& vars);
+  void writeToFile(const std::vector< std::vector<float> >& vars);
+#endif
 };
 
 }
