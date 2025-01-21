@@ -29,6 +29,8 @@ class MLMakeNtuple : public Algorithm {
   string _jetname;
   TFile* _file;
   TTree* _tree;
+  int _label;
+  int _labelKeep;
 
   struct MLData {
     // methods
