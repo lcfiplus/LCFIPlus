@@ -993,14 +993,21 @@ void TestAlgo::end() {
 void FlavtagReader::init(Parameters* param) {
   Algorithm::init(param);
 
-  string filename = param->get("FileName",string("test.root"));
-  _jetname = param->get("JetCollectionName",string("Durham_2Jets"));
+  string filename = param->get("FlavtagReader.FileName",string("test.root"));
+  _jetname = param->get("FlavtagReader.JetCollectionName",string("Durham_2Jets"));
   string primvtxcolname = param->get("PrimaryVertexCollectionName",string("PrimaryVertex"));
   Event::Instance()->setDefaultPrimaryVertex(primvtxcolname.c_str());
+  _is6cat = param->get("FlavtagReader.SixCategories",int(1));
+  _isWeaver = param->get("FlavtagReader.Weaver",int(0));
 
   _file = new TFile(filename.c_str(),"RECREATE");
-  _nt = new TNtupleD("nt","nt","nev:nj:e:px:py:pz:btag:ctag:otag:bbtag:bctag:cctag");
-  _ntev = new TNtupleD("ntev","ntev","nev:btag1:btag2:btag3:btag4:btag5:btag6:ctag1:ctag2:ctag3:ctag4:ctag5:ctag6");
+  if(_is6cat){
+    _nt = new TNtupleD("nt","nt","nev:nj:e:px:py:pz:btag:ctag:otag:bbtag:bctag:cctag");
+  }else{
+    _nt = new TNtupleD("nt","nt","nev:nj:e:px:py:pz:btag:ctag:otag");
+  }
+    
+  _ntev = new TNtupleD("ntev","ntev","nev:nbz:nbh:btag1:btag2:btag3:btag4:btag5:btag6:ctag1:ctag2:ctag3:ctag4:ctag5:ctag6");
 
   _jets = 0;
   _nev = 0;
@@ -1017,19 +1024,59 @@ void FlavtagReader::process() {
   for (unsigned int nj = 0; nj < _jets->size(); nj++) {
     const Jet* j = (*_jets)[nj];
 
-    const Parameters* para = j->getParam("lcfiplus");
-    _nt->Fill(_nev, nj, j->E(), j->Px(), j->Py(), j->Pz(),
-              para->get<double>("BTag"), para->get<double>("CTag"), para->get<double>("OTag"),  para->get<double>("BBTag"),  para->get<double>("CCTag"),  para->get<double>("BCTag"));
-    btags.push_back(para->get<double>("BTag"));
-    ctags.push_back(para->get<double>("CTag"));
+    double btag = 0.;
+    double ctag = 0.;
+    
+    const Parameters* para = j->getParam(_isWeaver ? "weaver" : "lcfiplus");
 
-    cout << "nvtx = " << para->get<double>("nvtx") << ", nvtxall = " << para->get<double>("nvtxall") << endl;
+    btag = para->get<double>(_isWeaver ? "mc_b" : "BTag");
+    ctag = para->get<double>(_isWeaver ? "mc_c" : "CTag");
+
+    if(_isWeaver){
+      _nt->Fill(_nev, nj, j->E(), j->Px(), j->Py(), j->Pz(),
+		para->get<double>("mc_b"), para->get<double>("mc_c"), para->get<double>("mc_d"));
+    }
+    else if(_is6cat){
+      _nt->Fill(_nev, nj, j->E(), j->Px(), j->Py(), j->Pz(),
+              para->get<double>("BTag"), para->get<double>("CTag"), para->get<double>("OTag"),  para->get<double>("BBTag"),  para->get<double>("CCTag"),  para->get<double>("BCTag"));
+    }else{
+      _nt->Fill(_nev, nj, j->E(), j->Px(), j->Py(), j->Pz(),
+              para->get<double>("BTag"), para->get<double>("CTag"), para->get<double>("OTag"));
+    }
+    btags.push_back(btag);
+    ctags.push_back(ctag);
+
+    //    if(!_isWeaver){
+    //  cout << "nvtx = " << para->get<double>("nvtx") << ", nvtxall = " << para->get<double>("nvtxall") << endl;
+    //}
   }
 
+  // counting MC b for ZHH/ZZH analysis
+
+  int nbz = 0;
+  int nbh = 0;
+  Event *event = Event::Instance();
+  if(event->IsExist(event->getDefaultMCParticles()) && event->getMCParticles().size() >= 12){
+    for(unsigned int i=8;i<11;i++){
+      //cout << i << endl;
+      if(fabs(event->getMCParticles()[i]->getPDG()) == 5)nbz ++;
+    }
+    for(unsigned int i=0;i<event->getMCParticles().size();i++){
+      //cout << "quark " << i << endl;
+      if(event->getMCParticles()[i]->getPDG() == 25){//Higgs
+	const MCParticle *mcp = event->getMCParticle(i);
+	for(unsigned int j=0;j<mcp->getDaughters().size();j++){
+	  //cout << "higgs " << j << endl;
+	  if(fabs(mcp->getDaughters()[j]->getPDG()) == 5)nbh ++;
+	}
+      }
+    }
+  }
+    
   std::sort(btags.begin(), btags.end());
   std::sort(ctags.begin(), ctags.end());
   if (_jets->size() >= 6)
-    _ntev->Fill(_nev,  btags[0],  btags[1],  btags[2],  btags[3],  btags[4],  btags[5],  ctags[0],  ctags[1],  ctags[2],  ctags[3],  ctags[4],  ctags[5]);
+    _ntev->Fill(_nev, nbz, nbh, btags[0],  btags[1],  btags[2],  btags[3],  btags[4],  btags[5],  ctags[0],  ctags[1],  ctags[2],  ctags[3],  ctags[4],  ctags[5]);
 
   _nev ++;
 }

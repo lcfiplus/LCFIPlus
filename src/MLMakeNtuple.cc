@@ -49,6 +49,7 @@ void MLMakeNtuple::init(Parameters* param) {
 
   string outputFilename = param->get("MLMakeNtuple.OutputRootFileName",string("ml_flavtag.root"));
   string treeName = param->get("MLMakeNtuple.TTreeName",string("ntp"));
+  _labelKeep = param->get("MLMakeNtuple.Label",int(0));
   
   //cout << "MLMakeNtuple: Ntuple file set to " << outputFilename << endl;
   _file = new TFile(outputFilename.c_str(),"RECREATE");
@@ -57,6 +58,8 @@ void MLMakeNtuple::init(Parameters* param) {
   _tree = new TTree(treeName.c_str(),"ML input data for flavor tagging");
 
   MLInputGenerator::init();
+
+  _tree->Branch("label",&_label,"Label/I");
 
   // TODO: implement labels
 #if 0
@@ -96,6 +99,8 @@ void MLMakeNtuple::process() {
   JetVec& jets = *jetsPtr;
 
   for (unsigned int njet = 0; njet < jets.size(); ++njet) {
+    _label = _labelKeep;
+    
     _data.resetData();
     const Jet* jet = jets[njet];
     TrackVec tracks = jet->getAllTracksSorted(true);

@@ -328,6 +328,9 @@ class FlavtagReader : public Algorithm {
   string _jetname;
   bool _bbhh;
 
+  bool _isWeaver;
+  bool _is6cat;
+
   VertexVec* _vertices;  //!
   VertexVec* _v0vertices;  //!
   JetVec* _jets;  //!
