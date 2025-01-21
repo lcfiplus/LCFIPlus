@@ -6,6 +6,8 @@
 #include <fstream>
 #include <iostream>
 
+//#define DUMP_WEAVER_INPUT 1
+
 using namespace lcfiplus;
 
 WeaverInterface::WeaverInterface(const std::string& onnx_filename,
@@ -118,18 +120,29 @@ void WeaverInterface::writeToFile(const rv::RVec< rv::RVec<float> >& vars) {
 void WeaverInterface::writeToFile(const std::vector< std::vector<float> >& vars) {
   static size_t cnt(0);
   ++cnt;
+
   char buf[1024];
   sprintf(buf,"norm%05ld.txt",cnt);
   std::ofstream out(buf);
-  out << "input_sizes_.size()=" << input_sizes_.size() << std::endl;
-  out << "col size=" << vars.size() << std::endl;
+
+  //out << "input_sizes_.size()=" << input_sizes_.size() << std::endl;
+  //out << "vars.size()=" << vars.size() << std::endl;
   for (size_t i=0; i<vars.size(); ++i) {
+    const auto& name = onnx_->inputNames()[i];
+    const auto& params = prep_info_map_.at(name);
+    out << "BLOCK[" << i << "]: " << name;
     const std::vector<float>& row = vars[i];
-    out << "row size=" << row.size() << std::endl;
+    //out << "row.size()=" << row.size() << std::endl;
     for (size_t j=0; j<row.size(); ++j) {
-      out << row[j];
-      if (j!=row.size()-1)
+      if ( (j%75) == 0) {
+        const auto& var_name = params.var_names.at(j/75);
+        out << std::endl << "  VARNAME[" << j/75 << "]: " << var_name << std::endl;
+      }
+
+      out << "    " << row[j];
+      if (j!=row.size()-1) {
         out << ",";
+      }
     }
     out << std::endl;
   }
@@ -152,12 +165,16 @@ rv::RVec<float> WeaverInterface::run(const rv::RVec<ConstituentVars>& constituen
       //if (std::find(variables_names_.begin(), variables_names_.end(), "pfcand_mask") == variables_names_.end())
       //  jc = ConstituentVars(constituents.at(0).size(), 1.f);
 
-        if (var_name.find("_mask") != std::string::npos) {
-          jc = ConstituentVars(constituents.at(0).size(), 1.f);
-        }
+      //if (var_name.find("pfcand_mask") != std::string::npos)
+        //jc = ConstituentVars(constituents.at(0).size(), 1.f);
 
-      else
+      if (var_name == "pfcand_mask") {
+        jc = ConstituentVars(constituents.at(0).size(), 1.f);
+      } else if (var_name == "neu_pfcand_mask") {
+        jc = ConstituentVars(constituents.at(constituents.size()-1).size(), 1.f);
+      } else {
         jc = constituents.at(variablePos(var_name));
+      }
       const auto& var_info = params.info(var_name);
       auto val = center_norm_pad(jc,
                                  var_info.center,
