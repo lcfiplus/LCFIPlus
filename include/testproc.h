@@ -344,6 +344,27 @@ class FlavtagReader : public Algorithm {
 
 };
 
+class WeaverReader : public Algorithm {
+ public:
+  WeaverReader() {}
+  virtual ~WeaverReader() {}
+
+  void init(Parameters* param);
+  void process();
+  void end();
+
+  ClassDef(WeaverReader,1);
+
+ private:
+  TNtupleD* _nt;
+  int _nev;
+  TFile* _file;
+
+  string _jetname;
+  JetVec* _jets;  //!
+
+};
+
 class TestAlgoV0 : public Algorithm {
  public:
   TestAlgoV0() {}

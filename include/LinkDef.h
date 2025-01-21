@@ -46,11 +46,14 @@
 #pragma link C++ class lcfiplus::ZHHAlgo;
 #pragma link C++ class lcfiplus::TestAlgo;
 #pragma link C++ class lcfiplus::FlavtagReader;
+#pragma link C++ class lcfiplus::WeaverReader;
 #pragma link C++ class lcfiplus::VertexAnalysis;
 #pragma link C++ class lcfiplus::TrackPairTree;
 #pragma link C++ class lcfiplus::TestAlgoV0;
 #pragma link C++ class lcfiplus::VertexFinderDNNccbar;
 #pragma link C++ class lcfiplus::DNNProvider2;
+#pragma link C++ class lcfiplus::MLMakeNtuple;
+#pragma link C++ class lcfiplus::MLInferenceWeaver;
 
 #endif
 

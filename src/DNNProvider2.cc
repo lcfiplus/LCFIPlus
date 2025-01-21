@@ -140,6 +140,11 @@ void DNNProvider2::init(Parameters* param) {
   _ntp->Branch("pfcand_iskaonlike",&d.iskaonlike);
   _ntp->Branch("pfcand_isprotonlike",&d.isprotonlike);
 
+  _ntp->Branch("pfcand_iselectronprob",&d.iselectronprob);
+  _ntp->Branch("pfcand_ismuonprob",&d.ismuonprob);
+  _ntp->Branch("pfcand_ispionprob",&d.ispionprob);
+  _ntp->Branch("pfcand_iskaonprob",&d.iskaonprob);
+  _ntp->Branch("pfcand_isprotonprob",&d.isprotonprob);
 
 
 
@@ -199,7 +204,7 @@ void DNNProvider2::init(Parameters* param) {
   _ntp->Branch("neu_pfcand_isNeutralHad",&d.neu_isneutralhadron);
   _ntp->Branch("neu_pfcand_type",&d.neu_pdg_pfa);
   _ntp->Branch("neu_pfcand_mcpid",&d.neu_mcpid);
-  _ntp->Branch("pfcand_mcp_pdg",&d.mcp_pdg);
+  _ntp->Branch("neu_pfcand_mcp_pdg",&d.neu_mcp_pdg);
   _ntp->Branch("neu_pfcand_Ktype",&d.neu_K_pdg_pfa); //20240201
   _ntp->Branch("neu_pfcand_isPion",&d.neu_ispion);
   _ntp->Branch("neu_pfcand_isKaon",&d.neu_iskaon);
@@ -230,6 +235,8 @@ void DNNProvider2::process() {
 
   for (unsigned int j=0; j < jets.size(); ++j) {
     const Jet* jet = jets[j];
+
+
 
     memset(&_data,0,sizeof(_data));
 
@@ -346,6 +353,11 @@ void DNNProvider2::process() {
     d.iskaonlike.resize(ntra);
     d.isprotonlike.resize(ntra);
 
+    d.iselectronprob.resize(ntra);
+    d.ismuonprob.resize(ntra);
+    d.ispionprob.resize(ntra);
+    d.iskaonprob.resize(ntra);
+    d.isprotonprob.resize(ntra);
 
 
     // for neutrals
@@ -460,7 +472,6 @@ void DNNProvider2::process() {
       }
 
       const Track *tr = tracks[order_tr[i].second];
-      // const MCParticle *mcparticles = mcps[order_tr[i].second];
       // const Track *tr = tracks[i];
       d.px[i] = tr->Px();
       d.py[i] = tr->Py();
@@ -504,8 +515,6 @@ void DNNProvider2::process() {
 
       d.dEdx[i] = tr->getdEdx();
       
-      d.dEdx[i] = tr->getdEdx();
-      
       d.dxy[i] = calc_dxy(tr->getD0(), tr->getZ0(), tr->getPhi(), tr->Vect(), privtx->getPos(), tr->getCharge());
       d.dz[i] = calc_dz(tr->getD0(), tr->getZ0(), tr->getPhi(), tr->Vect(), privtx->getPos(), tr->getCharge());
       d.ip2d_fcc[i] = calc_sip2d(tr->getD0(), tr->getPhi(), jet->Px(), jet->Py());
@@ -515,10 +524,10 @@ void DNNProvider2::process() {
       d.jetdist_fcc[i] = calc_jetDist(tr->getD0(), tr->getZ0(), tr->getPhi(), tr->Vect(), jet->Vect());
       d.jetdistsig_fcc[i] = d.jetdist_fcc[i] / sqrt(d.cov_d0[i] + d.cov_z0[i]);
 
+
       d.charge[i] = tr->getCharge();
 
-      // get ParticleID 0 or 1
-      // d.ischargedhadron[i] = !(d.ismuon[i] || d.iselectron[i]);
+      // // get ParticleID 0 or 1
       // d.isneutralhadron[i] = 0.0;
       // std::vector<float> charged(5);
       // charged.clear();
@@ -534,53 +543,97 @@ void DNNProvider2::process() {
       // charged.push_back(tr->getParticleIDProbability("pionProbability"));
       // charged.push_back(tr->getParticleIDProbability("protonProbability"));
 
-      // std::vector<float>::iterator iter = std::max_element(charged.begin(), charged.end());
+      // //std::vector<float>::iterator iter = std::max_element(charged.begin(), charged.end());
+      // auto iter = std::max_element(charged.begin(), charged.end());
       // int index = std::distance(charged.begin(), iter);
       // if (index==0) d.ismuon[i] = 1;
       // if (index==1) d.iselectron[i] = 1;
       // if (index==2) d.iskaon[i] = 1;
       // if (index==3) d.ispion[i] = 1;
       // if (index==4) d.isproton[i] = 1;
-      // d.pdg_pfa[i] = tr->getPDG();
 
-
-      // tracing LCFIPlus default
-      d.isphoton[i] = 0;
-      d.ismuon[i] = tr->getParticleIDProbability("muonProbability");
-
-      d.iselectron[i] = tr->getParticleIDProbability("electronProbability");
-      d.isphoton[i] = 0.0;
-      d.ischargedhadron[i] = !(d.ismuon[i] || d.iselectron[i]);
-      d.isneutralhadron[i] = 0.0;
-      d.ispion[i] = tr->getParticleIDProbability("pionProbability");
-      d.iskaon[i] = tr->getParticleIDProbability("kaonProbability");
-      d.isproton[i] = tr->getParticleIDProbability("protonProbability");
+      // pdg etc
       d.pdg_pfa[i] = tr->getPDG();
-
-      if(tr->getMcp()){
-	d.mcpid[i] = (tr->getMcp())->getId();
-	d.mcp_pdg[i] = (tr->getMcp())->getPDG();
-      }
-
+      if (tr->getMcp()) d.mcp_pdg[i] = (tr->getMcp())->getPDG();
+      else d.mcp_pdg[i] = 0;
       d.K_pdg_pfa[i] = 0;
       if (d.pdg_pfa[i]==321) d.K_pdg_pfa[i] = 1;
       if (d.pdg_pfa[i]==310) d.K_pdg_pfa[i] = 1;
+
+      // new PID 2024.06.13
+      d.isneutralhadron[i] = 0.0;
+      d.ismuonprob[i] = tr->getParticleIDProbability("muonProbability");
+      d.iselectronprob[i] = tr->getParticleIDProbability("electronProbability");
+      d.iskaonprob[i] = tr->getParticleIDProbability("kaonProbability");
+      d.ispionprob[i] = tr->getParticleIDProbability("pionProbability");
+      d.isprotonprob[i] = tr->getParticleIDProbability("protonProbability");
+
+      // dEdx check !! if not test, need to comment out !!
+      float pfcandp = pow(d.px[i]*d.px[i]+d.py[i]*d.py[i]+d.pz[i]*d.pz[i],0.5);
+      if ((d.pdg_pfa[i]==321) && (pfcandp<0.4) && (0.0000001<d.dEdx[i]) && (d.dEdx[i]<0.0000002)) cout << "dEdx error detected!" << endl;
+
+      // get ParticleID 0 or 1
+      std::vector<float> charged(5);
+      charged.clear();
+      d.ismuon[i] = 0;
+      d.iselectron[i] = 0;
+      d.iskaon[i] = 0;
+      d.ispion[i] = 0;
+      d.isproton[i] = 0;
+      d.isphoton[i] = 0;
+      charged.push_back(d.ismuonprob[i]);
+      charged.push_back(d.iselectronprob[i]);
+      charged.push_back(d.iskaonprob[i]);
+      charged.push_back(d.ispionprob[i]);
+      charged.push_back(d.isprotonprob[i]);
+      auto iter = std::max_element(charged.begin(), charged.end());
+      int index = std::distance(charged.begin(), iter);
+      if ((d.ismuonprob[i]==0) && (d.iselectronprob[i]==0) && (d.iskaonprob[i]==0) && (d.ispionprob[i]==0) && (d.isprotonprob[i]==0)) {
+        continue;
+      }
+      else if (index==0) d.ismuon[i] = 1;
+      else if (index==1) d.iselectron[i] = 1;
+      else if (index==2) d.iskaon[i] = 1;
+      else if (index==3) d.ispion[i] = 1;
+      else if (index==4) d.isproton[i] = 1;
+
+
+
+
+
+      d.ischargedhadron[i] = !(d.ismuon[i] || d.iselectron[i]);
+
+      //d.mcpid[i] = (tr->getMcp())->getId();
+      // if (tr->getMcp()) d.mcp_pdg[i] = (tr->getMcp())->getPDG();
+      // else d.mcp_pdg[i] = 0;
+      // d.K_pdg_pfa[i] = 0;
+      // if (d.pdg_pfa[i]==321) d.K_pdg_pfa[i] = 1;
+      // if (d.pdg_pfa[i]==310) d.K_pdg_pfa[i] = 1;
+
       d.pion_K[i] = d.ispion[i] - d.iskaon[i];
       d.proton_K[i] = d.isproton[i] - d.iskaon[i];
-      d.pion_Klike[i] = tr->getParticleIDProbability("pionLikelihood") - tr->getParticleIDProbability("kaonLikelihood");
-      d.proton_Klike[i] = tr->getParticleIDProbability("protonLikelihood") - tr->getParticleIDProbability("kaonLikelihood");
+      // d.pion_Klike[i] = tr->getParticleIDProbability("pionLikelihood") - tr->getParticleIDProbability("kaonLikelihood");
+      // d.proton_Klike[i] = tr->getParticleIDProbability("protonLikelihood") - tr->getParticleIDProbability("kaonLikelihood");
       
-      d.electron_dEdxdistance[i] = tr->getParticleIDProbability("electron_dEdxdistance");
-      d.muon_dEdxdistance[i] = tr->getParticleIDProbability("muon_dEdxdist ance");
-      d.pion_dEdxdistance[i] = tr->getParticleIDProbability("pion_dEdxdistance");
-      d.kaon_dEdxdistance[i] = tr->getParticleIDProbability("kaon_dEdxdistance");
-      d.proton_dEdxdistance[i] = tr->getParticleIDProbability("proton_dEdxdistance");
 
-      d.iselectronlike[i] = tr->getParticleIDProbability("electronLikelihood");
-      d.ismuonlike[i] = tr->getParticleIDProbability("muonLikelihood");
-      d.ispionlike[i] = tr->getParticleIDProbability("pionLikelihood");
-      d.iskaonlike[i] = tr->getParticleIDProbability("kaonLikelihood");
-      d.isprotonlike[i] = tr->getParticleIDProbability("protonLikelihood");
+      // d.electron_dEdxdistance[i] = tr->getParticleIDProbability("electron_dEdxdistance");
+      // d.muon_dEdxdistance[i] = tr->getParticleIDProbability("muon_dEdxdist ance");
+      // d.pion_dEdxdistance[i] = tr->getParticleIDProbability("pion_dEdxdistance");
+      // d.kaon_dEdxdistance[i] = tr->getParticleIDProbability("kaon_dEdxdistance");
+      // d.proton_dEdxdistance[i] = tr->getParticleIDProbability("proton_dEdxdistance");
+
+      // d.iselectronlike[i] = tr->getParticleIDProbability("electronLikelihood");
+      // d.ismuonlike[i] = tr->getParticleIDProbability("muonLikelihood");
+      // d.ispionlike[i] = tr->getParticleIDProbability("pionLikelihood");
+      // d.iskaonlike[i] = tr->getParticleIDProbability("kaonLikelihood");
+      // d.isprotonlike[i] = tr->getParticleIDProbability("protonLikelihood");
+
+      // d.iselectronprob[i] = tr->getParticleIDProbability("electronProbability");
+      // d.ismuonprob[i] = tr->getParticleIDProbability("muonProbability");
+      // d.ispionprob[i] = tr->getParticleIDProbability("pionProbability");
+      // d.iskaonprob[i] = tr->getParticleIDProbability("kaonProbability");
+      // d.isprotonprob[i] = tr->getParticleIDProbability("protonProbability");
+
 
       // PDG ID
 
@@ -642,7 +695,7 @@ void DNNProvider2::process() {
       }
       // const Neutral *neu = neutrals[i];
       const Neutral *neu = neutrals[order_n[i].second];
-      // const MCParticle *mcparticles = mcps[order_n[i].second];
+      
       d.neu_px[i] = neu->Px();
       d.neu_py[i] = neu->Py();
       d.neu_pz[i] = neu->Pz();
@@ -696,11 +749,13 @@ void DNNProvider2::process() {
       d.neu_iskaon[i] = 0;
       d.neu_isproton[i] = 0;
       // d.neu_iskaon0[i] = 0;
+
       d.neu_pdg_pfa[i] = neu->getPDG();
+      
+	      //d.neu_mcpid[i] = (neu->getMcp())->getId();
       if(neu->getMcp()){
-	d.neu_mcpid[i] = (neu->getMcp())->getId();
-	d.neu_mcp_pdg[i] = (neu->getMcp())->getPDG();
-      }
+	      d.neu_mcp_pdg[i] = (neu->getMcp())->getPDG();}
+      else d.neu_mcp_pdg[i] = 0;
       d.neu_K_pdg_pfa[i] = 0;
       if (d.neu_pdg_pfa[i]==321) d.neu_K_pdg_pfa[i] = 1;
       if (d.neu_pdg_pfa[i]==310) d.neu_K_pdg_pfa[i] = 1;

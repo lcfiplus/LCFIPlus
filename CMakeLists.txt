@@ -1,7 +1,7 @@
 ########################################################
 # cmake file for building LCFIPlus package
 # @author Tomohiko Tanabe (ICEPP, The University of Tokyo)
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5 FATAL_ERROR)
 ########################################################
 
 
@@ -13,8 +13,6 @@ PROJECT( LCFIPlus )
 SET( ${PROJECT_NAME}_VERSION_MAJOR 0 )
 SET( ${PROJECT_NAME}_VERSION_MINOR 10 )
 SET( ${PROJECT_NAME}_VERSION_PATCH 1 )
-
-
 
 ### DEPENDENCIES ############################################################
 
@@ -39,15 +37,13 @@ FIND_PACKAGE( Marlin 1.0 REQUIRED )
 FIND_PACKAGE( MarlinUtil REQUIRED )
 #FIND_PACKAGE( ROOT REQUIRED COMPONENTS Minuit2 TMVA TreePlayer )
 FIND_PACKAGE( ROOT REQUIRED COMPONENTS Minuit2 TMVA TreePlayer Gui Geom Eve Minuit XMLIO RGL Ged EG MLP )
+#FIND_PACKAGE( Torch REQUIRED )
 FIND_PACKAGE( LCFIVertex REQUIRED )
-<<<<<<< HEAD
-=======
 FIND_PACKAGE( onnxruntime 1.19.2 REQUIRED)
 FIND_PACKAGE( nlohmann_json REQUIRED)
 
 #set(JSON_BuildTests OFF CACHE INTERNAL "")
 #add_subdirectory(nlohmann_json)
->>>>>>> 08d2926 (CMakeLists modified)
 
 INCLUDE_DIRECTORIES( SYSTEM ${Marlin_INCLUDE_DIRS} )
 ADD_DEFINITIONS ( ${Marlin_DEFINITIONS} )
@@ -55,8 +51,11 @@ INCLUDE_DIRECTORIES( SYSTEM ${MarlinUtil_INCLUDE_DIRS} )
 ADD_DEFINITIONS ( ${MarlinUtil_DEFINITIONS} )
 INCLUDE_DIRECTORIES( SYSTEM ${ROOT_INCLUDE_DIRS} )
 INCLUDE_DIRECTORIES( SYSTEM ${LCFIVertex_INCLUDE_DIRS} )
+#INCLUDE_DIRECTORIES( SYSTEM ${TORCH_INCLUDE_DIRS} )
 # left here for backwards compatibility
 INCLUDE_DIRECTORIES( SYSTEM ${LCFIVertex_ROOT}/vertex_lcfi ${LCFIVertex_ROOT}/boost )
+
+INCLUDE_DIRECTORIES( SYSTEM ${onnxruntime_INCLUDE_DIRS} )
 
 #INCLUDE( ${ROOT_DICT_MACROS_FILE} )
 INCLUDE( "${ILCUTIL_ROOT}/cmakemodules/MacroRootDict.cmake" )
@@ -78,6 +77,9 @@ SET( ROOT_DICT_INPUT_HEADERS
 		${PROJECT_SOURCE_DIR}/include/VertexNtuple.h
 		${PROJECT_SOURCE_DIR}/include/vertexfinderdnn.h
 		${PROJECT_SOURCE_DIR}/include/DNNProvider2.h
+		${PROJECT_SOURCE_DIR}/include/MLInputGenerator.h
+		${PROJECT_SOURCE_DIR}/include/MLMakeNtuple.h
+		${PROJECT_SOURCE_DIR}/include/MLInferenceWeaver.h
 		${PROJECT_SOURCE_DIR}/include/LinkDef.h
 )
 SET( ROOT_DICT_INCLUDE_DIRS ${Marlin_INCLUDE_DIRS} )
@@ -107,7 +109,7 @@ ADD_DEFINITIONS( "-Wno-long-long" )
 ADD_DEFINITIONS( "-Wno-strict-aliasing" ) # avoid warnings in dict.cc
 
 # shut up warnings in boost
-ADD_DEFINITIONS( "-Wno-unused-local-typedefs" )
+#ADD_DEFINITIONS( "-Wno-unused-local-typedefs" )
 
 # add library
 SET( libname ${PROJECT_NAME} )
@@ -115,9 +117,6 @@ AUX_SOURCE_DIRECTORY( ./src library_sources )
 LIST( REMOVE_ITEM library_sources ${binary_sources} )
 ADD_SHARED_LIBRARY( ${libname} ${library_sources} )
 INSTALL_SHARED_LIBRARY( ${libname} DESTINATION lib )
-<<<<<<< HEAD
-TARGET_LINK_LIBRARIES( ${libname} ${Marlin_LIBRARIES} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${MarlinUtil_LIBRARIES} ${LCFIVertex_LIBRARIES} )
-=======
 TARGET_LINK_LIBRARIES( ${libname}
 	${Marlin_LIBRARIES}
 	${ROOT_LIBRARIES}
@@ -127,7 +126,6 @@ TARGET_LINK_LIBRARIES( ${libname}
 	nlohmann_json::nlohmann_json
 	${onnxruntime_LIBRARY}
 )
->>>>>>> 08d2926 (CMakeLists modified)
 
 ### EXECUTABLE MODE ########################################################
 
@@ -142,7 +140,7 @@ LIST(APPEND binary_sources ${ROOT_DICT_OUTPUT_SOURCES} )
 ADD_EXECUTABLE( lcfiplus_bin EXCLUDE_FROM_ALL ${binary_sources} )
 
 SET_TARGET_PROPERTIES( lcfiplus_bin PROPERTIES COMPILE_FLAGS "-DBUILD_EVE" OUTPUT_NAME lcfiplus )
-TARGET_LINK_LIBRARIES( lcfiplus_bin ${libname} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} )
+TARGET_LINK_LIBRARIES( lcfiplus_bin ${libname} torch ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} )
 
 # display some variables and write them to cache
 DISPLAY_STD_VARIABLES()

@@ -134,6 +134,12 @@ class DNNProvider2 : public Algorithm {
     std::vector<float> ispionlike;
     std::vector<float> iskaonlike;
     std::vector<float> isprotonlike;
+    
+    std::vector<float> ismuonprob;
+    std::vector<float> iselectronprob;
+    std::vector<float> ispionprob;
+    std::vector<float> iskaonprob;
+    std::vector<float> isprotonprob;
 
 
     int mc_b;
