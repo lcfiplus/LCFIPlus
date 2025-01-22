@@ -6,7 +6,7 @@
 #include "ONNXRuntime.h"
 #include "ROOT/RVec.hxx"
 
-#define DUMP_WEAVER_INPUT 1
+//#define DUMP_WEAVER_INPUT 1
 
 namespace rv = ROOT::VecOps;
 
