@@ -371,6 +371,99 @@ bool SimpleSecElectronFinder(const Track* tr, double d0sigth, double z0sigth, do
 
 }
 
+void AssignJetsToMC(JetVec &jets, vector<const MCParticle *>&mcs_out){
+  bool debug = true;
+  
+  map<const MCParticle *, pair<const Jet *, double> > mapMcJet;
+  map<const Jet *, const MCParticle *> mapJetMc;
+
+  MCColorSingletVec &mccsv = Event::Instance()->getMCColorSinglets();
+  
+  for(JetVecIte it = jets.begin(); it != jets.end(); it++){
+    map<const MCColorSinglet *, double > mapMccs;
+    TrackVec vtr = (*it)->getAllTracks();
+    for(TrackVecIte itt = vtr.begin();itt != vtr.end();itt++){
+      const MCColorSinglet *mccs = (*itt)->getMcp()->getColorSinglet(&mccsv);
+      if(!mccs)continue;
+      if(mapMccs.find(mccs) != mapMccs.end())
+	mapMccs[mccs] += (*itt)->E();
+      else
+	mapMccs[mccs] = (*itt)->E();
+    }
+    NeutralVec vnt = (*it)->getNeutrals();
+    for(NeutralVecIte itn = vnt.begin(); itn != vnt.end(); itn++){
+      const MCColorSinglet *mccs = (*itn)->getMcp()->getColorSinglet(&mccsv);
+      if(!mccs)continue;
+      
+      if(mapMccs.find(mccs) != mapMccs.end())
+	mapMccs[mccs] += (*itn)->E();
+      else
+	mapMccs[mccs] = (*itn)->E();
+    }
+
+    // find ColorSinglet assignment
+    const MCColorSinglet *mccsf = 0;
+    double mccsd = 0.;
+
+    if(debug) cout << "MCCS mapsize: " << mapMccs.size() << endl;
+    for(map<const MCColorSinglet *, double >::const_iterator itmccs = mapMccs.begin(); itmccs != mapMccs.end(); itmccs ++){
+      if(debug) cout << "MCCS assignment: energy = " << itmccs->second << ", MCCS: " << (long long)itmccs->first << endl;
+      if(itmccs->second > mccsd){
+	mccsf = itmccs->first;
+	mccsd = itmccs->second;
+      }
+    }
+
+    if(debug)
+      cout << "ColorSinglet found: Jet E = " << (*it)->E() << ", MCCS E = " << (mccsf->getMcp() ? mccsf->getMcp()->E() : 0) << endl;
+
+    if(!mccsf){
+      cout << "ColorSinglet could not found. Skipping the jet." << endl;
+      mapJetMc[*it] = 0;
+      continue;
+    }
+    
+    // find initial based on angle
+    // record energy fraction
+    const MCParticle *mcq = 0;
+    double mcqd = 100;
+    MCParticleVec &initials = mccsf->_initials;
+    for(MCParticleVecIte itin = initials.begin(); itin != initials.end(); itin ++){
+      double angle = (*itin)->Angle((*it)->Vect());
+      if(debug){
+	cout << "Checking MCP: pdg = " << (*itin)->getPDG() << ", angle = " << angle << endl;
+	cout << "Jet direction: (" << (*it)->Px() << ", " << (*it)->Py() << ", " << (*it)->Pz() << ")" << endl;
+	cout << "MCP direction: (" << (*itin)->Px() << ", " << (*itin)->Py() << ", " << (*itin)->Pz() << ")" << endl;
+      }
+      if(angle < mcqd){
+	mcq = *itin;
+	mcqd = angle;
+      }
+    }
+    if(debug)
+      cout << "Initial MCP found: pdg = " << mcq->getPDG() << ", angle = " << mcqd << endl;
+    auto itmap = mapMcJet.find(mcq);
+    if(itmap == mapMcJet.end() || itmap->second.second < (*it)->E()){ // not registered or larger jet energy
+      if(itmap != mapMcJet.end()){ // removing previous assignment
+	if(debug)
+	  cout << "Jet with energy " << itmap->second.first->E() << " is removed with MCP." << endl;
+	mapJetMc[itmap->second.first] = 0;
+      }	
+      mapMcJet[mcq] = make_pair((*it), (*it)->E());
+      mapJetMc[*it] = mcq;
+      if(debug)
+	cout << "Jet with energy " << (*it)->E() << " is associated with MCP." << endl;
+    }
+  }
+
+  // extract map to vector
+  for(unsigned int ij = 0; ij < jets.size(); ij++){
+    mcs_out.push_back(mapJetMc[jets[ij]]);
+    if(debug && mapJetMc[jets[ij]])
+      cout << "Jet " << ij << " assigned to MC PDG " << mapJetMc[jets[ij]]->getPDG() << endl;
+  }    
+}
+  
 
 }
 }

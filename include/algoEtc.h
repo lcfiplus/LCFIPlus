@@ -22,6 +22,7 @@ bool SimpleSecMuonFinder(const Track* tr, double d0sigth, double z0sigth, double
 bool SimpleSecElectronFinder(const Track* tr, double d0sigth, double z0sigth, double maxpos, double emin,
                              double minfracecal, double minecalpertrackenergy, double maxecalpertrackenergy,
                              const Vertex* ip = 0);
+void AssignJetsToMC(JetVec &jets, vector<const MCParticle *>&mcs_out);
 
 }
 }

@@ -350,6 +350,8 @@ class Event : public EventStore {
   }
 
   // utility functions for MCParticles
+  bool isMCExist() const { return IsExist(getDefaultMCParticles());}
+  
   const MCParticle* getMCParticle(int id) const;
   const MCParticle* getMCParticle(const Track* trk) const;
 
@@ -719,7 +721,7 @@ class MCParticle : public TLorentzVector {
   int getFlavor() const;
   const MCParticle* getColorString()const;
 
-  const MCColorSinglet* getColorSinglet(const vector<const MCColorSinglet*>* pcs)const;
+  const MCColorSinglet* getColorSinglet(const vector<const MCColorSinglet*> * pcs)const;
 
   bool isStableTrack() const;
   bool isStable() const;

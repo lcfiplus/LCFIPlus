@@ -5,6 +5,7 @@
 #include "EventStore.h"
 #include "lcfiplus.h"
 #include "JetFinder.h"
+#include "algoEtc.h"
 
 #include "TROOT.h"
 #include <variant>
@@ -98,8 +99,15 @@ void MLMakeNtuple::process() {
   }
   JetVec& jets = *jetsPtr;
 
+  vector<const MCParticle *> mcpJets;
+  if(_labelKeep == 0 && Event::Instance()->isMCExist()){
+    algoEtc::AssignJetsToMC(jets, mcpJets);
+  }
   for (unsigned int njet = 0; njet < jets.size(); ++njet) {
     _label = _labelKeep;
+    if(_label == 0 && Event::Instance()->isMCExist()){
+      _label = mcpJets[njet]->getPDG();
+    }
     
     _data.resetData();
     const Jet* jet = jets[njet];
