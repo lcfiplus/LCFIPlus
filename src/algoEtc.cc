@@ -372,7 +372,7 @@ bool SimpleSecElectronFinder(const Track* tr, double d0sigth, double z0sigth, do
 }
 
 void AssignJetsToMC(JetVec &jets, vector<const MCParticle *>&mcs_out){
-  bool debug = true;
+  bool debug = false;
   
   map<const MCParticle *, pair<const Jet *, double> > mapMcJet;
   map<const Jet *, const MCParticle *> mapJetMc;
@@ -380,9 +380,12 @@ void AssignJetsToMC(JetVec &jets, vector<const MCParticle *>&mcs_out){
   MCColorSingletVec &mccsv = Event::Instance()->getMCColorSinglets();
   
   for(JetVecIte it = jets.begin(); it != jets.end(); it++){
+    mapJetMc[*it] = 0; // initialization in case cannot find proper MC
+
     map<const MCColorSinglet *, double > mapMccs;
     TrackVec vtr = (*it)->getAllTracks();
     for(TrackVecIte itt = vtr.begin();itt != vtr.end();itt++){
+      if(!(*itt)->getMcp())continue;
       const MCColorSinglet *mccs = (*itt)->getMcp()->getColorSinglet(&mccsv);
       if(!mccs)continue;
       if(mapMccs.find(mccs) != mapMccs.end())
@@ -392,6 +395,7 @@ void AssignJetsToMC(JetVec &jets, vector<const MCParticle *>&mcs_out){
     }
     NeutralVec vnt = (*it)->getNeutrals();
     for(NeutralVecIte itn = vnt.begin(); itn != vnt.end(); itn++){
+      if(!(*itn)->getMcp())continue;
       const MCColorSinglet *mccs = (*itn)->getMcp()->getColorSinglet(&mccsv);
       if(!mccs)continue;
       
@@ -461,7 +465,10 @@ void AssignJetsToMC(JetVec &jets, vector<const MCParticle *>&mcs_out){
     mcs_out.push_back(mapJetMc[jets[ij]]);
     if(debug && mapJetMc[jets[ij]])
       cout << "Jet " << ij << " assigned to MC PDG " << mapJetMc[jets[ij]]->getPDG() << endl;
-  }    
+  }
+
+  if(debug)
+    cout << "AssignJetsToMC finished." << endl;
 }
   
 

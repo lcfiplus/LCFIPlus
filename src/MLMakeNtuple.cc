@@ -106,7 +106,7 @@ void MLMakeNtuple::process() {
   for (unsigned int njet = 0; njet < jets.size(); ++njet) {
     _label = _labelKeep;
     if(_label == 0 && Event::Instance()->isMCExist()){
-      _label = mcpJets[njet]->getPDG();
+      _label = (mcpJets[njet] ? mcpJets[njet]->getPDG() : 0);
     }
     
     _data.resetData();
