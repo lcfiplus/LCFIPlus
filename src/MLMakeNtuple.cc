@@ -51,6 +51,7 @@ void MLMakeNtuple::init(Parameters* param) {
   string outputFilename = param->get("MLMakeNtuple.OutputRootFileName",string("ml_flavtag.root"));
   string treeName = param->get("MLMakeNtuple.TTreeName",string("ntp"));
   _labelKeep = param->get("MLMakeNtuple.Label",int(0));
+  _outEvent = param->get("MLMakeNtuple.EventClassification",int(0));
   
   //cout << "MLMakeNtuple: Ntuple file set to " << outputFilename << endl;
   _file = new TFile(outputFilename.c_str(),"RECREATE");
@@ -76,11 +77,22 @@ void MLMakeNtuple::init(Parameters* param) {
 
   for (const auto& v: calcInput) {
     const auto& key = v.first;
-    if (std::holds_alternative<function<double(const Jet*)> >(v.second)) {
-      string buf = key + "/F";
-      _tree->Branch( key.c_str(), &_data.newData(key), buf.c_str() );
-    } else {
-      _tree->Branch( key.c_str(), &_data.newDataVec(key) );
+
+    if(_outEvent){
+      if (std::holds_alternative<function<double(const Track*)> >(v.second)
+       || std::holds_alternative<function<double(const Track*, const Vertex*)> >(v.second)
+       || std::holds_alternative<function<double(const Neutral*)> >(v.second)
+       || std::holds_alternative<function<double(const Neutral*, const Vertex*)> >(v.second)){
+	_tree->Branch( key.c_str(), &_data.newDataVec(key) );
+      }
+    }
+    else{
+      if (std::holds_alternative<function<double(const Jet*)> >(v.second)) {
+	string buf = key + "/F";
+	_tree->Branch( key.c_str(), &_data.newData(key), buf.c_str() );
+      } else {
+	_tree->Branch( key.c_str(), &_data.newDataVec(key) );
+      }
     }
   }
 }
@@ -89,6 +101,72 @@ void MLMakeNtuple::init(Parameters* param) {
 //template<typename ...Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
 void MLMakeNtuple::process() {
+  if(_outEvent)
+    processEvent();
+  else
+    processJets();
+}
+
+void MLMakeNtuple::processEvent(){
+  Event* event = Event::Instance();
+  const Vertex* privtx = Event::Instance()->getPrimaryVertex();
+  _label = _labelKeep;
+
+  TrackVec &tracks_orig = event->getTracks();
+  NeutralVec &neutrals_orig = event->getNeutrals();
+
+  vector<const Track *> tracks(tracks_orig.size());
+  vector<const Neutral *> neutrals(neutrals_orig.size());
+
+  std::partial_sort_copy(tracks_orig.begin(),tracks_orig.end(),tracks.begin(), tracks.end(), [](const Track *a, const Track *b){
+    return a->E() > b->E();
+  });
+  std::partial_sort_copy(neutrals_orig.begin(),neutrals_orig.end(),neutrals.begin(), neutrals.end(),[](const Neutral *a, const Neutral *b){
+    return a->E() > b->E();
+  });
+
+  _data.resetData();
+  for (const auto& v: calcInput) {
+    const auto& key = v.first;
+
+    if (std::holds_alternative<function<double(const Track*)> >(v.second)) {
+      auto f = std::get<function<double(const Track*)> >(v.second);
+      for (auto tr: tracks) {
+	double ret = f(tr);
+	_data.addDataVec(key,ret);
+      }
+    }
+
+    if (std::holds_alternative<function<double(const Track*, const Vertex*)> >(v.second)) {
+      auto f = std::get<function<double(const Track*, const Vertex*)> >(v.second);
+      for (auto tr: tracks) {
+	double ret = f(tr,privtx);
+	_data.addDataVec(key,ret);
+      }
+    }
+    
+    if (std::holds_alternative<function<double(const Neutral*)> >(v.second)) {
+      auto f = std::get<function<double(const Neutral*)> >(v.second);
+      for (auto neu: neutrals) {
+	double ret = f(neu);
+	_data.addDataVec(key,ret);
+      }
+    }
+    
+    if (std::holds_alternative<function<double(const Neutral*, const Vertex*)> >(v.second)) {
+      auto f = std::get<function<double(const Neutral*, const Vertex*)> >(v.second);
+      for (auto neu: neutrals) {
+	double ret = f(neu,privtx);
+	_data.addDataVec(key,ret);
+      }
+    }
+  }
+
+  _tree->Fill();
+
+}
+  
+void MLMakeNtuple::processJets(){
   Event* event = Event::Instance();
   const Vertex* privtx = Event::Instance()->getPrimaryVertex();
   JetVec* jetsPtr(0);

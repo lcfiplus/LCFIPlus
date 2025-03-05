@@ -1057,8 +1057,8 @@ void FlavtagReader::process() {
   int nbh = 0;
   Event *event = Event::Instance();
   if(event->IsExist(event->getDefaultMCParticles()) && event->getMCParticles().size() >= 12){
-    for(unsigned int i=8;i<11;i++){
-      //cout << i << endl;
+    for(unsigned int i=8;i<12;i++){
+      //cout << i << " " << event->getMCParticles()[i]->getPDG() << endl;
       if(fabs(event->getMCParticles()[i]->getPDG()) == 5)nbz ++;
     }
     for(unsigned int i=0;i<event->getMCParticles().size();i++){

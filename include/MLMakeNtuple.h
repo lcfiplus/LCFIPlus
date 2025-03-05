@@ -23,6 +23,8 @@ class MLMakeNtuple : public Algorithm {
 
   void init(Parameters* param);
   void process();
+  void processEvent();
+  void processJets();
   void end();
 
  private:
@@ -31,6 +33,7 @@ class MLMakeNtuple : public Algorithm {
   TTree* _tree;
   int _label;
   int _labelKeep;
+  int _outEvent;
 
   struct MLData {
     // methods
