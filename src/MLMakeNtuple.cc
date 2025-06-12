@@ -52,6 +52,7 @@ void MLMakeNtuple::init(Parameters* param) {
   string treeName = param->get("MLMakeNtuple.TTreeName",string("ntp"));
   _labelKeep = param->get("MLMakeNtuple.Label",int(0));
   _outEvent = param->get("MLMakeNtuple.EventClassification",int(0));
+  _outEventNoJets = param->get("MLMakeNtuple.EventClassificationNoJets",int(0));
   
   //cout << "MLMakeNtuple: Ntuple file set to " << outputFilename << endl;
   _file = new TFile(outputFilename.c_str(),"RECREATE");
@@ -75,10 +76,18 @@ void MLMakeNtuple::init(Parameters* param) {
   _tree->Branch("mc_q",&d.mc_q,"mc_q/I"); // usdg
 #endif
 
+  if (_outEvent){ 
+    string key = "jetIndex";
+    _tree->Branch( key.c_str(), &_data.newDataVec(key) );
+
+    key = "neu_jetIndex";
+    _tree->Branch( key.c_str(), &_data.newDataVec(key) );
+  }
+
   for (const auto& v: calcInput) {
     const auto& key = v.first;
 
-    if(_outEvent){
+    if(_outEventNoJets){
       if (std::holds_alternative<function<double(const Track*)> >(v.second)
        || std::holds_alternative<function<double(const Track*, const Vertex*)> >(v.second)
        || std::holds_alternative<function<double(const Neutral*)> >(v.second)
@@ -86,14 +95,29 @@ void MLMakeNtuple::init(Parameters* param) {
 	_tree->Branch( key.c_str(), &_data.newDataVec(key) );
       }
     }
-    else{
-      if (std::holds_alternative<function<double(const Jet*)> >(v.second)) {
-	string buf = key + "/F";
-	_tree->Branch( key.c_str(), &_data.newData(key), buf.c_str() );
-      } else {
+
+    if (_outEvent){ 
+      if (std::holds_alternative<function<double(const Track*)> >(v.second)
+       || std::holds_alternative<function<double(const Track*, const Vertex*)> >(v.second)
+       || std::holds_alternative<function<double(const Neutral*)> >(v.second)
+       || std::holds_alternative<function<double(const Neutral*, const Vertex*)> >(v.second)
+       || std::holds_alternative<function<double(const Track*, const Jet*)> >(v.second)
+       || std::holds_alternative<function<double(const Neutral*, const Jet*)> >(v.second)
+       )
+      {
 	_tree->Branch( key.c_str(), &_data.newDataVec(key) );
       }
+
+    } else {
+
+      if (std::holds_alternative<function<double(const Jet*)> >(v.second)) {
+        string buf = key + "/F";
+        _tree->Branch( key.c_str(), &_data.newData(key), buf.c_str() );
+      } else {
+        _tree->Branch( key.c_str(), &_data.newDataVec(key) );
+      }
     }
+
   }
 }
 
@@ -101,17 +125,27 @@ void MLMakeNtuple::init(Parameters* param) {
 //template<typename ...Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
 void MLMakeNtuple::process() {
+
+  // only one of EventClassification or EventClassificationNoJets is allowed to be 1
+  if (_outEvent && _outEventNoJets) {
+    cout << "Skipping due to ambiguous setting: MLMakeNtuple.EventClassification and MLMakeNtuple.EventClassificationNoJets are both turned on" << endl;
+    return;
+  }
+
   if(_outEvent)
     processEvent();
+  else if (_outEventNoJets)
+    processEventNoJets();
   else
     processJets();
 }
 
-void MLMakeNtuple::processEvent(){
+void MLMakeNtuple::processEventNoJets(){
   Event* event = Event::Instance();
   const Vertex* privtx = Event::Instance()->getPrimaryVertex();
   _label = _labelKeep;
 
+  // get tracks and neutrals
   TrackVec &tracks_orig = event->getTracks();
   NeutralVec &neutrals_orig = event->getNeutrals();
 
@@ -158,6 +192,101 @@ void MLMakeNtuple::processEvent(){
       for (auto neu: neutrals) {
 	double ret = f(neu,privtx);
 	_data.addDataVec(key,ret);
+      }
+    }
+  }
+
+  _tree->Fill();
+
+}
+
+void MLMakeNtuple::processEvent(){
+
+  Event* event = Event::Instance();
+  const Vertex* privtx = Event::Instance()->getPrimaryVertex();
+  JetVec* jetsPtr(0);
+  bool success = event->Get(_jetname.c_str(), jetsPtr);
+  if (!success) {
+    cout << "jets could not be found" << endl;
+    return;
+  }
+  JetVec& jets = *jetsPtr;
+
+  _data.resetData();
+  _label = _labelKeep;
+
+  for (unsigned int njet = 0; njet < jets.size(); ++njet) {
+    
+    const Jet* jet = jets[njet];
+    TrackVec tracks = jet->getAllTracksSorted(true);
+    NeutralVec neutrals = jet->getNeutralsSorted();
+
+    for (auto tr: tracks) {
+      (void) tr;
+      _data.addDataVec("jetIndex",(float)njet);
+    }
+    for (auto neu: neutrals) {
+      (void) neu;
+      _data.addDataVec("neu_jetIndex",(float)njet);
+    }
+
+    for (const auto& v: calcInput) {
+      const auto& key = v.first;
+
+      /*
+      if (std::holds_alternative<function<double(const Jet*)> >(v.second)) {
+        auto f = std::get<function<double(const Jet*)> >(v.second);
+        double ret = f(jet);
+        _data.setData(key,ret);
+      }
+      */
+
+      if (std::holds_alternative<function<double(const Track*)> >(v.second)) {
+        auto f = std::get<function<double(const Track*)> >(v.second);
+        for (auto tr: tracks) {
+          double ret = f(tr);
+          _data.addDataVec(key,ret);
+        }
+      }
+
+      if (std::holds_alternative<function<double(const Track*, const Jet*)> >(v.second)) {
+        auto f = std::get<function<double(const Track*, const Jet*)> >(v.second);
+        for (auto tr: tracks) {
+          double ret = f(tr,jet);
+          _data.addDataVec(key,ret);
+        }
+      }
+
+      if (std::holds_alternative<function<double(const Track*, const Vertex*)> >(v.second)) {
+        auto f = std::get<function<double(const Track*, const Vertex*)> >(v.second);
+        for (auto tr: tracks) {
+          double ret = f(tr,privtx);
+          _data.addDataVec(key,ret);
+        }
+      }
+
+      if (std::holds_alternative<function<double(const Neutral*)> >(v.second)) {
+        auto f = std::get<function<double(const Neutral*)> >(v.second);
+        for (auto neu: neutrals) {
+          double ret = f(neu);
+          _data.addDataVec(key,ret);
+        }
+      }
+
+      if (std::holds_alternative<function<double(const Neutral*, const Jet*)> >(v.second)) {
+        auto f = std::get<function<double(const Neutral*, const Jet*)> >(v.second);
+        for (auto neu: neutrals) {
+          double ret = f(neu,jet);
+          _data.addDataVec(key,ret);
+        }
+      }
+
+      if (std::holds_alternative<function<double(const Neutral*, const Vertex*)> >(v.second)) {
+        auto f = std::get<function<double(const Neutral*, const Vertex*)> >(v.second);
+        for (auto neu: neutrals) {
+          double ret = f(neu,privtx);
+          _data.addDataVec(key,ret);
+        }
       }
     }
   }

@@ -24,6 +24,7 @@ class MLMakeNtuple : public Algorithm {
   void init(Parameters* param);
   void process();
   void processEvent();
+  void processEventNoJets();
   void processJets();
   void end();
 
@@ -34,6 +35,7 @@ class MLMakeNtuple : public Algorithm {
   int _label;
   int _labelKeep;
   int _outEvent;
+  int _outEventNoJets;
 
   struct MLData {
     // methods
