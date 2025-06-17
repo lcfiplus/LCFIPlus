@@ -97,7 +97,10 @@ void MLMakeNtuple::init(Parameters* param) {
     }
 
     if (_outEvent){ 
-      if (std::holds_alternative<function<double(const Track*)> >(v.second)
+      if (std::holds_alternative<function<double(const Event*)> >(v.second)) {
+        string buf = key + "/F";
+        _tree->Branch( key.c_str(), &_data.newData(key), buf.c_str() );
+      }else if (std::holds_alternative<function<double(const Track*)> >(v.second)
        || std::holds_alternative<function<double(const Track*, const Vertex*)> >(v.second)
        || std::holds_alternative<function<double(const Neutral*)> >(v.second)
        || std::holds_alternative<function<double(const Neutral*, const Vertex*)> >(v.second)
@@ -110,7 +113,8 @@ void MLMakeNtuple::init(Parameters* param) {
 
     } else {
 
-      if (std::holds_alternative<function<double(const Jet*)> >(v.second)) {
+      if (std::holds_alternative<function<double(const Jet*)> >(v.second)
+	  || std::holds_alternative<function<double(const Event*)> >(v.second)) {
         string buf = key + "/F";
         _tree->Branch( key.c_str(), &_data.newData(key), buf.c_str() );
       } else {
@@ -144,6 +148,15 @@ void MLMakeNtuple::processEventNoJets(){
   Event* event = Event::Instance();
   const Vertex* privtx = Event::Instance()->getPrimaryVertex();
   _label = _labelKeep;
+
+  for (const auto& v: calcInput) {
+    const auto& key = v.first;
+    if (std::holds_alternative<function<double(const Event*)> >(v.second)) {
+      auto f = std::get<function<double(const Event*)> >(v.second);
+      double ret = f(Event::Instance());
+      _data.setData(key,ret);
+    }
+  }
 
   // get tracks and neutrals
   TrackVec &tracks_orig = event->getTracks();
@@ -215,6 +228,15 @@ void MLMakeNtuple::processEvent(){
   _data.resetData();
   _label = _labelKeep;
 
+  for (const auto& v: calcInput) {
+    const auto& key = v.first;
+    if (std::holds_alternative<function<double(const Event*)> >(v.second)) {
+      auto f = std::get<function<double(const Event*)> >(v.second);
+      double ret = f(Event::Instance());
+      _data.setData(key,ret);
+    }
+  }
+  
   for (unsigned int njet = 0; njet < jets.size(); ++njet) {
     
     const Jet* jet = jets[njet];
@@ -305,6 +327,15 @@ void MLMakeNtuple::processJets(){
     return;
   }
   JetVec& jets = *jetsPtr;
+
+  for (const auto& v: calcInput) {
+    const auto& key = v.first;
+    if (std::holds_alternative<function<double(const Event*)> >(v.second)) {
+      auto f = std::get<function<double(const Event*)> >(v.second);
+      double ret = f(Event::Instance());
+      _data.setData(key,ret);
+    }
+  }
 
   vector<const MCParticle *> mcpJets;
   if(_labelKeep == 0 && Event::Instance()->isMCExist()){

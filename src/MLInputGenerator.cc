@@ -31,6 +31,7 @@ namespace lcfiplus {
 namespace MLInputGenerator {
 
   map<string, variant<
+    function<double(const Event*)>,
     function<double(const Jet*)>,
     function<double(const Track*)>,
     function<double(const Track*, const Jet*)>,
@@ -54,12 +55,27 @@ namespace MLInputGenerator {
     //const string _trk_prefix = "tr_";
     //const string _neu_prefix = "neu_";
 
+    const string _event_prefix = "event_";
     const string _jet_prefix = "jet_";
     const string _trk_prefix = "pfcand_";
     const string _neu_prefix = "neu_pfcand_";
     const string _trk_prefix0 = "";
     const string _neu_prefix0 = "neu_";
 
+    // event inputs
+    // number of bs from Higgs decay
+    calcInput[_event_prefix+"nbh"] = [](const Event* ev)
+    {
+      int nbh = 0;
+      MCParticleVec &mcps = ev->getMCParticles();
+      for(unsigned int nmc = 0; nmc < mcps.size();nmc++){
+	if(mcps[nmc]->getPDG() == 25){ // higgs
+	  if(fabs(mcps[nmc]->getDaughters()[0]->getPDG()) == 5) nbh += 2;
+	}
+      }
+      return (double)nbh;
+    };
+    
     // jet inputs
     calcInput[_jet_prefix+"px"] = [](const Jet* jet){ return jet->Px(); };
     calcInput[_jet_prefix+"py"] = [](const Jet* jet){ return jet->Py(); };

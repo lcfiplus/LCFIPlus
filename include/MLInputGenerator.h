@@ -14,6 +14,7 @@ namespace lcfiplus {
 namespace MLInputGenerator {
 
   extern map<string, variant<
+    function<double(const Event*)>,
     function<double(const Jet*)>,
     function<double(const Track*)>,
     function<double(const Track*, const Jet*)>,
