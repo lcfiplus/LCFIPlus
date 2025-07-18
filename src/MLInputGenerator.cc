@@ -67,9 +67,11 @@ namespace MLInputGenerator {
     calcInput[_event_prefix+"nbh"] = [](const Event* ev)
     {
       int nbh = 0;
+      if(strlen(ev->getDefaultMCParticles())==0)return (double)0.;
+      
       MCParticleVec &mcps = ev->getMCParticles();
       for(unsigned int nmc = 0; nmc < mcps.size();nmc++){
-	if(mcps[nmc]->getPDG() == 25){ // higgs
+	if(mcps[nmc]->getPDG() == 25 && mcps[nmc]->getDaughters().size()>=1){ // higgs
 	  if(fabs(mcps[nmc]->getDaughters()[0]->getPDG()) == 5) nbh += 2;
 	}
       }
