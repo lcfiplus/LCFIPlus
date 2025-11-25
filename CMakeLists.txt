@@ -39,7 +39,7 @@ FIND_PACKAGE( MarlinUtil REQUIRED )
 FIND_PACKAGE( ROOT REQUIRED COMPONENTS Minuit2 TMVA TreePlayer Gui Geom Eve Minuit XMLIO RGL Ged EG MLP )
 #FIND_PACKAGE( Torch REQUIRED )
 FIND_PACKAGE( LCFIVertex REQUIRED )
-FIND_PACKAGE( onnxruntime 1.19.2 REQUIRED)
+FIND_PACKAGE( onnxruntime 1.17.1 REQUIRED)
 FIND_PACKAGE( nlohmann_json REQUIRED)
 
 #set(JSON_BuildTests OFF CACHE INTERNAL "")
@@ -55,7 +55,8 @@ INCLUDE_DIRECTORIES( SYSTEM ${LCFIVertex_INCLUDE_DIRS} )
 # left here for backwards compatibility
 INCLUDE_DIRECTORIES( SYSTEM ${LCFIVertex_ROOT}/vertex_lcfi ${LCFIVertex_ROOT}/boost )
 
-INCLUDE_DIRECTORIES( SYSTEM ${onnxruntime_INCLUDE_DIRS} )
+#INCLUDE_DIRECTORIES( SYSTEM ${onnxruntime_INCLUDE_DIRS} )
+#INCLUDE_DIRECTORIES( SYSTEM onnxruntime::onnxruntime)
 
 #INCLUDE( ${ROOT_DICT_MACROS_FILE} )
 INCLUDE( "${ILCUTIL_ROOT}/cmakemodules/MacroRootDict.cmake" )
@@ -124,8 +125,9 @@ TARGET_LINK_LIBRARIES( ${libname}
 	${MarlinUtil_LIBRARIES}
 	${LCFIVertex_LIBRARIES}
 	nlohmann_json::nlohmann_json
-	${onnxruntime_LIBRARY}
+	onnxruntime::onnxruntime
 )
+# 	${onnxruntime_LIBRARY}
 
 ### EXECUTABLE MODE ########################################################
 

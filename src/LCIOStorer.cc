@@ -487,6 +487,8 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
 
         track->setId(trkIdCounter++); // start from 0. 110927 suehara
         track->setMcp(mcpf);
+	
+	track->setPDG(pfo->getType()); // added for SGV, 250908 suehara
 
         track->setCharge(pfo->getCharge());
 

@@ -3,7 +3,8 @@
 #ifndef ONNXRuntime_ONNXRuntime_h
 #define ONNXRuntime_ONNXRuntime_h
 
-#include "onnxruntime/onnxruntime_cxx_api.h"
+//#include "onnxruntime/onnxruntime_cxx_api.h"
+#include "onnxruntime_cxx_api.h"
 
 #include <string>
 #include <vector>
