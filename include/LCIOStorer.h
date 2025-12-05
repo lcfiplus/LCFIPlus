@@ -31,7 +31,7 @@ class LCIOStorer : public TObject, public EventStoreObserver {
 
   // LCIO -> lcfiplus
   // register basic collections to EventStore
-  void InitMCPPFOCollections(const char* pfoColName, const char* mcColName, const char* mcpfoColName, const char *mctrkColName);
+  void InitMCPPFOCollections(const char* pfoColName, const char* mcColName, const char* mcpfoColName, const char *mctrkColName = "");
   void InitPFOCollections(const char* pfoColName);
 
   // initialize misc collections

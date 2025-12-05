@@ -406,8 +406,8 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
       lcio::MCParticle* mcp = NULL;
       lcfiplus::MCParticle* mcpf = NULL;
 
-      // looking for MCParticle for tracks
-      if(pfo->getCharge() != 0 && pfo->getTracks().size() > 0){
+      // looking for MCParticle for tracks (if Track-MC relation is available)
+      if(navTrks.size() > 0 && pfo->getCharge() != 0 && pfo->getTracks().size() > 0){
 	int tridx =0; // which track in PFO will be used
 
 	if(pfo->getTracks().size() > 1){
@@ -421,7 +421,7 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
 	      maxomega = fabs(trk->getOmega());
 	      tridx = n;
 	    }
-	    //cout << "    Track " << n << ", pt = " << 0.00105 / trk->getOmega() << " ,rhitmin = " << trk->getRadiusOfInnermostHit() << endl;; 
+	    //cout << "    Track " << n << ", pt = " << 0.00105 / trk->getOmega() << " ,rhitmin = " << trk->getRadiusOfInnermostHit() << endl;;
 	  }
 	  //cout << "    PFO energy: " << pfo->getEnergy() << " , pt = " << sqrt(pow(pfo->getMomentum()[0],2) + pow(pfo->getMomentum()[1],2)) << endl;
 	  //cout << "    Track " << tridx << " is selected." << endl;
@@ -440,17 +440,27 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
 	}
       }
 
-      // looking for MCParticle
+      // looking for MCParticle from PFO-MC relation
       if(!mcp){
 	for (unsigned int n=0; n<navs.size(); n++) {
-	  double relmax = 0;
-	  for(unsigned int r=0;r<navs[n]->getRelatedToObjects(pfo).size();r++){
-	    double weight = navs[n]->getRelatedToWeights(pfo)[r];
-	    if(weight < relmax)continue;
-	    relmax = weight;
-	    mcp = dynamic_cast<lcio::MCParticle*>(navs[n]->getRelatedToObjects(pfo)[r]);
-	    mcpf = _mcpLCIORel2[mcp];
-	    break;
+	  // Use simple method (first element) if Track-MC relation is not available (backward compatibility)
+	  if(navTrks.size() == 0){
+	    if (navs[n]->getRelatedToObjects(pfo).size()) {
+	      mcp = dynamic_cast<lcio::MCParticle*>(navs[n]->getRelatedToObjects(pfo)[0]);
+	      mcpf = _mcpLCIORel2[mcp];
+	      break;
+	    }
+	  } else {
+	    // Use weight-based method if Track-MC relation is available
+	    double relmax = 0;
+	    for(unsigned int r=0;r<navs[n]->getRelatedToObjects(pfo).size();r++){
+	      double weight = navs[n]->getRelatedToWeights(pfo)[r];
+	      if(weight < relmax)continue;
+	      relmax = weight;
+	      mcp = dynamic_cast<lcio::MCParticle*>(navs[n]->getRelatedToObjects(pfo)[r]);
+	      mcpf = _mcpLCIORel2[mcp];
+	      break;
+	    }
 	  }
 	}
       }
