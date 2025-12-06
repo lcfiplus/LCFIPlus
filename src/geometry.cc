@@ -20,7 +20,6 @@
 
 #include "Minuit2/FCNAdapter.h"
 #include "Minuit2/FumiliFCNAdapter.h"
-#include "Minuit2/FCNGradAdapter.h"
 #include "Minuit2/FunctionMinimum.h"
 #include "Minuit2/MnMigrad.h"
 #include "Minuit2/MnMinos.h"
@@ -1324,7 +1323,7 @@ double GeometryHandler::PointFit(const vector<PointBase*>& points, const TVector
   param.Add("x",initial.x(),1e-4);
   param.Add("y",initial.y(),1e-4);
   param.Add("z",initial.z(),1e-4);
-  ROOT::Minuit2::FCNAdapter<ROOT::Math::IMultiGenFunction> func(f, 1. ); // errordef = 1 in chi2 minimization
+  ROOT::Minuit2::FCNAdapter func(f, 1. ); // errordef = 1 in chi2 minimization
 
   int maxfcn = 10000; // max function calls
   double tol = 0.01; // tolerance

@@ -11,8 +11,8 @@ PROJECT( LCFIPlus )
 
 # project version
 SET( ${PROJECT_NAME}_VERSION_MAJOR 0 )
-SET( ${PROJECT_NAME}_VERSION_MINOR 10 )
-SET( ${PROJECT_NAME}_VERSION_PATCH 1 )
+SET( ${PROJECT_NAME}_VERSION_MINOR 11 )
+SET( ${PROJECT_NAME}_VERSION_PATCH 0 )
 
 ### DEPENDENCIES ############################################################
 
@@ -66,9 +66,7 @@ INCLUDE_DIRECTORIES( SYSTEM ${LCFIVertex_INCLUDE_DIRS} )
 # left here for backwards compatibility
 INCLUDE_DIRECTORIES( SYSTEM ${LCFIVertex_ROOT}/vertex_lcfi ${LCFIVertex_ROOT}/boost )
 
-#INCLUDE_DIRECTORIES( SYSTEM ${onnxruntime_INCLUDE_DIRS} )
-#INCLUDE_DIRECTORIES( SYSTEM onnxruntime::onnxruntime)
-
+SET( ROOT_DICT_CINT_DEFINITIONS -noIncludePaths -inlineInputHeader -I${PROJECT_SOURCE_DIR}/include )
 #INCLUDE( ${ROOT_DICT_MACROS_FILE} )
 INCLUDE( "${ILCUTIL_ROOT}/cmakemodules/MacroRootDict.cmake" )
 
@@ -101,7 +99,7 @@ IF( ENABLE_ONNX )
 ENDIF()
 
 LIST( APPEND ROOT_DICT_INPUT_HEADERS ${PROJECT_SOURCE_DIR}/include/LinkDef.h )
-SET( ROOT_DICT_INCLUDE_DIRS ${Marlin_INCLUDE_DIRS} )
+SET( ROOT_DICT_INCLUDE_DIRS ${Marlin_INCLUDE_DIRS} ${LCIO_INCLUDE_DIRS})
 GEN_ROOT_DICT_SOURCES( dict.cc )
 INSTALL(FILES ${ROOT_DICT_OUTPUT_DIR}/dict_rdict.pcm DESTINATION lib)
 LIST(APPEND library_sources ${ROOT_DICT_OUTPUT_SOURCES} )
@@ -110,7 +108,7 @@ SET( binary_sources ./src/Driver.cc ./src/EventNavigator.cc )
 
 ### DOCUMENTATION ###########################################################
 
-OPTION( INSTALL_DOC "Set to OFF to skip build/install Documentation" ON )
+OPTION( INSTALL_DOC "Set to OFF to skip build/install Documentation" OFF )
 
 IF( INSTALL_DOC )
 	ADD_SUBDIRECTORY( ./doc )
