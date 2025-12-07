@@ -23,9 +23,6 @@ using namespace lcfiplus ;
 
 LcfiplusProcessor aLcfiplusProcessor ;
 
-// static object initialization
-LCIOStorer* LcfiplusProcessor::_lcio = 0;
-
 LcfiplusProcessor::LcfiplusProcessor() : Processor("LcfiplusProcessor") {
 
   _inInit = false;
@@ -139,26 +136,13 @@ void LcfiplusProcessor::init() {
       _param->add(keys[i].c_str(), vals);
     }
 
-    // initialize LCIOStorer
-    if (!_lcio) {
-      _lcio = new LCIOStorer(0,0,true,false,0); // no file
-      _lcio->setReadSubdetectorEnergies(_readSubdetectorEnergies);
-      _lcio->setTrackHitOrdering(_trackHitOrdering);
-      _lcio->setUpdateVertexRPDaughters(_updateVertexRPDaughters);
-      _lcio->setIgnoreLackOfVertexRP(_ignoreLackOfVertexRP);
-      _lcio->setParticleIDAlgorithmName(_pidAlgoName.c_str());
-
-      _lcioowner = true;
-    } else {
-      _lcioowner = false;
-
-      if ((_lcio->getReadSubdetectorEnergies() != _readSubdetectorEnergies)
-          ||(_lcio->getTrackHitOrdering() != _trackHitOrdering)
-          ||(_lcio->getUpdateVertexRPDaughters() != _updateVertexRPDaughters)
-          ||(_lcio->getIgnoreLackOfVertexRP() != _ignoreLackOfVertexRP)) {
-        throw (lcfiplus::Exception("Global parameters do not match to previous processors: specify the same for all LcfiplusProcessors."));
-      }
-    }
+    // init LCIOStorer
+    _lcio = new LCIOStorer(0,0,true,false,0); // no file
+    _lcio->setReadSubdetectorEnergies(_readSubdetectorEnergies);
+    _lcio->setTrackHitOrdering(_trackHitOrdering);
+    _lcio->setUpdateVertexRPDaughters(_updateVertexRPDaughters);
+    _lcio->setIgnoreLackOfVertexRP(_ignoreLackOfVertexRP);
+    _lcio->setParticleIDAlgorithmName(_pidAlgoName.c_str());
 
     // load basic collection
     if (_useMcp)
@@ -226,9 +210,9 @@ void LcfiplusProcessor::processEvent( LCEvent* evt ) {
     		if(_autoJet)
     			_lcio->InitJetCollectionsAuto(evt);
     */
+
     // set LCEvent
-    if (_lcioowner)
-      _lcio->SetEvent(evt);
+    _lcio->SetEvent(evt);
 
     // set deafult mcp/track/netural
     Event::Instance()->setDefaultTracks(_pfoCollectionName.c_str());
