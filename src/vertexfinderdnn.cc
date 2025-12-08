@@ -181,7 +181,7 @@ void VertexFinderDNNccbar::process() {
     const MCParticle* mcpc1 = event->getMCParticle(track1);
     _hel1 = new lcfiplus::Helix(track1, PointBase::NOTUSED);
 
-    memset(&_data,0,sizeof(_data));
+    _data = TracksData();
 
     _data.tr1d0 = track1->getD0();
     _data.tr1z0 = track1->getZ0();

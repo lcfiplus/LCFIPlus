@@ -238,7 +238,7 @@ void DNNProvider2::process() {
 
 
 
-    memset(&_data,0,sizeof(_data));
+    _data = DNNData();
 
     d.jet_px = jet->Px();
     d.jet_py = jet->Py();
