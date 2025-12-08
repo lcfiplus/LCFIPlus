@@ -267,7 +267,7 @@ void DNNProvider2::process() {
     d.mc_q = _mcIsU || _mcIsD || _mcIsS || _mcIsG;
 
     // probably order of tracks/netural does not matter...
-    int nall = d.jet_ntracks + d.jet_nneutrals;
+    //int nall = d.jet_ntracks + d.jet_nneutrals;
     int ntra = d.jet_ntracks;
     int nneu = d.jet_nneutrals;
     if (ntra==0) continue;
