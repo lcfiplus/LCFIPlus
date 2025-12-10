@@ -31,7 +31,7 @@ class LCIOStorer : public TObject, public EventStoreObserver {
 
   // LCIO -> lcfiplus
   // register basic collections to EventStore
-  void InitMCPPFOCollections(const char* pfoColName, const char* mcColName, const char* mcpfoColName);
+  void InitMCPPFOCollections(const char* pfoColName, const char* mcColName, const char* mcpfoColName, const char *mctrkColName = "");
   void InitPFOCollections(const char* pfoColName);
 
   // initialize misc collections
@@ -112,6 +112,7 @@ class LCIOStorer : public TObject, public EventStoreObserver {
   map<string, vector<lcfiplus::MCColorSinglet*> *> _importMCCSCols;
   map<string, pair<vector<lcfiplus::Track*> *, vector<lcfiplus::Neutral*> *> >_importPFOCols;
   map<string, pair<string,string> > _importMCPFOLinkCols; // Link, <MC, PFO>
+  map<string, pair<string,string> > _importMCTrkLinkCols; // Link (trk), <MC, PFO>
   map<string, vector<const lcfiplus::Vertex*> *> _importVertexCols;
   map<string, vector<const lcfiplus::Jet*> *> _importJetCols;
 

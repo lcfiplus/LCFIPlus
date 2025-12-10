@@ -1,3 +1,40 @@
+# Development branch additions (merged 2025-12-06)
+
+* 2025-12-05 SUEHARA Taikan
+  - Implement backward compatibility for MC-PFO assignment
+    - Add default parameter to InitMCPPFOCollections for backward compatibility
+    - Use simple method (first element) when Track-MC relation is not available
+    - Use improved method (weight-based, multi-track support) when available
+    - Maintain full backward compatibility with upstream v00-11
+
+* 2025-12-03 SUEHARA Taikan
+  - Add optional ONNX support with backward compatibility
+    - Enable ONNX Runtime support as optional feature (ENABLE_ONNX CMake option, default: OFF)
+    - Make onnxruntime and nlohmann_json optional dependencies
+    - Conditionally compile ONNX-related source files
+    - Full backward compatibility when ENABLE_ONNX=OFF
+
+* SUEHARA Taikan and collaborators (2024-2025)
+  - Machine Learning and ONNX integration
+    - Add MLInputGenerator, MLMakeNtuple, MLInferenceWeaver for ML-based flavor tagging
+    - Add WeaverInterface and ONNXRuntime for ONNX model inference
+    - Add DNNProvider2 for DNN-based vertex finding
+    - Implement event-based classification with jets
+    - Add dEdx support for particle identification
+
+  - Flavor tagging improvements
+    - Improve PFA-track assignment and track-MC assignment
+    - Implement true jet flavor assignment from MC
+    - Add MC-to-jet assignment algorithm (AssignJetsToMC)
+    - Bugfixes on MC flavor assignment
+    - Add sorted track and neutral accessors (getAllTracksSorted, getNeutralsSorted)
+
+  - Code quality and compatibility
+    - Update C++ standard to C++17 with CMake 3.5+ requirement
+    - Compatibility fixes for key4hep environment and onnxruntime
+    - Various bugfixes in weaver output and neutral PF candidate masking
+    - Add event-based input support
+
 # v00-11
 
 * 2025-02-24 Thomas Madlener ([PR#73](https://github.com/LCFIPlus/LCFIPlus/pull/73))

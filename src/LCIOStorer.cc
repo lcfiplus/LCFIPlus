@@ -101,7 +101,7 @@ LCIOStorer::~LCIOStorer() {
   if (_writer)_writer->close();
 }
 
-void LCIOStorer::InitMCPPFOCollections(const char* pfoColName, const char* mcColName, const char* mcpfoColName) {
+void LCIOStorer::InitMCPPFOCollections(const char* pfoColName, const char* mcColName, const char* mcpfoColName, const char *mctrkColName) {
   Event* event = Event::Instance();
 
   vector<Track*>* pTracks;
@@ -128,6 +128,11 @@ void LCIOStorer::InitMCPPFOCollections(const char* pfoColName, const char* mcCol
   // mcpfo relation
   if (_importMCPFOLinkCols.count(mcpfoColName) == 0) {
     _importMCPFOLinkCols[mcpfoColName] = make_pair(mcColName, pfoColName);
+  }
+
+  // mctrack relation - keep PFOs instead of tracks
+  if (_importMCTrkLinkCols.count(mctrkColName) == 0 && strlen(mctrkColName) > 0) {
+    _importMCTrkLinkCols[mctrkColName] = make_pair(mcColName, pfoColName);
   }
 
   cout << "LCIOStorer initialized with MCParticle collection." << endl;
@@ -374,6 +379,16 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
     }
     //cout << navs.size() << " relation found." << endl;
 
+    // looking for LCRelation for tracks
+    vector<lcio::LCRelationNavigator*> navTrks;
+    //map<string, pair<string,string> >::iterator itRelCol;
+    for (itRelCol = _importMCTrkLinkCols.begin(); itRelCol != _importMCTrkLinkCols.end(); itRelCol ++) {
+      if (itRelCol->second.second == itPfoCol->first) {
+        navTrks.push_back(new LCRelationNavigator(evt->getCollection(itRelCol->first)));
+      }
+    }
+    //cout << navTrks.size() << " relation found." << endl;
+
     // sorted PFO list
     vector<lcio::ReconstructedParticle*> pfo_list;
     for (int i=0; i<colPFO->getNumberOfElements(); ++i) {
@@ -391,13 +406,63 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
       lcio::MCParticle* mcp = NULL;
       lcfiplus::MCParticle* mcpf = NULL;
 
-      // looking for MCParticle
-      for (unsigned int n=0; n<navs.size(); n++) {
-        if (navs[n]->getRelatedToObjects(pfo).size()) {
-          mcp = dynamic_cast<lcio::MCParticle*>(navs[n]->getRelatedToObjects(pfo)[0]);  // TODO [0] OK?
-          mcpf = _mcpLCIORel2[mcp];
-          break;
-        }
+      // looking for MCParticle for tracks (if Track-MC relation is available)
+      if(navTrks.size() > 0 && pfo->getCharge() != 0 && pfo->getTracks().size() > 0){
+	int tridx =0; // which track in PFO will be used
+
+	if(pfo->getTracks().size() > 1){
+	  double maxomega = 10000.;
+
+	  //cout << "PFO has " << (unsigned int)(pfo->getTracks().size()) << " tracks." << endl;
+	  // selecting track with largest Pt, can also be smallest hit radius (but not taken because of uncertainty)
+	  for(unsigned int n=0;n<pfo->getTracks().size();n++){
+	    lcio::Track *trk = pfo->getTracks()[n];
+	    if(maxomega > fabs(trk->getOmega())){
+	      maxomega = fabs(trk->getOmega());
+	      tridx = n;
+	    }
+	    //cout << "    Track " << n << ", pt = " << 0.00105 / trk->getOmega() << " ,rhitmin = " << trk->getRadiusOfInnermostHit() << endl;;
+	  }
+	  //cout << "    PFO energy: " << pfo->getEnergy() << " , pt = " << sqrt(pow(pfo->getMomentum()[0],2) + pow(pfo->getMomentum()[1],2)) << endl;
+	  //cout << "    Track " << tridx << " is selected." << endl;
+	}
+	for (unsigned int n=0; n<navTrks.size(); n++) {
+	  lcio::Track *trk = pfo->getTracks()[tridx];
+	  double relmax = 0;
+	  for(unsigned int r=0;r<navTrks[n]->getRelatedToObjects(trk).size();r++){
+	    double weight = navTrks[n]->getRelatedToWeights(trk)[r];
+	    if(weight < relmax)continue;
+	    relmax = weight;
+	    mcp = dynamic_cast<lcio::MCParticle*>(navTrks[n]->getRelatedToObjects(trk)[r]);
+	    mcpf = _mcpLCIORel2[mcp];
+	    break;
+	  }
+	}
+      }
+
+      // looking for MCParticle from PFO-MC relation
+      if(!mcp){
+	for (unsigned int n=0; n<navs.size(); n++) {
+	  // Use simple method (first element) if Track-MC relation is not available (backward compatibility)
+	  if(navTrks.size() == 0){
+	    if (navs[n]->getRelatedToObjects(pfo).size()) {
+	      mcp = dynamic_cast<lcio::MCParticle*>(navs[n]->getRelatedToObjects(pfo)[0]);
+	      mcpf = _mcpLCIORel2[mcp];
+	      break;
+	    }
+	  } else {
+	    // Use weight-based method if Track-MC relation is available
+	    double relmax = 0;
+	    for(unsigned int r=0;r<navs[n]->getRelatedToObjects(pfo).size();r++){
+	      double weight = navs[n]->getRelatedToWeights(pfo)[r];
+	      if(weight < relmax)continue;
+	      relmax = weight;
+	      mcp = dynamic_cast<lcio::MCParticle*>(navs[n]->getRelatedToObjects(pfo)[r]);
+	      mcpf = _mcpLCIORel2[mcp];
+	      break;
+	    }
+	  }
+	}
       }
 
       // find clusters
@@ -432,6 +497,8 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
 
         track->setId(trkIdCounter++); // start from 0. 110927 suehara
         track->setMcp(mcpf);
+	
+	track->setPDG(pfo->getType()); // added for SGV, 250908 suehara
 
         track->setCharge(pfo->getCharge());
 
@@ -518,6 +585,8 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
 
         track->setChi2(trk->getChi2());
         track->setNdf(trk->getNdf());
+	track->setdEdx(trk->getdEdx());
+	//cout << "dEdx:" << trk->getdEdx() << endl;
 
         // store detector hit numbers
         int nhits[lcfiplus::tpar::hitN];
@@ -934,6 +1003,8 @@ void LCIOStorer::WriteVertices(VertexVec* pvvtx, const char* newName, const char
 }
 
 void LCIOStorer::WriteJets(const char* jetName, const char* newName, bool writeVertex, const char* vtxName, const char* relName) {
+  //cout << "WriteJets" << endl;
+  
   if (!_event) {
     cerr << "LCIOStorer::ConvertJet: LCIO event has not been initialized." << endl;
     return ;
@@ -1093,6 +1164,7 @@ void LCIOStorer::WriteAllPIDs(lcio::LCCollection* lciocol, lcio::ReconstructedPa
 
   map<string, Parameters>::const_iterator it;
   for (it = parammap.begin(); it != parammap.end(); it++) {
+    //cout << "Writing PID " << it->first << endl;
     WritePID(lciocol, lciojet, lcfijet, it->first.c_str());
   }
 

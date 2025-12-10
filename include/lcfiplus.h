@@ -350,6 +350,8 @@ class Event : public EventStore {
   }
 
   // utility functions for MCParticles
+  bool isMCExist() const { return IsExist(getDefaultMCParticles());}
+  
   const MCParticle* getMCParticle(int id) const;
   const MCParticle* getMCParticle(const Track* trk) const;
 
@@ -419,6 +421,13 @@ class Track : public TLorentzVector {//, protected TrackData {//, public EventPo
   }
   void setCharge(double charge) {
     _charge = charge;
+  }
+
+  double getdEdx() const {
+    return _dEdx;
+  }
+  void setdEdx(double dEdx) {
+    _dEdx = dEdx;
   }
 
   double getD0()         const {
@@ -569,6 +578,7 @@ class Track : public TLorentzVector {//, protected TrackData {//, public EventPo
   const lcfiplus::MCParticle* _mcp;
   int _pdg;
   double _charge;
+  double _dEdx;
 
   // track parameter
   double _par[tpar::parN];
@@ -711,7 +721,7 @@ class MCParticle : public TLorentzVector {
   int getFlavor() const;
   const MCParticle* getColorString()const;
 
-  const MCColorSinglet* getColorSinglet(const vector<const MCColorSinglet*>* pcs)const;
+  const MCColorSinglet* getColorSinglet(const vector<const MCColorSinglet*> * pcs)const;
 
   bool isStableTrack() const;
   bool isStable() const;
@@ -1007,6 +1017,9 @@ class Jet : public TLorentzVector {
   const vector<const Neutral*>& getNeutrals() const {
     return _neutrals;
   }
+  // get all neutrals sorted by energy
+  vector<const Neutral*> getNeutralsSorted() const;
+
   const vector<const Vertex*>& getVertices() const {
     return _vertices;
   }
@@ -1018,6 +1031,8 @@ class Jet : public TLorentzVector {
   	if withoutV0 is true, skip tracks which are identified as v0 (default: false)
    */
   vector<const Track*> getAllTracks(bool withoutV0=false) const;
+  // get all tracks sorted by energy
+  vector<const Track*> getAllTracksSorted(bool withoutV0=false) const;
 
   // methods
   void add(const Jet& jet);
