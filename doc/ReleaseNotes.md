@@ -1,3 +1,11 @@
+# v00-11-01
+
+* 2025-10-30 Thomas Madlener ([PR#76](https://github.com/lcfiplus/lcfiplus/pull/76))
+  - Adapt the usage of Minuit2 to the changes that landed in https://github.com/root-project/root/pull/20026
+
+* 2025-10-30 Thomas Madlener ([PR#75](https://github.com/lcfiplus/lcfiplus/pull/75))
+  - Make sure to run Key4hep based CI on existing nightlies
+
 # v00-11
 
 * 2025-02-24 Thomas Madlener ([PR#73](https://github.com/LCFIPlus/LCFIPlus/pull/73))
