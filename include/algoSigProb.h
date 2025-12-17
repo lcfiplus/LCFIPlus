@@ -28,6 +28,10 @@ extern double jointProbZ0(const Jet* jet, const Vertex* pri, int minhitcut, doub
 extern double jointProb2D0(const Jet* jet, const Vertex* pri, int minhitcut, double maxd0sigcut, bool useVertexTracks, const TH1* jh1, const TH1* jh2);
 extern double jointProb2Z0(const Jet* jet, const Vertex* pri, int minhitcut, double maxz0sigcut, bool useVertexTracks, const TH1* jh1, const TH1* jh2);
 
+extern double dEdxNPartPri(const Vertex* pri, string particle, float GausWidth, float MaxMom, float MaxAngle);
+extern double dEdxNPartSec(const VertexVec& vtxList, string particle, float GausWidth, float MaxMom, float MaxAngle);
+extern double dEdxRatioPri(const Vertex* pri, string P1overP2, float GausWidth, float MaxMom, float MaxAngle);
+extern double dEdxRatioSec(const VertexVec& vtxList, string P1overP2, float GausWidth, float MaxMom, float MaxAngle);
 }
 }
 

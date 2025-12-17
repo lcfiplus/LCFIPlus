@@ -438,6 +438,10 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
         track->SetE(pfo->getEnergy());
         TVector3 pTrack(pfo->getMomentum());
         track->SetVect(pTrack);
+	
+	// Check if the PFO has multiple tracks or not
+	if(pfo->getTracks().size() > 1) track->setMultiTrack(true);
+	else track->setMultiTrack(false);
 
 	//PIDs
 	try{
