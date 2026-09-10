@@ -534,14 +534,13 @@ void Pi0VertexFinder::Make_GammaVector(const lcfiplus::Neutral* neut){
   for(int i=0;i<9;i++) vars[i]=0.0;
 
   //get deposit energy
-  double ecal=0.0,hcal=0.0,mucal=0.0;
+  double ecal=0.0,hcal=0.0;
   EVENT::ClusterVec cluvec=neut->getClusters();
   EVENT::FloatVec shapes;
   if(cluvec.size()!=0){
     for(unsigned int i=0;i<cluvec.size();i++){
       ecal+=cluvec[i]->getSubdetectorEnergies()[0];
       hcal+=cluvec[i]->getSubdetectorEnergies()[1];
-      mucal+=cluvec[i]->getSubdetectorEnergies()[2];
     }
 
     shapes=cluvec[0]->getShape();
