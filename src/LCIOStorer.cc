@@ -402,12 +402,10 @@ void LCIOStorer::SetEvent(lcio::LCEvent* evt) {
 
       // find clusters
       vector<lcio::Cluster*> clusters = pfo->getClusters();
-      double clusEnergy(0);
       double subE[6];
       for (int i=0; i<6; ++i) subE[i]=0;
       if (_readSubdetectorEnergies) {
         for (unsigned int iclus=0; iclus<clusters.size(); ++iclus) {
-          clusEnergy += clusters[iclus]->getEnergy();
           for (int i=0; i<6; ++i) {
             subE[i] = clusters[iclus]->getSubdetectorEnergies()[i];
           }

@@ -30,7 +30,6 @@ const Jet* JetMCMatch(JetVec& jets, const MCParticle* mcp, vector<const Track*>&
   vector<int> nVertexTrackInJet;
   nVertexTrackInJet.resize(jets.size());
 
-  int nvtx = 0;
   // get tracks
   for (unsigned int i=0; i<pTracks->size(); i++) {
     const MCParticle* mcpc = (*pTracks)[i]->getMcp();
@@ -47,7 +46,6 @@ const Jet* JetMCMatch(JetVec& jets, const MCParticle* mcp, vector<const Track*>&
 // 						if(nvtx == 0 && k > 0){cout << "CAUTION: vertices in the same jet might be from different semistables!" << endl;}
 // 						if(nvtx > 0 && k == 0){cout << "CAUTION: vertices in different jets might be from the same samistable!" << endl;}
             nVertexTrackInJet[j] ++;
-            nvtx ++;
           }
         }
         if (find(jets[j]->getTracks().begin(), jets[j]->getTracks().end(), (*pTracks)[i]) != jets[j]->getTracks().end()) {
@@ -61,7 +59,6 @@ const Jet* JetMCMatch(JetVec& jets, const MCParticle* mcp, vector<const Track*>&
   int ntijMax = 0;
   int ntijMaxIndex = -1;
 
-  int ntrsum = 0;
   int ntrvtxsum = 0;
   // determine best-match jet
   for (unsigned int j=0; j<jets.size(); j++) {
@@ -69,7 +66,6 @@ const Jet* JetMCMatch(JetVec& jets, const MCParticle* mcp, vector<const Track*>&
       ntijMax = nTrackInJet[j];
       ntijMaxIndex = j;
     }
-    ntrsum += nTrackInJet[j];
     ntrvtxsum += nVertexTrackInJet[j];
   }
 

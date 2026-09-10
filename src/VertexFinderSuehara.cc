@@ -1303,10 +1303,6 @@ void VertexFinderSuehara::recombineVertices(vector<Vertex*>& vertices, vector<Ve
 
         // optimizeTwoVertices here is removed: no better effect, comparing to do last
 
-        double prob = 1.;
-        if (n1tracks.size() > 1) prob *= v1->getProb();
-        if (n2tracks.size() > 1) prob *= v2->getProb();
-
         if (_verbose) {
           cout << "n1 = " << n1 << ", n2 = " << n2 << ", tracks = " << n1tracks.size() << ", " << n2tracks.size();
           cout << ", prob = " << v1->getProb() << ", " << v2->getProb();
@@ -1504,10 +1500,6 @@ void VertexFinderSuehara::recombineVertices(vector<Vertex*>& vertices, vector<Ve
         Vertex* v2 = VertexFitterSimple_V()(n2tracks.begin(), n2tracks.end());
 
         // optimizeTwoVertices here is removed: no better effect, comparing to do last
-
-        double prob = 1.;
-        if (n1tracks.size() > 1) prob *= v1->getProb();
-        if (n2tracks.size() > 1) prob *= v2->getProb();
 
         if (_verbose) {
           cout << "n1 = " << n1 << ", n2 = " << n2 << ", tracks = " << n1tracks.size() << ", " << n2tracks.size();

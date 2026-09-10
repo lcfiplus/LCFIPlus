@@ -804,7 +804,6 @@ class FtVtxLongitudinalDeviation : public FTAlgo {
 
       //cout << "LongitudinalDeviation: vpos " << vtx->getX() << " " << vtx->getY() << " " << vtx->getZ() << endl;
 
-      double devall = 0;
       double devmax = 0;
       for (unsigned int i=0; i<vtx->getTracks().size(); i++) {
         const Track* tr = vtx->getTracks()[i];
@@ -819,7 +818,6 @@ class FtVtxLongitudinalDeviation : public FTAlgo {
         Helix hel(tr,PointBase::SECVTX);
         double dev = hel.LongitudinalDeviation(_privtx,vtx);
         //cout << "LongitudinalDeviation: track " << i << ", cpdg " << cpdg << ", bpdg " << bpdg << ", dev " << dev << endl;
-        devall += dev;
 
         if (devmax < dev)devmax = dev;
       }
