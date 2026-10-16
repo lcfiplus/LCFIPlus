@@ -56,9 +56,9 @@ LcfiplusProcessor::LcfiplusProcessor() : Processor("LcfiplusProcessor") {
   registerProcessorParameter("PIDAlgorithmName", "ParticleID Algorithm Name", _pidAlgoName, string("LikelihoodPID"));
 
   registerOptionalParameter("MagneticField", "Manually set magnetic field, overriding the value from DD4hep [T]", _magneticField, float(0.0));
-  registerOptionalParameter("BeamSizeX", "Bunch size in the X direction [mm]", _beamSizeX, float(639e-6));
-  registerOptionalParameter("BeamSizeY", "Bunch size in the Y direction [mm]", _beamSizeY, float(5.7e-6));
-  registerOptionalParameter("BeamSizeZ", "Bunch size in the Z direction [mm]", _beamSizeZ, float(9.13e-2));
+  registerOptionalParameter("BeamSizeX", "Bunch size in the X direction [mm]", _beamSizeX, Globals::defaultBeamSizeX);
+  registerOptionalParameter("BeamSizeY", "Bunch size in the Y direction [mm]", _beamSizeY, Globals::defaultBeamSizeY);
+  registerOptionalParameter("BeamSizeZ", "Bunch size in the Z direction [mm]", _beamSizeZ, Globals::defaultBeamSizeZ);
   
 
   // ROOT object
@@ -120,9 +120,10 @@ void LcfiplusProcessor::init() {
       Globals::Instance()->setBField( MarlinUtil::getBzAtOrigin() );
     }
 
-    Globals::Instance()->setBeamSizeX(_beamSizeX);
-    Globals::Instance()->setBeamSizeY(_beamSizeY);
-    Globals::Instance()->setBeamSizeZ(_beamSizeZ);
+    // the beam sizes are shared by all LcfiplusProcessors, so only set the ones given to this one
+    if (parameterSet("BeamSizeX")) Globals::Instance()->setBeamSizeX(_beamSizeX);
+    if (parameterSet("BeamSizeY")) Globals::Instance()->setBeamSizeY(_beamSizeY);
+    if (parameterSet("BeamSizeZ")) Globals::Instance()->setBeamSizeZ(_beamSizeZ);
 
     // register observer
     Event::Instance()->RegisterObserver(this);
