@@ -165,6 +165,13 @@ void FTManager::process(const Event* event, const Vertex* privtx, int nhitsJoint
   }
 }
 
+//KDS Parameters 
+void FTManager::setDEDXParameters(const double gaus, const double mom, const double ang) {
+  _dEdxGausWidth = gaus;
+  _dEdxMinMom = mom;
+  _dEdxMaxAng = ang;
+}
+
 float* FTManager::getVarAddress(const string& varname) {
   std::vector<FTAlgo*>::iterator iter;
   for (iter = _algoList.begin(); iter != _algoList.end(); ++iter) {
