@@ -1,3 +1,12 @@
+# v00-11-02
+
+* 2026-10-29 Joshua Beirer ([PR#80](https://github.com/lcfiplus/lcfiplus/pull/80))
+  - Preserve configured beam sizes when initializing another `LcfiplusProcessor` without explicit `BeamSizeX/Y/Z` parameters.
+
+* 2026-09-10 Thomas Madlener ([PR#79](https://github.com/lcfiplus/lcfiplus/pull/79))
+  - Switch to the latest version of the key4hep-build workflow
+  - Fix gcc16/-Werror unused-but-set-variable build errors surfaced by the nightly stack
+
 # v00-11-01
 
 * 2025-10-30 Thomas Madlener ([PR#76](https://github.com/lcfiplus/lcfiplus/pull/76))
