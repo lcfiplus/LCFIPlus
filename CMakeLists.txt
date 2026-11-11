@@ -1,7 +1,7 @@
 ########################################################
 # cmake file for building LCFIPlus package
 # @author Tomohiko Tanabe (ICEPP, The University of Tokyo)
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.10 FATAL_ERROR)
 ########################################################
 
 
