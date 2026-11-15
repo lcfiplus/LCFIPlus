@@ -6,6 +6,8 @@
 #include "lcfiplus.h"
 #include "geometry.h"
 
+#include <algorithm>
+
 using namespace std;
 using namespace lcfiplus;
 
@@ -32,6 +34,15 @@ class VertexFitterSimple {
         cout << "VertexFitterSimple: number of tracks is " << ntracks << endl;
 
       TVector3 initial = pointConstraint->getPos();
+      if (!pointInitialOnly && ntracks > 0) {
+        // Start a constrained (primary) vertex fit at the median z0 of the tracks rather than at the centre of the
+        // beam spot: the beam spot is long in z, and from up to ~1 mm away the minimisation does not reach a vertex
+        // whose tracks have micrometre z0 errors, after which the tear-down rejects every track.
+        vector<double> z0s;
+        for (Iterator it = tracksBegin; it != tracksEnd; it++) z0s.push_back((*it)->getZ0());
+        nth_element(z0s.begin(), z0s.begin() + z0s.size() / 2, z0s.end());
+        initial.SetZ(z0s[z0s.size() / 2]);
+      }
       Point* result = new Point(PointBase::NOTUSED);
       double chi2 = -gh->PointFit(tracks, initial, result);
 
