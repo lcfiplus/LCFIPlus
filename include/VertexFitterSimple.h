@@ -7,6 +7,7 @@
 #include "geometry.h"
 
 #include <algorithm>
+#include <ranges>
 
 using namespace std;
 using namespace lcfiplus;
@@ -39,8 +40,9 @@ class VertexFitterSimple {
         // beam spot: the beam spot is long in z, and from up to ~1 mm away the minimisation does not reach a vertex
         // whose tracks have micrometre z0 errors, after which the tear-down rejects every track.
         vector<double> z0s;
-        for (Iterator it = tracksBegin; it != tracksEnd; it++) z0s.push_back((*it)->getZ0());
-        nth_element(z0s.begin(), z0s.begin() + z0s.size() / 2, z0s.end());
+        z0s.reserve(ntracks);
+        for (const Track* trk : ranges::subrange(tracksBegin, tracksEnd)) z0s.push_back(trk->getZ0());
+        ranges::nth_element(z0s, z0s.begin() + z0s.size() / 2);
         initial.SetZ(z0s[z0s.size() / 2]);
       }
       Point* result = new Point(PointBase::NOTUSED);
