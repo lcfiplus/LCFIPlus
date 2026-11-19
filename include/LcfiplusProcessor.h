@@ -55,9 +55,8 @@ class LcfiplusProcessor : public Processor, public lcfiplus::EventStoreObserver 
 
  private:
 
-  // lciostorer singleton
-  static lcfiplus::LCIOStorer* _lcio;
-  bool _lcioowner;
+  // lciostorer
+  lcfiplus::LCIOStorer* _lcio;
 
   int _useMcp;
 
