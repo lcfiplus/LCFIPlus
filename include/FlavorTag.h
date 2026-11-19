@@ -47,6 +47,8 @@ class FlavorTag : public Algorithm {
   int _nhitsJointProbZ0;
   int _nhitsMostSignificantTrack;
 
+  double _dEdxGausWidth, _dEdxMinMom, _dEdxMaxAng;
+
   ClassDef(FlavorTag,1);
 };
 
