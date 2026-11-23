@@ -1,3 +1,11 @@
+# v00-11-03
+
+* 2026-11-18 Joshua Beirer ([PR#82](https://github.com/lcfiplus/lcfiplus/pull/82))
+  - `VertexFitterSimple`: with a beam-spot constraint (primary-vertex finding), start the vertex fit at the median z0 of the tracks instead of at the centre of the beam spot. From up to ~1 mm away in z the minimisation did not reach the vertex, and the tear-down then removed every track, leaving a primary vertex without tracks.
+
+* 2026-11-17 Juan Miguel Carceller ([PR#81](https://github.com/lcfiplus/lcfiplus/pull/81))
+  - Require CMake 3.10 to fix `Compatibility with CMake < 3.5 has been removed from CMake.`
+
 # v00-11-02
 
 * 2026-10-29 Joshua Beirer ([PR#80](https://github.com/lcfiplus/lcfiplus/pull/80))
